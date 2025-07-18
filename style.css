@@ -1,0 +1,64 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+#main {
+    max-width: 800px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 0 16px #ddd;
+    padding: 20px 40px 40px 40px;
+}
+header {
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 1em;
+    text-align: center;
+}
+h1 {
+    margin-bottom: 0.2em;
+    font-size: 2em;
+    color: #27ae60;
+}
+#subtitle {
+    color: #888;
+    font-size: 1.1em;
+    margin-bottom: 1.2em;
+}
+section {
+    margin-bottom: 1.5em;
+}
+#red-code-list div {
+    margin-bottom: 0.2em;
+}
+.status {
+    font-size: 0.9em;
+    padding: 2px 8px;
+    border-radius: 7px;
+    margin-left: 10px;
+}
+.status.active { background: #d3f9df; color: #167a4c; }
+.status.inactive { background: #f9d3d3; color: #a31616; }
+#pulseForm input, #pulseForm select, #pulseForm button {
+    padding: 6px 8px;
+    margin: 2px 4px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+#pulseForm button {
+    background: #27ae60;
+    color: white;
+    border: none;
+}
+#pulseForm button:hover {
+    background: #218c53;
+}
+ul { list-style: none; padding-left: 0; }
+ul li { margin-bottom: 0.4em; }
+@media (max-width: 600px) {
+    #main { padding: 10px; }
+}
