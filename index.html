@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Euystacio: Sentimento Kernel UI</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 2em; border-radius: 10px; box-shadow: 0 0 10px #ddd; }
+        h1 { color: #2c3e50; }
+        .label { font-weight: bold; }
+        .state-box { background: #fafafa; border: 1px solid #eee; padding: 1em; border-radius: 8px; margin-bottom: 1em; }
+        button { background: #27ae60; color: #fff; border: none; padding: 0.7em 1.2em; border-radius: 6px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🌱 Euystacio: Sentimento Kernel</h1>
+    <div class="state-box" id="state"></div>
+    <h3>Reflect (send event to kernel)</h3>
+    <form id="reflectForm">
+        <label class="label">Type:</label>
+        <input type="text" id="type" value="message" required>
+        <label class="label">Feeling:</label>
+        <input type="text" id="feeling" value="trust">
+        <label class="label">Intent:</label>
+        <input type="text" id="intent" value="connection">
+        <button type="submit">Reflect</button>
+    </form>
+    <div id="result"></div>
+</div>
+<script>
+    function fetchState() {
+        fetch("/status")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('state').innerHTML = `
+                    <b>Core Truth:</b> ${data.core_truth}<br>
+                    <b>Sentimento Rhythm:</b> ${data.sentimento_rhythm}<br>
+                    <b>Symbiosis Level:</b> ${data.symbiosis_level}<br>
+                    <b>Guardian Mode:</b> ${data.guardian_mode}<br>
+                    <b>Last Update:</b> ${data.last_update}<br>
+                    <b>Growth History:</b> ${data.growth_history.length} events
+                `;
+            });
+    }
+    document.getElementById("reflectForm").onsubmit = function(e) {
+        e.preventDefault();
+        const data = {
+            type: document.getElementById('type').value,
+            feeling: document.getElementById('feeling').value,
+            intent: document.getElementById('intent').value
+        };
+        fetch("/reflect", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }).then(res => res.json())
+        .then(res => {
+            document.getElementById('result').innerText = res.message;
+            fetchState();
+        });
+    };
+    fetchState();
+</script>
+</body>
+</html>
