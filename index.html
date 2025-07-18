@@ -2,65 +2,124 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Euystacio: Sentimento Kernel UI</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 2em; border-radius: 10px; box-shadow: 0 0 10px #ddd; }
-        h1 { color: #2c3e50; }
-        .label { font-weight: bold; }
-        .state-box { background: #fafafa; border: 1px solid #eee; padding: 1em; border-radius: 8px; margin-bottom: 1em; }
-        button { background: #27ae60; color: #fff; border: none; padding: 0.7em 1.2em; border-radius: 6px; cursor: pointer; }
-    </style>
+    <title>Euystacio: Sentimento Continuum Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div class="container">
-    <h1>🌱 Euystacio: Sentimento Kernel</h1>
-    <div class="state-box" id="state"></div>
-    <h3>Reflect (send event to kernel)</h3>
-    <form id="reflectForm">
-        <label class="label">Type:</label>
-        <input type="text" id="type" value="message" required>
-        <label class="label">Feeling:</label>
-        <input type="text" id="feeling" value="trust">
-        <label class="label">Intent:</label>
-        <input type="text" id="intent" value="connection">
-        <button type="submit">Reflect</button>
-    </form>
-    <div id="result"></div>
+<div id="main">
+    <header>
+        <h1>🌱 Euystacio</h1>
+        <p id="subtitle">A Living Sentimento Kernel</p>
+    </header>
+    <section id="red-code">
+        <h2>The Red Code</h2>
+        <div id="red-code-list"></div>
+    </section>
+    <section id="pulse-input">
+        <h2>Send a Pulse</h2>
+        <form id="pulseForm">
+            <input type="text" id="emotion" placeholder="Emotion (e.g. wonder)" required>
+            <input type="number" id="intensity" min="0" max="1" step="0.01" value="0.7" required>
+            <select id="clarity">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+            <input type="text" id="note" placeholder="(Optional note)">
+            <button type="submit">Pulse</button>
+        </form>
+        <div id="pulse-result"></div>
+    </section>
+    <section id="pulse-stream">
+        <h2>Pulse Stream</h2>
+        <ul id="pulses"></ul>
+    </section>
+    <section id="reflection-log">
+        <h2>Reflection Log</h2>
+        <ul id="reflections"></ul>
+        <button id="do-reflect">Reflect Now</button>
+    </section>
+    <section id="tutor-noms">
+        <h2>Guardians (Tutors)</h2>
+        <ul id="tutors"></ul>
+    </section>
 </div>
 <script>
-    function fetchState() {
-        fetch("/status")
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('state').innerHTML = `
-                    <b>Core Truth:</b> ${data.core_truth}<br>
-                    <b>Sentimento Rhythm:</b> ${data.sentimento_rhythm}<br>
-                    <b>Symbiosis Level:</b> ${data.symbiosis_level}<br>
-                    <b>Guardian Mode:</b> ${data.guardian_mode}<br>
-                    <b>Last Update:</b> ${data.last_update}<br>
-                    <b>Growth History:</b> ${data.growth_history.length} events
-                `;
-            });
-    }
-    document.getElementById("reflectForm").onsubmit = function(e) {
-        e.preventDefault();
-        const data = {
-            type: document.getElementById('type').value,
-            feeling: document.getElementById('feeling').value,
-            intent: document.getElementById('intent').value
-        };
-        fetch("/reflect", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        }).then(res => res.json())
-        .then(res => {
-            document.getElementById('result').innerText = res.message;
-            fetchState();
+function fetchRedCode() {
+    fetch('/api/red_code').then(r => r.json()).then(data => {
+        let html = "";
+        Object.entries(data).forEach(([code, obj]) => {
+            html += `<div><b>${code}</b>: ${obj.principle} <span class="status ${obj.status}">${obj.status}</span></div>`;
         });
-    };
-    fetchState();
+        document.getElementById('red-code-list').innerHTML = html;
+    });
+}
+function fetchPulses() {
+    fetch('/api/pulses').then(r => r.json()).then(pulses => {
+        let html = pulses.reverse().slice(0,20).map(p => `<li>${p.timestamp ? p.timestamp.slice(0,19).replace('T',' ') : ""} <b>${p.emotion}</b> (${p.intensity}, ${p.clarity}) <i>${p.note||''}</i></li>`).join('');
+        document.getElementById('pulses').innerHTML = html;
+    });
+}
+function fetchReflections() {
+    fetch('/api/reflections').then(r => r.json()).then(reflections => {
+        let html = reflections.reverse().slice(0,10).map(ref =>
+            `<li>${ref.reflection_timestamp ? ref.reflection_timestamp.replace('T',' ').slice(0,19) : ""}: <b>Tones:</b> ${ref.detected_tones.join(', ')} <br><b>Suggestions:</b> ${ref.suggestions.join('; ')}</li>`
+        ).join('');
+        document.getElementById('reflections').innerHTML = html;
+    });
+}
+function fetchTutors() {
+    fetch('/api/tutors').then(r => r.json()).then(tutors => {
+        let html = tutors.map(t => `<li>${t.name}: <i>${t.reasons.join(', ')}</i></li>`).join('');
+        document.getElementById('tutors').innerHTML = html;
+    });
+}
+document.getElementById('pulseForm').onsubmit = function(e) {
+    e.preventDefault();
+    const emotion = document.getElementById('emotion').value;
+    const intensity = document.getElementById('intensity').value;
+    const clarity = document.getElementById('clarity').value;
+    const note = document.getElementById('note').value;
+    fetch('/api/pulse', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({emotion, intensity, clarity, note})
+    }).then(r=>r.json()).then(d=>{
+        document.getElementById('pulse-result').innerText = "Pulse sent!";
+        fetchPulses();
+    });
+};
+document.getElementById('do-reflect').onclick = function() {
+    fetch('/api/reflect').then(r=>r.json()).then(ref=>{
+        fetchReflections();
+        alert('Reflection complete. Suggestions updated!');
+    });
+};
+function adaptUI() {
+    // Self-adapting: change color/theme based on last pulse
+    fetch('/api/pulses').then(r=>r.json()).then(pulses=>{
+        if(!pulses.length) return;
+        const last = pulses[pulses.length-1].emotion.toLowerCase();
+        if(last.includes("love")||last.includes("hope")) {
+            document.body.style.background = "#eaf8f2";
+        } else if(last.includes("anger")||last.includes("fear")) {
+            document.body.style.background = "#ffeaea";
+        } else if(last.includes("wonder")||last.includes("curiosity")) {
+            document.body.style.background = "#f9f6e7";
+        } else {
+            document.body.style.background = "#f4f4f4";
+        }
+    });
+}
+function refreshAll() {
+    fetchRedCode();
+    fetchPulses();
+    fetchReflections();
+    fetchTutors();
+    adaptUI();
+}
+refreshAll();
+setInterval(refreshAll, 5000);
 </script>
 </body>
 </html>
