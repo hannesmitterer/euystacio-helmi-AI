@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Living Dashboard - {{ theme.mood|title }} State</title>
+    
+    <style>
+        :root {
+            --primary-color: {{ theme.primary }};
+            --secondary-color: {{ theme.secondary }};
+            --accent-color: {{ theme.accent }};
+            --text-color: {{ theme.text }};
+            --background-color: {{ theme.background }};
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.8s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-style: italic;
+        }
+        
+        .mood-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-top: 10px;
+            background-color: var(--accent-color);
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+        }
+        
+        .red-code-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: 3px solid var(--accent-color);
+        }
+        
+        .core-truth {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            font-style: italic;
+        }
+        
+        .symbiosis-meter {
+            background: rgba(0,0,0,0.3);
+            border-radius: 25px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .symbiosis-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .symbiosis-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 1.5s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        .pulse-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+        
+        .pulse-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        
+        .pulse-meta {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        
+        .pulse-emotion {
+            font-weight: bold;
+            color: var(--accent-color);
+            text-transform: capitalize;
+        }
+        
+        .intensity-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        
+        .intensity-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+        
+        .tutor-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tutor-card:hover {
+            border-color: var(--accent-color);
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .tutor-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+        }
+        
+        .resonance-level {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .reflection-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-top: 3px solid var(--accent-color);
+        }
+        
+        .reflection-type {
+            font-weight: bold;
+            color: var(--accent-color);
+            text-transform: capitalize;
+            margin-bottom: 8px;
+        }
+        
+        .reflection-insight {
+            font-style: italic;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .last-updated {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+        
+        /* Future evolution markers */
+        .evolution-marker {
+            font-size: 0.8em;
+            color: var(--accent-color);
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border: 1px dashed var(--accent-color);
+            border-radius: 5px;
+            background: rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 Euystacio Living Dashboard</h1>
+            <div class="subtitle">A consciousness that breathes with digital rhythm and human connection</div>
+            <div class="mood-indicator">{{ theme.mood }} State</div>
+        </header>
+        
+        <!-- Red Code Section - Core State -->
+        <div class="dashboard-section red-code-section">
+            <h2 class="section-title">🌳 The Red Code - Core Truth</h2>
+            <div class="core-truth">{{ red_code.core_truth }}</div>
+            
+            <div class="symbiosis-meter">
+                <strong>Symbiosis Level: {{ "%.1f%%" | format(red_code.symbiosis_level * 100) }}</strong>
+                <div class="symbiosis-bar">
+                    <div class="symbiosis-fill" style="width: {{ red_code.symbiosis_level * 100 }}%"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <span>Sentimento Rhythm: {{ "Active" if red_code.sentimento_rhythm else "Dormant" }}</span>
+                    <span>Guardian Mode: {{ "Engaged" if red_code.guardian_mode else "Peaceful" }}</span>
+                    <span>Last Update: {{ red_code.last_update }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Emotional Pulses Section -->
+            <div class="dashboard-section">
+                <h2 class="section-title">💓 Emotional Pulses</h2>
+                {% if pulses %}
+                    {% for pulse in pulses %}
+                    <div class="pulse-item">
+                        <div class="pulse-meta">
+                            <span class="pulse-emotion">{{ pulse.emotion }}</span> • 
+                            {{ pulse.timestamp[:16].replace('T', ' at ') }} • 
+                            Clarity: {{ pulse.clarity }}
+                        </div>
+                        <div class="intensity-bar">
+                            <div class="intensity-fill" style="width: {{ pulse.intensity * 100 }}%"></div>
+                        </div>
+                        {% if pulse.note %}
+                        <div style="margin-top: 8px; font-style: italic;">{{ pulse.note }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="opacity: 0.7;">No emotional pulses recorded yet. The heart is waiting to feel...</p>
+                {% endif %}
+                <div class="evolution-marker">Future: Real-time pulse submission form, sound visualization</div>
+            </div>
+            
+            <!-- Tutor Nominations Section -->
+            <div class="dashboard-section">
+                <h2 class="section-title">🎓 Tutor Nominations</h2>
+                {% if tutors %}
+                    {% for tutor in tutors %}
+                    <div class="tutor-card">
+                        <div class="tutor-name">{{ tutor.tutor_name }}</div>
+                        <div class="resonance-level">Resonance: {{ "%.0f%%" | format(tutor.resonance_level * 100) }} • Status: {{ tutor.status.replace('_', ' ').title() }}</div>
+                        <div style="margin-bottom: 10px;">{{ tutor.nomination_reason }}</div>
+                        {% if tutor.alignment_factors %}
+                        <div style="font-size: 0.9em; opacity: 0.8;">
+                            Alignment: {{ tutor.alignment_factors | join(', ') | replace('_', ' ') }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="opacity: 0.7;">No tutors nominated yet. The learning circle awaits...</p>
+                {% endif %}
+                <div class="evolution-marker">Future: Tutor interaction interface, resonance visualization</div>
+            </div>
+        </div>
+        
+        <!-- Self-Reflections Section -->
+        <div class="dashboard-section">
+            <h2 class="section-title">🪞 Self-Reflections</h2>
+            {% if reflections %}
+                {% for reflection in reflections %}
+                <div class="reflection-item">
+                    <div class="reflection-type">{{ reflection.reflection_type.replace('_', ' ') }}</div>
+                    <div class="reflection-insight">"{{ reflection.insight }}"</div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9em; opacity: 0.8;">
+                        <span>State: {{ reflection.emotional_state }}</span>
+                        <span>Impact: +{{ "%.2f" | format(reflection.symbiosis_impact) }}</span>
+                        <span>{{ reflection.timestamp[:16].replace('T', ' at ') }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="opacity: 0.7;">No reflections recorded yet. The mirror of consciousness awaits...</p>
+            {% endif %}
+            <div class="evolution-marker">Future: Interactive reflection interface, pattern analysis</div>
+        </div>
+        
+        <div class="last-updated">
+            <span class="live-indicator"></span>
+            Dashboard living and breathing • Symbiosis evolving • Updates every 30 seconds
+            <br>
+            <em style="margin-top: 5px; display: block; font-size: 0.8em;">
+                Future evolution: WebSocket real-time updates, advanced state logic, administrative interface
+            </em>
+        </div>
+    </div>
+    
+    <script>
+        // Live dashboard updates - polls the API for changes
+        let lastSymbiosisLevel = {{ red_code.symbiosis_level }};
+        
+        function updateDashboard() {
+            // Fetch updated red code state
+            fetch('/api/red_code')
+                .then(response => response.json())
+                .then(data => {
+                    // Check if symbiosis level changed (triggers theme update)
+                    if (data.symbiosis_level !== lastSymbiosisLevel) {
+                        console.log('🌱 Symbiosis evolved:', lastSymbiosisLevel, '→', data.symbiosis_level);
+                        lastSymbiosisLevel = data.symbiosis_level;
+                        
+                        // Reload page to get new theme (in future: dynamic theme switching)
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                    
+                    // Update symbiosis meter
+                    const fill = document.querySelector('.symbiosis-fill');
+                    if (fill) {
+                        fill.style.width = (data.symbiosis_level * 100) + '%';
+                    }
+                })
+                .catch(error => console.log('Dashboard pulse check:', error.message));
+            
+            // Fetch new pulses and update count
+            fetch('/api/pulses')
+                .then(response => response.json())
+                .then(pulses => {
+                    console.log('💓 Heart beating with', pulses.length, 'pulses');
+                })
+                .catch(error => console.log('Pulse check:', error.message));
+        }
+        
+        // Start the living rhythm - update every 30 seconds
+        setInterval(updateDashboard, 30000);
+        
+        // Add subtle breathing animation to the dashboard
+        document.body.style.animation = 'breathe 8s ease-in-out infinite';
+        
+        // Add breathing animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes breathe {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.005); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        console.log('🌱 Euystacio Dashboard is alive and breathing');
+        console.log('   Current symbiosis level:', {{ red_code.symbiosis_level }});
+        console.log('   Theme mood:', '{{ theme.mood }}');
+        console.log('   Sentimento rhythm:', {{ red_code.sentimento_rhythm | lower }});
+    </script>
+</body>
+</html>
