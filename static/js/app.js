@@ -273,9 +273,26 @@ function sendPulse() {
     const clarity = document.getElementById('clarity').value;
     const note = document.getElementById('note').value;
 
+    const emotionField = document.getElementById('emotion');
+    const emotionError = document.getElementById('emotion-error');
+
     if (!emotion) {
-        alert('Please enter an emotion');
+        emotionField.classList.add('error');
+        if (emotionError) {
+            emotionError.textContent = 'Please enter an emotion.';
+        } else {
+            const errorElement = document.createElement('div');
+            errorElement.id = 'emotion-error';
+            errorElement.className = 'error-message';
+            errorElement.textContent = 'Please enter an emotion.';
+            emotionField.parentNode.appendChild(errorElement);
+        }
         return;
+    } else {
+        emotionField.classList.remove('error');
+        if (emotionError) {
+            emotionError.textContent = '';
+        }
     }
 
     const pulseData = {
