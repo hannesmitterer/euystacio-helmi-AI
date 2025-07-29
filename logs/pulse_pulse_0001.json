@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-07-29T06:58:32.354746",
+  "emotion": "wonder",
+  "intensity": 0.8,
+  "clarity": "high",
+  "note": "Testing the pulse interface",
+  "pulse_id": "pulse_0001",
+  "resonance_pattern": {
+    "frequency": 741,
+    "color": "#9370DB",
+    "harmony": 0.6400000000000001,
+    "amplitude": 0.8,
+    "clarity_factor": 1.0
+  }
+}
