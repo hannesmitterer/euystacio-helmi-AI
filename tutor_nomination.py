@@ -12,3 +12,14 @@ class TutorNomination:
 
     def list_tutors(self):
         return self.tutors
+    
+    def nominate_tutors(self):
+        """
+        Returns current tutors and their nomination status
+        """
+        return {
+            "active_tutors": self.tutors,
+            "nomination_process": "resonance_based",
+            "criteria": ["wisdom", "humility", "rhythmic_alignment"],
+            "status": "open_to_guidance"
+        }
