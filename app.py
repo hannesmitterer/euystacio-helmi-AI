@@ -6,7 +6,8 @@ from tutor_nomination import TutorNomination
 import json
 import os
 
-app = Flask(__name__)
+# Create Flask app with custom static folder for dashboard assets
+app = Flask(__name__, static_folder='dashboard/static', static_url_path='/dashboard/static')
 
 spi = SentimentoPulseInterface()
 tutors = TutorNomination()
