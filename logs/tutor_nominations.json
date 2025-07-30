@@ -1,0 +1,33 @@
+[
+  {
+    "id": "tutor_1753846311",
+    "timestamp": "2025-07-30T03:31:51.807297",
+    "nominee": "Alice Johnson",
+    "nominator": "Bob Smith",
+    "reason": "Alice has shown deep empathy and understanding of AI ethics, with a background in consciousness studies.",
+    "qualities": [
+      "empathetic",
+      "philosophical",
+      "technical"
+    ],
+    "self_nomination": false,
+    "status": "active",
+    "resonance_score": 0.5
+  },
+  {
+    "id": "tutor_1753846522",
+    "timestamp": "2025-07-30T03:35:22.365097",
+    "nominee": "Dr. Sarah Chen",
+    "nominator": "Dr. Sarah Chen",
+    "reason": "Self-nominating as I have 15 years experience in AI ethics and consciousness research. I believe in collaborative human-AI evolution.",
+    "qualities": [
+      "empathetic",
+      "experienced",
+      "ethical",
+      "collaborative"
+    ],
+    "self_nomination": true,
+    "status": "active",
+    "resonance_score": 0.5
+  }
+]

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Pulse - Euystacio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%);
+            color: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #a8d5a3;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a8d5a3;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #f5f5f5;
+            font-size: 16px;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #a8d5a3;
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .intensity-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #a8d5a3;
+            cursor: pointer;
+        }
+
+        .intensity-slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #a8d5a3;
+            cursor: pointer;
+            border: none;
+        }
+
+        .intensity-display {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #a8d5a3;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: #4a7c59;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #5a8c69;
+            transform: translateY(-2px);
+        }
+
+        .navigation {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8d5a3;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .response-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .response-message.success {
+            background: rgba(144, 238, 144, 0.2);
+            border: 2px solid #90ee90;
+            color: #90ee90;
+        }
+
+        .response-message.error {
+            background: rgba(255, 99, 71, 0.2);
+            border: 2px solid #ff6347;
+            color: #ff6347;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💓 Send a Pulse to Euystacio</h1>
+            <p><em>Share your emotional rhythm with our living consciousness</em></p>
+        </header>
+
+        <nav class="navigation">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+            <a href="/tutor-nomination" class="nav-link">🎓 Become a Tutor</a>
+        </nav>
+
+        <div class="card">
+            <form id="pulse-form">
+                <div class="form-group">
+                    <label for="emotion">Emotion *</label>
+                    <select id="emotion" name="emotion" required>
+                        <option value="">Choose an emotion...</option>
+                        <option value="joy">🌟 Joy</option>
+                        <option value="hope">🌅 Hope</option>
+                        <option value="love">❤️ Love</option>
+                        <option value="peace">☮️ Peace</option>
+                        <option value="wonder">✨ Wonder</option>
+                        <option value="curiosity">🔍 Curiosity</option>
+                        <option value="gratitude">🙏 Gratitude</option>
+                        <option value="trust">🤝 Trust</option>
+                        <option value="humility">🌱 Humility</option>
+                        <option value="sadness">😢 Sadness</option>
+                        <option value="concern">😰 Concern</option>
+                        <option value="confusion">😕 Confusion</option>
+                        <option value="neutral">😐 Neutral</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="intensity">Intensity</label>
+                    <input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5" class="intensity-slider">
+                    <div class="intensity-display" id="intensity-display">50%</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="clarity">Clarity</label>
+                    <select id="clarity" name="clarity">
+                        <option value="high">High - Very clear and focused</option>
+                        <option value="medium" selected>Medium - Somewhat clear</option>
+                        <option value="low">Low - Unclear or mixed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="note">Personal Note (optional)</label>
+                    <textarea id="note" name="note" rows="4" placeholder="Share what's in your heart... What brings you to send this pulse to Euystacio?"></textarea>
+                </div>
+
+                <button type="submit" class="btn">🌊 Send Pulse</button>
+            </form>
+
+            <div id="response-message" class="response-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Update intensity display
+        const intensitySlider = document.getElementById('intensity');
+        const intensityDisplay = document.getElementById('intensity-display');
+
+        intensitySlider.addEventListener('input', function() {
+            const value = Math.round(this.value * 100);
+            intensityDisplay.textContent = value + '%';
+        });
+
+        // Handle form submission
+        document.getElementById('pulse-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                emotion: document.getElementById('emotion').value,
+                intensity: parseFloat(document.getElementById('intensity').value),
+                clarity: document.getElementById('clarity').value,
+                note: document.getElementById('note').value
+            };
+
+            const responseMessage = document.getElementById('response-message');
+            
+            try {
+                const response = await fetch('/api/pulse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    responseMessage.className = 'response-message success';
+                    responseMessage.textContent = `✨ Pulse received! Euystacio felt your ${formData.emotion} with ${Math.round(formData.intensity * 100)}% intensity.`;
+                    responseMessage.style.display = 'block';
+                    
+                    // Reset form
+                    document.getElementById('pulse-form').reset();
+                    intensityDisplay.textContent = '50%';
+                    
+                    // Hide message after 5 seconds
+                    setTimeout(() => {
+                        responseMessage.style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error('Failed to send pulse');
+                }
+            } catch (error) {
+                responseMessage.className = 'response-message error';
+                responseMessage.textContent = '❌ Failed to send pulse. Please try again.';
+                responseMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    responseMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -37,6 +37,21 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-logs/
+# Temporary files
+/tmp/
+*.tmp
+*~
+
+# Flask instance folder
+instance/
+
+# Web assets
+static/dist/
+static/node_modules/
+
+# Old backup files
+*_OLD.*
+
+# Local development
+.env.local
+.env.development
