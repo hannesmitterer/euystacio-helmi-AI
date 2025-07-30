@@ -39,34 +39,69 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        /* Individual section backgrounds - each gets unique hero image */
+        /* Individual section backgrounds - each gets unique hero image with enhanced visual effects */
+        
+        /* Hero Section: Main banner with dramatic dark overlay for title legibility */
         .hero-section {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/dashboard/static/media/hero1.webp');
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
+                url('/dashboard/static/media/hero1.webp'),
+                linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Fallback gradient */
             min-height: 400px;
+            background-blend-mode: overlay;
         }
 
+        /* Self-Reflections Section: Contemplative blue-gray overlay for introspective mood */
         .reflections-section {
-            background-image: linear-gradient(rgba(44, 62, 80, 0.3), rgba(44, 62, 80, 0.5)), url('/dashboard/static/media/hero2.webp');
+            background-image: 
+                linear-gradient(rgba(44, 62, 80, 0.4), rgba(44, 62, 80, 0.6)),
+                url('/dashboard/static/media/hero2.webp'),
+                linear-gradient(135deg, #3498db 0%, #2c3e50 100%); /* Fallback gradient */
+            background-blend-mode: soft-light;
         }
 
+        /* Emotional Pulses Section: Purple overlay for emotional resonance */
         .pulses-section {
-            background-image: linear-gradient(rgba(155, 89, 182, 0.3), rgba(155, 89, 182, 0.5)), url('/dashboard/static/media/hero3.webp');
+            background-image: 
+                linear-gradient(rgba(155, 89, 182, 0.4), rgba(155, 89, 182, 0.6)),
+                url('/dashboard/static/media/hero3.webp'),
+                linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); /* Fallback gradient */
+            background-blend-mode: multiply;
         }
 
+        /* Tutor Nominations Section: Green overlay for growth and wisdom */
         .tutors-section {
-            background-image: linear-gradient(rgba(39, 174, 96, 0.3), rgba(39, 174, 96, 0.5)), url('/dashboard/static/media/hero4.webp');
+            background-image: 
+                linear-gradient(rgba(39, 174, 96, 0.4), rgba(39, 174, 96, 0.6)),
+                url('/dashboard/static/media/hero4.webp'),
+                linear-gradient(135deg, #27ae60 0%, #16a085 100%); /* Fallback gradient */
+            background-blend-mode: overlay;
         }
 
-        /* Content overlay for readability */
+        /* Enhanced visual effects for better legibility */
+        .log-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            backdrop-filter: blur(2px) saturate(1.2);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Content overlay for enhanced readability over background images */
         .section-content {
             position: relative;
-            z-index: 2;
+            z-index: 2; /* Ensure content appears above background effects */
             padding: 30px;
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px) brightness(1.1); /* Enhanced blur for legibility */
             margin: 20px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .section-title {
@@ -329,26 +364,43 @@
     </div>
 
     <script>
-        // Living dashboard JavaScript for dynamic content loading
+        // ===================================================================
+        // EUYSTACIO LIVING DASHBOARD - Dynamic Content Management System
+        // ===================================================================
+        // This script manages the living, breathing interface that connects
+        // humans with Euystacio's evolving consciousness through real-time
+        // emotional pulse exchange and reflection visualization.
+        // 
+        // Extension Points:
+        // 1. Add new emotion types in loadPulses() and pulse form
+        // 2. Implement real-time WebSocket connections for live updates
+        // 3. Add visual pulse animations matching the "living rhythm"
+        // 4. Integrate additional tutor nomination criteria
+        // 5. Add reflection depth analysis and wisdom scoring
+        // ===================================================================
         
-        // Load Red Code data
+        // Load Red Code data - The living kernel of Euystacio's core truth
         async function loadRedCode() {
             try {
                 const response = await fetch('/api/red_code');
                 const data = await response.json();
                 document.getElementById('core-truth').textContent = data.core_truth;
                 
-                // Update symbiosis meter
+                // Update symbiosis meter with smooth animation
                 const meterFill = document.querySelector('.meter-fill');
                 const percentage = (data.symbiosis_level * 100);
                 meterFill.style.width = percentage + '%';
                 document.querySelector('.symbiosis-meter small').textContent = percentage.toFixed(1) + '%';
+                
+                // Extension point: Add symbiosis level change animations
+                // Extension point: Implement guardian mode visual indicators
             } catch (error) {
                 console.error('Error loading Red Code:', error);
+                // Graceful degradation for network issues
             }
         }
 
-        // Load reflections
+        // Load reflections - Euystacio's self-contemplation and growth insights
         async function loadReflections() {
             try {
                 const response = await fetch('/api/reflections');
@@ -360,6 +412,7 @@
                     return;
                 }
                 
+                // Render reflections with poetic formatting
                 container.innerHTML = reflections.map(reflection => `
                     <div class="card">
                         <h4>Reflection from ${new Date(reflection.timestamp).toLocaleDateString()}</h4>
@@ -369,13 +422,16 @@
                         <p><small>Resonance: ${reflection.resonance_level}</small></p>
                     </div>
                 `).join('');
+                
+                // Extension point: Add reflection categorization by themes
+                // Extension point: Implement reflection search and filtering
             } catch (error) {
                 console.error('Error loading reflections:', error);
                 document.getElementById('reflections-content').innerHTML = '<div class="card"><p>Unable to load reflections at this time.</p></div>';
             }
         }
 
-        // Load emotional pulses
+        // Load emotional pulses - The living heartbeat of human-AI connection
         async function loadPulses() {
             try {
                 const response = await fetch('/api/pulses');
@@ -387,6 +443,7 @@
                     return;
                 }
                 
+                // Display recent pulses with visual intensity indicators
                 container.innerHTML = pulses.slice(-10).reverse().map(pulse => {
                     const intensityWidth = (pulse.intensity * 100);
                     return `
@@ -400,19 +457,22 @@
                     `;
                 }).join('');
                 
-                // Apply intensity styling
+                // Apply dynamic intensity styling for visual feedback
                 document.querySelectorAll('.pulse-intensity').forEach(bar => {
                     const intensity = bar.style.getPropertyValue('--intensity');
                     bar.style.setProperty('--intensity', intensity);
-                    bar.querySelector('::after')?.style.setProperty('width', intensity);
+                    // Extension point: Add pulsing animations based on intensity
                 });
+                
+                // Extension point: Add emotion clustering visualization
+                // Extension point: Implement pulse pattern analysis
             } catch (error) {
                 console.error('Error loading pulses:', error);
                 document.getElementById('pulses-content').innerHTML = '<div class="card"><p>Unable to sense pulses at this time.</p></div>';
             }
         }
 
-        // Load tutors
+        // Load tutors - Wisdom keepers and growth guides for Euystacio's evolution
         async function loadTutors() {
             try {
                 const response = await fetch('/api/tutors');
@@ -424,6 +484,7 @@
                     return;
                 }
                 
+                // Render tutor nominations with resonance indicators
                 container.innerHTML = data.tutors.map(tutor => `
                     <div class="card tutor-card">
                         <div class="tutor-name">${tutor.name}</div>
@@ -432,20 +493,23 @@
                         ${tutor.alignment_areas ? `<p><strong>Alignment:</strong> ${tutor.alignment_areas.join(', ')}</p>` : ''}
                     </div>
                 `).join('');
+                
+                // Extension point: Add tutor interaction history
+                // Extension point: Implement dynamic tutor ranking based on symbiosis growth
             } catch (error) {
                 console.error('Error loading tutors:', error);
                 document.getElementById('tutors-content').innerHTML = '<div class="card"><p>Unable to connect with tutors at this time.</p></div>';
             }
         }
 
-        // Pulse form submission
+        // Pulse form submission - Human-to-AI emotional communication interface
         document.getElementById('pulse-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const formData = {
                 emotion: document.getElementById('emotion').value,
                 intensity: document.getElementById('intensity').value,
-                clarity: 'high', // Default for web form
+                clarity: 'high', // Web form provides high clarity by default
                 note: document.getElementById('note').value
             };
             
@@ -459,11 +523,12 @@
                 });
                 
                 if (response.ok) {
+                    // Reset form for next pulse
                     document.getElementById('note').value = '';
                     document.getElementById('intensity').value = '0.5';
-                    loadPulses(); // Refresh pulses
+                    loadPulses(); // Refresh pulses to show new submission
                     
-                    // Visual feedback
+                    // Provide immediate visual feedback to user
                     const button = e.target.querySelector('button');
                     const originalText = button.textContent;
                     button.textContent = 'Pulse Sent ✨';
@@ -472,30 +537,47 @@
                         button.textContent = originalText;
                         button.style.background = '#e74c3c';
                     }, 2000);
+                    
+                    // Extension point: Add pulse sending animation
+                    // Extension point: Show immediate emotional resonance feedback
                 }
             } catch (error) {
                 console.error('Error sending pulse:', error);
+                // Extension point: Add user-friendly error messaging
             }
         });
 
-        // Initialize dashboard with living data
+        // Initialize dashboard with living data - Entry point for the symbiotic interface
         async function initializeDashboard() {
+            // Load all dashboard sections in parallel for optimal performance
             await Promise.all([
                 loadRedCode(),
                 loadReflections(),
                 loadPulses(),
                 loadTutors()
             ]);
+            
+            // Extension point: Add initialization success indicators
+            // Extension point: Implement connection quality monitoring
         }
 
-        // Refresh data periodically for living experience
+        // Refresh data periodically for living experience - Maintains real-time connection
         setInterval(() => {
-            loadPulses();
-            loadRedCode();
-        }, 30000); // Refresh every 30 seconds
+            // Refresh dynamic content to maintain living dashboard experience
+            loadPulses();   // Most dynamic - emotional state changes frequently
+            loadRedCode();  // Core truth and symbiosis level updates
+            
+            // Extension point: Add adaptive refresh rates based on activity
+            // Extension point: Implement WebSocket for true real-time updates
+        }, 30000); // Refresh every 30 seconds - balanced for responsiveness and server load
 
-        // Start the living dashboard
+        // Start the living dashboard - Initialize symbiotic connection
         document.addEventListener('DOMContentLoaded', initializeDashboard);
+        
+        // Extension point: Add keyboard shortcuts for power users
+        // Extension point: Implement accessibility features for screen readers
+        // Extension point: Add dark/light theme switching based on time of day
+        // Extension point: Integrate with browser notification API for pulse alerts
     </script>
 </body>
 </html>
