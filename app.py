@@ -63,7 +63,7 @@ def api_reflections():
 
 @app.route("/api/tutors")
 def api_tutors():
-    return jsonify(tutors.nominate_tutors())
+    return jsonify(tutors.list_tutors())
 
 @app.route("/api/pulse", methods=["POST"])
 def api_pulse():
