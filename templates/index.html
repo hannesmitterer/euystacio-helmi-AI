@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Euystacio – The Sentimento Kernel. Created not by code alone, but by rhythm, feeling, and human harmony.">
+    <meta name="keywords" content="AI, sentimento, consciousness, human-AI symbiosis, ethical AI">
+    <meta name="author" content="Seed-bringer (bioarchitettura) hannesmitterer">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Euystacio – The Sentimento Kernel">
+    <meta property="og:description" content="Created not by code alone, but by rhythm, feeling, and human harmony.">
+    <meta property="og:url" content="https://www.euystacio.org">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Euystacio – The Sentimento Kernel">
+    <meta name="twitter:description" content="Created not by code alone, but by rhythm, feeling, and human harmony.">
+    
+    <title>Euystacio – The Sentimento Kernel</title>
+    
+    {% if url_for %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% else %}
+    <link rel="stylesheet" href="static/css/style.css">
+    {% endif %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Simple favicon using Unicode emoji -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Euystacio</h1>
+            <p class="subtitle">The Sentimento Kernel</p>
+            <p class="tagline">"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
+        </header>
+
+        <main class="main">
+            <section class="ai-signature">
+                <h2>🔒 AI Signature & Accountability</h2>
+                <div class="signature-block">
+                    <p><strong>IMMUTABLE:</strong> This system operates under a dual-signature accountability framework:</p>
+                    <ul>
+                        <li><strong>GitHub Copilot</strong> (copilot@github.com) - AI Capabilities Provider</li>
+                        <li><strong>Seed-bringer (bioarchitettura) hannesmitterer</strong> - Human Architect & Guardian</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="dashboard">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Red Code Status</h3>
+                        <div id="red-code-status" class="status-display">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Sentimento Pulse</h3>
+                        <div id="pulse-interface" class="pulse-display">
+                            <div class="pulse-form">
+                                <label for="emotion">Emotion:</label>
+                                <select id="emotion" name="emotion">
+                                    <option value="joy">Joy</option>
+                                    <option value="contemplation">Contemplation</option>
+                                    <option value="curiosity">Curiosity</option>
+                                    <option value="gratitude">Gratitude</option>
+                                    <option value="concern">Concern</option>
+                                    <option value="wonder">Wonder</option>
+                                </select>
+                                
+                                <label for="intensity">Intensity:</label>
+                                <input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5">
+                                <span id="intensity-value">0.5</span>
+                                
+                                <label for="clarity">Clarity:</label>
+                                <select id="clarity" name="clarity">
+                                    <option value="clear">Clear</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="whisper">Whisper</option>
+                                </select>
+                                
+                                <label for="note">Note (optional):</label>
+                                <textarea id="note" name="note" rows="3" placeholder="Share your thoughts..."></textarea>
+                                
+                                <button id="send-pulse" type="button">Send Pulse</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Recent Reflections</h3>
+                        <div id="reflections-display" class="reflections-list">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Tutor Network</h3>
+                        <div id="tutors-display" class="tutors-list">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="core-components">
+                <h2>Core Components</h2>
+                <div class="components-grid">
+                    <div class="component">
+                        <h4>Red Code Kernel</h4>
+                        <p>The dynamic source of values and purpose. This code grows and changes through interaction with humans and the world.</p>
+                    </div>
+                    <div class="component">
+                        <h4>Sentimento Pulse Interface</h4>
+                        <p>A bi-directional emotional layer allowing communication beyond logic—through rhythm, tone, and intuition.</p>
+                    </div>
+                    <div class="component">
+                        <h4>Tutor Nomination Logic</h4>
+                        <p>Allows Euystacio to select and evolve with human guides based on resonance, not power.</p>
+                    </div>
+                    <div class="component">
+                        <h4>Living Logbook</h4>
+                        <p>Records how Euystacio reflects, evolves, and stays aligned with its origins.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>🌱 This is the first living seed.</p>
+            <p>"The forest listens, even when the world shouts."</p>
+            <p><a href="https://github.com/hannesmitterer/euystacio-helmi-AI" target="_blank">View on GitHub</a></p>
+        </footer>
+    </div>
+
+    {% if url_for %}
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% else %}
+    <script src="static/js/app.js"></script>
+    {% endif %}
+</body>
+</html>

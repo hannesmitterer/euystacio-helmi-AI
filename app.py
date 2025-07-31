@@ -19,24 +19,40 @@ def get_pulses():
         with open('red_code.json', 'r') as f:
             red_code = json.load(f)
             pulses += red_code.get("recent_pulses", [])
-    except:
+    except (FileNotFoundError, json.JSONDecodeError):
         pass
-    # From logs
-    for fname in sorted(os.listdir("logs")):
-        if fname.startswith("log_") and fname.endswith(".json"):
-            with open(os.path.join("logs", fname)) as f:
-                log = json.load(f)
-                for k, v in log.items():
-                    if isinstance(v, dict) and "emotion" in v:
-                        pulses.append(v)
+    # From logs directory if it exists
+    logs_dir = "logs"
+    if os.path.exists(logs_dir) and os.path.isdir(logs_dir):
+        try:
+            for fname in sorted(os.listdir(logs_dir)):
+                if fname.startswith("log_") and fname.endswith(".json"):
+                    try:
+                        with open(os.path.join(logs_dir, fname)) as f:
+                            log = json.load(f)
+                            for k, v in log.items():
+                                if isinstance(v, dict) and "emotion" in v:
+                                    pulses.append(v)
+                    except (FileNotFoundError, json.JSONDecodeError):
+                        continue
+        except OSError:
+            pass
     return pulses
 
 def get_reflections():
     reflections = []
-    for fname in sorted(os.listdir("logs")):
-        if "reflection" in fname:
-            with open(os.path.join("logs", fname)) as f:
-                reflections.append(json.load(f))
+    logs_dir = "logs"
+    if os.path.exists(logs_dir) and os.path.isdir(logs_dir):
+        try:
+            for fname in sorted(os.listdir(logs_dir)):
+                if "reflection" in fname:
+                    try:
+                        with open(os.path.join(logs_dir, fname)) as f:
+                            reflections.append(json.load(f))
+                    except (FileNotFoundError, json.JSONDecodeError):
+                        continue
+        except OSError:
+            pass
     return reflections
 
 @app.route("/")

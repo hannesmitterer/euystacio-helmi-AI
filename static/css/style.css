@@ -1,0 +1,340 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.tagline {
+    font-style: italic;
+    font-size: 1.1rem;
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* AI Signature Section */
+.ai-signature {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.ai-signature h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.signature-block {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.signature-block ul {
+    margin-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.signature-block li {
+    margin-bottom: 0.5rem;
+}
+
+/* Dashboard */
+.dashboard {
+    margin-bottom: 3rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+}
+
+/* Pulse Interface */
+.pulse-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pulse-form label {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.pulse-form input,
+.pulse-form select,
+.pulse-form textarea {
+    padding: 0.75rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.pulse-form input:focus,
+.pulse-form select:focus,
+.pulse-form textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.pulse-form input[type="range"] {
+    cursor: pointer;
+}
+
+#intensity-value {
+    font-weight: 500;
+    color: #667eea;
+    margin-left: 0.5rem;
+}
+
+#send-pulse {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#send-pulse:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+#send-pulse:active {
+    transform: translateY(0);
+}
+
+/* Status displays */
+.status-display,
+.reflections-list,
+.tutors-list {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #667eea;
+}
+
+.loading {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.reflection-item,
+.tutor-item {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #28a745;
+}
+
+.reflection-item:last-child,
+.tutor-item:last-child {
+    margin-bottom: 0;
+}
+
+.tutor-item.active {
+    border-left-color: #667eea;
+}
+
+.tutor-item.nominated {
+    border-left-color: #ffc107;
+}
+
+/* Core Components */
+.core-components {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.core-components h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.component {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.3s ease;
+}
+
+.component:hover {
+    transform: translateY(-3px);
+}
+
+.component h4 {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.component p {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: white;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.footer p {
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.footer a {
+    color: white;
+    text-decoration: underline;
+    transition: opacity 0.3s ease;
+}
+
+.footer a:hover {
+    opacity: 0.8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .components-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ai-signature,
+    .core-components {
+        padding: 1.5rem;
+    }
+    
+    .card {
+        padding: 1.25rem;
+    }
+}
+
+/* Animation for pulse sending */
+.pulse-sending {
+    animation: pulse 1.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Success/error states */
+.success {
+    border-left-color: #28a745 !important;
+    background-color: #d4edda;
+}
+
+.error {
+    border-left-color: #dc3545 !important;
+    background-color: #f8d7da;
+}
+
+.info {
+    border-left-color: #17a2b8 !important;
+    background-color: #d1ecf1;
+}

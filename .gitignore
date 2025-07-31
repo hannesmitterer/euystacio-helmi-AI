@@ -40,3 +40,9 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Build directories
+static_build/
+_site/
+dist/
+build/

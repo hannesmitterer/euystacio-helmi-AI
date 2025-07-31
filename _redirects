@@ -1,0 +1,10 @@
+# Netlify redirects for Euystacio AI
+
+# API fallbacks for static deployment
+/api/red_code /api/red_code.json 200
+/api/tutors /api/tutors.json 200
+/api/reflections /api/reflections.json 200
+/api/pulse /api/pulse_response.json 200
+
+# SPA routing - send all other requests to index.html
+/* /index.html 200

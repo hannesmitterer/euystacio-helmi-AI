@@ -1,0 +1,39 @@
+# Netlify Configuration for Euystacio AI
+
+[build]
+  publish = "static_build"
+  command = "python3 build_static.py"
+  
+[build.environment]
+  PYTHON_VERSION = "3.8"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production]
+  command = "python3 build_static.py --production"
+  
+[context.production.environment]
+  NODE_ENV = "production"
+
+[dev]
+  command = "python3 app.py"
+  port = 5000
+  targetPort = 5000
+  publish = "templates"
+  
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
