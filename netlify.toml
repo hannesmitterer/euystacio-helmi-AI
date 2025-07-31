@@ -1,0 +1,24 @@
+[build]
+  publish = "static"
+  command = "python build_static.py"
+
+[build.environment]
+  PYTHON_VERSION = "3.8"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "netlify/functions"
+  
+[dev]
+  command = "python app.py"
+  port = 5000
+  publish = "static"
