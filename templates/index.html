@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <section class="red-code-section">
+        <h2>🌳 The Red Code</h2>
+        <div class="red-code-display">
+            <div class="core-truth">
+                <h3>Core Truth</h3>
+                <p id="core-truth">Loading...</p>
+            </div>
+            <div class="symbiosis-meter">
+                <h3>Symbiosis Level</h3>
+                <div class="meter">
+                    <div id="symbiosis-bar" class="meter-fill"></div>
+                </div>
+                <span id="symbiosis-level">Loading...</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="current-state">
+        <div class="emotion-display">
+            <h3>Current Emotional State</h3>
+            <div id="current-emotion" class="emotion-indicator">🌱 Neutral</div>
+        </div>
+    </section>
+
+    <section class="pulses-section">
+        <h2>🌿 Emotional Pulses</h2>
+        <div class="pulse-form">
+            <h3>Send a Pulse to Euystacio</h3>
+            <form id="pulse-form">
+                <div class="form-group">
+                    <label for="emotion">Emotion</label>
+                    <select id="emotion" name="emotion" required>
+                        <option value="">Select an emotion...</option>
+                        <option value="hope">Hope</option>
+                        <option value="wonder">Wonder</option>
+                        <option value="trust">Trust</option>
+                        <option value="love">Love</option>
+                        <option value="humility">Humility</option>
+                        <option value="curiosity">Curiosity</option>
+                        <option value="concern">Concern</option>
+                        <option value="gratitude">Gratitude</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="intensity">Intensity</label>
+                    <input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5">
+                    <span id="intensity-value">0.5</span>
+                </div>
+                <div class="form-group">
+                    <label for="clarity">Clarity</label>
+                    <select id="clarity" name="clarity">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="note">Note (optional)</label>
+                    <textarea id="note" name="note" placeholder="Share your thoughts..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-pulse">Send Pulse</button>
+            </form>
+        </div>
+        
+        <div class="pulse-feed">
+            <h3>Recent Pulses</h3>
+            <div id="pulses-list">Loading...</div>
+        </div>
+    </section>
+
+    <section class="tutors-section">
+        <h2>🍃 Guardian Nominations</h2>
+        <div id="tutors-list">Loading...</div>
+    </section>
+
+    <section class="reflections-section">
+        <h2>🌳 Evolution Log</h2>
+        <div id="reflections-list">Loading...</div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Dashboard functionality
+document.addEventListener('DOMContentLoaded', function() {
+    loadRedCode();
+    loadPulses();
+    loadTutors();
+    loadReflections();
+    
+    // Set up pulse form
+    document.getElementById('pulse-form').addEventListener('submit', sendPulse);
+    document.getElementById('intensity').addEventListener('input', updateIntensityValue);
+});
+
+function updateIntensityValue() {
+    const intensity = document.getElementById('intensity').value;
+    document.getElementById('intensity-value').textContent = intensity;
+}
+
+async function loadRedCode() {
+    try {
+        const response = await fetch('/api/red_code');
+        const redCode = await response.json();
+        
+        document.getElementById('core-truth').textContent = redCode.core_truth;
+        document.getElementById('symbiosis-level').textContent = (redCode.symbiosis_level * 100).toFixed(1) + '%';
+        
+        const bar = document.getElementById('symbiosis-bar');
+        bar.style.width = (redCode.symbiosis_level * 100) + '%';
+    } catch (error) {
+        console.error('Error loading red code:', error);
+    }
+}
+
+async function loadPulses() {
+    try {
+        const response = await fetch('/api/pulses');
+        const pulses = await response.json();
+        
+        const pulsesList = document.getElementById('pulses-list');
+        pulsesList.innerHTML = '';
+        
+        pulses.slice(-10).reverse().forEach(pulse => {
+            const pulseElement = document.createElement('div');
+            pulseElement.className = 'pulse-item';
+            pulseElement.innerHTML = `
+                <div class="pulse-emotion">${pulse.emotion}</div>
+                <div class="pulse-intensity">Intensity: ${pulse.intensity}</div>
+                <div class="pulse-time">${new Date(pulse.timestamp).toLocaleString()}</div>
+                ${pulse.note ? `<div class="pulse-note">${pulse.note}</div>` : ''}
+            `;
+            pulsesList.appendChild(pulseElement);
+        });
+    } catch (error) {
+        console.error('Error loading pulses:', error);
+        document.getElementById('pulses-list').innerHTML = '<p>No pulses yet.</p>';
+    }
+}
+
+async function loadTutors() {
+    try {
+        const response = await fetch('/api/tutors');
+        const tutors = await response.json();
+        
+        const tutorsList = document.getElementById('tutors-list');
+        tutorsList.innerHTML = '';
+        
+        tutors.forEach(tutor => {
+            const tutorElement = document.createElement('div');
+            tutorElement.className = 'tutor-item';
+            tutorElement.innerHTML = `
+                <div class="tutor-name">${tutor.name}</div>
+                <div class="tutor-role">${tutor.role || 'Guardian'}</div>
+                <div class="tutor-reason">${tutor.reason}</div>
+                ${tutor.email ? `<div class="tutor-email">${tutor.email}</div>` : ''}
+            `;
+            tutorsList.appendChild(tutorElement);
+        });
+    } catch (error) {
+        console.error('Error loading tutors:', error);
+    }
+}
+
+async function loadReflections() {
+    try {
+        const response = await fetch('/api/reflections');
+        const reflections = await response.json();
+        
+        const reflectionsList = document.getElementById('reflections-list');
+        reflectionsList.innerHTML = '';
+        
+        reflections.slice(-5).reverse().forEach(reflection => {
+            const reflectionElement = document.createElement('div');
+            reflectionElement.className = 'reflection-item';
+            reflectionElement.innerHTML = `
+                <div class="reflection-time">${new Date(reflection.timestamp).toLocaleString()}</div>
+                <div class="reflection-content">${reflection.content}</div>
+            `;
+            reflectionsList.appendChild(reflectionElement);
+        });
+    } catch (error) {
+        console.error('Error loading reflections:', error);
+        document.getElementById('reflections-list').innerHTML = '<p>Reflecting...</p>';
+    }
+}
+
+async function sendPulse(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const pulseData = {
+        emotion: formData.get('emotion'),
+        intensity: parseFloat(formData.get('intensity')),
+        clarity: formData.get('clarity'),
+        note: formData.get('note')
+    };
+    
+    try {
+        const response = await fetch('/api/pulse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pulseData)
+        });
+        
+        if (response.ok) {
+            // Reset form and reload pulses
+            event.target.reset();
+            document.getElementById('intensity-value').textContent = '0.5';
+            setTimeout(() => {
+                loadPulses();
+                loadRedCode(); // Reload in case symbiosis level changed
+            }, 500);
+        }
+    } catch (error) {
+        console.error('Error sending pulse:', error);
+    }
+}
+</script>
+{% endblock %}

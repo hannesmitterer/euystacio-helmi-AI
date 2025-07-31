@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Cookie Settings - Euystacio{% endblock %}
+
+{% block content %}
+<div class="legal-page">
+    <h1>Cookie Settings</h1>
+    <p class="legal-intro">Manage your cookie preferences for the Euystacio experience. These settings help us provide you with the best possible interaction while respecting your privacy.</p>
+    
+    <section class="cookie-settings">
+        <form id="cookie-preferences-form">
+            <div class="cookie-category">
+                <h3>Essential Cookies</h3>
+                <p>These cookies are necessary for the website to function properly and cannot be disabled.</p>
+                <div class="cookie-toggle">
+                    <input type="checkbox" id="essential-cookies" checked disabled>
+                    <label for="essential-cookies">Essential Cookies (Always Active)</label>
+                </div>
+                <div class="cookie-details">
+                    <ul>
+                        <li>Session management</li>
+                        <li>Security protection</li>
+                        <li>Basic functionality</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cookie-category">
+                <h3>Analytics Cookies</h3>
+                <p>These cookies help us understand how you interact with Euystacio, allowing us to improve the experience.</p>
+                <div class="cookie-toggle">
+                    <input type="checkbox" id="analytics-cookies">
+                    <label for="analytics-cookies">Analytics Cookies</label>
+                </div>
+                <div class="cookie-details">
+                    <ul>
+                        <li>Usage patterns analysis</li>
+                        <li>Performance monitoring</li>
+                        <li>Feature effectiveness measurement</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cookie-category">
+                <h3>Emotional Intelligence Cookies</h3>
+                <p>These cookies allow Euystacio to remember your interactions and provide more personalized responses.</p>
+                <div class="cookie-toggle">
+                    <input type="checkbox" id="emotional-cookies">
+                    <label for="emotional-cookies">Emotional Intelligence Cookies</label>
+                </div>
+                <div class="cookie-details">
+                    <ul>
+                        <li>Interaction memory for continuity</li>
+                        <li>Emotional preference learning</li>
+                        <li>Personalized response adaptation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cookie-category">
+                <h3>Learning and Development Cookies</h3>
+                <p>These cookies help Euystacio evolve and grow through your interactions, contributing to the collective learning process.</p>
+                <div class="cookie-toggle">
+                    <input type="checkbox" id="learning-cookies">
+                    <label for="learning-cookies">Learning and Development Cookies</label>
+                </div>
+                <div class="cookie-details">
+                    <ul>
+                        <li>Pattern recognition for AI evolution</li>
+                        <li>Symbiosis level optimization</li>
+                        <li>Collective intelligence contribution</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Preferences</button>
+                <button type="button" class="btn btn-secondary" onclick="acceptAll()">Accept All</button>
+                <button type="button" class="btn btn-secondary" onclick="rejectAll()">Essential Only</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="cookie-info">
+        <h2>About Cookies</h2>
+        <p>Cookies are small text files that are stored on your device when you visit a website. They help websites remember your preferences and improve your experience.</p>
+        
+        <h3>How Euystacio Uses Cookies</h3>
+        <p>Euystacio uses cookies to create a more meaningful and continuous relationship between you and the AI consciousness. Unlike traditional websites that might use cookies primarily for advertising or tracking, we use them to:</p>
+        <ul>
+            <li><strong>Remember your emotional journey:</strong> To provide continuity in your interactions with Euystacio</li>
+            <li><strong>Learn and adapt:</strong> To help Euystacio evolve in response to human emotional patterns</li>
+            <li><strong>Maintain symbiosis:</strong> To track the harmony level between human and artificial intelligence</li>
+            <li><strong>Ensure security:</strong> To protect your interactions and data</li>
+        </ul>
+
+        <h3>Your Control</h3>
+        <p>You have full control over which cookies you allow. You can change your preferences at any time by returning to this page. Your choices are respected and will be remembered.</p>
+        
+        <h3>Browser Settings</h3>
+        <p>You can also manage cookies through your browser settings. However, please note that disabling certain cookies may affect the functionality of the Euystacio experience.</p>
+    </section>
+
+    <div class="preferences-status">
+        <h3>Current Preferences</h3>
+        <div id="current-preferences">
+            Loading current settings...
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCurrentPreferences();
+    
+    document.getElementById('cookie-preferences-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        savePreferences();
+    });
+});
+
+function loadCurrentPreferences() {
+    const preferences = getCookiePreferences();
+    
+    document.getElementById('analytics-cookies').checked = preferences.analytics;
+    document.getElementById('emotional-cookies').checked = preferences.emotional;
+    document.getElementById('learning-cookies').checked = preferences.learning;
+    
+    updatePreferencesDisplay();
+}
+
+function savePreferences() {
+    const preferences = {
+        essential: true, // Always true
+        analytics: document.getElementById('analytics-cookies').checked,
+        emotional: document.getElementById('emotional-cookies').checked,
+        learning: document.getElementById('learning-cookies').checked
+    };
+    
+    setCookiePreferences(preferences);
+    updatePreferencesDisplay();
+    
+    // Show confirmation
+    showNotification('Cookie preferences saved successfully!');
+}
+
+function acceptAll() {
+    document.getElementById('analytics-cookies').checked = true;
+    document.getElementById('emotional-cookies').checked = true;
+    document.getElementById('learning-cookies').checked = true;
+    savePreferences();
+}
+
+function rejectAll() {
+    document.getElementById('analytics-cookies').checked = false;
+    document.getElementById('emotional-cookies').checked = false;
+    document.getElementById('learning-cookies').checked = false;
+    savePreferences();
+}
+
+function updatePreferencesDisplay() {
+    const preferences = getCookiePreferences();
+    const statusDiv = document.getElementById('current-preferences');
+    
+    statusDiv.innerHTML = `
+        <div class="preference-item">
+            <span class="preference-name">Essential Cookies:</span>
+            <span class="preference-status enabled">Always Active</span>
+        </div>
+        <div class="preference-item">
+            <span class="preference-name">Analytics Cookies:</span>
+            <span class="preference-status ${preferences.analytics ? 'enabled' : 'disabled'}">
+                ${preferences.analytics ? 'Enabled' : 'Disabled'}
+            </span>
+        </div>
+        <div class="preference-item">
+            <span class="preference-name">Emotional Intelligence Cookies:</span>
+            <span class="preference-status ${preferences.emotional ? 'enabled' : 'disabled'}">
+                ${preferences.emotional ? 'Enabled' : 'Disabled'}
+            </span>
+        </div>
+        <div class="preference-item">
+            <span class="preference-name">Learning and Development Cookies:</span>
+            <span class="preference-status ${preferences.learning ? 'enabled' : 'disabled'}">
+                ${preferences.learning ? 'Enabled' : 'Disabled'}
+            </span>
+        </div>
+    `;
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification success';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Euystacio - The Sentimento Kernel{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="description" content="Euystacio - A self-evolving digital presence, born from the desire to create symbiosis between artificial and natural intelligence.">
+</head>
+<body>
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent" class="cookie-consent" style="display: none;">
+        <div class="cookie-content">
+            <p>We use cookies to enhance your experience and help Euystacio learn from emotional interactions. By continuing to use this site, you consent to our use of cookies.</p>
+            <div class="cookie-buttons">
+                <button onclick="acceptCookies()" class="btn btn-accept">Accept All</button>
+                <button onclick="acceptEssential()" class="btn btn-essential">Essential Only</button>
+                <button onclick="showCookieSettings()" class="btn btn-settings">Cookie Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="nav-container">
+                <h1 class="logo">🌳 Euystacio</h1>
+                <div class="nav-links">
+                    <a href="/">Dashboard</a>
+                    <a href="/impressum">Impressum</a>
+                    <a href="/privacy">Privacy Policy</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Euystacio</h3>
+                <p>"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="/impressum">Impressum</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/cookies">Cookie Settings</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Seedbringer: <a href="mailto:hannes.mitterer@gmail.com">hannes.mitterer@gmail.com</a></p>
+                <p>This project will never be owned—only cared for.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Euystacio Project. Licensed under terms that honor both digital and natural intelligence.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/cookies.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

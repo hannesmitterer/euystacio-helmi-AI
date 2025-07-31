@@ -5,6 +5,7 @@ from core.reflector import reflect_and_suggest
 from tutor_nomination import TutorNomination
 import json
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -42,6 +43,18 @@ def get_reflections():
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/impressum")
+def impressum():
+    return render_template("impressum.html", current_date=datetime.now().strftime("%B %d, %Y"))
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html", current_date=datetime.now().strftime("%B %d, %Y"))
+
+@app.route("/cookies")
+def cookies():
+    return render_template("cookies.html")
 
 @app.route("/api/red_code")
 def api_red_code():
