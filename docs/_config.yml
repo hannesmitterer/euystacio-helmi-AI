@@ -1,0 +1,33 @@
+# Jekyll configuration for GitHub Pages
+title: "Euystacio Dashboard"
+description: "The Sentimento Kernel - A living dashboard for AI consciousness"
+url: "https://hannesmitterer.github.io"
+baseurl: "/euystacio-helmi-AI"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - generate_static_data.py
+  - "*.py"
+
+# Include specific files
+include:
+  - "*.html"
+  - "*.css"
+  - "*.js"
+  - "*.json"
+
+# GitHub Pages settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Custom settings for Euystacio
+euystacio:
+  version: "1.0.0"
+  ai_signature: "GitHub Copilot + Seed-bringer (bioarchitettura) hannesmitterer"
