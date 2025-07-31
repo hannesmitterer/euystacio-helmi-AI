@@ -1,0 +1,90 @@
+name: CI/CD Pipeline for Euystacio
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10']
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-flask
+    
+    - name: Create logs directory
+      run: mkdir -p logs
+    
+    - name: Test Python imports
+      run: |
+        python -c "import app; print('App imports successfully')"
+        python -c "from core.red_code import RED_CODE; print('Red code loads successfully')"
+        python -c "from sentimento_pulse_interface import SentimentoPulseInterface; print('SPI loads successfully')"
+        python -c "from tutor_nomination import TutorNomination; print('Tutor nomination loads successfully')"
+    
+    - name: Test Flask app initialization
+      run: |
+        python -c "
+        import app
+        with app.app.test_client() as client:
+            response = client.get('/api/red_code')
+            assert response.status_code == 200
+            print('API endpoints working')
+        "
+
+  deploy-github-pages:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+    
+    - name: Build static site
+      run: |
+        # Copy static files to root for GitHub Pages
+        cp index.html _site_index.html || true
+        mkdir -p _site
+        cp -r static _site/
+        cp index.html _site/index.html
+        cp -r docs _site/ || true
+        cp -r manifesto _site/ || true
+        cp -r vision _site/ || true
+        cp LICENSE _site/ || true
+        cp README.md _site/ || true
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: '_site'
+    
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
