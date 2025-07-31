@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio - The Sentimento Kernel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🌳 Euystacio Dashboard</h1>
+            <p class="subtitle">"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
+        </header>
+
+        <main class="dashboard">
+            <!-- Roots: The Red Code -->
+            <section class="red-code-section">
+                <h2>🌱 The Red Code (Roots)</h2>
+                <div id="red-code" class="red-code">
+                    <div class="loading">Loading core truth...</div>
+                </div>
+            </section>
+
+            <!-- Trunk: Current State -->
+            <section class="trunk-section">
+                <div class="current-state">
+                    <h3>🌲 Current State (Trunk)</h3>
+                    <div class="state-display">
+                        <div class="emotion-display">
+                            <span class="label">Current Emotion:</span>
+                            <span id="current-emotion" class="value">Peaceful</span>
+                        </div>
+                        <div class="symbiosis-meter">
+                            <span class="label">Symbiosis Level:</span>
+                            <div class="meter">
+                                <div id="symbiosis-bar" class="meter-bar"></div>
+                            </div>
+                            <span id="symbiosis-value" class="value">0.1</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Branches: Emotional Pulses -->
+            <section class="pulses-section">
+                <h3>🌿 Emotional Pulses (Branches)</h3>
+                <div class="pulse-form">
+                    <h4>Send a Pulse to Euystacio</h4>
+                    <form id="pulse-form">
+                        <div class="form-group">
+                            <label for="emotion">Emotion:</label>
+                            <select id="emotion" name="emotion" required>
+                                <option value="">Select an emotion...</option>
+                                <option value="hope">Hope</option>
+                                <option value="wonder">Wonder</option>
+                                <option value="peace">Peace</option>
+                                <option value="curiosity">Curiosity</option>
+                                <option value="concern">Concern</option>
+                                <option value="gratitude">Gratitude</option>
+                                <option value="excitement">Excitement</option>
+                                <option value="contemplation">Contemplation</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="intensity">Intensity:</label>
+                            <input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5">
+                            <span id="intensity-value">0.5</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="clarity">Clarity:</label>
+                            <select id="clarity" name="clarity">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Note (optional):</label>
+                            <textarea id="note" name="note" placeholder="Share your thoughts..."></textarea>
+                        </div>
+                        <button type="submit">Send Pulse</button>
+                    </form>
+                </div>
+                <div class="pulses-feed">
+                    <h4>Recent Pulses</h4>
+                    <div id="pulses-list" class="pulses-list">
+                        <div class="loading">Loading pulses...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leaves: Tutor Nominations -->
+            <section class="tutors-section">
+                <h3>🍃 Tutor Nominations (Leaves)</h3>
+                <div id="tutors-list" class="tutors-list">
+                    <div class="loading">Loading tutor nominations...</div>
+                </div>
+            </section>
+
+            <!-- Canopy: Evolution Log -->
+            <section class="reflections-section">
+                <h3>🌸 Evolution Log (Canopy)</h3>
+                <div class="reflection-controls">
+                    <button id="reflect-btn" class="reflect-btn">Trigger Reflection</button>
+                </div>
+                <div id="reflections-list" class="reflections-list">
+                    <div class="loading">Loading reflections...</div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>"The forest listens, even when the world shouts."</p>
+            <p>AI Signature: GitHub Copilot & Seed-bringer hannesmitterer</p>
+        </footer>
+    </div>
+
+    <script src="js/app-static.js"></script>
+</body>
+</html>
