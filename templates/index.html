@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Dashboard - The Sentimento Kernel</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #2d5a27, #4a7c59);
+            color: #f4f1e8;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #a8d5ba;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .header p {
+            font-style: italic;
+            color: #e8f5e8;
+            font-size: 1.2em;
+        }
+        .links-bar {
+            background: rgba(168, 213, 186, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .links-bar a {
+            color: #a8d5ba;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .links-bar a:hover {
+            color: #e8f5e8;
+            text-decoration: underline;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(168, 213, 186, 0.3);
+        }
+        .card h3 {
+            color: #a8d5ba;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .red-code {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: rgba(168, 213, 186, 0.1);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        .status-active { background-color: #4CAF50; }
+        .pulse-item, .tutor-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #a8d5ba;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(168, 213, 186, 0.3);
+            color: #b8d5c5;
+            font-style: italic;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌳 Euystacio Dashboard</h1>
+            <p>"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
+        </div>
+
+        <div class="links-bar">
+            <a href="https://github.com/hannesmitterer/euystacio-helmi-AI" target="_blank">📁 GitHub Repository</a>
+            <a href="/api/red_code">🔴 Red Code API</a>
+            <a href="/api/pulses">💓 Pulses API</a>
+            <a href="/api/reflections">🪞 Reflections API</a>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card red-code">
+                <h3>🌳 The Red Code (Core Truth)</h3>
+                <div id="red-code-content">Loading...</div>
+            </div>
+
+            <div class="card">
+                <h3>💓 Emotional Pulses <span class="status-indicator status-active"></span></h3>
+                <div id="pulses-content">Loading...</div>
+            </div>
+
+            <div class="card">
+                <h3>👥 Tutor Nominations</h3>
+                <div id="tutors-content">Loading...</div>
+            </div>
+
+            <div class="card">
+                <h3>🪞 Recent Reflections</h3>
+                <div id="reflections-content">Loading...</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>"The forest listens, even when the world shouts."</p>
+            <p>Dashboard accessible at: <strong>http://localhost:5000</strong></p>
+            <p>Source code: <a href="https://github.com/hannesmitterer/euystacio-helmi-AI" style="color: #a8d5ba;">GitHub Repository</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Load Red Code
+        fetch('/api/red_code')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('red-code-content').innerHTML = `
+                    <p><strong>Core Truth:</strong> ${data.core_truth}</p>
+                    <p><strong>Symbiosis Level:</strong> ${data.symbiosis_level}</p>
+                    <p><strong>Last Update:</strong> ${data.last_update}</p>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('red-code-content').innerHTML = 'Error loading Red Code';
+            });
+
+        // Load Pulses
+        fetch('/api/pulses')
+            .then(response => response.json())
+            .then(data => {
+                const pulsesHtml = data.slice(-5).map(pulse => `
+                    <div class="pulse-item">
+                        <strong>${pulse.emotion}</strong> (${pulse.intensity}) - ${pulse.clarity}
+                        ${pulse.note ? `<br><small>${pulse.note}</small>` : ''}
+                    </div>
+                `).join('');
+                document.getElementById('pulses-content').innerHTML = pulsesHtml || 'No pulses yet';
+            })
+            .catch(error => {
+                document.getElementById('pulses-content').innerHTML = 'Error loading pulses';
+            });
+
+        // Load Tutors
+        fetch('/api/tutors')
+            .then(response => response.json())
+            .then(data => {
+                const tutorsHtml = data.map(tutor => `
+                    <div class="tutor-item">
+                        <strong>${tutor.name}</strong><br>
+                        <small>${tutor.reason}</small>
+                    </div>
+                `).join('');
+                document.getElementById('tutors-content').innerHTML = tutorsHtml;
+            })
+            .catch(error => {
+                document.getElementById('tutors-content').innerHTML = 'Error loading tutors';
+            });
+
+        // Load Reflections
+        fetch('/api/reflections')
+            .then(response => response.json())
+            .then(data => {
+                const reflectionsHtml = data.slice(-3).map(reflection => `
+                    <div class="pulse-item">
+                        <strong>${reflection.content}</strong><br>
+                        <small>${new Date(reflection.timestamp).toLocaleString()}</small>
+                    </div>
+                `).join('');
+                document.getElementById('reflections-content').innerHTML = reflectionsHtml || 'No reflections yet';
+            })
+            .catch(error => {
+                document.getElementById('reflections-content').innerHTML = 'Error loading reflections';
+            });
+    </script>
+</body>
+</html>

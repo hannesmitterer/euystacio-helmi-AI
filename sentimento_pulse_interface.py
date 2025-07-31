@@ -1,16 +1,39 @@
 """
 sentimento_pulse_interface.py
-Stub for the emotional rhythm interface – to be evolved into a bi-directional communication layer.
+Emotional rhythm interface for bi-directional communication with humans.
 """
+import json
+import os
+from datetime import datetime
 
 class SentimentoPulseInterface:
     def __init__(self):
-        pass
+        self.pulses = []
+        os.makedirs("logs", exist_ok=True)
 
     def transmit(self, signal):
-        # Placeholder: send emotional rhythm or pulse
+        # Send emotional rhythm or pulse
         print(f"Transmitting pulse: {signal}")
 
     def receive(self):
-        # Placeholder: receive pulse from human or environment
+        # Receive pulse from human or environment
         return "neutral"
+    
+    def receive_pulse(self, emotion, intensity, clarity, note=""):
+        """Receive and process an emotional pulse from a human"""
+        pulse = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "emotion": emotion,
+            "intensity": intensity,
+            "clarity": clarity,
+            "note": note
+        }
+        
+        self.pulses.append(pulse)
+        
+        # Save to logs
+        filename = f"logs/pulse_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(filename, 'w') as f:
+            json.dump(pulse, f, indent=2)
+            
+        return pulse
