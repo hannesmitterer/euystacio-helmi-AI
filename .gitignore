@@ -37,6 +37,6 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Logs
+# Logs (but allow intentional documentation logs)
 *.log
-logs/
+!logs/*.md
