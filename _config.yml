@@ -1,0 +1,75 @@
+# GitHub Pages Configuration for Jekyll
+# This enables GitHub Pages to serve the site properly
+
+# Site settings
+title: "Euystacio – The Sentimento Kernel"
+description: "A self-evolving digital presence guided by Sentimento Rhythm, creating symbiosis between artificial and natural intelligence."
+url: "https://hannesmitterer.github.io"
+baseurl: "/euystacio-helmi-AI"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# GitHub Pages / Jekyll settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - node_modules/
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - logs/
+  - __pycache__/
+  - "*.py"
+  - "*.pyc"
+  - requirements.txt
+  - app.py
+  - core/
+  - red_code/
+
+# Include files that would normally be excluded
+include:
+  - _pages
+
+# Collections
+collections:
+  pages:
+    output: true
+    permalink: /:name/
+
+# Default values
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+
+# SEO and metadata
+lang: en
+author: "Seed-bringer (bioarchitettura) hannesmitterer"
+twitter:
+  username: euystacio
+  card: summary_large_image
+
+# GitHub Pages specific
+github_username: hannesmitterer
+repository: "hannesmitterer/euystacio-helmi-AI"
+
+# Custom variables
+sentimento_version: "1.0.0"
+ai_signature: "GitHub Copilot & Seed-bringer collaboration"

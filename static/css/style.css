@@ -1,0 +1,315 @@
+/* Euystacio Sentimento Kernel - Responsive Design */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header/Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 0;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+.hero .subtitle {
+    font-size: 1.4rem;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.hero blockquote {
+    font-size: 1.1rem;
+    color: #34495e;
+    font-style: italic;
+    max-width: 600px;
+    margin: 0 auto;
+    border-left: 4px solid #3498db;
+    padding-left: 20px;
+    text-align: left;
+}
+
+/* Main Content Sections */
+section {
+    background: rgba(255, 255, 255, 0.95);
+    margin-bottom: 30px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+section h2 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 2rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.intro p {
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Component Grid */
+.component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.component {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.component:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.component h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.component p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* Status and Interactive Elements */
+.status {
+    background: #e8f5e8;
+    border: 1px solid #5cb85c;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #3c763d;
+}
+
+.pulse-interface button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.pulse-interface button:hover {
+    background: #2980b9;
+}
+
+#pulse-history {
+    background: #f1f2f6;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Accountability Section */
+.accountability {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.accountability h2 {
+    color: white;
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.signature-lock {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.accountability ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.accountability li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.accountability li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* Status Section */
+.status-section {
+    text-align: center;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.status-indicator {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.status-section blockquote {
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-top: 20px;
+    border-left: 4px solid #f39c12;
+    padding-left: 20px;
+    text-align: left;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .hero {
+        padding: 40px 20px;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    section {
+        padding: 25px 20px;
+    }
+    
+    section h2 {
+        font-size: 1.6rem;
+    }
+    
+    .component-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .hero blockquote {
+        text-align: center;
+        border-left: none;
+        border-top: 4px solid #3498db;
+        padding-left: 0;
+        padding-top: 15px;
+    }
+    
+    .status-section blockquote {
+        text-align: center;
+        border-left: none;
+        border-top: 4px solid #f39c12;
+        padding-left: 0;
+        padding-top: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero .subtitle {
+        font-size: 1rem;
+    }
+    
+    section {
+        padding: 20px 15px;
+    }
+    
+    .component {
+        padding: 20px;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.loading {
+    animation: pulse 2s infinite;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .hero, section {
+        background: white;
+        box-shadow: none;
+    }
+    
+    .pulse-interface button {
+        display: none;
+    }
+}
