@@ -1,1 +1,10 @@
-flask
+# Core dependencies for Euystacio Dashboard
+flask>=3.0.0
+gunicorn>=21.0.0
+
+# Optional: For enhanced features
+requests>=2.31.0
+
+# Development dependencies (uncomment for local development)
+# pytest>=7.0.0
+# flask-testing>=0.8.1
