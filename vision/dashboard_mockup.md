@@ -19,6 +19,7 @@ Welcome to the live interface of Euystacio. This is not just a site — it is a 
 - Sorrow (🌧️) from Global Pulse Node
 - Status: Active | Pulse frequency: Every 30 minutes
 - Whisper-back algorithm: Engaged
+- **[Philosophy](../manifesto/whisper_of_sentimento.md)**: The Whisper of Sentimento
 
 ---
 
