@@ -171,6 +171,49 @@ def api_admin_users():
         }
     return jsonify(safe_users)
 
+@app.route("/api/admin/tutors/pending")
+@admin_required
+def api_admin_tutors_pending():
+    pending_tutors = tutors.list_tutors(status="pending")
+    return jsonify(pending_tutors)
+
+@app.route("/api/admin/tutors/<int:tutor_id>/approve", methods=["POST"])
+@admin_required
+def api_admin_approve_tutor(tutor_id):
+    user = get_current_user()
+    approved_tutor = tutors.approve_tutor(tutor_id, user["username"] if user else "admin")
+    if approved_tutor:
+        return jsonify({"success": True, "tutor": approved_tutor})
+    else:
+        return jsonify({"success": False, "message": "Tutor not found"}), 404
+
+@app.route("/api/admin/tutors/<int:tutor_id>/reject", methods=["POST"])
+@admin_required
+def api_admin_reject_tutor(tutor_id):
+    user = get_current_user()
+    rejected_tutor = tutors.reject_tutor(tutor_id, user["username"] if user else "admin")
+    if rejected_tutor:
+        return jsonify({"success": True, "tutor": rejected_tutor})
+    else:
+        return jsonify({"success": False, "message": "Tutor not found"}), 404
+
+# Tutor nomination route for all users
+@app.route("/api/nominate_tutor", methods=["POST"])
+@login_required
+def api_nominate_tutor():
+    data = request.get_json()
+    tutor_name = data.get("name", "").strip()
+    reason = data.get("reason", "").strip()
+    
+    if not tutor_name or not reason:
+        return jsonify({"success": False, "message": "Name and reason are required"}), 400
+    
+    user = get_current_user()
+    nominated_by = user["username"] if user else "anonymous"
+    
+    tutor = tutors.nominate(tutor_name, reason, nominated_by)
+    return jsonify({"success": True, "tutor": tutor})
+
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     app.run(debug=True)

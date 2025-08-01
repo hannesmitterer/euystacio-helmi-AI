@@ -102,8 +102,39 @@
             <!-- Leaves: Tutor Nominations -->
             <section class="tutors-section">
                 <h3>🍃 Tutor Nominations (Leaves)</h3>
-                <div id="tutors-list" class="tutors-list">
-                    <div class="loading">Loading tutor nominations...</div>
+                
+                <!-- Tutor Nomination Form for all users -->
+                <div class="tutor-form">
+                    <h4>Nominate a Tutor</h4>
+                    <form id="tutor-form" class="tutor-nomination-form">
+                        <div class="form-group">
+                            <label for="tutor-name">Tutor Name:</label>
+                            <input type="text" id="tutor-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tutor-reason">Reason for Nomination:</label>
+                            <textarea id="tutor-reason" name="reason" placeholder="Why do you nominate this person as a tutor?" required></textarea>
+                        </div>
+                        <button type="submit">Nominate Tutor</button>
+                    </form>
+                </div>
+
+                <!-- Admin Controls -->
+                {% if user and user.is_admin %}
+                <div class="admin-controls">
+                    <h4>🛡️ Admin: Pending Nominations</h4>
+                    <div id="pending-tutors" class="pending-tutors">
+                        <div class="loading">Loading pending nominations...</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- All Tutors List -->
+                <div class="tutors-feed">
+                    <h4>Approved Tutors</h4>
+                    <div id="tutors-list" class="tutors-list">
+                        <div class="loading">Loading tutor nominations...</div>
+                    </div>
                 </div>
             </section>
 

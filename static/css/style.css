@@ -255,6 +255,104 @@ button:hover {
 }
 
 /* Tutors List */
+.tutor-form {
+    background: #fff8e1;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 2px solid var(--accent-gold);
+}
+
+.tutor-nomination-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-controls {
+    background: #e8f5e9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 2px solid var(--primary-green);
+}
+
+.admin-controls h4 {
+    color: var(--primary-green);
+    margin-bottom: 15px;
+}
+
+.pending-tutors {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pending-tutor-item {
+    background: #fff3e0;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 3px solid #ff9800;
+}
+
+.pending-tutor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.pending-tutor-name {
+    font-weight: 600;
+    color: var(--earth-brown);
+    font-size: 1.1rem;
+}
+
+.pending-tutor-meta {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.pending-tutor-reason {
+    margin: 10px 0;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+.tutor-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.approve-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.approve-btn:hover {
+    background: #45a049;
+}
+
+.reject-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.reject-btn:hover {
+    background: #da190b;
+}
+
 .tutor-item {
     background: #fff8e1;
     padding: 15px;
@@ -263,15 +361,36 @@ button:hover {
     border-left: 3px solid var(--accent-gold);
 }
 
+.tutor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
 .tutor-name {
     font-weight: 600;
     color: var(--earth-brown);
     font-size: 1.1rem;
 }
 
+.tutor-status {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background: #4caf50;
+    color: white;
+}
+
 .tutor-reason {
     margin-top: 5px;
     color: var(--text-dark);
+}
+
+.tutor-meta {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 8px;
 }
 
 /* Reflections */

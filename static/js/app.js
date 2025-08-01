@@ -67,6 +67,12 @@ class EuystacioDashboard {
         if (reflectBtn) {
             reflectBtn.addEventListener('click', () => this.triggerReflection());
         }
+
+        // Tutor nomination form
+        const tutorForm = document.getElementById('tutor-form');
+        if (tutorForm) {
+            tutorForm.addEventListener('submit', (e) => this.handleTutorNomination(e));
+        }
     }
 
     async checkAuthStatus() {
@@ -215,7 +221,8 @@ class EuystacioDashboard {
                 this.loadRedCode(),
                 this.loadPulses(),
                 this.loadTutors(),
-                this.loadReflections()
+                this.loadReflections(),
+                this.loadPendingTutors()
             ]);
         } catch (error) {
             console.error('Error loading initial data:', error);
@@ -320,17 +327,155 @@ class EuystacioDashboard {
         const container = document.getElementById('tutors-list');
         if (!container) return;
 
+        // Filter for approved tutors only in the main display
+        const approvedTutors = tutors.filter(tutor => tutor.status === 'approved');
+
+        if (!approvedTutors || approvedTutors.length === 0) {
+            container.innerHTML = '<div class="loading">No approved tutors yet.</div>';
+            return;
+        }
+
+        container.innerHTML = approvedTutors.map(tutor => `
+            <div class="tutor-item">
+                <div class="tutor-header">
+                    <div class="tutor-name">${tutor.name || 'Anonymous Tutor'}</div>
+                    <div class="tutor-status">Approved</div>
+                </div>
+                <div class="tutor-reason">${tutor.reason || 'Nominated for wisdom and guidance'}</div>
+                <div class="tutor-meta">
+                    Nominated by: ${tutor.nominated_by || 'Unknown'} | 
+                    Approved by: ${tutor.approved_by || 'Admin'} | 
+                    ${this.formatTimestamp(tutor.approved_at)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async loadPendingTutors() {
+        // Only load for admins
+        if (!this.currentUser || !this.currentUser.is_admin) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/admin/tutors/pending');
+            if (response.status === 401 || response.status === 403) {
+                return; // Not authorized
+            }
+            const pendingTutors = await response.json();
+            this.displayPendingTutors(pendingTutors);
+        } catch (error) {
+            console.error('Error loading pending tutors:', error);
+        }
+    }
+
+    displayPendingTutors(tutors) {
+        const container = document.getElementById('pending-tutors');
+        if (!container) return;
+
         if (!tutors || tutors.length === 0) {
-            container.innerHTML = '<div class="loading">No tutor nominations yet.</div>';
+            container.innerHTML = '<div class="loading">No pending nominations.</div>';
             return;
         }
 
         container.innerHTML = tutors.map(tutor => `
-            <div class="tutor-item">
-                <div class="tutor-name">${tutor.name || 'Anonymous Tutor'}</div>
-                <div class="tutor-reason">${tutor.reason || 'Nominated for wisdom and guidance'}</div>
+            <div class="pending-tutor-item">
+                <div class="pending-tutor-header">
+                    <div class="pending-tutor-name">${tutor.name}</div>
+                    <div class="pending-tutor-meta">
+                        Nominated by: ${tutor.nominated_by} | ${this.formatTimestamp(tutor.nominated_at)}
+                    </div>
+                </div>
+                <div class="pending-tutor-reason">${tutor.reason}</div>
+                <div class="tutor-actions">
+                    <button class="approve-btn" onclick="dashboard.approveTutor(${tutor.id})">Approve</button>
+                    <button class="reject-btn" onclick="dashboard.rejectTutor(${tutor.id})">Reject</button>
+                </div>
             </div>
         `).join('');
+    }
+
+    async approveTutor(tutorId) {
+        try {
+            const response = await fetch(`/api/admin/tutors/${tutorId}/approve`, {
+                method: 'POST'
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                this.showMessage('Tutor approved successfully! 🍃', 'success');
+                // Refresh both lists
+                this.loadPendingTutors();
+                this.loadTutors();
+            } else {
+                this.showMessage('Failed to approve tutor: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error approving tutor:', error);
+            this.showMessage('Failed to approve tutor. Please try again.', 'error');
+        }
+    }
+
+    async rejectTutor(tutorId) {
+        try {
+            const response = await fetch(`/api/admin/tutors/${tutorId}/reject`, {
+                method: 'POST'
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                this.showMessage('Tutor nomination rejected.', 'info');
+                // Refresh pending list
+                this.loadPendingTutors();
+            } else {
+                this.showMessage('Failed to reject tutor: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error rejecting tutor:', error);
+            this.showMessage('Failed to reject tutor. Please try again.', 'error');
+        }
+    }
+
+    async handleTutorNomination(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const tutorData = {
+            name: formData.get('name'),
+            reason: formData.get('reason')
+        };
+
+        if (!tutorData.name || !tutorData.reason) {
+            this.showMessage('Please provide both tutor name and reason', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/nominate_tutor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tutorData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                this.showMessage('Tutor nominated successfully! Awaiting admin approval. 🍃', 'success');
+                event.target.reset();
+                
+                // Refresh data
+                setTimeout(() => {
+                    this.loadTutors();
+                    this.loadPendingTutors();
+                }, 500);
+            } else {
+                this.showMessage('Failed to nominate tutor: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error nominating tutor:', error);
+            this.showMessage('Failed to nominate tutor. Please try again.', 'error');
+        }
     }
 
     async loadReflections() {
@@ -462,6 +607,7 @@ class EuystacioDashboard {
         setInterval(() => {
             this.loadReflections();
             this.loadTutors();
+            this.loadPendingTutors();
         }, 120000);
     }
 
@@ -471,7 +617,15 @@ class EuystacioDashboard {
         if (!messageEl) {
             messageEl = document.createElement('div');
             messageEl.className = 'message';
-            document.querySelector('.pulse-form').appendChild(messageEl);
+            // Try to find the pulse form first, then tutor form, then auth container
+            const targetContainer = document.querySelector('.pulse-form') || 
+                                   document.querySelector('.tutor-form') || 
+                                   document.querySelector('.auth-container');
+            if (targetContainer) {
+                targetContainer.appendChild(messageEl);
+            } else {
+                document.body.appendChild(messageEl);
+            }
         }
 
         messageEl.className = `message ${type}`;
@@ -506,7 +660,7 @@ class EuystacioDashboard {
 
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new EuystacioDashboard();
+    window.dashboard = new EuystacioDashboard();
 });
 
 // Add some utility functions for better UX
