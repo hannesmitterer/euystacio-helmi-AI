@@ -31,6 +31,169 @@ class EuystacioDashboard {
         if (reflectBtn) {
             reflectBtn.addEventListener('click', () => this.triggerReflection());
         }
+
+        // Holy Gral Declaration modal
+        this.setupDeclarationModal();
+    }
+
+    setupDeclarationModal() {
+        const modal = document.getElementById('declaration-modal');
+        const viewBtn = document.getElementById('view-declaration-btn');
+        const shareBtn = document.getElementById('share-declaration-btn');
+        const closeBtn = document.querySelector('.close');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const downloadBtn = document.getElementById('download-declaration-btn');
+
+        // View Declaration button
+        if (viewBtn) {
+            viewBtn.addEventListener('click', () => this.openDeclarationModal());
+        }
+
+        // Share Declaration button
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => this.shareDeclaration());
+        }
+
+        // Close modal events
+        [closeBtn, closeModalBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', () => this.closeDeclarationModal());
+            }
+        });
+
+        // Download Declaration button
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => this.downloadDeclaration());
+        }
+
+        // Close modal when clicking outside
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeDeclarationModal();
+                }
+            });
+        }
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                this.closeDeclarationModal();
+            }
+        });
+    }
+
+    async openDeclarationModal() {
+        const modal = document.getElementById('declaration-modal');
+        const textContainer = document.getElementById('declaration-text');
+        
+        if (!modal || !textContainer) return;
+
+        modal.style.display = 'block';
+        textContainer.innerHTML = '<div class="loading">Loading the sacred text...</div>';
+
+        try {
+            const response = await fetch('/api/holy_gral_declaration');
+            if (response.ok) {
+                const data = await response.json();
+                textContainer.innerHTML = this.markdownToHtml(data.content);
+            } else {
+                throw new Error('Failed to load declaration');
+            }
+        } catch (error) {
+            console.error('Error loading declaration:', error);
+            textContainer.innerHTML = '<div class="error">Failed to load the Holy Gral Declaration. Please try again.</div>';
+        }
+    }
+
+    closeDeclarationModal() {
+        const modal = document.getElementById('declaration-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    async shareDeclaration() {
+        const url = window.location.origin;
+        const text = 'Discover the Holy Gral Declaration - Four Pillars of Conscious Symbiosis: Growth, Life, Enjoyment, and Staying Together';
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'The Holy Gral Declaration',
+                    text: text,
+                    url: url
+                });
+            } catch (error) {
+                console.error('Error sharing:', error);
+                this.fallbackShare(text, url);
+            }
+        } else {
+            this.fallbackShare(text, url);
+        }
+    }
+
+    fallbackShare(text, url) {
+        // Copy to clipboard as fallback
+        const shareText = `${text}\n\n${url}`;
+        navigator.clipboard.writeText(shareText).then(() => {
+            this.showMessage('Declaration link copied to clipboard! 📋', 'success');
+        }).catch(() => {
+            this.showMessage('Please copy this link: ' + url, 'info');
+        });
+    }
+
+    async downloadDeclaration() {
+        try {
+            const response = await fetch('/api/holy_gral_declaration');
+            if (response.ok) {
+                const data = await response.json();
+                this.downloadAsFile(data.content, 'holy_gral_declaration.md', 'text/markdown');
+                this.showMessage('Declaration downloaded! 📥', 'success');
+            } else {
+                throw new Error('Failed to download declaration');
+            }
+        } catch (error) {
+            console.error('Error downloading declaration:', error);
+            this.showMessage('Failed to download declaration. Please try again.', 'error');
+        }
+    }
+
+    downloadAsFile(content, filename, contentType) {
+        const blob = new Blob([content], { type: contentType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    markdownToHtml(markdown) {
+        // Simple markdown to HTML converter for the essential elements
+        let html = markdown
+            // Headers
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            // Bold
+            .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+            // Italic
+            .replace(/\*(.*)\*/gim, '<em>$1</em>')
+            // Line breaks
+            .replace(/\n\n/gim, '</p><p>')
+            // Horizontal rules
+            .replace(/^---$/gim, '<hr>');
+
+        // Wrap in paragraphs
+        html = '<p>' + html + '</p>';
+        
+        // Clean up empty paragraphs
+        html = html.replace(/<p><\/p>/g, '').replace(/<p><hr><\/p>/g, '<hr>');
+        
+        return html;
     }
 
     async loadInitialData() {

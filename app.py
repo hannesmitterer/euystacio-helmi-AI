@@ -75,6 +75,18 @@ def api_pulse():
     event = spi.receive_pulse(emotion, intensity, clarity, note)
     return jsonify(event)
 
+@app.route("/api/holy_gral_declaration")
+def api_holy_gral_declaration():
+    try:
+        with open('holy_gral_declaration.md', 'r', encoding='utf-8') as f:
+            content = f.read()
+            # Replace template variable with current date
+            from datetime import datetime
+            content = content.replace('{{ current_date }}', datetime.now().strftime('%B %d, %Y'))
+            return jsonify({"content": content})
+    except FileNotFoundError:
+        return jsonify({"error": "Holy Gral Declaration not found"}), 404
+
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     app.run(debug=True)

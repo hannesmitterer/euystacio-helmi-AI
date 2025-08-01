@@ -406,3 +406,249 @@ button:hover {
         --border-light: #666666;
     }
 }
+
+/* Holy Gral Declaration Section */
+.holy-gral-section {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3);
+    border: 2px solid var(--accent-gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.holy-gral-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    pointer-events: none;
+}
+
+.holy-gral-header {
+    text-align: center;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+.holy-gral-header h2 {
+    font-size: 2.2rem;
+    color: var(--primary-green);
+    margin-bottom: 10px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.holy-gral-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.holy-gral-content {
+    position: relative;
+    z-index: 2;
+}
+
+.declaration-preview {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.declaration-preview p {
+    font-size: 1.2rem;
+    color: var(--primary-green);
+    font-style: italic;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.four-pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.pillar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.pillar:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-green);
+}
+
+.pillar-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+.pillar-name {
+    font-weight: 600;
+    color: var(--primary-green);
+    font-size: 1rem;
+}
+
+.declaration-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.declaration-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.declaration-btn.primary {
+    background: var(--primary-green);
+    color: white;
+}
+
+.declaration-btn.primary:hover {
+    background: var(--light-green);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(45, 90, 61, 0.3);
+}
+
+.declaration-btn.secondary {
+    background: transparent;
+    color: var(--primary-green);
+    border: 2px solid var(--primary-green);
+}
+
+.declaration-btn.secondary:hover {
+    background: var(--primary-green);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--white);
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 30px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.declaration-text {
+    line-height: 1.8;
+    color: var(--text-dark);
+}
+
+.declaration-text h1,
+.declaration-text h2,
+.declaration-text h3 {
+    color: var(--primary-green);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.declaration-text h1 {
+    text-align: center;
+    font-size: 2rem;
+    border-bottom: 2px solid var(--accent-gold);
+    padding-bottom: 10px;
+}
+
+.declaration-text em {
+    color: var(--primary-green);
+    font-style: italic;
+    text-align: center;
+    display: block;
+    margin: 1rem 0;
+    font-size: 1.1rem;
+}
+
+.declaration-text strong {
+    color: var(--primary-green);
+}
+
+.modal-footer {
+    background: var(--bg-light);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 1px solid var(--border-light);
+}
