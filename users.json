@@ -1,0 +1,18 @@
+{
+  "test@example.com": {
+    "email": "test@example.com",
+    "username": "test",
+    "password": "fcb471969785aafd037e38d0639bc768:1baa55f0caa3b88b3a6646d0c1ed079810fb5c620aab9003e206f39ab3cd45af",
+    "is_admin": false,
+    "created_at": "2025-08-01T11:21:52.787271",
+    "last_login": null
+  },
+  "seedbringer@euystacio.ai": {
+    "email": "seedbringer@euystacio.ai",
+    "username": "seedbringer",
+    "password": "c1e634e046c7eff17fb50d92bd380b3b:932c3d2b60c957846cd88373f657df0259b9748381778ec3ea4ca5d619b322fd",
+    "is_admin": true,
+    "created_at": "2025-08-01T11:23:06.548659",
+    "last_login": null
+  }
+}

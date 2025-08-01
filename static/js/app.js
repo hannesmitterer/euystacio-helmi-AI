@@ -1,16 +1,52 @@
 // Euystacio Dashboard JavaScript
 class EuystacioDashboard {
     constructor() {
+        this.currentUser = null;
         this.init();
     }
 
     init() {
         this.setupEventListeners();
+        this.checkAuthStatus();
         this.loadInitialData();
         this.setupAutoRefresh();
     }
 
     setupEventListeners() {
+        // Authentication forms
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const showRegisterLink = document.getElementById('show-register');
+        const showLoginLink = document.getElementById('show-login');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
+
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => this.handleRegister(e));
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
+
+        if (showRegisterLink) {
+            showRegisterLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggleAuthForms('register');
+            });
+        }
+
+        if (showLoginLink) {
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggleAuthForms('login');
+            });
+        }
+
+        // Dashboard functionality (existing code)
         // Pulse form submission
         const pulseForm = document.getElementById('pulse-form');
         if (pulseForm) {
@@ -33,7 +69,147 @@ class EuystacioDashboard {
         }
     }
 
+    async checkAuthStatus() {
+        try {
+            const response = await fetch('/api/user');
+            if (response.ok) {
+                this.currentUser = await response.json();
+            }
+        } catch (error) {
+            console.log('User not authenticated');
+        }
+    }
+
+    toggleAuthForms(show) {
+        const loginContainer = document.getElementById('login-form-container');
+        const registerContainer = document.getElementById('register-form-container');
+
+        if (show === 'register') {
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+        } else {
+            loginContainer.style.display = 'block';
+            registerContainer.style.display = 'none';
+        }
+    }
+
+    async handleLogin(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const loginData = {
+            email: formData.get('email'),
+            password: formData.get('password')
+        };
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showAuthMessage('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                this.showAuthMessage(result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showAuthMessage('Login failed. Please try again.', 'error');
+        }
+    }
+
+    async handleRegister(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const registerData = {
+            username: formData.get('username'),
+            email: formData.get('email'),
+            password: formData.get('password')
+        };
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(registerData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                let message = 'Registration successful!';
+                if (result.is_admin) {
+                    message += ' Admin privileges granted.';
+                }
+                message += ' Redirecting...';
+                this.showAuthMessage(message, 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                this.showAuthMessage(result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            this.showAuthMessage('Registration failed. Please try again.', 'error');
+        }
+    }
+
+    async handleLogout() {
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    }
+
+    showAuthMessage(message, type = 'info') {
+        // Find or create message container in auth forms
+        let messageEl = document.querySelector('.auth-container .message');
+        if (!messageEl) {
+            messageEl = document.createElement('div');
+            messageEl.className = 'message';
+            const authForms = document.querySelector('.auth-forms');
+            if (authForms) {
+                authForms.insertBefore(messageEl, authForms.firstChild);
+            }
+        }
+
+        messageEl.className = `message ${type}`;
+        messageEl.textContent = message;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if (messageEl.parentNode) {
+                messageEl.parentNode.removeChild(messageEl);
+            }
+        }, 5000);
+    }
+
     async loadInitialData() {
+        // Only load data if user is authenticated
+        if (!document.querySelector('.dashboard')) {
+            return;
+        }
+
         try {
             await Promise.all([
                 this.loadRedCode(),
@@ -49,6 +225,10 @@ class EuystacioDashboard {
     async loadRedCode() {
         try {
             const response = await fetch('/api/red_code');
+            if (response.status === 401) {
+                this.handleAuthError();
+                return;
+            }
             const redCode = await response.json();
             this.displayRedCode(redCode);
         } catch (error) {
@@ -82,6 +262,10 @@ class EuystacioDashboard {
     async loadPulses() {
         try {
             const response = await fetch('/api/pulses');
+            if (response.status === 401) {
+                this.handleAuthError();
+                return;
+            }
             const pulses = await response.json();
             this.displayPulses(pulses);
         } catch (error) {
@@ -120,6 +304,10 @@ class EuystacioDashboard {
     async loadTutors() {
         try {
             const response = await fetch('/api/tutors');
+            if (response.status === 401) {
+                this.handleAuthError();
+                return;
+            }
             const tutors = await response.json();
             this.displayTutors(tutors);
         } catch (error) {
@@ -148,6 +336,10 @@ class EuystacioDashboard {
     async loadReflections() {
         try {
             const response = await fetch('/api/reflections');
+            if (response.status === 401) {
+                this.handleAuthError();
+                return;
+            }
             const reflections = await response.json();
             this.displayReflections(reflections);
         } catch (error) {
@@ -176,6 +368,12 @@ class EuystacioDashboard {
                 <div class="reflection-content">${reflection.content || JSON.stringify(reflection, null, 2)}</div>
             </div>
         `).join('');
+    }
+
+    handleAuthError() {
+        console.log('Authentication required');
+        // Could redirect to login or show a message
+        window.location.reload();
     }
 
     async handlePulseSubmission(event) {
