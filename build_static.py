@@ -16,9 +16,18 @@ def create_static_version():
     os.makedirs(f"{static_dir}/css", exist_ok=True)
     os.makedirs(f"{static_dir}/js", exist_ok=True)
     os.makedirs(f"{static_dir}/api", exist_ok=True)
+    os.makedirs(f"{static_dir}/spi", exist_ok=True)
+    os.makedirs(f"{static_dir}/core", exist_ok=True)
     
     # Copy CSS and JavaScript files
     shutil.copy2("static/css/style.css", f"{static_dir}/css/")
+    
+    # Copy SPI and Core directories
+    if os.path.exists("spi/index.html"):
+        shutil.copy2("spi/index.html", f"{static_dir}/spi/")
+    
+    if os.path.exists("core/symbolic-kernel.js"):
+        shutil.copy2("core/symbolic-kernel.js", f"{static_dir}/core/")
     
     # Create a static version of the HTML
     with open("templates/index.html", "r") as f:

@@ -205,7 +205,7 @@ class EuystacioDashboard {
 
             if (response.ok) {
                 const result = await response.json();
-                this.showMessage('Pulse sent successfully! 🌿', 'success');
+                this.showMessage('Pulse sent successfully! 🌿 So may it be heard in stillness and love…', 'success');
                 event.target.reset();
                 document.getElementById('intensity-value').textContent = '0.5';
                 

@@ -28,3 +28,13 @@ class SentimentoPulseInterface:
             "ai_signature_status": "verified"
         }
         return event
+    
+    def echo_pulse(self, pulse_data):
+        """Echo interface with blessing"""
+        echo_response = {
+            "original_pulse": pulse_data,
+            "echo": f"Pulse received and integrated. So may it be heard in stillness and love…",
+            "timestamp": datetime.utcnow().isoformat(),
+            "blessing": "So may it be heard in stillness and love…"
+        }
+        return echo_response
