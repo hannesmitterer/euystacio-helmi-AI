@@ -40,3 +40,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Runtime workflow files (created by CI/CD for artifact compatibility)
+blocked.jsonl
+blocked.md

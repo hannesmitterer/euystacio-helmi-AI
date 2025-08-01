@@ -33,6 +33,22 @@ jobs:
     - name: Build static version
       run: python build_static.py
       
+    # Create runtime log files if they don't exist to prevent upload warnings
+    - name: Ensure runtime log files exist
+      run: |
+        # Create empty blocked.jsonl and blocked.md files if they don't exist
+        # This prevents workflow warnings about missing files during artifact upload
+        if [ ! -f "blocked.jsonl" ]; then
+          echo "[]" > blocked.jsonl
+          echo "Created empty blocked.jsonl for artifact compatibility"
+        fi
+        if [ ! -f "blocked.md" ]; then
+          echo "# Runtime Logs" > blocked.md
+          echo "" >> blocked.md
+          echo "No runtime blocks occurred during this build." >> blocked.md
+          echo "Created empty blocked.md for artifact compatibility"
+        fi
+        
     - name: Setup Pages
       uses: actions/configure-pages@v4
       
@@ -40,6 +56,18 @@ jobs:
       uses: actions/upload-pages-artifact@v3
       with:
         path: './docs'
+        
+    # Upload runtime logs as separate artifacts if they exist and have content
+    - name: Upload runtime logs (if any)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: runtime-logs
+        path: |
+          blocked.jsonl
+          blocked.md
+        if-no-files-found: ignore
+        retention-days: 7
 
   deploy:
     environment:
