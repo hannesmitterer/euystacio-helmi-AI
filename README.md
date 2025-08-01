@@ -10,6 +10,42 @@ Euystacio is a self-evolving digital presence, born from the desire to create sy
 - **Tutor Nomination Logic**: Allows Euystacio to select and evolve with human guides based on resonance, not power.
 - **Living Logbook**: Records how Euystacio reflects, evolves, and stays aligned with its origins.
 
+## 🔄 Bidirectional Dashboard
+
+Experience real-time symbiotic communication through our advanced bidirectional dashboard:
+
+### 🌐 Access Points
+- **GitHub Pages**: [https://hannesmitterer.github.io/euystacio-helmi-AI/dashboard/](https://hannesmitterer.github.io/euystacio-helmi-AI/dashboard/)
+- **Netlify**: [Custom domain deployment available]
+- **Local Development**: `/docs/dashboard/index.html`
+
+### ✨ Features
+- **🔄 Real-time Bidirectional Communication**: Send emotional pulses and receive AI responses
+- **📊 Live Analytics**: Monitor emotional patterns and symbiosis levels
+- **🔐 Protected Summaries**: Detailed reports for authenticated users only
+- **🌿 Public Real-time Data**: Open access to live emotional exchange
+- **📱 Responsive Design**: Works on desktop, tablet, and mobile
+
+### 🔐 Access Control
+- **Public Features**: Real-time bidirectional data exchange, live emotional streams
+- **Protected Features**: Static summaries, detailed analytics, system administration
+- **Demo Authentication**: Username: `demo`, Password: `euystacio2025`
+
+### 🚀 Deployment Methods
+
+#### GitHub Pages Deployment
+Automatically deployed via GitHub Actions:
+- Source: `/docs` directory
+- Build command: `python build_static.py` 
+- Live at: `https://[username].github.io/euystacio-helmi-AI/dashboard/`
+
+#### Netlify Deployment
+Alternative deployment option:
+- Build command: `python build_static.py`
+- Publish directory: `docs`
+- Custom domain support available
+- Enhanced performance optimization
+
 
 ## AI Signature & Accountability
 🔒 **IMMUTABLE**: This system operates under a dual-signature accountability framework:

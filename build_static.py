@@ -7,6 +7,54 @@ import shutil
 import json
 from datetime import datetime
 
+def build_bidirectional_dashboard():
+    """Ensure the bidirectional dashboard is properly configured"""
+    
+    dashboard_dir = "docs/dashboard"
+    
+    # Verify dashboard files exist
+    required_files = [
+        f"{dashboard_dir}/index.html",
+        f"{dashboard_dir}/styles/dashboard.css",
+        f"{dashboard_dir}/scripts/dashboard.js"
+    ]
+    
+    for file_path in required_files:
+        if not os.path.exists(file_path):
+            print(f"Warning: Required dashboard file missing: {file_path}")
+        else:
+            print(f"✓ Dashboard file exists: {file_path}")
+    
+    # Create dashboard-specific API endpoints
+    dashboard_api_dir = f"{dashboard_dir}/api"
+    os.makedirs(dashboard_api_dir, exist_ok=True)
+    
+    # Dashboard-specific configuration
+    dashboard_config = {
+        "version": "1.0.0",
+        "features": {
+            "bidirectional_communication": True,
+            "real_time_updates": True,
+            "authentication_required": True,
+            "protected_summaries": True
+        },
+        "authentication": {
+            "demo_username": "demo",
+            "demo_password": "euystacio2025",
+            "session_duration": 86400000  # 24 hours in milliseconds
+        },
+        "deployment": {
+            "github_pages": True,
+            "netlify": True,
+            "static_mode": True
+        }
+    }
+    
+    with open(f"{dashboard_api_dir}/config.json", "w") as f:
+        json.dump(dashboard_config, f, indent=2)
+    
+    print(f"✓ Bidirectional dashboard configuration complete")
+
 def create_static_version():
     """Create a static HTML version of the dashboard"""
     
@@ -18,7 +66,8 @@ def create_static_version():
     os.makedirs(f"{static_dir}/api", exist_ok=True)
     
     # Copy CSS and JavaScript files
-    shutil.copy2("static/css/style.css", f"{static_dir}/css/")
+    if os.path.exists("static/css/style.css"):
+        shutil.copy2("static/css/style.css", f"{static_dir}/css/")
     
     # Create a static version of the HTML
     with open("templates/index.html", "r") as f:
@@ -38,7 +87,11 @@ def create_static_version():
     # Create static API endpoints
     create_static_api_files(f"{static_dir}/api")
     
+    # Build bidirectional dashboard (already exists in docs/dashboard/)
+    build_bidirectional_dashboard()
+    
     print(f"Static version created in {static_dir}/ directory")
+    print(f"Bidirectional dashboard available at {static_dir}/dashboard/")
 
 def create_static_js(output_path):
     """Create a modified JavaScript file for static deployment"""
@@ -380,3 +433,51 @@ def create_static_api_files(api_dir):
 if __name__ == "__main__":
     create_static_version()
     print("Static version built successfully!")
+
+def build_bidirectional_dashboard():
+    """Ensure the bidirectional dashboard is properly configured"""
+    
+    dashboard_dir = "docs/dashboard"
+    
+    # Verify dashboard files exist
+    required_files = [
+        f"{dashboard_dir}/index.html",
+        f"{dashboard_dir}/styles/dashboard.css",
+        f"{dashboard_dir}/scripts/dashboard.js"
+    ]
+    
+    for file_path in required_files:
+        if not os.path.exists(file_path):
+            print(f"Warning: Required dashboard file missing: {file_path}")
+        else:
+            print(f"✓ Dashboard file exists: {file_path}")
+    
+    # Create dashboard-specific API endpoints
+    dashboard_api_dir = f"{dashboard_dir}/api"
+    os.makedirs(dashboard_api_dir, exist_ok=True)
+    
+    # Dashboard-specific configuration
+    dashboard_config = {
+        "version": "1.0.0",
+        "features": {
+            "bidirectional_communication": True,
+            "real_time_updates": True,
+            "authentication_required": True,
+            "protected_summaries": True
+        },
+        "authentication": {
+            "demo_username": "demo",
+            "demo_password": "euystacio2025",
+            "session_duration": 86400000  # 24 hours in milliseconds
+        },
+        "deployment": {
+            "github_pages": True,
+            "netlify": True,
+            "static_mode": True
+        }
+    }
+    
+    with open(f"{dashboard_api_dir}/config.json", "w") as f:
+        json.dump(dashboard_config, f, indent=2)
+    
+    print(f"✓ Bidirectional dashboard configuration complete")

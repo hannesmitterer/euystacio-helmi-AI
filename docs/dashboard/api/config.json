@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "features": {
+    "bidirectional_communication": true,
+    "real_time_updates": true,
+    "authentication_required": true,
+    "protected_summaries": true
+  },
+  "authentication": {
+    "demo_username": "demo",
+    "demo_password": "euystacio2025",
+    "session_duration": 86400000
+  },
+  "deployment": {
+    "github_pages": true,
+    "netlify": true,
+    "static_mode": true
+  }
+}
