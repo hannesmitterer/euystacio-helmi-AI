@@ -4,5 +4,14 @@
   "symbiosis_level": 0.1,
   "guardian_mode": false,
   "last_update": "2025-07-13",
-  "growth_history": []
+  "growth_history": [],
+  "recent_pulses": [
+    {
+      "emotion": "hope",
+      "intensity": 0.8,
+      "clarity": "high",
+      "note": "Test pulse for static generation",
+      "timestamp": "2025-08-01T11:58:59.104642"
+    }
+  ]
 }
