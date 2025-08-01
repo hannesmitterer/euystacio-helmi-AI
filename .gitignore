@@ -44,3 +44,6 @@ logs/
 # Runtime workflow files (created by CI/CD for artifact compatibility)
 blocked.jsonl
 blocked.md
+
+# Generated documentation and API files
+docs/
