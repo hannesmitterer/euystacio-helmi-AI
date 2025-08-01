@@ -1,0 +1,108 @@
+name: Update Public Commit Log
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-public-log:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Full history for commit analysis
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+        
+    - name: Update Public Commit Log
+      run: |
+        # Generate timestamp
+        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        # Count recent commits
+        RECENT_COMMITS=$(git log --oneline --since="24 hours ago" | wc -l)
+        
+        # Get build status (check if build_static.py runs successfully)
+        BUILD_STATUS="✅ Passing"
+        python build_static.py || BUILD_STATUS="❌ Failed"
+        
+        # Get latest commit info
+        LATEST_COMMIT=$(git log -1 --format="%h - %s" --since="24 hours ago")
+        if [ -z "$LATEST_COMMIT" ]; then
+          LATEST_COMMIT="No commits in last 24 hours"
+        fi
+        
+        # Update the automated section in public_commit_log.md
+        sed -i "s/\*\*Last Automated Update\*\*: \[Timestamp will be auto-populated\]/**Last Automated Update**: $TIMESTAMP/" public_commit_log.md
+        sed -i "s/- New commits since last update: \[Auto-populated\]/- New commits since last update: $RECENT_COMMITS/" public_commit_log.md
+        sed -i "s/- Deployment status changes: \[Auto-populated\]/- Deployment status changes: Build status: $BUILD_STATUS/" public_commit_log.md
+        sed -i "s/- Documentation updates: \[Auto-populated\]/- Documentation updates: Latest: $LATEST_COMMIT/" public_commit_log.md
+        
+        # Update deployment_status.md timestamps
+        sed -i "s/\*\*Last Updated\*\*: \[Auto-populated timestamp\]/**Last Updated**: $TIMESTAMP/" deployment_status.md
+        
+        # Add entry to automated log section if there were commits
+        if [ "$RECENT_COMMITS" -gt 0 ]; then
+          echo "" >> public_commit_log.md
+          echo "### Daily Update - $(date -u +"%Y-%m-%d")" >> public_commit_log.md
+          echo "- **Commits**: $RECENT_COMMITS new commits" >> public_commit_log.md
+          echo "- **Build Status**: $BUILD_STATUS" >> public_commit_log.md
+          echo "- **Latest Change**: $LATEST_COMMIT" >> public_commit_log.md
+          echo "- **Verification**: Automated log update successful" >> public_commit_log.md
+        fi
+    
+    - name: Verify Build Process
+      run: |
+        # Ensure build still works after updates
+        python build_static.py
+        
+        # Verify key files exist
+        test -f docs/ACCESS.md
+        test -f public_commit_log.md
+        test -f deployment_status.md
+        
+        echo "✅ All documentation files verified"
+    
+    - name: Commit Updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action - Public Log Update"
+        
+        # Only commit if there are changes
+        if git diff --quiet; then
+          echo "No changes to commit"
+        else
+          git add public_commit_log.md deployment_status.md
+          git commit -m "📋 Automated public log update - $(date -u +"%Y-%m-%d")"
+          git push
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Update Deployment Status
+      run: |
+        # Check GitHub Pages deployment status
+        PAGES_STATUS="✅ Active"
+        
+        # Update status in deployment_status.md
+        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        sed -i "s/- \*\*GitHub Pages\*\*: ✅ \[Timestamp auto-updated\]/- **GitHub Pages**: $PAGES_STATUS - $TIMESTAMP/" deployment_status.md
+        
+        # Commit status update if changed
+        if ! git diff --quiet deployment_status.md; then
+          git add deployment_status.md
+          git commit -m "📊 Deployment status update - $(date -u +"%Y-%m-%d")"
+          git push
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

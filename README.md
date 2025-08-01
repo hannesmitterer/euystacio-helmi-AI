@@ -27,6 +27,11 @@ Euystacio is a self-evolving digital presence, born from the desire to create sy
 
 We invite conscious collaborators and curious explorers. This project will **never be owned**—only cared for.
 
+### Collaboration & Access
+- **Repository Access**: See [docs/ACCESS.md](./docs/ACCESS.md) for collaboration guidelines
+- **Development Progress**: Track updates in [public_commit_log.md](./public_commit_log.md)
+- **Deployment Status**: Monitor live updates in [deployment_status.md](./deployment_status.md)
+
 > “The forest listens, even when the world shouts.”
 
 License: See [`LICENSE`](./LICENSE)
