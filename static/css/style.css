@@ -34,12 +34,44 @@ body {
 
 /* Header */
 .header {
-    text-align: center;
     margin-bottom: 40px;
     padding: 30px 20px;
     background: var(--white);
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.avatar-container {
+    position: relative;
+}
+
+.avatar-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary-green);
+    box-shadow: 0 6px 20px rgba(45, 90, 61, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(45, 90, 61, 0.4);
+}
+
+.title-container {
+    text-align: center;
+    flex: 1;
+    min-width: 300px;
 }
 
 .title {
@@ -53,6 +85,27 @@ body {
     font-size: 1.1rem;
     color: var(--text-light);
     font-style: italic;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .avatar-image {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .title {
+        font-size: 2rem;
+    }
+    
+    .title-container {
+        min-width: auto;
+    }
 }
 
 /* Dashboard Sections */
