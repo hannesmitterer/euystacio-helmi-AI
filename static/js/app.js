@@ -8,6 +8,7 @@ class EuystacioDashboard {
         this.setupEventListeners();
         this.loadInitialData();
         this.setupAutoRefresh();
+        this.setupDocumentModal();
     }
 
     setupEventListeners() {
@@ -31,6 +32,16 @@ class EuystacioDashboard {
         if (reflectBtn) {
             reflectBtn.addEventListener('click', () => this.triggerReflection());
         }
+
+        // Document buttons
+        const readmeBtn = document.getElementById('readme-btn');
+        const manifestoBtn = document.getElementById('manifesto-btn');
+        if (readmeBtn) {
+            readmeBtn.addEventListener('click', () => this.showDocument('readme'));
+        }
+        if (manifestoBtn) {
+            manifestoBtn.addEventListener('click', () => this.showDocument('manifesto'));
+        }
     }
 
     async loadInitialData() {
@@ -39,7 +50,8 @@ class EuystacioDashboard {
                 this.loadRedCode(),
                 this.loadPulses(),
                 this.loadTutors(),
-                this.loadReflections()
+                this.loadReflections(),
+                this.loadEcho()  // Load latest echo
             ]);
         } catch (error) {
             console.error('Error loading initial data:', error);
@@ -178,6 +190,44 @@ class EuystacioDashboard {
         `).join('');
     }
 
+    async loadEcho() {
+        /**
+         * Load and display the latest emotional echo response from Euystacio
+         */
+        try {
+            const response = await fetch('/api/echo');
+            const echo = await response.json();
+            this.displayEcho(echo);
+        } catch (error) {
+            console.error('Error loading echo:', error);
+            this.showError('echo-response', 'Failed to load echo');
+        }
+    }
+
+    displayEcho(echo) {
+        /**
+         * Display the echo response in the UI
+         */
+        const container = document.getElementById('echo-response');
+        if (!container) return;
+
+        if (!echo || !echo.text) {
+            container.innerHTML = '<div class="loading">No echo yet. Send a pulse to start the conversation!</div>';
+            return;
+        }
+
+        const timestamp = this.formatTimestamp(echo.timestamp);
+        container.innerHTML = `
+            <div class="echo-item">
+                <div class="echo-text">${echo.text}</div>
+                <div class="echo-meta">
+                    <span class="echo-timestamp">${timestamp}</span>
+                    ${echo.symbiosis_change ? `<span class="symbiosis-change">Symbiosis: +${echo.symbiosis_change.toFixed(3)}</span>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     async handlePulseSubmission(event) {
         event.preventDefault();
         
@@ -205,14 +255,22 @@ class EuystacioDashboard {
 
             if (response.ok) {
                 const result = await response.json();
-                this.showMessage('Pulse sent successfully! 🌿', 'success');
+                
+                // Show echo response if available
+                if (result.echo) {
+                    this.showMessage(`Pulse sent! Echo: "${result.echo}" 🌿`, 'success');
+                } else {
+                    this.showMessage('Pulse sent successfully! 🌿', 'success');
+                }
+                
                 event.target.reset();
                 document.getElementById('intensity-value').textContent = '0.5';
                 
-                // Refresh pulses and red code
+                // Refresh pulses, red code, and echo
                 setTimeout(() => {
                     this.loadPulses();
                     this.loadRedCode();
+                    this.loadEcho();  // Refresh echo display
                 }, 500);
             } else {
                 throw new Error('Failed to send pulse');
@@ -258,6 +316,7 @@ class EuystacioDashboard {
         setInterval(() => {
             this.loadPulses();
             this.loadRedCode();
+            this.loadEcho();  // Include echo in auto-refresh
         }, 30000);
 
         // Refresh reflections and tutors every 2 minutes
@@ -265,6 +324,101 @@ class EuystacioDashboard {
             this.loadReflections();
             this.loadTutors();
         }, 120000);
+    }
+
+    setupDocumentModal() {
+        /**
+         * Set up the modal functionality for viewing documents
+         */
+        const modal = document.getElementById('document-modal');
+        const closeBtn = document.getElementById('modal-close');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    async showDocument(docType) {
+        /**
+         * Display a document in the modal
+         * @param {string} docType - 'readme' or 'manifesto'
+         */
+        const modal = document.getElementById('document-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+
+        if (!modal || !modalTitle || !modalContent) return;
+
+        // Show loading state
+        modalTitle.textContent = 'Loading...';
+        modalContent.innerHTML = '<div class="loading">Loading document...</div>';
+        modal.style.display = 'block';
+
+        try {
+            const endpoint = docType === 'readme' ? '/api/documents/readme' : '/api/documents/manifesto';
+            const response = await fetch(endpoint);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load ${docType}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // Set title and content
+            modalTitle.textContent = data.filename || (docType === 'readme' ? 'README' : 'Manifesto');
+            
+            // Convert markdown to HTML (basic conversion)
+            const htmlContent = this.markdownToHtml(data.content);
+            modalContent.innerHTML = htmlContent;
+
+        } catch (error) {
+            console.error(`Error loading ${docType}:`, error);
+            modalTitle.textContent = 'Error';
+            modalContent.innerHTML = `<div class="error">Failed to load ${docType}: ${error.message}</div>`;
+        }
+    }
+
+    markdownToHtml(markdown) {
+        /**
+         * Basic markdown to HTML conversion
+         * @param {string} markdown - The markdown content
+         * @returns {string} HTML content
+         */
+        return markdown
+            // Headers
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            // Bold
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // Italic
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            // Code blocks
+            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+            // Inline code
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            // Links
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+            // Line breaks and paragraphs
+            .split('\n\n').map(paragraph => {
+                if (paragraph.trim().startsWith('<h') || paragraph.trim().startsWith('<pre')) {
+                    return paragraph;
+                }
+                return paragraph.trim() ? `<p>${paragraph.trim()}</p>` : '';
+            }).join('\n');
     }
 
     showMessage(message, type = 'info') {

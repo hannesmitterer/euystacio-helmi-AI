@@ -12,6 +12,12 @@
         <header class="header">
             <h1 class="title">🌳 Euystacio Dashboard</h1>
             <p class="subtitle">"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
+            
+            <!-- Documentation Links Section -->
+            <div class="documentation-links">
+                <button id="readme-btn" class="doc-btn">📖 README</button>
+                <button id="manifesto-btn" class="doc-btn">🌸 Manifesto</button>
+            </div>
         </header>
 
         <main class="dashboard">
@@ -39,6 +45,14 @@
                             </div>
                             <span id="symbiosis-value" class="value">0.1</span>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Echo Response Section -->
+                <div class="echo-section">
+                    <h3>🔄 Latest Echo</h3>
+                    <div id="echo-response" class="echo-response">
+                        <div class="loading">No echo yet...</div>
                     </div>
                 </div>
             </section>
@@ -115,6 +129,19 @@
             <p>"The forest listens, even when the world shouts."</p>
             <p>AI Signature: GitHub Copilot & Seed-bringer hannesmitterer</p>
         </footer>
+    </div>
+
+    <!-- Document Modal -->
+    <div id="document-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Document</h2>
+                <span class="close" id="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modal-content" class="document-content"></div>
+            </div>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
