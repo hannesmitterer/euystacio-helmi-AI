@@ -40,3 +40,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Test files
+test_dashboard_compatibility.html

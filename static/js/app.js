@@ -17,12 +17,15 @@ class EuystacioDashboard {
             pulseForm.addEventListener('submit', (e) => this.handlePulseSubmission(e));
         }
 
-        // Intensity slider
+        // Intensity slider with accessibility
         const intensitySlider = document.getElementById('intensity');
         const intensityValue = document.getElementById('intensity-value');
         if (intensitySlider && intensityValue) {
             intensitySlider.addEventListener('input', (e) => {
-                intensityValue.textContent = e.target.value;
+                const value = e.target.value;
+                intensityValue.textContent = value;
+                // Update ARIA attributes for accessibility
+                e.target.setAttribute('aria-valuetext', `Intensity level ${value}`);
             });
         }
 
@@ -69,13 +72,19 @@ class EuystacioDashboard {
             <p><strong>Last Update:</strong> ${redCode.last_update || 'Unknown'}</p>
         `;
 
-        // Update symbiosis meter
+        // Update symbiosis meter with accessibility
         const symbiosisBar = document.getElementById('symbiosis-bar');
         const symbiosisValue = document.getElementById('symbiosis-value');
-        if (symbiosisBar && symbiosisValue) {
+        const symbiosisMeter = document.querySelector('.meter[role="progressbar"]');
+        
+        if (symbiosisBar && symbiosisValue && symbiosisMeter) {
             const level = (redCode.symbiosis_level || 0) * 100;
             symbiosisBar.style.width = `${level}%`;
             symbiosisValue.textContent = redCode.symbiosis_level || '0.0';
+            
+            // Update ARIA attributes
+            symbiosisMeter.setAttribute('aria-valuenow', redCode.symbiosis_level || '0.0');
+            symbiosisMeter.setAttribute('aria-valuetext', `${level.toFixed(1)}% symbiosis level`);
         }
     }
 
@@ -104,8 +113,8 @@ class EuystacioDashboard {
             new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
         ).slice(0, 10); // Show only the 10 most recent
 
-        container.innerHTML = sortedPulses.map(pulse => `
-            <div class="pulse-item">
+        container.innerHTML = sortedPulses.map((pulse, index) => `
+            <div class="pulse-item" role="listitem" aria-label="Pulse ${index + 1}">
                 <div class="pulse-emotion">${pulse.emotion || 'Unknown'}</div>
                 <div class="pulse-meta">
                     Intensity: ${pulse.intensity || 0} | 

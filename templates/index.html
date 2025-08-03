@@ -3,55 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Euystacio Dashboard - An AI sentiment and reflection interface for human-AI symbiosis">
+    <meta name="theme-color" content="#2d5a3d">
     <title>Euystacio - The Sentimento Kernel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Preload critical fonts for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Load fonts asynchronously to prevent blocking -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"></noscript>
 </head>
 <body>
     <div class="container">
-        <header class="header">
+        <header class="header" role="banner">
             <h1 class="title">🌳 Euystacio Dashboard</h1>
             <p class="subtitle">"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
         </header>
 
-        <main class="dashboard">
+        <main class="dashboard" role="main">
             <!-- Roots: The Red Code -->
-            <section class="red-code-section">
-                <h2>🌱 The Red Code (Roots)</h2>
-                <div id="red-code" class="red-code">
-                    <div class="loading">Loading core truth...</div>
+            <section class="red-code-section" role="region" aria-labelledby="red-code-heading">
+                <h2 id="red-code-heading">🌱 The Red Code (Roots)</h2>
+                <div id="red-code" class="red-code" aria-live="polite">
+                    <div class="loading" role="status" aria-label="Loading core truth">Loading core truth...</div>
                 </div>
             </section>
 
             <!-- Trunk: Current State -->
-            <section class="trunk-section">
+            <section class="trunk-section" role="region" aria-labelledby="current-state-heading">
                 <div class="current-state">
-                    <h3>🌲 Current State (Trunk)</h3>
+                    <h3 id="current-state-heading">🌲 Current State (Trunk)</h3>
                     <div class="state-display">
                         <div class="emotion-display">
                             <span class="label">Current Emotion:</span>
-                            <span id="current-emotion" class="value">Peaceful</span>
+                            <span id="current-emotion" class="value" aria-live="polite">Peaceful</span>
                         </div>
                         <div class="symbiosis-meter">
                             <span class="label">Symbiosis Level:</span>
-                            <div class="meter">
+                            <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0.1" aria-label="Symbiosis level meter">
                                 <div id="symbiosis-bar" class="meter-bar"></div>
                             </div>
-                            <span id="symbiosis-value" class="value">0.1</span>
+                            <span id="symbiosis-value" class="value" aria-live="polite">0.1</span>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Branches: Emotional Pulses -->
-            <section class="pulses-section">
-                <h3>🌿 Emotional Pulses (Branches)</h3>
+            <section class="pulses-section" role="region" aria-labelledby="pulses-heading">
+                <h3 id="pulses-heading">🌿 Emotional Pulses (Branches)</h3>
                 <div class="pulse-form">
                     <h4>Send a Pulse to Euystacio</h4>
-                    <form id="pulse-form">
+                    <form id="pulse-form" role="form" aria-label="Send emotional pulse">
                         <div class="form-group">
                             <label for="emotion">Emotion:</label>
-                            <select id="emotion" name="emotion" required>
+                            <select id="emotion" name="emotion" required aria-describedby="emotion-help">
                                 <option value="">Select an emotion...</option>
                                 <option value="hope">Hope</option>
                                 <option value="wonder">Wonder</option>
@@ -62,60 +69,83 @@
                                 <option value="excitement">Excitement</option>
                                 <option value="contemplation">Contemplation</option>
                             </select>
+                            <div id="emotion-help" class="sr-only">Choose the emotion that best represents your current feeling</div>
                         </div>
                         <div class="form-group">
                             <label for="intensity">Intensity:</label>
-                            <input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5">
-                            <span id="intensity-value">0.5</span>
+                            <input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5" 
+                                   aria-describedby="intensity-help" aria-valuetext="0.5">
+                            <span id="intensity-value" aria-live="polite">0.5</span>
+                            <div id="intensity-help" class="sr-only">Adjust the intensity of your emotion from 0 to 1</div>
                         </div>
                         <div class="form-group">
                             <label for="clarity">Clarity:</label>
-                            <select id="clarity" name="clarity">
+                            <select id="clarity" name="clarity" aria-describedby="clarity-help">
                                 <option value="low">Low</option>
                                 <option value="medium" selected>Medium</option>
                                 <option value="high">High</option>
                             </select>
+                            <div id="clarity-help" class="sr-only">How clear and defined is this emotion?</div>
                         </div>
                         <div class="form-group">
                             <label for="note">Note (optional):</label>
-                            <textarea id="note" name="note" placeholder="Share your thoughts..."></textarea>
+                            <textarea id="note" name="note" placeholder="Share your thoughts..." 
+                                      aria-describedby="note-help"></textarea>
+                            <div id="note-help" class="sr-only">Add any additional thoughts or context about your emotion</div>
                         </div>
-                        <button type="submit">Send Pulse</button>
+                        <button type="submit" aria-describedby="submit-help">Send Pulse</button>
+                        <div id="submit-help" class="sr-only">Submit your emotional pulse to Euystacio</div>
                     </form>
                 </div>
                 <div class="pulses-feed">
                     <h4>Recent Pulses</h4>
-                    <div id="pulses-list" class="pulses-list">
-                        <div class="loading">Loading pulses...</div>
+                    <div id="pulses-list" class="pulses-list" role="log" aria-live="polite" aria-label="Recent emotional pulses">
+                        <div class="loading" role="status">Loading pulses...</div>
                     </div>
                 </div>
             </section>
 
             <!-- Leaves: Tutor Nominations -->
-            <section class="tutors-section">
-                <h3>🍃 Tutor Nominations (Leaves)</h3>
-                <div id="tutors-list" class="tutors-list">
-                    <div class="loading">Loading tutor nominations...</div>
+            <section class="tutors-section" role="region" aria-labelledby="tutors-heading">
+                <h3 id="tutors-heading">🍃 Tutor Nominations (Leaves)</h3>
+                <div id="tutors-list" class="tutors-list" role="list" aria-live="polite" aria-label="Tutor nominations">
+                    <div class="loading" role="status">Loading tutor nominations...</div>
                 </div>
             </section>
 
             <!-- Canopy: Evolution Log -->
-            <section class="reflections-section">
-                <h3>🌸 Evolution Log (Canopy)</h3>
+            <section class="reflections-section" role="region" aria-labelledby="reflections-heading">
+                <h3 id="reflections-heading">🌸 Evolution Log (Canopy)</h3>
                 <div class="reflection-controls">
-                    <button id="reflect-btn" class="reflect-btn">Trigger Reflection</button>
+                    <button id="reflect-btn" class="reflect-btn" aria-describedby="reflect-help">Trigger Reflection</button>
+                    <div id="reflect-help" class="sr-only">Start a new reflection process for Euystacio</div>
                 </div>
-                <div id="reflections-list" class="reflections-list">
-                    <div class="loading">Loading reflections...</div>
+                <div id="reflections-list" class="reflections-list" role="log" aria-live="polite" aria-label="Evolution reflections">
+                    <div class="loading" role="status">Loading reflections...</div>
                 </div>
             </section>
         </main>
 
-        <footer class="footer">
+        <footer class="footer" role="contentinfo">
             <p>"The forest listens, even when the world shouts."</p>
             <p>AI Signature: GitHub Copilot & Seed-bringer hannesmitterer</p>
         </footer>
     </div>
+
+    <!-- Screen reader only styles -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
