@@ -1,13 +1,73 @@
-// Euystacio Dashboard JavaScript
+// Euystacio Dashboard JavaScript with Real-time WebSocket Support
 class EuystacioDashboard {
     constructor() {
+        this.socket = null;
         this.init();
     }
 
     init() {
+        this.setupWebSocket();
         this.setupEventListeners();
         this.loadInitialData();
         this.setupAutoRefresh();
+    }
+
+    setupWebSocket() {
+        // Check if Socket.IO is available
+        if (typeof io === 'undefined') {
+            console.warn('Socket.IO not available, falling back to polling mode');
+            this.showMessage('Running in fallback mode (WebSocket unavailable)', 'warning');
+            return;
+        }
+        
+        // Initialize Socket.IO connection
+        this.socket = io();
+        
+        // Connection events
+        this.socket.on('connect', () => {
+            console.log('🌿 Connected to Euystacio real-time interface');
+            this.showMessage('Connected to real-time updates! 🌱', 'success');
+            // Request current state on connection
+            this.socket.emit('request_current_state');
+        });
+
+        this.socket.on('disconnect', () => {
+            console.log('🍃 Disconnected from real-time interface');
+            this.showMessage('Real-time connection lost. Retrying...', 'warning');
+        });
+
+        this.socket.on('connection_status', (data) => {
+            console.log('Connection status:', data);
+        });
+
+        // Real-time data updates
+        this.socket.on('new_pulse', (pulse) => {
+            console.log('🌿 New pulse received:', pulse);
+            this.showMessage(`New pulse: ${pulse.emotion} (${pulse.intensity}) 🌸`, 'info');
+            this.addPulseToDisplay(pulse);
+        });
+
+        this.socket.on('new_reflection', (reflection) => {
+            console.log('🌸 New reflection received:', reflection);
+            this.showMessage('New reflection generated! 🌸', 'info');
+            this.addReflectionToDisplay(reflection);
+        });
+
+        this.socket.on('pulses_update', (pulses) => {
+            this.displayPulses(pulses);
+        });
+
+        this.socket.on('reflections_update', (reflections) => {
+            this.displayReflections(reflections);
+        });
+
+        this.socket.on('red_code_update', (redCode) => {
+            this.displayRedCode(redCode);
+        });
+
+        this.socket.on('tutors_update', (tutors) => {
+            this.displayTutors(tutors);
+        });
     }
 
     setupEventListeners() {
@@ -99,13 +159,13 @@ class EuystacioDashboard {
             return;
         }
 
-        // Sort pulses by timestamp (most recent first)
+        // Sort pulses by timestamp (most recent first) and show only the 10 most recent
         const sortedPulses = pulses.sort((a, b) => 
             new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
-        ).slice(0, 10); // Show only the 10 most recent
+        ).slice(0, 10);
 
         container.innerHTML = sortedPulses.map(pulse => `
-            <div class="pulse-item">
+            <div class="pulse-item" data-timestamp="${pulse.timestamp}">
                 <div class="pulse-emotion">${pulse.emotion || 'Unknown'}</div>
                 <div class="pulse-meta">
                     Intensity: ${pulse.intensity || 0} | 
@@ -115,6 +175,42 @@ class EuystacioDashboard {
                 ${pulse.note ? `<div class="pulse-note">"${pulse.note}"</div>` : ''}
             </div>
         `).join('');
+    }
+
+    addPulseToDisplay(pulse) {
+        const container = document.getElementById('pulses-list');
+        if (!container) return;
+
+        // Create new pulse element
+        const pulseElement = document.createElement('div');
+        pulseElement.className = 'pulse-item new-pulse';
+        pulseElement.setAttribute('data-timestamp', pulse.timestamp);
+        pulseElement.innerHTML = `
+            <div class="pulse-emotion">${pulse.emotion || 'Unknown'}</div>
+            <div class="pulse-meta">
+                Intensity: ${pulse.intensity || 0} | 
+                Clarity: ${pulse.clarity || 'unknown'} | 
+                ${this.formatTimestamp(pulse.timestamp)}
+            </div>
+            ${pulse.note ? `<div class="pulse-note">"${pulse.note}"</div>` : ''}
+        `;
+
+        // Add to the top of the list
+        if (container.querySelector('.loading')) {
+            container.innerHTML = '';
+        }
+        container.insertBefore(pulseElement, container.firstChild);
+
+        // Remove the 'new-pulse' class after animation
+        setTimeout(() => {
+            pulseElement.classList.remove('new-pulse');
+        }, 2000);
+
+        // Keep only 10 items
+        const items = container.querySelectorAll('.pulse-item');
+        if (items.length > 10) {
+            items[items.length - 1].remove();
+        }
     }
 
     async loadTutors() {
@@ -165,17 +261,59 @@ class EuystacioDashboard {
             return;
         }
 
-        // Sort reflections by timestamp (most recent first)
+        // Sort reflections by timestamp (most recent first) and show only the 5 most recent
         const sortedReflections = reflections.sort((a, b) => 
             new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
-        ).slice(0, 5); // Show only the 5 most recent
+        ).slice(0, 5);
 
         container.innerHTML = sortedReflections.map(reflection => `
-            <div class="reflection-item">
+            <div class="reflection-item" data-timestamp="${reflection.timestamp}">
                 <div class="reflection-timestamp">${this.formatTimestamp(reflection.timestamp)}</div>
-                <div class="reflection-content">${reflection.content || JSON.stringify(reflection, null, 2)}</div>
+                <div class="reflection-content">${this.formatReflectionContent(reflection)}</div>
             </div>
         `).join('');
+    }
+
+    addReflectionToDisplay(reflection) {
+        const container = document.getElementById('reflections-list');
+        if (!container) return;
+
+        // Create new reflection element
+        const reflectionElement = document.createElement('div');
+        reflectionElement.className = 'reflection-item new-reflection';
+        reflectionElement.setAttribute('data-timestamp', reflection.timestamp);
+        reflectionElement.innerHTML = `
+            <div class="reflection-timestamp">${this.formatTimestamp(reflection.timestamp)}</div>
+            <div class="reflection-content">${this.formatReflectionContent(reflection)}</div>
+        `;
+
+        // Add to the top of the list
+        if (container.querySelector('.loading')) {
+            container.innerHTML = '';
+        }
+        container.insertBefore(reflectionElement, container.firstChild);
+
+        // Remove the 'new-reflection' class after animation
+        setTimeout(() => {
+            reflectionElement.classList.remove('new-reflection');
+        }, 2000);
+
+        // Keep only 5 items
+        const items = container.querySelectorAll('.reflection-item');
+        if (items.length > 5) {
+            items[items.length - 1].remove();
+        }
+    }
+
+    formatReflectionContent(reflection) {
+        if (reflection.suggestion) {
+            return `
+                <div class="reflection-suggestion">${reflection.suggestion}</div>
+                ${reflection.ethical_status ? `<div class="reflection-ethics">${reflection.ethical_status}</div>` : ''}
+                ${reflection.next_steps ? `<div class="reflection-steps">Next: ${reflection.next_steps.join(', ')}</div>` : ''}
+            `;
+        }
+        return reflection.content || JSON.stringify(reflection, null, 2);
     }
 
     async handlePulseSubmission(event) {
@@ -254,17 +392,27 @@ class EuystacioDashboard {
     }
 
     setupAutoRefresh() {
-        // Refresh data every 30 seconds
+        // Determine refresh intervals based on WebSocket availability
+        const hasWebSocket = this.socket && this.socket.connected;
+        const shortInterval = hasWebSocket ? 120000 : 30000; // 2min with WS, 30s without
+        const longInterval = hasWebSocket ? 300000 : 120000; // 5min with WS, 2min without
+        
+        // Refresh data periodically
         setInterval(() => {
-            this.loadPulses();
-            this.loadRedCode();
-        }, 30000);
+            if (!this.socket || !this.socket.connected) {
+                console.log('Using fallback polling for updates...');
+                this.loadPulses();
+                this.loadRedCode();
+            }
+        }, shortInterval);
 
-        // Refresh reflections and tutors every 2 minutes
+        // Refresh reflections and tutors
         setInterval(() => {
-            this.loadReflections();
-            this.loadTutors();
-        }, 120000);
+            if (!this.socket || !this.socket.connected) {
+                this.loadReflections();
+                this.loadTutors();
+            }
+        }, longInterval);
     }
 
     showMessage(message, type = 'info') {

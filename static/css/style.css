@@ -382,10 +382,65 @@ button:hover {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes pulseGlow {
+    0% { box-shadow: 0 2px 10px rgba(45, 90, 61, 0.3); }
+    50% { box-shadow: 0 4px 20px rgba(45, 90, 61, 0.6); }
+    100% { box-shadow: 0 2px 10px rgba(45, 90, 61, 0.3); }
+}
+
+@keyframes slideInFromTop {
+    from { 
+        opacity: 0; 
+        transform: translateY(-30px) scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
 .pulse-item,
 .tutor-item,
 .reflection-item {
     animation: fadeIn 0.5s ease-out;
+}
+
+/* Real-time update animations */
+.new-pulse {
+    animation: slideInFromTop 0.8s ease-out, pulseGlow 2s ease-in-out;
+    border-left: 4px solid var(--accent-gold);
+}
+
+.new-reflection {
+    animation: slideInFromTop 0.8s ease-out, pulseGlow 2s ease-in-out;
+    border-left: 4px solid var(--soft-blue);
+}
+
+/* WebSocket connection status indicator */
+.connection-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.connection-status.connected {
+    background: var(--primary-green);
+    color: white;
+}
+
+.connection-status.disconnected {
+    background: #dc3545;
+    color: white;
+}
+
+.connection-status.connecting {
+    background: #ffc107;
+    color: black;
 }
 
 /* Accessibility */
