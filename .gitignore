@@ -40,3 +40,11 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# SSH keys (allow public keys, block private keys)
+.ssh/*
+!.ssh/config
+!.ssh/*.pub
+
+# Build output
+static/
