@@ -3,7 +3,34 @@
 class EuystacioDashboard {
     constructor() {
         this.baseURL = window.location.hostname === 'localhost' ? '' : 'https://hannesmitterer.github.io/euystacio-helmi-AI';
+        this.initSymbolicKernel();
         this.init();
+    }
+
+    initSymbolicKernel() {
+        // Initialize the Symbolic Kernel for bidirectional SPI-RedCode bridge
+        if (typeof SymbolicKernel !== 'undefined') {
+            this.symbolicKernel = new SymbolicKernel({
+                staticMode: true,
+                apiBaseUrl: this.baseURL
+            });
+
+            // Subscribe to live pulse broadcasts
+            this.symbolicKernel.subscribeToPulses((pulseData) => {
+                console.log('Received pulse broadcast:', pulseData);
+                this.displayPulses(pulseData.pulses);
+            });
+
+            // Subscribe to feedback events
+            this.symbolicKernel.subscribeToFeedback((feedback) => {
+                console.log('Received feedback:', feedback);
+                this.showMessage(`Feedback received: ${feedback.type || 'system'}`, 'info');
+            });
+
+            console.log('Symbolic Kernel integrated with Dashboard');
+        } else {
+            console.warn('SymbolicKernel not available - falling back to basic mode');
+        }
     }
 
     init() {
@@ -188,7 +215,6 @@ class EuystacioDashboard {
     async handlePulseSubmission(event) {
         event.preventDefault();
         
-        // In static mode, we simulate the pulse submission
         const formData = new FormData(event.target);
         const pulseData = {
             emotion: formData.get('emotion'),
@@ -203,18 +229,27 @@ class EuystacioDashboard {
             return;
         }
 
-        // Store in localStorage for static demo
-        const pulses = JSON.parse(localStorage.getItem('euystacio_pulses') || '[]');
-        pulses.unshift(pulseData);
-        pulses.splice(10); // Keep only last 10
-        localStorage.setItem('euystacio_pulses', JSON.stringify(pulses));
+        try {
+            // Use Symbolic Kernel if available
+            if (this.symbolicKernel) {
+                await this.symbolicKernel.submitPulse(pulseData);
+                this.showMessage('Pulse sent through Symbolic Kernel! 🌿', 'success');
+            } else {
+                // Fallback to localStorage for static demo
+                const pulses = JSON.parse(localStorage.getItem('euystacio_pulses') || '[]');
+                pulses.unshift(pulseData);
+                pulses.splice(10); // Keep only last 10
+                localStorage.setItem('euystacio_pulses', JSON.stringify(pulses));
+                this.displayPulses(pulses);
+                this.showMessage('Pulse sent successfully! 🌿 (Demo mode - stored locally)', 'success');
+            }
 
-        this.showMessage('Pulse sent successfully! 🌿 (Demo mode - stored locally)', 'success');
-        event.target.reset();
-        document.getElementById('intensity-value').textContent = '0.5';
-        
-        // Update display
-        this.displayPulses(pulses);
+            event.target.reset();
+            document.getElementById('intensity-value').textContent = '0.5';
+        } catch (error) {
+            console.error('Error sending pulse:', error);
+            this.showMessage('Failed to send pulse. Please try again.', 'error');
+        }
     }
 
     async triggerReflection() {

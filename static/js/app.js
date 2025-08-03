@@ -1,7 +1,34 @@
 // Euystacio Dashboard JavaScript
 class EuystacioDashboard {
     constructor() {
+        this.initSymbolicKernel();
         this.init();
+    }
+
+    initSymbolicKernel() {
+        // Initialize the Symbolic Kernel for bidirectional SPI-RedCode bridge
+        if (typeof SymbolicKernel !== 'undefined') {
+            this.symbolicKernel = new SymbolicKernel({
+                staticMode: false, // Dynamic mode for Flask backend
+                apiBaseUrl: ''
+            });
+
+            // Subscribe to live pulse broadcasts
+            this.symbolicKernel.subscribeToPulses((pulseData) => {
+                console.log('Received pulse broadcast:', pulseData);
+                this.displayPulses(pulseData.pulses);
+            });
+
+            // Subscribe to feedback events
+            this.symbolicKernel.subscribeToFeedback((feedback) => {
+                console.log('Received feedback:', feedback);
+                this.showMessage(`Feedback received: ${feedback.type || 'system'}`, 'info');
+            });
+
+            console.log('Symbolic Kernel integrated with Dashboard');
+        } else {
+            console.warn('SymbolicKernel not available - falling back to basic mode');
+        }
     }
 
     init() {
@@ -195,28 +222,37 @@ class EuystacioDashboard {
         }
 
         try {
-            const response = await fetch('/api/pulse', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(pulseData)
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                this.showMessage('Pulse sent successfully! 🌿', 'success');
-                event.target.reset();
-                document.getElementById('intensity-value').textContent = '0.5';
-                
-                // Refresh pulses and red code
-                setTimeout(() => {
-                    this.loadPulses();
-                    this.loadRedCode();
-                }, 500);
+            // Use Symbolic Kernel if available, otherwise fall back to direct API
+            if (this.symbolicKernel) {
+                await this.symbolicKernel.submitPulse(pulseData);
+                this.showMessage('Pulse sent through Symbolic Kernel! 🌿', 'success');
             } else {
-                throw new Error('Failed to send pulse');
+                // Fallback to direct API call
+                const response = await fetch('/api/pulse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(pulseData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    this.showMessage('Pulse sent successfully! 🌿', 'success');
+                } else {
+                    throw new Error('Failed to send pulse');
+                }
             }
+
+            event.target.reset();
+            document.getElementById('intensity-value').textContent = '0.5';
+            
+            // Refresh pulses and red code
+            setTimeout(() => {
+                this.loadPulses();
+                this.loadRedCode();
+            }, 500);
+
         } catch (error) {
             console.error('Error sending pulse:', error);
             this.showMessage('Failed to send pulse. Please try again.', 'error');
