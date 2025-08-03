@@ -1,5 +1,5 @@
 [build]
-  publish = "static"
+  publish = "docs"
   command = "python build_static.py"
 
 [build.environment]
@@ -21,4 +21,4 @@
 [dev]
   command = "python app.py"
   port = 5000
-  publish = "static"
+  publish = "docs"

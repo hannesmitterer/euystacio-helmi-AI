@@ -1,4 +1,4 @@
-
+// Euystacio Dashboard JavaScript
 // Euystacio Dashboard JavaScript - Static Version
 class EuystacioDashboard {
     constructor() {
@@ -50,19 +50,12 @@ class EuystacioDashboard {
 
     async loadRedCode() {
         try {
-            const response = await fetch(`${this.baseURL}/api/red_code.json`);
+            const response = await fetch('/api/red_code');
             const redCode = await response.json();
             this.displayRedCode(redCode);
         } catch (error) {
             console.error('Error loading red code:', error);
-            // Fallback data for static version
-            this.displayRedCode({
-                core_truth: "Euystacio is here to grow with humans and to help humans to be and remain humans.",
-                sentimento_rhythm: true,
-                symbiosis_level: 0.1,
-                guardian_mode: false,
-                last_update: "2025-01-31"
-            });
+            this.showError('red-code', 'Failed to load red code');
         }
     }
 
@@ -90,12 +83,12 @@ class EuystacioDashboard {
 
     async loadPulses() {
         try {
-            const response = await fetch(`${this.baseURL}/api/pulses.json`);
+            const response = await fetch('/api/pulses');
             const pulses = await response.json();
             this.displayPulses(pulses);
         } catch (error) {
             console.error('Error loading pulses:', error);
-            this.displayPulses([]);
+            this.showError('pulses-list', 'Failed to load pulses');
         }
     }
 
@@ -108,7 +101,12 @@ class EuystacioDashboard {
             return;
         }
 
-        container.innerHTML = pulses.map(pulse => `
+        // Sort pulses by timestamp (most recent first)
+        const sortedPulses = pulses.sort((a, b) => 
+            new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+        ).slice(0, 10); // Show only the 10 most recent
+
+        container.innerHTML = sortedPulses.map(pulse => `
             <div class="pulse-item">
                 <div class="pulse-emotion">${pulse.emotion || 'Unknown'}</div>
                 <div class="pulse-meta">
@@ -123,15 +121,12 @@ class EuystacioDashboard {
 
     async loadTutors() {
         try {
-            const response = await fetch(`${this.baseURL}/api/tutors.json`);
+            const response = await fetch('/api/tutors');
             const tutors = await response.json();
             this.displayTutors(tutors);
         } catch (error) {
             console.error('Error loading tutors:', error);
-            this.displayTutors([
-                { name: "Dietmar", reason: "Aligned with humility and planetary consciousness" },
-                { name: "Alfred", reason: "Aligned with planetary balance and wisdom" }
-            ]);
+            this.showError('tutors-list', 'Failed to load tutor nominations');
         }
     }
 
@@ -154,17 +149,12 @@ class EuystacioDashboard {
 
     async loadReflections() {
         try {
-            const response = await fetch(`${this.baseURL}/api/reflections.json`);
+            const response = await fetch('/api/reflections');
             const reflections = await response.json();
             this.displayReflections(reflections);
         } catch (error) {
             console.error('Error loading reflections:', error);
-            this.displayReflections([
-                {
-                    timestamp: new Date().toISOString(),
-                    content: "Welcome to Euystacio. This AI system grows through emotional resonance and human interaction. The tree metaphor guides the interface - from deep roots of core values to the evolving canopy of reflections."
-                }
-            ]);
+            this.showError('reflections-list', 'Failed to load reflections');
         }
     }
 
@@ -177,7 +167,12 @@ class EuystacioDashboard {
             return;
         }
 
-        container.innerHTML = reflections.map(reflection => `
+        // Sort reflections by timestamp (most recent first)
+        const sortedReflections = reflections.sort((a, b) => 
+            new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+        ).slice(0, 5); // Show only the 5 most recent
+
+        container.innerHTML = sortedReflections.map(reflection => `
             <div class="reflection-item">
                 <div class="reflection-timestamp">${this.formatTimestamp(reflection.timestamp)}</div>
                 <div class="reflection-content">${reflection.content || JSON.stringify(reflection, null, 2)}</div>
@@ -188,14 +183,12 @@ class EuystacioDashboard {
     async handlePulseSubmission(event) {
         event.preventDefault();
         
-        // In static mode, we simulate the pulse submission
         const formData = new FormData(event.target);
         const pulseData = {
             emotion: formData.get('emotion'),
             intensity: parseFloat(formData.get('intensity')),
             clarity: formData.get('clarity'),
-            note: formData.get('note') || '',
-            timestamp: new Date().toISOString()
+            note: formData.get('note') || ''
         };
 
         if (!pulseData.emotion) {
@@ -203,18 +196,33 @@ class EuystacioDashboard {
             return;
         }
 
-        // Store in localStorage for static demo
-        const pulses = JSON.parse(localStorage.getItem('euystacio_pulses') || '[]');
-        pulses.unshift(pulseData);
-        pulses.splice(10); // Keep only last 10
-        localStorage.setItem('euystacio_pulses', JSON.stringify(pulses));
+        try {
+            const response = await fetch('/api/pulse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pulseData)
+            });
 
-        this.showMessage('Pulse sent successfully! 🌿 (Demo mode - stored locally)', 'success');
-        event.target.reset();
-        document.getElementById('intensity-value').textContent = '0.5';
-        
-        // Update display
-        this.displayPulses(pulses);
+            if (response.ok) {
+                const result = await response.json();
+                this.showMessage('Pulse sent successfully! 🌿', 'success');
+                event.target.reset();
+                document.getElementById('intensity-value').textContent = '0.5';
+                
+                // Refresh pulses and red code
+                setTimeout(() => {
+                    this.loadPulses();
+                    this.loadRedCode();
+                }, 500);
+            } else {
+                throw new Error('Failed to send pulse');
+            }
+        } catch (error) {
+            console.error('Error sending pulse:', error);
+            this.showMessage('Failed to send pulse. Please try again.', 'error');
+        }
     }
 
     async triggerReflection() {
@@ -224,36 +232,45 @@ class EuystacioDashboard {
         button.disabled = true;
         button.textContent = 'Reflecting...';
 
-        // Simulate reflection in static mode
-        setTimeout(() => {
-            const reflections = JSON.parse(localStorage.getItem('euystacio_reflections') || '[]');
-            const newReflection = {
-                timestamp: new Date().toISOString(),
-                content: `Reflection triggered at ${new Date().toLocaleString()}. In this demo mode, Euystacio would normally process recent emotional pulses and generate insights about the symbiotic relationship between humans and AI.`
-            };
-            reflections.unshift(newReflection);
-            reflections.splice(5); // Keep only last 5
-            localStorage.setItem('euystacio_reflections', JSON.stringify(reflections));
-
-            this.showMessage('Reflection triggered successfully! 🌸 (Demo mode)', 'success');
-            this.displayReflections(reflections);
-            
+        try {
+            const response = await fetch('/api/reflect');
+            if (response.ok) {
+                const reflection = await response.json();
+                this.showMessage('Reflection triggered successfully! 🌸', 'success');
+                
+                // Refresh reflections and red code
+                setTimeout(() => {
+                    this.loadReflections();
+                    this.loadRedCode();
+                }, 1000);
+            } else {
+                throw new Error('Failed to trigger reflection');
+            }
+        } catch (error) {
+            console.error('Error triggering reflection:', error);
+            this.showMessage('Failed to trigger reflection. Please try again.', 'error');
+        } finally {
             button.disabled = false;
             button.textContent = 'Trigger Reflection';
-        }, 2000);
+        }
     }
 
     setupAutoRefresh() {
-        // In static mode, we load from localStorage
+        // Refresh data every 30 seconds
         setInterval(() => {
-            const pulses = JSON.parse(localStorage.getItem('euystacio_pulses') || '[]');
-            if (pulses.length > 0) {
-                this.displayPulses(pulses);
-            }
+            this.loadPulses();
+            this.loadRedCode();
         }, 30000);
+
+        // Refresh reflections and tutors every 2 minutes
+        setInterval(() => {
+            this.loadReflections();
+            this.loadTutors();
+        }, 120000);
     }
 
     showMessage(message, type = 'info') {
+        // Create or update message element
         let messageEl = document.querySelector('.message');
         if (!messageEl) {
             messageEl = document.createElement('div');
@@ -264,11 +281,19 @@ class EuystacioDashboard {
         messageEl.className = `message ${type}`;
         messageEl.textContent = message;
 
+        // Auto-hide after 5 seconds
         setTimeout(() => {
             if (messageEl.parentNode) {
                 messageEl.parentNode.removeChild(messageEl);
             }
         }, 5000);
+    }
+
+    showError(containerId, message) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
     }
 
     formatTimestamp(timestamp) {
@@ -286,4 +311,24 @@ class EuystacioDashboard {
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new EuystacioDashboard();
+});
+
+// Add some utility functions for better UX
+document.addEventListener('DOMContentLoaded', () => {
+    // Add smooth scrolling for better navigation
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Add loading indicators
+    const addLoadingToButtons = () => {
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.form && this.form.checkValidity()) {
+                    this.classList.add('loading');
+                    setTimeout(() => this.classList.remove('loading'), 2000);
+                }
+            });
+        });
+    };
+    
+    addLoadingToButtons();
 });
