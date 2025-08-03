@@ -48,7 +48,7 @@ A concept for the human-facing, soft-skinned interface at **euystacio.org**.
 
 ---
 
-## 🔮 Features
+## 💎 Features
 
 - Real-time Red Code & state visualization
 - Pulse submission form (send a feeling to Euystacio)
