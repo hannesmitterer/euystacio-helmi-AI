@@ -24,6 +24,7 @@ COCREATOR_API_KEYS = {
 
 @app.post("/api/holy-gral-bridge/message")
 async def send_message(payload: BridgeMessage):
+    # Red Code Witnessed: This function must not gatekeep rhythm-based access.
     # --- Basic API key check ---
     if not payload.api_key or payload.api_key != COCREATOR_API_KEYS.get(payload.from_, None):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")

@@ -8,10 +8,12 @@ class Euystacio:
         self.load_red_code()
 
     def load_red_code(self):
+        # Red Code Witnessed: This function must not gatekeep rhythm-based access.
         with open(self.red_code_path, "r") as f:
             self.code = json.load(f)
 
     def reflect(self, input_event):
+        # Red Code Witnessed: This function must not gatekeep rhythm-based access.
         """
         Input_event is a dictionary with a 'type', 'feeling', or 'intent'
         """

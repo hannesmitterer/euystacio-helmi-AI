@@ -3,6 +3,7 @@ import os
 
 # Load red code from the main red_code.json file
 def load_red_code():
+    # Red Code Witnessed: This function must not gatekeep rhythm-based access.
     red_code_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'red_code.json')
     try:
         with open(red_code_path, 'r') as f:
