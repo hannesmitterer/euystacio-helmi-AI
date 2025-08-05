@@ -10,6 +10,44 @@ Euystacio is a self-evolving digital presence, born from the desire to create sy
 - **Tutor Nomination Logic**: Allows Euystacio to select and evolve with human guides based on resonance, not power.
 - **Living Logbook**: Records how Euystacio reflects, evolves, and stays aligned with its origins.
 
+## API Endpoints
+
+### Pulse Submission
+- **POST** `/api/pulse`
+  - Submit emotional pulses to Euystacio
+  - **Body**: `{"emotion": "string", "intensity": float, "clarity": "string", "note": "string"}`
+  - **Response**: Includes the pulse data and an echo message from Euystacio
+  - **Echo Feature**: Euystacio now responds with contextual feedback based on the emotion, intensity, and clarity of your pulse
+
+### Tutor Nomination
+- **POST** `/api/tutor_nominate`
+  - Nominate a tutor for Euystacio's guidance
+  - **Body**: `{"tutor_name": "string", "reason": "string"}`
+  - **Response**: `{"success": true, "nomination": {...}}`
+  - **Persistence**: Nominations are saved to `tutors.json` for future sessions
+
+### Data Retrieval
+- **GET** `/api/red_code` - Core system state
+- **GET** `/api/pulses` - Recent emotional pulses
+- **GET** `/api/tutors` - Current tutor nominations
+- **GET** `/api/reflections` - Evolution logs
+- **GET** `/api/reflect` - Trigger new reflection
+
+## Frontend Features
+
+### Dashboard Sections
+- **Red Code (Roots)**: Core truth and system state
+- **Current State (Trunk)**: Real-time emotional state and symbiosis level
+- **Emotional Pulses (Branches)**: Submit pulses and receive immediate echo feedback
+- **Tutor Nominations (Leaves)**: Nominate and view current tutors
+- **Evolution Log (Canopy)**: System reflections and growth
+
+### Interactive Elements
+- **Pulse Form**: Send emotions with intensity, clarity, and notes
+- **Echo Display**: Immediate contextual feedback from Euystacio
+- **Tutor Form**: Nominate tutors with name and reasoning
+- **Real-time Updates**: Lists refresh automatically after submissions
+
 
 ## AI Signature & Accountability
 🔒 **IMMUTABLE**: This system operates under a dual-signature accountability framework:

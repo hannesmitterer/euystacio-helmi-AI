@@ -17,6 +17,12 @@ class EuystacioDashboard {
             pulseForm.addEventListener('submit', (e) => this.handlePulseSubmission(e));
         }
 
+        // Tutor nomination form submission
+        const tutorForm = document.getElementById('tutor-form');
+        if (tutorForm) {
+            tutorForm.addEventListener('submit', (e) => this.handleTutorNomination(e));
+        }
+
         // Intensity slider
         const intensitySlider = document.getElementById('intensity');
         const intensityValue = document.getElementById('intensity-value');
@@ -178,6 +184,47 @@ class EuystacioDashboard {
         `).join('');
     }
 
+    async handleTutorNomination(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const tutorData = {
+            tutor_name: formData.get('tutor_name'),
+            reason: formData.get('reason')
+        };
+
+        if (!tutorData.tutor_name || !tutorData.reason) {
+            this.showMessage('Please fill in all fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/tutor_nominate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tutorData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.showMessage('Tutor nominated successfully! 🍃', 'success');
+                event.target.reset();
+                
+                // Refresh tutors list
+                setTimeout(() => {
+                    this.loadTutors();
+                }, 500);
+            } else {
+                throw new Error('Failed to nominate tutor');
+            }
+        } catch (error) {
+            console.error('Error nominating tutor:', error);
+            this.showMessage('Failed to nominate tutor. Please try again.', 'error');
+        }
+    }
+
     async handlePulseSubmission(event) {
         event.preventDefault();
         
@@ -209,6 +256,11 @@ class EuystacioDashboard {
                 event.target.reset();
                 document.getElementById('intensity-value').textContent = '0.5';
                 
+                // Display echo message if present
+                if (result.echo) {
+                    this.displayEcho(result.echo);
+                }
+                
                 // Refresh pulses and red code
                 setTimeout(() => {
                     this.loadPulses();
@@ -220,6 +272,21 @@ class EuystacioDashboard {
         } catch (error) {
             console.error('Error sending pulse:', error);
             this.showMessage('Failed to send pulse. Please try again.', 'error');
+        }
+    }
+
+    displayEcho(echoMessage) {
+        const echoContainer = document.getElementById('pulse-echo');
+        const echoText = document.getElementById('echo-message');
+        
+        if (echoContainer && echoText) {
+            echoText.textContent = echoMessage;
+            echoContainer.style.display = 'block';
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                echoContainer.style.display = 'none';
+            }, 10000);
         }
     }
 
@@ -273,7 +340,16 @@ class EuystacioDashboard {
         if (!messageEl) {
             messageEl = document.createElement('div');
             messageEl.className = 'message';
-            document.querySelector('.pulse-form').appendChild(messageEl);
+            // Try to place in tutor form first, then pulse form
+            const tutorForm = document.querySelector('.tutor-form');
+            const pulseForm = document.querySelector('.pulse-form');
+            if (tutorForm) {
+                tutorForm.appendChild(messageEl);
+            } else if (pulseForm) {
+                pulseForm.appendChild(messageEl);
+            } else {
+                document.querySelector('.dashboard').appendChild(messageEl);
+            }
         }
 
         messageEl.className = `message ${type}`;

@@ -255,6 +255,31 @@ button:hover {
 }
 
 /* Tutors List */
+.tutor-form {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.tutor-form h4 {
+    color: var(--earth-brown);
+    margin-bottom: 15px;
+}
+
+.tutors-feed {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tutors-feed h4 {
+    color: var(--earth-brown);
+    margin-bottom: 15px;
+}
+
 .tutor-item {
     background: #fff8e1;
     padding: 15px;
@@ -272,6 +297,48 @@ button:hover {
 .tutor-reason {
     margin-top: 5px;
     color: var(--text-dark);
+}
+
+/* Pulse Echo */
+.pulse-echo {
+    background: #e3f2fd;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border-left: 4px solid var(--soft-blue);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.pulse-echo h4 {
+    color: var(--soft-blue);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.echo-message {
+    color: var(--text-dark);
+    font-style: italic;
+    line-height: 1.6;
+}
+
+/* Message styling */
+.message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.message.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-left: 3px solid #4caf50;
+}
+
+.message.error {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 3px solid #f44336;
 }
 
 /* Reflections */

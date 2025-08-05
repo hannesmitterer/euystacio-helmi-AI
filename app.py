@@ -75,6 +75,18 @@ def api_pulse():
     event = spi.receive_pulse(emotion, intensity, clarity, note)
     return jsonify(event)
 
+@app.route("/api/tutor_nominate", methods=["POST"])
+def api_tutor_nominate():
+    data = request.get_json()
+    tutor_name = data.get("tutor_name", "")
+    reason = data.get("reason", "")
+    
+    if not tutor_name or not reason:
+        return jsonify({"error": "Tutor name and reason are required"}), 400
+    
+    nomination = tutors.nominate(tutor_name, reason)
+    return jsonify({"success": True, "nomination": nomination})
+
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     app.run(debug=True)

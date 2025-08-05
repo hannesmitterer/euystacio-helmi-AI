@@ -82,6 +82,10 @@
                         </div>
                         <button type="submit">Send Pulse</button>
                     </form>
+                    <div id="pulse-echo" class="pulse-echo" style="display: none;">
+                        <h4>🌊 Euystacio's Echo</h4>
+                        <div id="echo-message" class="echo-message"></div>
+                    </div>
                 </div>
                 <div class="pulses-feed">
                     <h4>Recent Pulses</h4>
@@ -94,8 +98,25 @@
             <!-- Leaves: Tutor Nominations -->
             <section class="tutors-section">
                 <h3>🍃 Tutor Nominations (Leaves)</h3>
-                <div id="tutors-list" class="tutors-list">
-                    <div class="loading">Loading tutor nominations...</div>
+                <div class="tutor-form">
+                    <h4>Nominate a Tutor</h4>
+                    <form id="tutor-form">
+                        <div class="form-group">
+                            <label for="tutor-name">Tutor Name:</label>
+                            <input type="text" id="tutor-name" name="tutor_name" required placeholder="Enter tutor's name...">
+                        </div>
+                        <div class="form-group">
+                            <label for="tutor-reason">Nomination Reason:</label>
+                            <textarea id="tutor-reason" name="reason" required placeholder="Why do you nominate this person as a tutor?"></textarea>
+                        </div>
+                        <button type="submit">Nominate Tutor</button>
+                    </form>
+                </div>
+                <div class="tutors-feed">
+                    <h4>Current Tutor Nominations</h4>
+                    <div id="tutors-list" class="tutors-list">
+                        <div class="loading">Loading tutor nominations...</div>
+                    </div>
                 </div>
             </section>
 
