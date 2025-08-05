@@ -1,0 +1,32 @@
+{
+  "name": "euystacio-alternative",
+  "version": "1.0.0",
+  "description": "Node.js/Express alternative backend for Euystacio emotional pulse system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --dev",
+    "build": "echo \"No build step required for Node.js server\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-endpoints": "node -e \"console.log('Use curl commands or websocket-demo.html to test endpoints')\"",
+    "netlify-build": "npm install"
+  },
+  "keywords": [
+    "euystacio",
+    "emotional-ai",
+    "express",
+    "websocket"
+  ],
+  "author": "Euystacio Team",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
+    "serverless-http": "^3.2.0",
+    "socket.io": "^4.8.1"
+  }
+}

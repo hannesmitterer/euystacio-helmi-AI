@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio WebSocket Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .event-log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .pulse-form {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .pulse-form input, .pulse-form select, .pulse-form textarea, .pulse-form button {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .pulse-form button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .pulse-form button:hover {
+            background-color: #218838;
+        }
+        .pulse-form button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .data-display {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .pulse-item {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        .pulse-emotion {
+            font-weight: bold;
+            color: #495057;
+        }
+        .pulse-meta {
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌿 Euystacio WebSocket Demo</h1>
+    
+    <!-- Connection Status -->
+    <div class="container">
+        <h2>Connection Status</h2>
+        <div id="connection-status" class="status disconnected">
+            Not connected
+        </div>
+        <button id="connect-btn" onclick="connectWebSocket()">Connect</button>
+        <button id="disconnect-btn" onclick="disconnectWebSocket()" disabled>Disconnect</button>
+    </div>
+
+    <!-- Send Pulse -->
+    <div class="container">
+        <h2>Send Emotional Pulse</h2>
+        <form id="pulse-form" class="pulse-form">
+            <select name="emotion" required>
+                <option value="">Select emotion...</option>
+                <option value="joy">Joy</option>
+                <option value="sadness">Sadness</option>
+                <option value="anger">Anger</option>
+                <option value="fear">Fear</option>
+                <option value="surprise">Surprise</option>
+                <option value="disgust">Disgust</option>
+                <option value="trust">Trust</option>
+                <option value="anticipation">Anticipation</option>
+                <option value="neutral">Neutral</option>
+            </select>
+            <label>
+                Intensity: <span id="intensity-value">0.5</span>
+                <input type="range" name="intensity" min="0" max="1" step="0.1" value="0.5" 
+                       oninput="document.getElementById('intensity-value').textContent = this.value">
+            </label>
+            <select name="clarity">
+                <option value="low">Low clarity</option>
+                <option value="medium" selected>Medium clarity</option>
+                <option value="high">High clarity</option>
+            </select>
+            <textarea name="note" placeholder="Optional note..." rows="2"></textarea>
+            <button type="submit">Send Pulse</button>
+        </form>
+    </div>
+
+    <!-- Trigger Reflection -->
+    <div class="container">
+        <h2>Reflection System</h2>
+        <button id="reflect-btn" onclick="triggerReflection()">Trigger Reflection</button>
+    </div>
+
+    <!-- Event Log -->
+    <div class="container">
+        <h2>Real-time Event Log</h2>
+        <div id="event-log" class="event-log"></div>
+        <button onclick="clearEventLog()">Clear Log</button>
+    </div>
+
+    <!-- Recent Pulses -->
+    <div class="container">
+        <h2>Recent Pulses (Auto-updating)</h2>
+        <div id="recent-pulses" class="data-display">
+            Loading...
+        </div>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    
+    <script>
+        let socket = null;
+        let isConnected = false;
+
+        // Elements
+        const connectionStatus = document.getElementById('connection-status');
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const eventLog = document.getElementById('event-log');
+        const pulseForm = document.getElementById('pulse-form');
+        const reflectBtn = document.getElementById('reflect-btn');
+        const recentPulses = document.getElementById('recent-pulses');
+
+        // Connect to WebSocket
+        function connectWebSocket() {
+            if (socket) return;
+
+            logEvent('Connecting to WebSocket...');
+            
+            socket = io(window.location.origin, {
+                transports: ['websocket', 'polling']
+            });
+
+            socket.on('connect', () => {
+                isConnected = true;
+                updateConnectionStatus(true);
+                logEvent('✅ Connected to Euystacio backend');
+                loadInitialData();
+            });
+
+            socket.on('disconnect', (reason) => {
+                isConnected = false;
+                updateConnectionStatus(false);
+                logEvent(`❌ Disconnected: ${reason}`);
+            });
+
+            socket.on('connect_error', (error) => {
+                logEvent(`❌ Connection error: ${error.message}`);
+            });
+
+            socket.on('connection_established', (data) => {
+                logEvent(`🤝 Connection established: ${data.message}`);
+            });
+
+            // Real-time event listeners
+            socket.on('new_pulse', (data) => {
+                logEvent(`📡 New pulse: ${JSON.stringify(data.data || data)}`);
+                loadPulses(); // Refresh pulses display
+            });
+
+            socket.on('new_reflection', (data) => {
+                logEvent(`🧠 New reflection generated`);
+            });
+
+            socket.on('red_code_update', (data) => {
+                logEvent(`🔴 Red code updated`);
+            });
+
+            socket.on('tutor_update', (data) => {
+                logEvent(`👨‍🏫 Tutor updated: ${data.data?.name || 'Unknown'}`);
+            });
+
+            socket.on('pong', (data) => {
+                logEvent(`🏓 Pong: ${data.timestamp}`);
+            });
+        }
+
+        // Disconnect from WebSocket
+        function disconnectWebSocket() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                isConnected = false;
+                updateConnectionStatus(false);
+                logEvent('🔌 Manually disconnected');
+            }
+        }
+
+        // Update connection status display
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                connectionStatus.textContent = `Connected (ID: ${socket.id})`;
+                connectionStatus.className = 'status connected';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+            } else {
+                connectionStatus.textContent = 'Not connected';
+                connectionStatus.className = 'status disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        // Log events to the event log
+        function logEvent(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            eventLog.innerHTML += `[${timestamp}] ${message}\n`;
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
+        // Clear event log
+        function clearEventLog() {
+            eventLog.innerHTML = '';
+        }
+
+        // Load initial data
+        async function loadInitialData() {
+            await loadPulses();
+        }
+
+        // Load and display pulses
+        async function loadPulses() {
+            try {
+                const response = await fetch('/api/pulses');
+                const pulses = await response.json();
+                displayPulses(pulses);
+            } catch (error) {
+                recentPulses.innerHTML = `<div style="color: red;">Error loading pulses: ${error.message}</div>`;
+            }
+        }
+
+        // Display pulses
+        function displayPulses(pulses) {
+            if (!Array.isArray(pulses) || pulses.length === 0) {
+                recentPulses.innerHTML = '<div>No pulses yet. Send the first one!</div>';
+                return;
+            }
+
+            const sortedPulses = pulses.sort((a, b) => 
+                new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+            ).slice(0, 5);
+
+            recentPulses.innerHTML = sortedPulses.map(pulse => `
+                <div class="pulse-item">
+                    <div class="pulse-emotion">${pulse.emotion || 'Unknown'}</div>
+                    <div class="pulse-meta">
+                        Intensity: ${pulse.intensity || 0} | 
+                        Clarity: ${pulse.clarity || 'unknown'} | 
+                        ${new Date(pulse.timestamp).toLocaleString()}
+                    </div>
+                    ${pulse.note ? `<div style="font-style: italic; margin-top: 5px;">"${pulse.note}"</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Handle pulse form submission
+        pulseForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const pulseData = {
+                emotion: formData.get('emotion'),
+                intensity: parseFloat(formData.get('intensity')),
+                clarity: formData.get('clarity'),
+                note: formData.get('note') || ''
+            };
+
+            try {
+                const response = await fetch('/api/pulse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(pulseData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    logEvent(`✅ Pulse sent: ${pulseData.emotion} (${pulseData.intensity})`);
+                    e.target.reset();
+                    document.getElementById('intensity-value').textContent = '0.5';
+                } else {
+                    throw new Error('Failed to send pulse');
+                }
+            } catch (error) {
+                logEvent(`❌ Error sending pulse: ${error.message}`);
+            }
+        });
+
+        // Trigger reflection
+        async function triggerReflection() {
+            reflectBtn.disabled = true;
+            reflectBtn.textContent = 'Reflecting...';
+
+            try {
+                const response = await fetch('/api/reflect', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    const reflection = await response.json();
+                    logEvent('✅ Reflection triggered successfully');
+                } else {
+                    throw new Error('Failed to trigger reflection');
+                }
+            } catch (error) {
+                logEvent(`❌ Error triggering reflection: ${error.message}`);
+            } finally {
+                reflectBtn.disabled = false;
+                reflectBtn.textContent = 'Trigger Reflection';
+            }
+        }
+
+        // Auto-connect on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(connectWebSocket, 500);
+        });
+
+        // Ping every 30 seconds to keep connection alive
+        setInterval(() => {
+            if (socket && socket.connected) {
+                socket.emit('ping');
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

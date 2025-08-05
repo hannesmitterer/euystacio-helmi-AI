@@ -1,0 +1,32 @@
+# Netlify configuration for Euystacio Alternative Backend
+# Place this file in the root of your repository if you want to deploy 
+# the Node.js backend as Netlify Functions
+
+[build]
+  publish = "static"
+  command = "cd euystacio-alternative && npm install"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirect API calls to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Serve the frontend
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "euystacio-alternative/netlify/functions"
+  node_bundler = "esbuild"
+
+# Development settings
+[dev]
+  command = "cd euystacio-alternative && npm start"
+  port = 3000
+  publish = "static"

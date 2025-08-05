@@ -3,6 +3,16 @@
   "sentimento_rhythm": true,
   "symbiosis_level": 0.1,
   "guardian_mode": false,
-  "last_update": "2025-07-13",
-  "growth_history": []
+  "last_update": "2025-08-05",
+  "growth_history": [],
+  "recent_pulses": [
+    {
+      "timestamp": "2025-08-05T09:42:42.040Z",
+      "emotion": "joy",
+      "intensity": 0.8,
+      "clarity": "high",
+      "note": "Testing the Node.js backend!",
+      "ai_signature_status": "verified"
+    }
+  ]
 }
