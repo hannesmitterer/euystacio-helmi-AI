@@ -406,3 +406,190 @@ button:hover {
         --border-light: #666666;
     }
 }
+
+/* Tutor Rhythm Section */
+.tutor-rhythm-section {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--soft-blue);
+}
+
+.tutor-rhythm-form {
+    background: var(--bg-light);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.tutor-rhythm-form h4 {
+    color: var(--primary-green);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.tutor-rhythm-form p {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.tutor-rhythm-form .form-group {
+    margin-bottom: 20px;
+}
+
+.tutor-rhythm-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.tutor-rhythm-form input[type="text"],
+.tutor-rhythm-form select,
+.tutor-rhythm-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    font-family: inherit;
+}
+
+.tutor-rhythm-form input[type="text"]:focus,
+.tutor-rhythm-form select:focus,
+.tutor-rhythm-form textarea:focus {
+    outline: none;
+    border-color: var(--soft-blue);
+    box-shadow: 0 0 0 3px rgba(107, 182, 255, 0.1);
+}
+
+.tutor-rhythm-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.tutor-rhythm-form button[type="submit"] {
+    background: linear-gradient(135deg, var(--soft-blue), var(--light-green));
+    color: var(--white);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.tutor-rhythm-form button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 182, 255, 0.3);
+}
+
+.tutor-rhythm-form button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+.response-area {
+    margin-top: 20px;
+}
+
+.kernel-response {
+    background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    color: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(45, 90, 61, 0.2);
+}
+
+.kernel-response h4 {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.kernel-response p {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.response-meta {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.response-meta small {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.tutor-log-link {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.tutor-log-link a {
+    color: var(--soft-blue);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 16px;
+    border: 2px solid var(--soft-blue);
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.tutor-log-link a:hover {
+    background: var(--soft-blue);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+/* Message styles for tutor rhythm form */
+.tutor-rhythm-form .message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+.tutor-rhythm-form .message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.tutor-rhythm-form .message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Animation for form submission */
+.tutor-rhythm-form button[type="submit"].loading {
+    position: relative;
+    color: transparent;
+}
+
+.tutor-rhythm-form button[type="submit"].loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--white);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

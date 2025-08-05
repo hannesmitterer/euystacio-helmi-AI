@@ -99,6 +99,50 @@
                 </div>
             </section>
 
+            <!-- Living Pulse: Tutor Rhythm Submission -->
+            <section class="tutor-rhythm-section">
+                <h3>🌊 Living Pulse: Submit Tutor Rhythm</h3>
+                <div class="tutor-rhythm-form">
+                    <h4>Join the Dynamic Ritual</h4>
+                    <p><em>"Join via the living pulse at /submit_tutor_rhythm, not by compiling code."</em></p>
+                    <form id="tutor-rhythm-form">
+                        <div class="form-group">
+                            <label for="tutor-name">Tutor Name:</label>
+                            <input type="text" id="tutor-name" name="tutor_name" required 
+                                   placeholder="Your name as a tutor or guide...">
+                        </div>
+                        <div class="form-group">
+                            <label for="intention">Intention:</label>
+                            <select id="intention" name="intention" required>
+                                <option value="">Select your intention...</option>
+                                <option value="teaching">Teaching - Sharing knowledge</option>
+                                <option value="learning">Learning - Seeking wisdom</option>
+                                <option value="sharing">Sharing - Building connections</option>
+                                <option value="supporting">Supporting - Offering help</option>
+                                <option value="creating">Creating - Making something new</option>
+                                <option value="exploring">Exploring - Discovering paths</option>
+                                <option value="other">Other - Custom intention</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="custom-intention-group" style="display: none;">
+                            <label for="custom-intention">Custom Intention:</label>
+                            <input type="text" id="custom-intention" name="custom_intention" 
+                                   placeholder="Describe your unique intention...">
+                        </div>
+                        <div class="form-group">
+                            <label for="offering">Offering:</label>
+                            <textarea id="offering" name="offering" required 
+                                      placeholder="What do you offer to the living system? Skills, perspectives, energy, time..."></textarea>
+                        </div>
+                        <button type="submit">Submit to the Living Pulse</button>
+                    </form>
+                    <div id="tutor-rhythm-response" class="response-area" style="display: none;"></div>
+                </div>
+                <div class="tutor-log-link">
+                    <a href="/tutor-log" target="_blank">View Tutor Pulse Log →</a>
+                </div>
+            </section>
+
             <!-- Canopy: Evolution Log -->
             <section class="reflections-section">
                 <h3>🌸 Evolution Log (Canopy)</h3>

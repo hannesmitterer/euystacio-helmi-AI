@@ -17,6 +17,27 @@ class EuystacioDashboard {
             pulseForm.addEventListener('submit', (e) => this.handlePulseSubmission(e));
         }
 
+        // Tutor rhythm form submission
+        const tutorRhythmForm = document.getElementById('tutor-rhythm-form');
+        if (tutorRhythmForm) {
+            tutorRhythmForm.addEventListener('submit', (e) => this.handleTutorRhythmSubmission(e));
+        }
+
+        // Handle custom intention toggle
+        const intentionSelect = document.getElementById('intention');
+        const customIntentionGroup = document.getElementById('custom-intention-group');
+        if (intentionSelect && customIntentionGroup) {
+            intentionSelect.addEventListener('change', (e) => {
+                if (e.target.value === 'other') {
+                    customIntentionGroup.style.display = 'block';
+                    document.getElementById('custom-intention').required = true;
+                } else {
+                    customIntentionGroup.style.display = 'none';
+                    document.getElementById('custom-intention').required = false;
+                }
+            });
+        }
+
         // Intensity slider
         const intensitySlider = document.getElementById('intensity');
         const intensityValue = document.getElementById('intensity-value');
@@ -176,6 +197,100 @@ class EuystacioDashboard {
                 <div class="reflection-content">${reflection.content || JSON.stringify(reflection, null, 2)}</div>
             </div>
         `).join('');
+    }
+
+    async handleTutorRhythmSubmission(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        let intention = formData.get('intention');
+        
+        // Use custom intention if "other" is selected
+        if (intention === 'other') {
+            intention = formData.get('custom_intention');
+        }
+        
+        const tutorRhythmData = {
+            tutor_name: formData.get('tutor_name'),
+            intention: intention,
+            offering: formData.get('offering')
+        };
+
+        // Validation
+        if (!tutorRhythmData.tutor_name || !tutorRhythmData.intention || !tutorRhythmData.offering) {
+            this.showTutorRhythmMessage('Please fill in all required fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/submit_tutor_rhythm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tutorRhythmData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.showTutorRhythmMessage('Tutor rhythm submitted to the living pulse! 🌊', 'success');
+                this.displayTutorRhythmResponse(result.event);
+                event.target.reset();
+                document.getElementById('custom-intention-group').style.display = 'none';
+                
+                // Refresh tutors
+                setTimeout(() => {
+                    this.loadTutors();
+                }, 500);
+            } else {
+                throw new Error(result.error || 'Failed to submit tutor rhythm');
+            }
+        } catch (error) {
+            console.error('Error submitting tutor rhythm:', error);
+            this.showTutorRhythmMessage('Failed to submit tutor rhythm. Please try again.', 'error');
+        }
+    }
+
+    displayTutorRhythmResponse(event) {
+        const responseArea = document.getElementById('tutor-rhythm-response');
+        if (!responseArea || !event) return;
+
+        responseArea.innerHTML = `
+            <div class="kernel-response">
+                <h4>Kernel Response:</h4>
+                <p><strong>"${event.kernel_response}"</strong></p>
+                <div class="response-meta">
+                    <small>Submitted: ${this.formatTimestamp(event.timestamp)}</small>
+                </div>
+            </div>
+        `;
+        responseArea.style.display = 'block';
+
+        // Auto-hide after 15 seconds
+        setTimeout(() => {
+            responseArea.style.display = 'none';
+        }, 15000);
+    }
+
+    showTutorRhythmMessage(message, type = 'info') {
+        // Create or update message element
+        let messageEl = document.querySelector('.tutor-rhythm-form .message');
+        if (!messageEl) {
+            messageEl = document.createElement('div');
+            messageEl.className = 'message';
+            document.querySelector('.tutor-rhythm-form').appendChild(messageEl);
+        }
+
+        messageEl.className = `message ${type}`;
+        messageEl.textContent = message;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if (messageEl.parentNode) {
+                messageEl.parentNode.removeChild(messageEl);
+            }
+        }, 5000);
     }
 
     async handlePulseSubmission(event) {

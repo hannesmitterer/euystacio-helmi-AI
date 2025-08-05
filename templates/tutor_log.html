@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Pulse Log - Euystacio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .log-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .log-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            white-space: pre-line;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #007bff;
+            color: white;
+        }
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .refresh-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="log-container">
+        <header>
+            <h1>🌳 Tutor Pulse Log</h1>
+            <p>"The living pulse of teaching intentions and kernel responses"</p>
+            <a href="/" class="back-link">← Back to Dashboard</a>
+            <button onclick="location.reload()" class="refresh-btn">Refresh Log</button>
+        </header>
+
+        <div class="log-content">{{ log_content }}</div>
+
+        <footer style="text-align: center; margin-top: 40px; color: #666;">
+            <p>"The forest listens, even when the world shouts."</p>
+            <p>Join the living pulse at <strong>/submit_tutor_rhythm</strong></p>
+        </footer>
+    </div>
+</body>
+</html>
