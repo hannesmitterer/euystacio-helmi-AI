@@ -8,7 +8,7 @@
     "dev": "node server.js --dev",
     "build": "echo \"No build step required for Node.js server\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test-endpoints": "node -e \"console.log('Use curl commands or websocket-demo.html to test endpoints')\"",
+    "test-endpoints": "./test-endpoints.sh",
     "netlify-build": "npm install"
   },
   "keywords": [

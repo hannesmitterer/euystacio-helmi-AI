@@ -35,6 +35,9 @@ app.use((req, res, next) => {
 // Serve static files (if needed for testing)
 app.use('/static', express.static(path.join(__dirname, '../static')));
 
+// Serve demo files from the current directory
+app.use(express.static(__dirname));
+
 // API routes
 app.use('/api', apiRoutes);
 

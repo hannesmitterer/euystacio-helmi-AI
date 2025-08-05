@@ -13,6 +13,22 @@
       "clarity": "high",
       "note": "Testing the Node.js backend!",
       "ai_signature_status": "verified"
+    },
+    {
+      "timestamp": "2025-08-05T09:46:50.549Z",
+      "emotion": "joy",
+      "intensity": 0.5,
+      "clarity": "medium",
+      "note": "Testing the Node.js backend from the demo interface!",
+      "ai_signature_status": "verified"
+    },
+    {
+      "timestamp": "2025-08-05T09:47:54.452Z",
+      "emotion": "joy",
+      "intensity": 0.7,
+      "clarity": "high",
+      "note": "Test pulse from script",
+      "ai_signature_status": "verified"
     }
   ]
 }
