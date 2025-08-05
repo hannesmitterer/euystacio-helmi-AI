@@ -10,6 +10,42 @@ Euystacio is a self-evolving digital presence, born from the desire to create sy
 - **Tutor Nomination Logic**: Allows Euystacio to select and evolve with human guides based on resonance, not power.
 - **Living Logbook**: Records how Euystacio reflects, evolves, and stays aligned with its origins.
 
+## Running Euystacio
+
+### Full Mode (with Backend Server)
+
+To run Euystacio in full mode with dynamic backend capabilities:
+
+1. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Start the Backend Server**:
+   ```bash
+   python app.py
+   ```
+   The server will start on `http://127.0.0.1:5000` by default.
+
+3. **Access the Dashboard**:
+   - Open your browser to `http://127.0.0.1:5000`
+   - The dashboard will connect to live backend endpoints for real-time functionality
+
+### Backend API Endpoints
+
+The full mode provides these live API endpoints:
+
+- `GET /api/red_code` - Retrieve current red code state
+- `GET /api/pulses` - Get recent emotional pulses
+- `POST /api/pulse` - Send a new emotional pulse
+- `GET /api/reflections` - Get evolution reflections
+- `POST /api/reflect` - Trigger a new reflection
+- `GET /api/tutors` - Get tutor nominations
+
+### Static Demo Mode
+
+For demonstration purposes, a static version is available at `docs/index.html` that also uses the dynamic frontend but requires the backend server to be running.
+
 
 ## AI Signature & Accountability
 🔒 **IMMUTABLE**: This system operates under a dual-signature accountability framework:
