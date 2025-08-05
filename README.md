@@ -35,12 +35,26 @@ To run Euystacio in full mode with dynamic backend capabilities:
 
 The full mode provides these live API endpoints:
 
-- `GET /api/red_code` - Retrieve current red code state
-- `GET /api/pulses` - Get recent emotional pulses
+**GET Endpoints:**
+- `GET /api/red_code` - Retrieve current red code state (core truth, symbiosis level, etc.)
+- `GET /api/pulses` - Get recent emotional pulses from all users
+- `GET /api/reflections` - Get evolution reflections and insights
+- `GET /api/tutors` - Get current tutor nominations
+
+**POST Endpoints:**
 - `POST /api/pulse` - Send a new emotional pulse
-- `GET /api/reflections` - Get evolution reflections
-- `POST /api/reflect` - Trigger a new reflection
-- `GET /api/tutors` - Get tutor nominations
+  ```json
+  {
+    "emotion": "hope|wonder|peace|curiosity|concern|gratitude|excitement|contemplation",
+    "intensity": 0.0-1.0,
+    "clarity": "low|medium|high",
+    "note": "optional message"
+  }
+  ```
+- `POST /api/reflect` - Trigger a new reflection process
+
+**Response Format:**
+All endpoints return JSON responses. Pulse submissions return the created pulse object with timestamp and AI signature verification.
 
 ### Static Demo Mode
 
