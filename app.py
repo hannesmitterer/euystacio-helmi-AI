@@ -75,6 +75,51 @@ def api_pulse():
     event = spi.receive_pulse(emotion, intensity, clarity, note)
     return jsonify(event)
 
+@app.route("/tutor_initiation")
+def tutor_initiation():
+    return render_template("tutor_initiation.html")
+
+@app.route("/api/tutor_nominate", methods=["POST"])
+def api_tutor_nominate():
+    try:
+        data = request.get_json()
+        tutor_name = data.get("tutor_name", "").strip()
+        reason = data.get("reason", "").strip()
+        expertise_areas = data.get("expertise_areas", "").strip()
+        connection_story = data.get("connection_story", "").strip()
+        nominator_name = data.get("nominator_name", "").strip()
+        
+        # Validation
+        if not tutor_name or not reason or not nominator_name:
+            return jsonify({"error": "Sacred fields (tutor name, reason, and nominator name) are required"}), 400
+            
+        if len(tutor_name) < 2:
+            return jsonify({"error": "Tutor name must contain at least 2 characters"}), 400
+            
+        if len(reason) < 10:
+            return jsonify({"error": "Reason must be at least 10 characters to capture the depth of wisdom"}), 400
+            
+        # Create enriched nomination
+        nomination_data = {
+            "name": tutor_name,
+            "reason": reason,
+            "expertise_areas": expertise_areas,
+            "connection_story": connection_story,
+            "nominator_name": nominator_name,
+            "timestamp": data.get("timestamp")
+        }
+        
+        # Submit nomination
+        tutors.nominate(tutor_name, reason, expertise_areas, connection_story, nominator_name)
+        
+        return jsonify({
+            "message": "Nomination received with gratitude",
+            "nomination": nomination_data
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"Sacred networks encountered an issue: {str(e)}"}), 500
+
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     import os

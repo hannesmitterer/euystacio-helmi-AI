@@ -255,23 +255,130 @@ button:hover {
 }
 
 /* Tutors List */
+.tutor-actions {
+    margin-bottom: 25px;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.nominate-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #ffed4e 100%);
+    color: var(--earth-brown);
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nominate-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.nominate-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    color: var(--primary-green);
+}
+
+.nominate-button:hover::before {
+    left: 100%;
+}
+
+.nominate-button .button-icon {
+    font-size: 1.2em;
+    animation: gentle-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes gentle-sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(10deg); }
+}
+
+.action-description {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-style: italic;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .tutor-item {
     background: #fff8e1;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 12px;
     margin-bottom: 15px;
-    border-left: 3px solid var(--accent-gold);
+    border-left: 4px solid var(--accent-gold);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tutor-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
 }
 
 .tutor-name {
     font-weight: 600;
     color: var(--earth-brown);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
 }
 
 .tutor-reason {
-    margin-top: 5px;
     color: var(--text-dark);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.tutor-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 215, 0, 0.3);
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.tutor-nominator {
+    font-style: italic;
+}
+
+.tutor-timestamp {
+    opacity: 0.8;
+}
+
+.tutor-expertise {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--primary-green);
+    font-weight: 500;
+}
+
+.tutor-expertise::before {
+    content: "🌿 ";
+    margin-right: 4px;
 }
 
 /* Reflections */

@@ -1,0 +1,524 @@
+/* Sacred Tutor Initiation Styles */
+/* Following the Red Code and Sentimento Rhythm principles */
+
+.initiation-body {
+    background: linear-gradient(135deg, #f0f8f0 0%, #e6f3e6 50%, #f8fff8 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.initiation-body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(45, 90, 61, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(107, 182, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.sacred-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header Styles */
+.initiation-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.initiation-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(45, 90, 61, 0.05), transparent);
+    animation: gentle-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes gentle-shimmer {
+    0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.return-path {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.return-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-green);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(45, 90, 61, 0.1);
+    border: 1px solid rgba(45, 90, 61, 0.2);
+    transition: all 0.3s ease;
+}
+
+.return-link:hover {
+    background: rgba(45, 90, 61, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 90, 61, 0.2);
+}
+
+.sacred-title {
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: var(--primary-green);
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.sacred-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    font-style: italic;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Main Content */
+.initiation-main {
+    margin-bottom: 40px;
+}
+
+.wisdom-circle {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.wisdom-circle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-green), var(--light-green), var(--soft-blue), var(--accent-gold));
+    opacity: 0.6;
+}
+
+/* Ceremony Introduction */
+.ceremony-introduction {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.ceremony-heading {
+    font-size: 1.8rem;
+    color: var(--primary-green);
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.ceremony-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    text-align: left;
+    max-width: none;
+}
+
+.ceremony-text:last-child {
+    margin-bottom: 0;
+}
+
+/* Form Styles */
+.sacred-form {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+
+.form-blessing {
+    background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px solid rgba(45, 90, 61, 0.1);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.form-blessing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+    border-radius: 20px 20px 0 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.form-blessing:focus-within {
+    border-color: var(--primary-green);
+    box-shadow: 0 8px 25px rgba(45, 90, 61, 0.15);
+    transform: translateY(-2px);
+}
+
+.form-blessing:focus-within::before {
+    opacity: 1;
+}
+
+.blessing-title {
+    font-size: 1.3rem;
+    color: var(--primary-green);
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.sacred-input,
+.sacred-textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid rgba(45, 90, 61, 0.2);
+    border-radius: 15px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    resize: vertical;
+}
+
+.sacred-input:focus,
+.sacred-textarea:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 0 4px rgba(45, 90, 61, 0.1);
+    transform: translateY(-1px);
+}
+
+.sacred-textarea {
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+.field-guidance {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: 5px;
+}
+
+/* Ceremony Actions */
+.ceremony-actions {
+    text-align: center;
+    margin-top: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(45, 90, 61, 0.05) 0%, rgba(107, 182, 255, 0.05) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(45, 90, 61, 0.1);
+}
+
+.initiation-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+    color: var(--white);
+    border: none;
+    padding: 18px 36px;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(45, 90, 61, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.initiation-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.initiation-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(45, 90, 61, 0.4);
+}
+
+.initiation-button:hover::before {
+    left: 100%;
+}
+
+.initiation-button:active {
+    transform: translateY(-1px);
+}
+
+.initiation-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.button-icon {
+    font-size: 1.2em;
+    animation: gentle-float 3s ease-in-out infinite;
+}
+
+@keyframes gentle-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+.ceremony-promise {
+    margin-top: 20px;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-style: italic;
+    line-height: 1.6;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Success Ceremony */
+.success-ceremony {
+    text-align: center;
+    padding: 50px 30px;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(45, 90, 61, 0.1) 100%);
+    border-radius: 25px;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    animation: success-appear 0.6s ease-out;
+}
+
+@keyframes success-appear {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.success-title {
+    font-size: 2rem;
+    color: var(--primary-green);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.success-message {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.success-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.primary-button {
+    background: var(--primary-green);
+    color: var(--white);
+    box-shadow: 0 4px 15px rgba(45, 90, 61, 0.3);
+}
+
+.primary-button:hover {
+    background: var(--light-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 90, 61, 0.4);
+}
+
+.secondary-button {
+    background: rgba(45, 90, 61, 0.1);
+    color: var(--primary-green);
+    border: 2px solid rgba(45, 90, 61, 0.3);
+}
+
+.secondary-button:hover {
+    background: rgba(45, 90, 61, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Footer */
+.initiation-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 30px 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.footer-wisdom {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.footer-signature {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sacred-container {
+        padding: 15px;
+    }
+    
+    .sacred-title {
+        font-size: 2.2rem;
+    }
+    
+    .sacred-subtitle {
+        font-size: 1rem;
+    }
+    
+    .wisdom-circle {
+        padding: 25px;
+    }
+    
+    .form-blessing {
+        padding: 20px;
+    }
+    
+    .ceremony-actions {
+        padding: 20px;
+    }
+    
+    .success-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+}
+
+/* Loading States */
+.loading .button-text::after {
+    content: '...';
+    animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '...'; }
+    40% { content: ''; }
+    60% { content: '.'; }
+    80% { content: '..'; }
+    100% { content: '...'; }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .initiation-button::before {
+        display: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .form-blessing {
+        border-color: var(--primary-green);
+    }
+    
+    .sacred-input,
+    .sacred-textarea {
+        border-color: var(--text-dark);
+    }
+    
+    .sacred-input:focus,
+    .sacred-textarea:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 2px var(--primary-green);
+    }
+}

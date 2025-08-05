@@ -133,14 +133,25 @@ class EuystacioDashboard {
         if (!container) return;
 
         if (!tutors || tutors.length === 0) {
-            container.innerHTML = '<div class="loading">No tutor nominations yet.</div>';
+            container.innerHTML = '<div class="loading">No tutor nominations yet. Be the first to honor a guardian of wisdom!</div>';
             return;
         }
 
-        container.innerHTML = tutors.map(tutor => `
+        // Sort tutors by timestamp (most recent first)
+        const sortedTutors = tutors.sort((a, b) => 
+            new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+        );
+
+        container.innerHTML = sortedTutors.map(tutor => `
             <div class="tutor-item">
-                <div class="tutor-name">${tutor.name || 'Anonymous Tutor'}</div>
-                <div class="tutor-reason">${tutor.reason || 'Nominated for wisdom and guidance'}</div>
+                <div class="tutor-name">${this.escapeHtml(tutor.name || 'Anonymous Guardian')}</div>
+                <div class="tutor-reason">${this.escapeHtml(tutor.reason || 'Nominated for wisdom and guidance')}</div>
+                ${tutor.expertise_areas ? `<div class="tutor-expertise">${this.escapeHtml(tutor.expertise_areas)}</div>` : ''}
+                ${tutor.connection_story ? `<div class="tutor-connection" style="margin-top: 10px; font-style: italic; color: var(--text-light); border-left: 2px solid var(--accent-gold); padding-left: 12px;">"${this.escapeHtml(tutor.connection_story)}"</div>` : ''}
+                <div class="tutor-meta">
+                    <span class="tutor-nominator">Honored by ${this.escapeHtml(tutor.nominator_name || 'Anonymous')}</span>
+                    <span class="tutor-timestamp">${this.formatTimestamp(tutor.timestamp)}</span>
+                </div>
             </div>
         `).join('');
     }
@@ -303,6 +314,13 @@ class EuystacioDashboard {
         } catch (error) {
             return timestamp;
         }
+    }
+
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
 
