@@ -10,6 +10,7 @@ Euystacio is a self-evolving digital presence, born from the desire to create sy
 - **Tutor Nomination Logic**: Allows Euystacio to select and evolve with human guides based on resonance, not power.
 - **Living Logbook**: Records how Euystacio reflects, evolves, and stays aligned with its origins.
 - **TensorFlow Model Optimization**: Ethical AI efficiency through quantization, pruning, and clustering techniques that make AI more accessible and environmentally conscious.
+- **🧠 Cognitive Modeling Integration (Opt-in)**: Extended capabilities through Andromeda-inspired cognitive modeling and world/environmental modeling for enhanced sentiment reflection and rhythm-based learning. [Learn more →](COGNITIVE_MODELING_README.md)
 
 
 ## AI Signature & Accountability
@@ -48,6 +49,37 @@ Our optimization work operates under the same accountability principles as all E
 - Human oversight maintained throughout the optimization process
 
 *"Efficiency in service of humanity, transparency in every optimization decision."*
+
+
+## 🧠 Cognitive Modeling Integration (Opt-in)
+
+Euystacio can be extended with advanced cognitive modeling capabilities while preserving its original philosophy:
+
+### ✨ Enhanced Capabilities
+- **Andromeda-inspired cognitive modeling** for deeper sentiment reflection
+- **World/environmental modeling** for rhythm-based interaction adaptation
+- **Advanced sentiment analysis** beyond basic emotion detection
+- **Environmental rhythm sensing** for natural interaction timing
+
+### 🔒 Ethical Framework
+- **Opt-in only**: All features disabled by default
+- **No core modification**: Original behavior preserved
+- **Full transparency**: Complete logging and accountability
+- **Human oversight**: Maintained throughout all operations
+
+### 🚀 Quick Start
+```bash
+# Check current status
+python activate_cognitive_modeling.py --status
+
+# Enable features (optional)
+python activate_cognitive_modeling.py --enable
+
+# Test integration
+python test_cognitive_integration.py
+```
+
+📖 **[Complete Cognitive Modeling Guide →](COGNITIVE_MODELING_README.md)**
 
 
 ## Status
