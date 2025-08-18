@@ -6,6 +6,16 @@ from tutor_nomination import TutorNomination
 import json
 import os
 
+# Import cognitive modeling integration (opt-in)
+try:
+    from cognitive_modeling.unified_api import UnifiedCognitiveAPI
+    cognitive_api = UnifiedCognitiveAPI()
+    COGNITIVE_MODELING_AVAILABLE = True
+except ImportError as e:
+    cognitive_api = None
+    COGNITIVE_MODELING_AVAILABLE = False
+    print(f"Cognitive modeling not available: {e}")
+
 app = Flask(__name__)
 
 spi = SentimentoPulseInterface()
@@ -104,8 +114,64 @@ def api_optimization_status():
             "note": "No optimization history found yet"
         })
 
+# Cognitive Modeling API Endpoints (opt-in)
+@app.route("/api/cognitive/status")
+def api_cognitive_status():
+    """Get cognitive modeling system status"""
+    if not COGNITIVE_MODELING_AVAILABLE or not cognitive_api:
+        return jsonify({
+            "available": False,
+            "message": "Cognitive modeling integration not available",
+            "note": "This is an opt-in feature that extends Euystacio's capabilities"
+        })
+    
+    return jsonify(cognitive_api.get_system_status())
+
+@app.route("/api/cognitive/reflection", methods=["POST"])
+def api_cognitive_reflection():
+    """Enhanced reflection using cognitive modeling"""
+    if not COGNITIVE_MODELING_AVAILABLE or not cognitive_api:
+        # Fall back to basic reflection
+        basic_reflection = reflect_and_suggest()
+        basic_reflection["note"] = "Using basic reflection - cognitive modeling not available"
+        return jsonify(basic_reflection)
+    
+    data = request.get_json() or {}
+    try:
+        enhanced_reflection = cognitive_api.enhanced_reflection(data)
+        return jsonify(enhanced_reflection)
+    except Exception as e:
+        # Fall back to basic reflection on error
+        basic_reflection = reflect_and_suggest()
+        basic_reflection["error"] = str(e)
+        basic_reflection["note"] = "Fell back to basic reflection due to error"
+        return jsonify(basic_reflection)
+
+@app.route("/api/cognitive/sentiment", methods=["POST"])
+def api_cognitive_sentiment():
+    """Enhanced sentiment reflection using cognitive modeling"""
+    if not COGNITIVE_MODELING_AVAILABLE or not cognitive_api:
+        return jsonify({
+            "error": "Cognitive modeling not available",
+            "message": "This feature requires cognitive modeling to be enabled"
+        })
+    
+    data = request.get_json() or {}
+    return jsonify(cognitive_api.sentiment_reflection_api(data))
+
+@app.route("/api/cognitive/environment")
+def api_cognitive_environment():
+    """Environmental rhythm sensing API"""
+    if not COGNITIVE_MODELING_AVAILABLE or not cognitive_api:
+        return jsonify({
+            "error": "World modeling not available", 
+            "message": "This feature requires world modeling to be enabled"
+        })
+    
+    return jsonify(cognitive_api.environmental_rhythm_api())
+
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     import os
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
