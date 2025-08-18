@@ -50,6 +50,65 @@ Our optimization work operates under the same accountability principles as all E
 *"Efficiency in service of humanity, transparency in every optimization decision."*
 
 
+## Deployment and Development
+
+### 🚀 **Deployment Workflow**
+
+Euystacio uses an automated GitHub Pages deployment with enhanced reliability features:
+
+#### **Automatic Deployment**
+- Triggers on push to `main` branch
+- Includes dependency caching for faster builds
+- Performs post-deployment health checks
+- Mobile-optimized with responsive design
+
+#### **Local Development**
+```bash
+# Start local Flask development server
+python app.py
+
+# Or serve static version locally
+cd docs && python -m http.server 8000
+```
+
+#### **Manual Build**
+```bash
+# Build static version for deployment
+python build_static.py
+```
+
+### 🛠️ **Troubleshooting Guide**
+
+#### **Deployment Issues**
+- **Build failures**: Check requirements.txt and Python version compatibility
+- **Health check failures**: Verify core content is present in index.html
+- **Mobile layout issues**: Test viewport meta tag and responsive CSS
+
+#### **Development Issues**
+- **Missing dependencies**: Run `pip install -r requirements.txt`
+- **Static assets not loading**: Verify file paths in templates and static directories
+- **API endpoints not working**: Check Flask app routes and data sources
+
+#### **Mobile Compatibility**
+- All buttons and form elements have minimum 48px touch targets
+- Viewport meta tag ensures proper mobile scaling
+- Touch feedback with :active and :focus styles
+- Responsive containers for optimal mobile experience
+
+#### **Cache Issues**
+- GitHub Actions uses dependency caching for faster builds
+- Clear browser cache if seeing outdated styles or content
+- Static assets are properly versioned and cached
+
+### 📋 **Deployment Checklist**
+- [x] Mobile viewport meta tag present
+- [x] Touch targets minimum 48px height
+- [x] Responsive CSS for mobile containers
+- [x] Dependency caching in CI/CD
+- [x] Post-deployment health checks
+- [x] Core content validation
+- [x] Mobile compatibility verification
+
 ## Status
 🌱 This is the first living seed.
 

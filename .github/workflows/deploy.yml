@@ -26,6 +26,14 @@ jobs:
       with:
         python-version: '3.11'
         
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+        
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
@@ -51,3 +59,58 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
+  health-check:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Wait for deployment
+        run: sleep 30
+        
+      - name: Health check - Test site availability
+        run: |
+          # Get the deployment URL from the deploy job
+          SITE_URL="${{ needs.deploy.outputs.page_url }}"
+          if [ -z "$SITE_URL" ]; then
+            # Fallback to repository GitHub Pages URL
+            SITE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          fi
+          
+          echo "Testing site availability at: $SITE_URL"
+          
+          # Test that the site loads successfully
+          response=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL")
+          
+          if [ "$response" -eq 200 ]; then
+            echo "✅ Site is available (HTTP $response)"
+          else
+            echo "❌ Site health check failed (HTTP $response)"
+            exit 1
+          fi
+          
+      - name: Health check - Validate core content
+        run: |
+          SITE_URL="${{ needs.deploy.outputs.page_url }}"
+          if [ -z "$SITE_URL" ]; then
+            SITE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          fi
+          
+          # Check that essential content is present
+          content=$(curl -s "$SITE_URL")
+          
+          if echo "$content" | grep -q "Euystacio Dashboard"; then
+            echo "✅ Core content found"
+          else
+            echo "❌ Core content missing"
+            exit 1
+          fi
+          
+          if echo "$content" | grep -q "viewport"; then
+            echo "✅ Mobile viewport meta tag found"
+          else
+            echo "❌ Mobile viewport meta tag missing"
+            exit 1
+          fi
+          
+          echo "🌳 Deployment health check completed successfully!"
