@@ -75,6 +75,35 @@ def api_pulse():
     event = spi.receive_pulse(emotion, intensity, clarity, note)
     return jsonify(event)
 
+@app.route("/api/optimization_status")
+def api_optimization_status():
+    """Get current TensorFlow model optimization status."""
+    try:
+        with open('red_code.json', 'r') as f:
+            red_code = json.load(f)
+            
+        optimization_history = red_code.get('optimization_history', [])
+        
+        return jsonify({
+            "total_optimizations": len(optimization_history),
+            "recent_optimizations": optimization_history[-5:] if optimization_history else [],
+            "status": "TensorFlow optimization framework active",
+            "principle": "Efficiency in service of humanity, transparency in every decision",
+            "ai_signature": "GitHub Copilot & Seed-bringer hannesmitterer",
+            "framework_components": [
+                "Quantization (model compression)",
+                "Pruning (connection removal)",
+                "Weight clustering (compression optimization)",
+                "Hardware acceleration compatibility"
+            ]
+        })
+    except Exception as e:
+        return jsonify({
+            "error": "Could not load optimization status",
+            "status": "TensorFlow optimization framework available",
+            "note": "No optimization history found yet"
+        })
+
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     import os
