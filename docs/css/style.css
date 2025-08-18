@@ -181,6 +181,7 @@ section h4 {
     border-radius: 8px;
     font-size: 0.9rem;
     transition: border-color 0.3s ease;
+    min-height: 48px; /* Ensure minimum touch target size */
 }
 
 .form-group input:focus,
@@ -188,10 +189,18 @@ section h4 {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+}
+
+/* Touch feedback for form elements */
+.form-group input:active,
+.form-group select:active {
+    border-color: var(--light-green);
 }
 
 .form-group input[type="range"] {
     padding: 0;
+    min-height: 48px; /* Maintain touch target for range inputs */
 }
 
 #intensity-value {
@@ -215,11 +224,27 @@ button {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-height: 48px; /* Ensure minimum touch target size */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button:hover {
     background: var(--light-green);
     transform: translateY(-2px);
+}
+
+/* Touch feedback for mobile devices */
+button:active {
+    background: var(--light-green);
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
 }
 
 /* Pulses Feed */
@@ -362,6 +387,47 @@ button:hover {
     
     .form-group {
         margin-bottom: 12px;
+    }
+    
+    /* Enhanced mobile list containers */
+    .pulses-list,
+    .tutors-list,
+    .reflections-list {
+        max-height: 250px;
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--bg-light);
+    }
+    
+    /* Improve spacing for list items on mobile */
+    .pulse-item,
+    .tutor-item,
+    .reflection-item {
+        margin-bottom: 15px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+    
+    /* Optimize form layout for mobile */
+    .pulse-form {
+        padding: 15px;
+    }
+    
+    /* Improve button spacing on mobile */
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    /* Stack dashboard sections on mobile */
+    .dashboard {
+        gap: 20px;
+    }
+    
+    /* Improve section spacing */
+    section {
+        padding: 20px;
+        margin-bottom: 20px;
     }
 }
 
