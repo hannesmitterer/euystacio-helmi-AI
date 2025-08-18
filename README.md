@@ -34,8 +34,11 @@ Euystacio leverages TensorFlow's Model Optimization Toolkit to ensure AI capabil
 
 ### 📚 **Resources for Collaborators**
 - **[Complete Optimization Guide](./docs/tensorflow_optimization_guide.md)**: Comprehensive documentation of our ethical optimization approach
+- **[Integration Guide](./docs/tensorflow_integration_guide.md)**: How optimization integrates with Red Code Kernel, Sentimento Pulse, and Living Logbook
 - **[Utility Module](./core/tensorflow_optimization.py)**: Ready-to-use optimization tools with example workflows
-- **Living Logbook Integration**: All optimization decisions are transparently logged and reviewable
+- **[Code Examples](./examples/tensorflow_optimization_examples.py)**: Practical code snippets with clear instructions
+- **[Optimization Template](./model_optimization_template.py)**: Command-line utility for model profiling and optimization
+- **[Integration Demo](./tensorflow_optimization_demo.py)**: Complete demonstration of framework integration
 
 ### 🌱 **Ethical Framework Integration**
 Our optimization work operates under the same accountability principles as all Euystacio components:
