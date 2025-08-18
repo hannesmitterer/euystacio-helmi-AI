@@ -2,9 +2,12 @@ from flask import Flask, render_template, jsonify, request
 from sentimento_pulse_interface import SentimentoPulseInterface
 from core.red_code import RED_CODE
 from core.reflector import reflect_and_suggest
+from core.facial_detection import facial_detection
 from tutor_nomination import TutorNomination
+from config import config
 import json
 import os
+import base64
 
 app = Flask(__name__)
 
@@ -72,7 +75,22 @@ def api_pulse():
     intensity = float(data.get("intensity", 0.5))
     clarity = data.get("clarity", "medium")
     note = data.get("note", "")
+    
+    # Process facial detection if image data is provided and feature is enabled
+    facial_data = None
+    if config.is_facial_detection_enabled() and "image" in data:
+        try:
+            image_data = base64.b64decode(data["image"])
+            facial_data = facial_detection.process_pulse_image(image_data)
+        except Exception as e:
+            facial_data = {"error": f"Facial detection failed: {str(e)}"}
+    
     event = spi.receive_pulse(emotion, intensity, clarity, note)
+    
+    # Add facial detection data to the pulse event
+    if facial_data:
+        event["facial_analysis"] = facial_data
+    
     return jsonify(event)
 
 @app.route("/api/optimization_status")
@@ -103,6 +121,28 @@ def api_optimization_status():
             "status": "TensorFlow optimization framework available",
             "note": "No optimization history found yet"
         })
+
+@app.route("/api/facial_detection_status")
+def api_facial_detection_status():
+    """Get facial detection feature status and configuration."""
+    return jsonify({
+        "enabled": config.is_facial_detection_enabled(),
+        "available": facial_detection.is_available(),
+        "submodule_available": config.is_submodule_available(),
+        "configuration": config.get_facial_detection_config(),
+        "feature_info": {
+            "name": "AIML Human Attributes Detection",
+            "description": "Facial feature extraction with age, emotion, gender recognition",
+            "capabilities": [
+                "Face detection using FaceNet model",
+                "40 types of facial attributes",
+                "Emotion recognition (7 emotions)",
+                "Age detection (8 age ranges)",
+                "Gender detection"
+            ]
+        },
+        "ai_signature": "Euystacio-Helmi AI with weblineindia submodule integration"
+    })
 
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
