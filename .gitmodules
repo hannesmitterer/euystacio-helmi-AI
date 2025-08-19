@@ -1,0 +1,3 @@
+[submodule "external/facial-detection"]
+	path = external/facial-detection
+	url = https://github.com/weblineindia/AIML-Human-Attributes-Detection-with-Facial-Feature-Extraction.git

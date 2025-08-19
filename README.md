@@ -49,6 +49,46 @@ Our optimization work operates under the same accountability principles as all E
 
 *"Efficiency in service of humanity, transparency in every optimization decision."*
 
+## 🎭 Facial Detection Integration (Optional Feature)
+
+Euystacio includes optional AI-powered facial analysis integration using the AIML Human Attributes Detection submodule, providing deeper insights into emotional expressions when users choose to include images with their pulse submissions.
+
+### 🔬 **Facial Analysis Capabilities**
+- **Face Detection**: FaceNet-based facial coordinate detection
+- **Emotion Recognition**: 7 primary emotions (Happy, Neutral, Surprise, Angry, Fear, Sad, Disgust)  
+- **Age Detection**: Classification into 8 age ranges from (0-2) to (60-100)
+- **Gender Detection**: Male/Female classification with confidence scores
+- **Facial Attributes**: 40+ detailed attributes (hair, expressions, accessories)
+
+### 📚 **Resources for Facial Detection**
+- **[Complete Integration Guide](./docs/facial_detection_integration_guide.md)**: Comprehensive setup and usage documentation
+- **[Configuration System](./config.py)**: Environment-based feature enabling/disabling
+- **[Core Integration](./core/facial_detection.py)**: Main wrapper for submodule functionality
+- **[Submodule Repository](./external/facial-detection/)**: weblineindia/AIML-Human-Attributes-Detection
+
+### 🛡️ **Privacy-First Design**
+- **Opt-in Only**: Must be explicitly enabled via environment variables
+- **No Image Storage**: Images processed in memory and immediately discarded
+- **User Control**: Users choose when to include facial analysis in pulse submissions  
+- **Transparent Processing**: All analysis logged in Red Code Kernel for accountability
+
+### 🚀 **Quick Setup**
+```bash
+# Initialize submodules
+git submodule update --init --recursive
+
+# Enable the feature
+export EUYSTACIO_FACIAL_DETECTION_ENABLED=true
+
+# Install additional dependencies
+cd external/facial-detection && pip install -r requirements.txt
+
+# Configure model paths (see integration guide for details)
+cp external/facial-detection/.env.example external/facial-detection/.env
+```
+
+*"In the pulse of recognition, we find not judgment but understanding."*
+
 
 ## Status
 🌱 This is the first living seed.

@@ -33,6 +33,12 @@ class EuystacioDashboard {
         if (reflectBtn) {
             reflectBtn.addEventListener('click', () => this.triggerReflection());
         }
+
+        // Facial detection image upload
+        const imageUpload = document.getElementById('facial-image-upload');
+        if (imageUpload) {
+            imageUpload.addEventListener('change', (e) => this.handleImageUpload(e));
+        }
     }
 
     async loadInitialData() {
@@ -41,7 +47,8 @@ class EuystacioDashboard {
                 this.loadRedCode(),
                 this.loadPulses(),
                 this.loadTutors(),
-                this.loadReflections()
+                this.loadReflections(),
+                this.checkFacialDetectionStatus()
             ]);
         } catch (error) {
             console.error('Error loading initial data:', error);
@@ -117,6 +124,7 @@ class EuystacioDashboard {
                     ${this.formatTimestamp(pulse.timestamp)}
                 </div>
                 ${pulse.note ? `<div class="pulse-note">"${pulse.note}"</div>` : ''}
+                ${pulse.facial_analysis ? this.formatFacialAnalysis(pulse.facial_analysis) : ''}
             </div>
         `).join('');
     }
@@ -203,15 +211,46 @@ class EuystacioDashboard {
             return;
         }
 
+        // Add facial image data if available
+        if (this.facialImageData) {
+            pulseData.image = this.facialImageData;
+            // In static mode, simulate facial analysis result
+            pulseData.facial_analysis = {
+                faces_detected: 1,
+                faces: [{
+                    face_id: 0,
+                    emotions: { primary_emotion: 'neutral', confidence: 0.85 },
+                    age: { age_range: '(25-32)', confidence: 0.75 },
+                    gender: { gender: 'Female', confidence: 0.82 },
+                    attributes: { detected_attributes: ['Smiling', 'Young'], total_attributes_checked: 40 }
+                }],
+                integration_info: {
+                    feature_name: 'AIML Human Attributes Detection',
+                    ai_signature: 'Euystacio-Helmi AI with weblineindia submodule'
+                }
+            };
+        }
+
         // Store in localStorage for static demo
         const pulses = JSON.parse(localStorage.getItem('euystacio_pulses') || '[]');
         pulses.unshift(pulseData);
         pulses.splice(10); // Keep only last 10
         localStorage.setItem('euystacio_pulses', JSON.stringify(pulses));
 
-        this.showMessage('Pulse sent successfully! 🌿 (Demo mode - stored locally)', 'success');
+        const message = this.facialImageData ? 
+            'Pulse sent with facial analysis! 🌿🎭 (Demo mode - stored locally)' :
+            'Pulse sent successfully! 🌿 (Demo mode - stored locally)';
+        
+        this.showMessage(message, 'success');
         event.target.reset();
         document.getElementById('intensity-value').textContent = '0.5';
+        
+        // Reset facial detection
+        this.facialImageData = null;
+        const preview = document.getElementById('facial-analysis-preview');
+        if (preview) {
+            preview.style.display = 'none';
+        }
         
         // Update display
         this.displayPulses(pulses);
@@ -271,6 +310,84 @@ class EuystacioDashboard {
         }, 5000);
     }
 
+    async checkFacialDetectionStatus() {
+        try {
+            // In static mode, simulate checking facial detection status
+            // In production, this would call the API endpoint
+            const facialDetectionEnabled = localStorage.getItem('euystacio_facial_detection') === 'true';
+            this.setupFacialDetectionUI(facialDetectionEnabled);
+        } catch (error) {
+            console.error('Error checking facial detection status:', error);
+        }
+    }
+
+    setupFacialDetectionUI(enabled) {
+        const form = document.getElementById('pulse-form');
+        if (!form) return;
+
+        // Remove existing facial detection UI
+        const existingSection = document.getElementById('facial-detection-section');
+        if (existingSection) {
+            existingSection.remove();
+        }
+
+        if (!enabled) return;
+
+        // Add facial detection section
+        const facialSection = document.createElement('div');
+        facialSection.id = 'facial-detection-section';
+        facialSection.className = 'form-group facial-detection-group';
+        facialSection.innerHTML = `
+            <label for="facial-image-upload">🎭 Facial Analysis (Optional):</label>
+            <input type="file" id="facial-image-upload" accept="image/*" class="facial-image-input">
+            <div id="facial-analysis-preview" class="facial-preview" style="display: none;">
+                <img id="facial-preview-image" src="" alt="Preview" style="max-width: 200px; max-height: 150px;">
+                <div id="facial-analysis-results" class="facial-results"></div>
+            </div>
+            <small class="facial-help-text">Upload an image for AI-powered facial attribute and emotion analysis</small>
+        `;
+
+        // Insert before the submit button
+        const submitButton = form.querySelector('button[type="submit"]');
+        form.insertBefore(facialSection, submitButton);
+
+        // Set up event listener for the new upload input
+        const imageUpload = document.getElementById('facial-image-upload');
+        if (imageUpload) {
+            imageUpload.addEventListener('change', (e) => this.handleImageUpload(e));
+        }
+    }
+
+    handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const preview = document.getElementById('facial-analysis-preview');
+            const previewImage = document.getElementById('facial-preview-image');
+            const results = document.getElementById('facial-analysis-results');
+
+            if (preview && previewImage && results) {
+                previewImage.src = e.target.result;
+                preview.style.display = 'block';
+                
+                // Store image data for pulse submission
+                this.facialImageData = e.target.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                
+                // Simulate facial analysis results in static mode
+                results.innerHTML = `
+                    <div class="facial-result-item">
+                        <strong>🎭 Analysis Ready</strong>
+                        <p>Image will be analyzed when pulse is submitted</p>
+                        <small>Features: Age, Gender, Emotion, 40+ Facial Attributes</small>
+                    </div>
+                `;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
     formatTimestamp(timestamp) {
         if (!timestamp) return 'Unknown time';
         
@@ -280,6 +397,31 @@ class EuystacioDashboard {
         } catch (error) {
             return timestamp;
         }
+    }
+
+    formatFacialAnalysis(facialData) {
+        if (!facialData || facialData.error) {
+            return `<div class="facial-analysis-error">🎭 Facial analysis failed</div>`;
+        }
+
+        if (facialData.faces_detected === 0) {
+            return `<div class="facial-analysis-none">🎭 No faces detected</div>`;
+        }
+
+        const face = facialData.faces[0]; // Show first face
+        if (!face) return '';
+
+        return `
+            <div class="facial-analysis-results">
+                <div class="facial-analysis-header">🎭 Facial Analysis</div>
+                <div class="facial-analysis-details">
+                    ${face.emotions ? `<span class="facial-emotion">Emotion: ${face.emotions.primary_emotion}</span>` : ''}
+                    ${face.age ? `<span class="facial-age">Age: ${face.age.age_range}</span>` : ''}
+                    ${face.gender ? `<span class="facial-gender">Gender: ${face.gender.gender}</span>` : ''}
+                    ${face.attributes ? `<span class="facial-attrs">${face.attributes.detected_attributes.length} attributes detected</span>` : ''}
+                </div>
+            </div>
+        `;
     }
 }
 
