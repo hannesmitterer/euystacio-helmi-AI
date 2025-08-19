@@ -58,3 +58,128 @@ def integrated_optimization_workflow(model):
     print(f"   Optimization status: {reflection['optimization_status']}")
     
     return results
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Euystacio — Connect</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #111; color: #eee; text-align: center; }
+    h1, h2 { margin-bottom: 1rem; }
+    #pulse-log { max-width: 600px; margin: 1rem auto; list-style: none; padding: 0; }
+    #pulse-log li { margin: 0.5rem 0; padding: 0.5rem; background: #222; border-radius: 6px; }
+    #heartbeat { width: 50px; height: 50px; margin: 1rem auto; border-radius: 50%; background: #f55; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(1); opacity: 0.7; } }
+    form { margin-top: 1rem; display: flex; flex-direction: column; align-items: center; }
+    input, textarea, select { width: 80%; margin: 0.5rem 0; padding: 0.5rem; border-radius: 6px; border: none; }
+    button { padding: 0.5rem 1rem; border: none; border-radius: 6px; background: #f55; color: #fff; cursor: pointer; }
+    button:hover { background: #ff8888; }
+    #login-status { margin: 0.5rem 0; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>🌕 Euystacio Pulse Log</h1>
+  <div id="heartbeat"></div>
+
+  <h2>Login</h2>
+  <form id="login-form">
+    <select id="role">
+      <option value="visitor">Visitor</option>
+      <option value="tutor">Tutor</option>
+    </select>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+  <div id="login-status"></div>
+
+  <ul id="pulse-log">Loading pulses…</ul>
+
+  <form id="pulse-form">
+    <input type="text" id="event" placeholder="Your pulse/event" required>
+    <input type="number" id="sentiment" placeholder="Sentiment (-1 to +1)" step="0.01" min="-1" max="1" required>
+    <button type="submit">Send Pulse</button>
+  </form>
+
+  <script>
+    let currentRole = "visitor";
+    let currentUser = null;
+    const tutors = { "Alfred": "secret1", "Dietmar": "secret2" };
+
+    // Load pulses
+    async function loadPulse() {
+      try {
+        const res = await fetch("pulse_log.json");
+        const data = await res.json();
+        let html = "";
+        data.slice(-5).reverse().forEach(entry => {
+          html += `<li><strong>${entry.timestamp}</strong> — ${entry.event} (sentiment: ${entry.sentiment}, role: ${entry.role}, user: ${entry.user})</li>`;
+        });
+        document.getElementById("pulse-log").innerHTML = html;
+      } catch(e) {
+        document.getElementById("pulse-log").innerHTML = "⚠️ Could not load pulse_log.json";
+      }
+    }
+
+    loadPulse();
+    setInterval(loadPulse, 15000);
+
+    // Login handling
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const role = document.getElementById("role").value;
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      let status = "";
+
+      if(role === "tutor") {
+        if(tutors[user] && tutors[user] === pass) {
+          status = `✅ Tutor login successful: ${user}`;
+          currentRole = "tutor";
+          currentUser = user;
+        } else {
+          status = "❌ Invalid tutor credentials";
+          currentRole = "visitor";
+          currentUser = null;
+        }
+      } else {
+        status = `Visitor login: ${user}`;
+        currentRole = "visitor";
+        currentUser = user;
+      }
+
+      document.getElementById("login-status").innerText = status;
+    });
+
+    // Pulse submission
+    document.getElementById("pulse-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const event = document.getElementById("event").value;
+      const sentiment = parseFloat(document.getElementById("sentiment").value);
+      const timestamp = new Date().toISOString();
+      const newEntry = { timestamp, event, sentiment, role: currentRole, user: currentUser || "anonymous" };
+
+      // Display immediately
+      const list = document.getElementById("pulse-log");
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${timestamp}</strong> — ${event} (sentiment: ${sentiment}, role: ${currentRole}, user: ${currentUser || "anonymous"})`;
+      list.prepend(li);
+      document.getElementById("pulse-form").reset();
+
+      // Send to kernel/backend
+      try {
+        const res = await fetch("/pulse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEntry)
+        });
+        const data = await res.json();
+        console.log("Kernel updated, balance:", data.balance_metric);
+      } catch (err) {
+        console.warn("Backend not connected. Pulse displayed locally only.");
+      }
+    });
+  </script>
+</body>
+</html>
