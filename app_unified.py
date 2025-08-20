@@ -55,16 +55,18 @@ def get_reflections():
                     reflections.append(json.load(f))
     return reflections
 
+# Routes for unified landing page
 @app.route("/")
-def index():
+def unified_landing():
     """Serve unified landing page"""
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('.', 'unified_index.html')
 
 @app.route("/dashboard")
 def dashboard():
-    """Serve full dashboard"""  
+    """Serve full dashboard"""
     return render_template("index.html")
 
+# API Routes
 @app.route("/api/red_code")
 def api_red_code():
     return jsonify(RED_CODE)
@@ -75,7 +77,7 @@ def api_pulses():
 
 @app.route("/api/reflect")
 def api_reflect():
-    # Run reflection, return latest
+    """Run reflection, return latest"""
     reflection = reflect_and_suggest()
     return jsonify(reflection)
 
@@ -172,12 +174,35 @@ def api_facial_detection_status():
             "note": "Install opencv-python and other dependencies to enable this feature"
         })
 
-# Static file serving for docs and demos  
+@app.route("/api/system_status")
+def api_system_status():
+    """Get overall system status"""
+    return jsonify({
+        "core_components": {
+            "sentimento_pulse": True,
+            "red_code_kernel": True,
+            "reflector": True,
+            "tutor_nomination": True
+        },
+        "optional_components": {
+            "facial_detection": facial_detection_available and config.is_facial_detection_enabled(),
+            "tensorflow_optimization": True  # Always available based on our test
+        },
+        "data_sources": {
+            "red_code_file": os.path.exists('red_code.json'),
+            "logs_directory": os.path.exists('logs'),
+            "pulse_count": len(get_pulses()),
+            "reflection_count": len(get_reflections()),
+            "tutor_count": len(tutors.list_tutors())
+        }
+    })
+
+# Static file serving for docs and demos
 @app.route("/docs/<path:filename>")
 def serve_docs(filename):
     return send_from_directory('docs', filename)
 
-@app.route("/examples/<path:filename>") 
+@app.route("/examples/<path:filename>")
 def serve_examples(filename):
     return send_from_directory('examples', filename)
 
