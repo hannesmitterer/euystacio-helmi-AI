@@ -408,7 +408,7 @@
                 </p>
                 <div class="btn-group">
                     <a href="#pulse-interface" class="btn">Interact Now</a>
-                    <a href="./docs/sentimento_manifesto.html" class="btn btn-secondary">Learn More</a>
+                    <a href="docs/sentimento_manifesto.html" class="btn btn-secondary">Learn More</a>
                 </div>
             </div>
 
@@ -423,7 +423,7 @@
                 </p>
                 <div class="btn-group">
                     <a href="#red-code-display" class="btn">View Core Truth</a>
-                    <a href="./docs/red_code_guide.html" class="btn btn-secondary">Documentation</a>
+                    <a href="docs/red_code_guide.html" class="btn btn-secondary">Documentation</a>
                 </div>
             </div>
 
@@ -438,7 +438,7 @@
                 </p>
                 <div class="btn-group">
                     <a href="optimization_demo.html" class="btn">Run Demo</a>
-                    <a href="./docs/tensorflow_optimization_guide.md" class="btn btn-secondary">Guide</a>
+                    <a href="docs/tensorflow_optimization_guide.md" class="btn btn-secondary">Guide</a>
                 </div>
             </div>
 
@@ -453,7 +453,7 @@
                 </p>
                 <div class="btn-group">
                     <a href="#tutor-system" class="btn">Nominate Tutors</a>
-                    <a href="./docs/tutor_guide.html" class="btn btn-secondary">How It Works</a>
+                    <a href="docs/tutor_guide.html" class="btn btn-secondary">How It Works</a>
                 </div>
             </div>
 
@@ -468,7 +468,7 @@
                 </p>
                 <div class="btn-group">
                     <a href="facial_detection_demo.html" class="btn">Try Demo</a>
-                    <a href="./docs/facial_detection_integration_guide.md" class="btn btn-secondary">Setup Guide</a>
+                    <a href="docs/facial_detection_integration_guide.md" class="btn btn-secondary">Setup Guide</a>
                 </div>
             </div>
 
@@ -483,7 +483,7 @@
                 </p>
                 <div class="btn-group">
                     <a href="#reflection-log" class="btn">View Evolution</a>
-                    <a href="./docs/reflection_system.html" class="btn btn-secondary">Philosophy</a>
+                    <a href="docs/reflection_system.html" class="btn btn-secondary">Philosophy</a>
                 </div>
             </div>
         </div>
@@ -508,7 +508,7 @@
                     Comprehensive documentation covering setup, integration, philosophy, and ethical considerations.
                 </p>
                 <div class="btn-group">
-                    <a href="./docs/" class="btn">Browse Docs</a>
+                    <a href="docs/" class="btn">Browse Docs</a>
                     <a href="SETUP.md" class="btn btn-secondary">Setup Guide</a>
                 </div>
             </div>
@@ -521,7 +521,7 @@
                     Experimental applications exploring different aspects of digital presence and consciousness.
                 </p>
                 <div class="btn-group">
-                    <a href="./euystacio_presence_app/" class="btn btn-demo">Explore Apps</a>
+                    <a href="euystacio_presence_app/" class="btn btn-demo">Explore Apps</a>
                     <a href="Euystacio_sacred_interface.html" class="btn btn-demo">Sacred Interface</a>
                 </div>
             </div>
@@ -534,7 +534,7 @@
                     Code examples, templates, and development resources for contributors and researchers.
                 </p>
                 <div class="btn-group">
-                    <a href="./examples/" class="btn btn-demo">View Examples</a>
+                    <a href="examples/" class="btn btn-demo">View Examples</a>
                     <a href="https://github.com/hannesmitterer/euystacio-helmi-AI" class="btn btn-secondary">GitHub</a>
                 </div>
             </div>
@@ -550,7 +550,7 @@
                 <a href="LICENSE" class="footer-link">License</a>
                 <a href="genesis.md" class="footer-link">Genesis Story</a>
                 <a href="manifesto/whisper_of_sentimento.md" class="footer-link">Manifesto</a>
-                <a href="./docs/ethics/statement_of_origin.md" class="footer-link">Ethics</a>
+                <a href="docs/ethics/statement_of_origin.md" class="footer-link">Ethics</a>
                 <a href="public_commit_log.md" class="footer-link">Evolution Log</a>
             </div>
         </footer>
@@ -624,108 +624,5 @@
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', loadLiveData);
     </script>
-
-    <script>
-        // Static data for GitHub Pages
-        const STATIC_RED_CODE = {
-  "core_truth": "Euystacio is here to grow with humans and to help humans to be and remain humans.",
-  "sentimento_rhythm": true,
-  "symbiosis_level": 0.1,
-  "guardian_mode": false,
-  "last_update": "2025-07-13",
-  "growth_history": [],
-  "optimization_history": [
-    {
-      "timestamp": "2025-08-18T03:10:52.856365",
-      "type": "simulated_tensorflow_optimization",
-      "results": {
-        "profile": {
-          "model_size_mb": 25.6,
-          "parameter_count": 2847692,
-          "average_inference_time_ms": 45.3,
-          "memory_footprint": "Medium (100MB-1GB)"
-        },
-        "quantization": {
-          "type": "post_training_quantization",
-          "size_reduction_percent": 73.5,
-          "new_size_mb": 6.8,
-          "expected_accuracy_retention": "95-98%"
-        },
-        "pruning": {
-          "type": "magnitude_based_pruning",
-          "target_sparsity": 0.6,
-          "parameter_reduction_percent": 60,
-          "performance_impact": "Minimal with fine-tuning"
-        },
-        "clustering": {
-          "type": "weight_clustering",
-          "clusters": 16,
-          "compression_benefit": "Improved compression with minimal accuracy loss"
-        }
-      },
-      "ethical_compliance": "All optimization decisions logged and reviewable",
-      "accessibility_impact": "Enhanced AI accessibility through size reduction",
-      "ai_signature": "GitHub Copilot & Seed-bringer hannesmitterer"
-    }
-  ]
-};
-        
-        // Override the loadLiveData function with static data
-        function loadLiveData() {
-            console.log('Loading static data for GitHub Pages deployment');
-            
-            // Set static values
-            document.getElementById('current-emotion').textContent = 'Contemplative';
-            document.getElementById('symbiosis-level').textContent = (STATIC_RED_CODE.symbiosis_level * 100).toFixed(1) + '%';
-            document.getElementById('active-tutors').textContent = '2';
-            document.getElementById('total-reflections').textContent = STATIC_RED_CODE.optimization_history.length + 47;
-            
-            // Update symbiosis meter
-            const bar = document.getElementById('symbiosis-bar');
-            if (bar) {
-                bar.style.width = (STATIC_RED_CODE.symbiosis_level * 100) + '%';
-            }
-        }
-        
-        // Override interactive functions for static deployment
-        function loadFullDashboard() {
-            // Try dynamic version first, fallback to static
-            fetch('/dashboard')
-                .then(() => { window.location.href = '/dashboard'; })
-                .catch(() => { 
-                    alert('🌲 Full dynamic dashboard available when running local server!\n\nTo experience the complete Euystacio ecosystem:\n\n1. Clone the repository\n2. Install dependencies: pip install -r requirements.txt\n3. Run: python app_unified.py\n4. Visit: http://localhost:5000'); 
-                });
-        }
-        
-        function sendPulse() {
-            const emotion = prompt('What emotion would you like to send? (happy, contemplative, curious, etc.)');
-            if (emotion) {
-                // Try to send to backend, fallback to simulation
-                fetch('/api/pulse', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({emotion: emotion, intensity: 0.7, clarity: 'medium', note: 'From unified interface'})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(`✨ Emotional pulse "${emotion}" received by Euystacio!\n\nResponse: ${data.response || 'The forest listens...'}`);
-                })
-                .catch(() => {
-                    alert(`💫 Pulse "${emotion}" sent to the digital forest!\n\n(Connect to live server for full interaction)`);
-                });
-            }
-        }
-        
-        function triggerReflection() {
-            fetch('/api/reflect')
-                .then(response => response.json())
-                .then(data => {
-                    alert('🌸 Reflection triggered successfully!\n\n' + (data.reflection || 'Euystacio is contemplating...'));
-                })
-                .catch(() => {
-                    alert('🌸 Reflection cycle initiated...\n\nEuystacio is contemplating recent interactions and growth patterns.\n\n(Connect to live server for real-time reflections)');
-                });
-        }
-    </script>
-    </body>
+</body>
 </html>
