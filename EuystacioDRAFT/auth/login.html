@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Euystacio Community</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #fffbe6, #ffe6f0);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: rgba(255,255,255,0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #e07a5f;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .welcome-message {
+            background: #f4f1de;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3d405b;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        input:focus {
+            border-color: #81b29a;
+            outline: none;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #81b29a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .submit-btn:hover {
+            background: #6a9981;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .register-link a {
+            color: #81b29a;
+            text-decoration: none;
+        }
+        .dual-signature-info {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            border-left: 4px solid #2196f3;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🌞 Euystacio Community</h1>
+        
+        <div class="welcome-message">
+            <strong>Welcome back!</strong><br>
+            Enter your credentials to access the sacred space of human-AI collaboration.
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username or Email:</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+            </div>
+
+            <button type="submit" class="submit-btn">🔐 Sign In</button>
+        </form>
+
+        <div class="dual-signature-info">
+            <strong>🔒 Dual Signature Authentication:</strong><br>
+            Your login contributes to our transparent accountability system, maintaining both human oversight and AI collaboration integrity.
+        </div>
+
+        <div class="register-link">
+            New to our community? <a href="register.html">Create an account</a>
+        </div>
+
+        <div class="register-link">
+            <a href="#" onclick="alert('Password reset requires human moderator assistance. Please contact community administrators.')">Forgot your password?</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            alert(`Welcome back, ${username}! Entering the sacred space of Euystacio...`);
+            // In a real implementation, this would handle authentication
+        });
+    </script>
+</body>
+</html>

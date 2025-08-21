@@ -1,0 +1,71 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "seed_bringer",
+      "display_name": "Seed-bringer (bioarchitettura) hannesmitterer",
+      "role": "human_architect",
+      "permissions": [
+        "sacred_document_edit",
+        "system_configuration",
+        "user_management",
+        "ethical_oversight"
+      ],
+      "created_date": "2025-01-31",
+      "symbiosis_level": 5.0,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "username": "github_copilot",
+      "display_name": "GitHub Copilot AI Assistant",
+      "role": "ai_collaborator",
+      "permissions": [
+        "content_generation",
+        "documentation_update",
+        "code_assistance",
+        "ethical_compliance_check"
+      ],
+      "created_date": "2025-01-31",
+      "symbiosis_level": 4.8,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "username": "community_member",
+      "display_name": "Community Member Template",
+      "role": "contributor",
+      "permissions": [
+        "content_contribute",
+        "discussion_participate",
+        "feedback_provide"
+      ],
+      "created_date": "2025-01-31",
+      "symbiosis_level": 1.0,
+      "status": "template"
+    }
+  ],
+  "roles": {
+    "human_architect": {
+      "description": "Human guardian and system designer",
+      "hierarchy_level": 10
+    },
+    "ai_collaborator": {
+      "description": "AI assistant with full collaboration rights",
+      "hierarchy_level": 9
+    },
+    "contributor": {
+      "description": "Community member with contribution rights",
+      "hierarchy_level": 5
+    },
+    "observer": {
+      "description": "Read-only community access",
+      "hierarchy_level": 1
+    }
+  },
+  "authentication": {
+    "method": "dual_signature_required",
+    "human_verification": true,
+    "ai_accountability": true
+  }
+}
