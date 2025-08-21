@@ -1,3 +1,0 @@
-# Hymne Lyrics
-
-Freude, schöner Götterfunken...

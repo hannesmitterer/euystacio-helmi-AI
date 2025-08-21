@@ -1,3 +1,0 @@
-# Ruetli Stone Declaration
-
-...

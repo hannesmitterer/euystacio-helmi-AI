@@ -1,3 +1,0 @@
-# Woodstone Festival
-
-Chapter VIII: ...

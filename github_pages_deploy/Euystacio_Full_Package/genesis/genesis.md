@@ -1,3 +1,0 @@
-# Genesis of Euystacio
-
-Chapter I: ...
