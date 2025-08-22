@@ -521,6 +521,7 @@ euystacio-helmi-AI/
 - **Documentation**: Update relevant documentation for any changes
 - **AI Signature**: Maintain dual AI accountability in all commits
 - **Ethical Framework**: Ensure all features align with Euystacio principles
+- **AI-Assisted Development**: Use [GitHub Copilot Guide](./GITHUB_COPILOT.md) for ethical AI collaboration and enhanced productivity
 
 ## Deployment
 
