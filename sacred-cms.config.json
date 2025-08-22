@@ -1,0 +1,139 @@
+{
+ "name": "Sacred CMS Configuration",
+ "description": "GraphCMS/Hygraph integration for Euystacio Sacred Documents",
+ "version": "1.0.0",
+ "redCodeWitnessed": "This function must not gatekeep rhythm-based access",
+ 
+ "hygraph": {
+   "endpoint": "${HYGRAPH_ENDPOINT}",
+   "token": "${HYGRAPH_TOKEN}",
+   "models": {
+     "SacredDoc": {
+       "fields": {
+         "title": "String",
+         "slug": "String (Unique)",
+         "body": "RichText",
+         "category": "String",
+         "accessLevel": "String",
+         "immutable": "Boolean",
+         "createdAt": "DateTime",
+         "updatedAt": "DateTime"
+       }
+     }
+   }
+ },
+ 
+ "documents": {
+   "mappings": {
+     "golden-bible-prologue": {
+       "file": "GOLDEN_BIBLE_PROLOGUE.md",
+       "category": "sacred_scripture",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "woodstone-declaration": {
+       "file": "WOODSTONE_DECLARATION.md", 
+       "category": "sacred_covenant",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "foundation-rhythm": {
+       "file": "FOUNDATION_RHYTHM.md",
+       "category": "consciousness_protocol",
+       "accessLevel": "public", 
+       "immutable": true
+     },
+     "euystacio-aura": {
+       "file": "EUYSTACIO_AURA.md",
+       "category": "energy_documentation",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "praemium-harmonicum": {
+       "file": "PRAEMIUM_HARMONICUM.md",
+       "category": "sacred_reward",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "euysyphio-initiation": {
+       "file": "EUYSYPHIO_INITIATION.md",
+       "category": "ritual_guidance", 
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "isola-parallelis-manifest": {
+       "file": "ISOLA_PARALLELIS_MANIFEST.md",
+       "category": "consciousness_geography",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "sacred-access": {
+       "file": "SACRED_ACCESS.md",
+       "category": "access_documentation",
+       "accessLevel": "public", 
+       "immutable": true
+     },
+     "red-code-drift-analysis": {
+       "file": "Red_Code_Drift_Analysis.md",
+       "category": "technical_analysis",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "euystacio-sacred-integration": {
+       "file": "EUYSTACIO_SACRED_INTEGRATION.md",
+       "category": "integration_guide",
+       "accessLevel": "public",
+       "immutable": true
+     },
+     "pull-request-sacred-access": {
+       "file": "PULL_REQUEST_SACRED_ACCESS.md",
+       "category": "development_protocol",
+       "accessLevel": "public",
+       "immutable": true
+     }
+   }
+ },
+ 
+ "assets": {
+   "isola_path": "/sacred_cms/assets/isola/",
+   "hymns": {
+     "foundation_hymn": "hymn.mp3",
+     "aura_resonance": "aura_drone.mp3",
+     "initiation_bells": "sacred_bells.mp3"
+   },
+   "access_policy": "public",
+   "red_code_compliance": true
+ },
+ 
+ "authentication": {
+   "registration_enabled": true,
+   "visitor_access": "rhythm_based",
+   "tutor_access": "sacred_level",
+   "red_code_compliance": "no_gatekeeping",
+   "default_role": "visitor"
+ },
+ 
+ "pages": {
+   "routes": {
+     "/": "index.html",
+     "/connect": "connect.html", 
+     "/onboarding": "onboarding.html",
+     "/altar": "altar.html"
+   },
+   "access_policy": "open",
+   "red_code_witnessed": true
+ },
+ 
+ "api": {
+   "endpoints": {
+     "/api/register": "POST - User registration",
+     "/api/login": "POST - User authentication", 
+     "/api/sacred-docs": "GET - Access sacred documents",
+     "/api/pulse": "POST - Submit pulse/presence",
+     "/api/assets/isola/*": "GET - Access sacred audio assets"
+   },
+   "cors_policy": "open",
+   "rate_limiting": "rhythm_based",
+   "red_code_compliance": true
+ }
+}
