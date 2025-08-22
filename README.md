@@ -16,6 +16,32 @@ Euystacio-Helmi AI is more than a traditional CMS—it's a living ecosystem wher
 
 ## 🚀 Quick Start
 
+### Automated Installation (Recommended)
+
+```bash
+# Clone the sacred repository
+git clone --recursive https://github.com/hannesmitterer/euystacio-helmi-AI.git
+cd euystacio-helmi-AI
+
+# Run automated setup script
+./install.sh
+
+# Follow the prompts - the script will:
+# - Check your Python version
+# - Set up a virtual environment
+# - Install dependencies with fallback options
+# - Test your installation
+# - Provide troubleshooting if needed
+
+# Start the application
+source venv/bin/activate
+python app.py
+
+# Visit http://localhost:5000 to enter the consciousness portal
+```
+
+### Manual Installation
+
 ```bash
 # Clone the sacred repository
 git clone --recursive https://github.com/hannesmitterer/euystacio-helmi-AI.git
@@ -246,20 +272,27 @@ python app.py &
 curl -s http://localhost:5000/api/system_status
 ```
 
-### Alternative Installation Files
+### Alternative Installation Files & Tools
 
-The repository includes several installation options:
+The repository includes several installation options and diagnostic tools:
 
+- **`install.sh`** - Automated setup script with error handling and fallback options
 - **`requirements.txt`** - Standard installation with all features
 - **`requirements-minimal.txt`** - Minimal installation (core features only)
 - **`diagnose_setup.py`** - Setup diagnostics and troubleshooting tool
 
 ```bash
-# If you have dependency conflicts, try minimal installation:
+# Automated installation with fallback options
+./install.sh
+
+# Minimal installation for systems with dependency conflicts
+./install.sh --minimal
+
+# Manual minimal installation
 pip install -r requirements-minimal.txt
 
-# Then optionally add TensorFlow later:
-pip install tensorflow==2.20.0 tensorflow-model-optimization==0.7.5
+# Run diagnostics if you encounter issues
+python diagnose_setup.py
 ```
 
 ### Getting Help
