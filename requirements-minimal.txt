@@ -1,0 +1,28 @@
+# Minimal Euystacio-Helmi AI Dependencies
+# Use this file if you encounter dependency conflicts with requirements.txt
+# 
+# Installation: pip install -r requirements-minimal.txt
+# 
+# Note: Some AI optimization features may be disabled with this minimal setup
+
+# Essential web framework
+flask>=3.0.0
+
+# Basic numerical computing (required for core functionality)
+numpy>=1.23.0
+
+# Optional: Install TensorFlow separately if needed
+# pip install tensorflow==2.20.0
+# pip install tensorflow-model-optimization==0.7.5
+
+# This minimal setup allows the core Euystacio interface to run
+# Features that will work:
+# - Web dashboard and interface
+# - Red Code Kernel
+# - Sentimento Pulse Interface  
+# - Basic reflection system
+# - Documentation and examples serving
+#
+# Features that may be limited:
+# - TensorFlow model optimization (requires tensorflow package)
+# - Advanced AI capabilities (requires full tensorflow stack)

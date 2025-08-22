@@ -180,6 +180,9 @@ euystacio-helmi-AI/
 
 4. **Run Tests and Validation**:
    ```bash
+   # Run diagnostics to check your setup
+   python diagnose_setup.py
+   
    # Test unified application
    python app.py
    
@@ -189,6 +192,37 @@ euystacio-helmi-AI/
    # Test API endpoints
    curl http://localhost:5000/api/red_code
    curl http://localhost:5000/api/system_status
+   ```
+
+### Troubleshooting Development Setup
+
+If you encounter issues during development setup:
+
+1. **Use the diagnostic tool**:
+   ```bash
+   python diagnose_setup.py
+   ```
+
+2. **Check for missing dependencies**:
+   ```bash
+   # For minimal development setup
+   pip install -r requirements-minimal.txt
+   
+   # Add TensorFlow later if needed
+   pip install tensorflow==2.20.0
+   ```
+
+3. **Verify submodules**:
+   ```bash
+   git submodule update --init --recursive
+   ```
+
+4. **Clear virtual environment if corrupted**:
+   ```bash
+   rm -rf venv
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
    ```
 
 ### Development Guidelines
@@ -243,11 +277,60 @@ euystacio-helmi-AI/
 
 ## 🛠️ Troubleshooting
 
-### Common Issues
+### Quick Diagnostics
+
+**First step:** Run the diagnostic tool to identify issues:
+```bash
+python diagnose_setup.py
+```
+
+This will check your Python version, required files, dependencies, and core functionality.
+
+### Installation Issues
+
+#### Dependency Conflicts
+If `pip install -r requirements.txt` fails:
+
+1. **Try clean installation**:
+   ```bash
+   python -m venv fresh-env
+   source fresh-env/bin/activate
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+2. **Use minimal installation**:
+   ```bash
+   pip install -r requirements-minimal.txt
+   # Add TensorFlow later if needed:
+   pip install tensorflow==2.20.0
+   ```
+
+3. **Platform-specific solutions**:
+   ```bash
+   # For older Python versions (3.8-3.10)
+   pip install numpy==1.23.5 tensorflow==2.20.0
+   
+   # For Apple Silicon Macs
+   pip install tensorflow-macos==2.20.0
+   
+   # For CPU-only installations
+   pip install tensorflow-cpu==2.20.0
+   ```
+
+#### Missing Files
+If the diagnostic reports missing files:
+```bash
+# Re-clone with all files
+git clone --recursive https://github.com/hannesmitterer/euystacio-helmi-AI.git
+```
+
+### Runtime Issues
 
 1. **Import Errors**: 
    - Install all dependencies: `pip install -r requirements.txt`
    - Check Python version compatibility (Python 3.8+)
+   - Verify you're in the correct directory
 
 2. **Facial Detection Issues**:
    - Optional feature - system works without it
@@ -258,6 +341,12 @@ euystacio-helmi-AI/
    - Ensure all required files exist
    - Check file permissions
    - Verify output in `github_pages_deploy/`
+
+4. **Port Already in Use**:
+   ```bash
+   export PORT=8080
+   python app.py
+   ```
 
 ### Debug Mode
 
