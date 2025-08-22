@@ -1,0 +1,1 @@
+# euystacio-helmi-AI\nCore modules for Euystacio: Red Code Kernel, SPI, Tutor nomination, and demo.
