@@ -198,6 +198,7 @@ euystacio-helmi-AI/
 - **Documentation**: Update relevant guides and maintain philosophical consistency
 - **Privacy First**: Optional features must be opt-in and clearly configured
 - **Accessibility**: Follow ethical AI principles and ensure broad accessibility
+- **AI-Assisted Development**: Use [GitHub Copilot](GITHUB_COPILOT.md) for enhanced coding productivity
 
 ## 🌍 Deployment Guide
 
