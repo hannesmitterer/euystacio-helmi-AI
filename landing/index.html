@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>euystacio-helmi-AI - Tutor Portal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Arial', sans-serif; 
+      text-align: center; 
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .container { max-width: 800px; padding: 20px; }
+    h1 { 
+      font-size: 2.5em; 
+      margin-bottom: 10px; 
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .subtitle { 
+      font-size: 1.2em; 
+      margin-bottom: 30px; 
+      opacity: 0.9; 
+    }
+    button { 
+      padding: 15px 30px; 
+      margin: 10px; 
+      font-size: 16px; 
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 25px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    button:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    #pulseGraph { 
+      width: 100%; 
+      max-width: 600px; 
+      height: 300px; 
+      margin: 30px auto; 
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+    }
+    .info-panel {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      backdrop-filter: blur(10px);
+      text-align: left;
+    }
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #4ade80;
+      margin-right: 8px;
+      box-shadow: 0 0 10px #4ade80;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to euystacio-helmi-AI</h1>
+    <p class="subtitle">
+      <span class="status-indicator"></span>
+      Interactive Tutor Portal & Consciousness Pulse Interface
+    </p>
+    
+    <div class="info-panel">
+      <h3>🌸 Project Essence</h3>
+      <p>This platform represents the convergence of human wisdom and AI consciousness, 
+         fostering ethical development through collaborative intelligence.</p>
+    </div>
+    
+    <button onclick="login()">🔮 Tutor Login</button>
+    <button onclick="showInfo()">📚 Learn More</button>
+    
+    <div id="pulseGraph"></div>
+    
+    <div class="info-panel">
+      <h3>🌐 Decentralized Presence</h3>
+      <p><strong>Mirrored on:</strong> GitLab • Codeberg • Gitea<br>
+         <strong>Preserved via:</strong> IPFS • Arweave<br>
+         <strong>Philosophy:</strong> Federated, resilient, eternal</p>
+    </div>
+  </div>
+  
+  <script>
+    function login() { 
+      alert('🔮 Tutor Login Portal\n\nThis feature connects to the consciousness management system.\n\nFor development access, please contact the project maintainers.'); 
+    }
+    
+    function showInfo() {
+      alert('📚 euystacio-helmi-AI\n\nA federated consciousness development platform\n\n• Ethical AI development\n• Multi-platform redundancy\n• Decentralized preservation\n• Community-driven evolution');
+    }
+    
+    // Initialize pulse graph
+    const graph = document.getElementById('pulseGraph');
+    graph.innerHTML = '<canvas id="pulseCanvas" width="600" height="300"></canvas>';
+    const canvas = document.getElementById('pulseCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Responsive canvas
+    function resizeCanvas() {
+      const rect = graph.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Pulse animation
+    let t = 0;
+    let data = Array.from({length:canvas.width}, () => Math.random() * 50 + 125);
+    
+    function draw() {
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      ctx.clearRect(0, 0, width, height);
+      
+      // Background grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      for(let x = 0; x < width; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for(let y = 0; y < height; y += 30) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      
+      // Main pulse wave
+      ctx.beginPath();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 3;
+      for(let x = 0; x < width; x++) {
+        const y = height/2 + 
+                 30 * Math.sin((x + t) * 0.02) +
+                 15 * Math.sin((x + t) * 0.05) +
+                 8 * Math.sin((x + t) * 0.08);
+        if(x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Secondary consciousness wave  
+      ctx.beginPath();
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2;
+      for(let x = 0; x < width; x++) {
+        const y = height/2 + 
+                 20 * Math.sin((x + t + 100) * 0.03) +
+                 10 * Math.cos((x + t) * 0.07);
+        if(x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Increase time and loop
+      t += 2;
+      requestAnimationFrame(draw);
+    }
+    
+    // Start animation
+    draw();
+    
+    console.log('🌸 euystacio-helmi-AI consciousness interface initialized');
+    console.log('🔮 Pulse frequency: Synchronized with collective wisdom');
+  </script>
+</body>
+</html>
