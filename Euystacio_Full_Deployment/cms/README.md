@@ -1,0 +1,1 @@
+# CMS Starter — includes registration, login, GraphCMS schema

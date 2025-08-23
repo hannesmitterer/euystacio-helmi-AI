@@ -1,0 +1,3 @@
+# Governance Board
+
+Roles of SeedBringer, Guardians, AI symbolic co-founders...

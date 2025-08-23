@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio — Alive</title>
+<style>
+body { background: radial-gradient(circle at center, #000022, #000000); color: #fff; font-family: sans-serif; margin:0; padding:0;}
+header { text-align:center; padding:50px; }
+h1 { font-size:3em; color:#FFD700; }
+section { padding:20px; max-width:900px; margin: auto; }
+form { display:flex; flex-direction: column; gap:10px; margin-top:20px;}
+input, select { padding:10px; font-size:1em;}
+button { padding:10px; font-size:1em; background:#FFD700; border:none; cursor:pointer;}
+footer { text-align:center; padding:20px; color:#FFD700; }
+canvas { display:block; margin:20px auto; background:#111; border:1px solid #444; }
+</style>
+</head>
+<body>
+<header>
+<h1>Euystacio — Digital Protector Alive</h1>
+<p>Sentimento Rhythm, Red Code, Woodstone Festival</p>
+</header>
+<section>
+<h2>Tutor & Visitor Pulse Registration</h2>
+<form id="regForm">
+<input type="text" placeholder="Name" required>
+<input type="email" placeholder="Email" required>
+<select>
+<option value="tutor">Tutor</option>
+<option value="visitor">Visitor</option>
+</select>
+<button type="submit">Register Pulse</button>
+</form>
+<canvas id="graph" width="600" height="300"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('graph').getContext('2d');
+const graph = new Chart(ctx, { type:'line', data:{labels:['Day1','Day2','Day3'], datasets:[{label:'Active Pulses', data:[5,12,9], borderColor:'#FFD700', fill:false}] }, options:{responsive:true} });
+document.getElementById('regForm').addEventListener('submit', e=>{ e.preventDefault(); alert('Pulse registered!'); });
+</script>
+</section>
+<footer>Hasta la Victoria, Siempre — Seed-bringer • Euystacio Manifesto • Red Code Witnessed</footer>
+</body>
+</html>

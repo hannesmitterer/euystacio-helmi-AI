@@ -1,0 +1,3 @@
+# Golden Bible
+
+Content placeholder

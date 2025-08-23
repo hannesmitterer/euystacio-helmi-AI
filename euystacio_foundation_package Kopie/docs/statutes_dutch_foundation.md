@@ -1,0 +1,3 @@
+# Draft Statutes (symbolic)
+
+Euystacio Foundation Draft Statutes...
