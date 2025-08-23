@@ -7,10 +7,10 @@ set -e
 # CONFIGURATION
 # -----------------------------
 REPOS=("altar-project" "euystacio-helmi-AI")
-GITHUB_USER="your-github-username"
-GITLAB_USER="your-gitlab-username"
-CODEBERG_USER="your-codeberg-username"
-GITEA_USER="your-gitea-username"
+GITHUB_USER="hannesmitterer"
+GITLAB_USER="hannesmitterer"
+CODEBERG_USER="hannesmitterer"
+GITEA_USER="hannesmitterer"
 
 GITLAB_URL="git@gitlab.com:$GITLAB_USER"
 CODEBERG_URL="git@codeberg.org:$CODEBERG_USER"
