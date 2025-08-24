@@ -8,6 +8,7 @@ import json
 import os
 import base64
 import logging
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -196,6 +197,63 @@ def api_system_status():
             "tutor_count": len(tutors.list_tutors())
         }
     })
+
+# Altar routes
+@app.route("/altar")
+@app.route("/altar/")
+def altar():
+    """Serve the dynamic altar interface"""
+    return send_from_directory('altar', 'index.html')
+
+@app.route("/altar/<path:filename>")
+def serve_altar(filename):
+    """Serve altar static assets"""
+    return send_from_directory('altar', filename)
+
+@app.route("/api/guardian_state", methods=['GET', 'POST'])
+def api_guardian_state():
+    """Handle guardian state management"""
+    if request.method == 'GET':
+        try:
+            with open('red_code.json', 'r') as f:
+                red_code = json.load(f)
+            return jsonify({
+                "guardian_mode": red_code.get("guardian_mode", False),
+                "current_state": "awaken" if red_code.get("guardian_mode", False) else "soothe"
+            })
+        except:
+            return jsonify({
+                "guardian_mode": False,
+                "current_state": "soothe"
+            })
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        guardian_mode = data.get('guardian_mode', False)
+        
+        try:
+            # Load current red_code
+            with open('red_code.json', 'r') as f:
+                red_code = json.load(f)
+            
+            # Update guardian mode
+            red_code['guardian_mode'] = guardian_mode
+            red_code['last_update'] = datetime.now().isoformat()
+            
+            # Save back to file
+            with open('red_code.json', 'w') as f:
+                json.dump(red_code, f, indent=2)
+            
+            return jsonify({
+                "success": True,
+                "guardian_mode": guardian_mode,
+                "current_state": "awaken" if guardian_mode else "soothe"
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
 
 # Static file serving for docs and demos
 @app.route("/docs/<path:filename>")

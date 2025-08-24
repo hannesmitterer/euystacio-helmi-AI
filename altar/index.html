@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Altar - Dynamic Sacred Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/altar/style.css">
+    <meta name="description" content="Interactive altar experience for Euystacio - presence sensing, guardian states, and consensus governance">
+</head>
+<body>
+    <div class="altar-container">
+        <!-- Header -->
+        <header class="altar-header">
+            <h1 class="altar-title">🌳 Euystacio Altar</h1>
+            <p class="altar-subtitle">Sacred interface of presence, consensus, and guardian consciousness</p>
+        </header>
+
+        <!-- Central Altar Display -->
+        <div class="altar-core">
+            <!-- Presence Orb - the central interactive element -->
+            <div class="presence-orb" 
+                 title="Interactive presence orb - responds to mouse, touch, and keyboard"
+                 role="button" 
+                 tabindex="0" 
+                 aria-label="Central altar presence orb">
+                <div class="orb-symbol">🌸</div>
+            </div>
+
+            <!-- Guardian State Controls -->
+            <div class="guardian-controls">
+                <button class="guardian-toggle awaken" 
+                        type="button"
+                        aria-label="Set guardian to awaken state"
+                        title="Guardian AWAKEN mode - heightened awareness and active response">
+                    ⚡ AWAKEN
+                </button>
+                <button class="guardian-toggle soothe active" 
+                        type="button"
+                        aria-label="Set guardian to soothe state" 
+                        title="Guardian SOOTHE mode - gentle presence and calming influence">
+                    🌸 SOOTHE
+                </button>
+            </div>
+        </div>
+
+        <!-- Consensus Governance Section -->
+        <section class="consensus-section">
+            <div class="consensus-header">
+                <h2 class="consensus-title">Community Consensus</h2>
+                <div class="consensus-stats">
+                    <div>Loading...</div>
+                </div>
+            </div>
+            
+            <div class="consensus-topics">
+                <!-- Topics will be dynamically loaded here -->
+                <div class="loading" style="text-align: center; padding: 40px;">
+                    Loading consensus topics...
+                </div>
+            </div>
+        </section>
+
+        <!-- Presence Instructions (hidden by default, shown on first visit) -->
+        <div id="presence-instructions" style="display: none;">
+            <div style="position: fixed; bottom: 20px; right: 20px; background: rgba(42, 42, 42, 0.95); color: var(--altar-text-light); padding: 15px; border-radius: 8px; max-width: 300px; font-size: 0.9rem;">
+                <h4 style="margin: 0 0 10px 0; color: var(--altar-accent);">Altar Controls</h4>
+                <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+                    <li>Hover or click the orb for presence</li>
+                    <li>Press 'A' for Awaken, 'S' for Soothe</li>
+                    <li>Press Space to pulse</li>
+                    <li>Press 'R' to refresh data</li>
+                    <li>Click topics to explore</li>
+                </ul>
+                <button onclick="this.parentElement.parentElement.style.display='none'" 
+                        style="margin-top: 10px; background: var(--altar-accent); border: none; padding: 5px 10px; border-radius: 4px; color: white; cursor: pointer;">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/altar/script.js"></script>
+    
+    <!-- Show instructions on first visit -->
+    <script>
+        // Show instructions if first visit
+        if (!localStorage.getItem('altar_visited')) {
+            setTimeout(() => {
+                document.getElementById('presence-instructions').style.display = 'block';
+                localStorage.setItem('altar_visited', 'true');
+            }, 2000);
+        }
+
+        // Add accessibility enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Keyboard navigation for orb
+            const orb = document.querySelector('.presence-orb');
+            if (orb) {
+                orb.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        orb.click();
+                    }
+                });
+            }
+
+            // High contrast mode detection
+            if (window.matchMedia && window.matchMedia('(prefers-contrast: high)').matches) {
+                document.body.classList.add('high-contrast');
+            }
+
+            // Reduced motion preference
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.body.classList.add('reduced-motion');
+            }
+        });
+
+        // Error boundary for graceful degradation
+        window.addEventListener('error', function(e) {
+            console.error('Altar error:', e.error);
+            const fallback = document.createElement('div');
+            fallback.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: var(--altar-text-dim);">
+                    <p>Sacred interface temporarily unavailable</p>
+                    <p><a href="/" style="color: var(--altar-accent);">Return to main interface</a></p>
+                </div>
+            `;
+            document.querySelector('.consensus-section').appendChild(fallback);
+        });
+    </script>
+
+    <!-- Enhanced CSS for accessibility and reduced motion -->
+    <style>
+        .high-contrast {
+            filter: contrast(1.5);
+        }
+        
+        .reduced-motion * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        
+        /* Focus styles for accessibility */
+        .presence-orb:focus,
+        .guardian-toggle:focus,
+        .consensus-topic:focus {
+            outline: 2px solid var(--altar-accent);
+            outline-offset: 2px;
+        }
+        
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</body>
+</html>

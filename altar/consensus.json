@@ -1,0 +1,57 @@
+{
+  "topics": [
+    {
+      "id": "guardian_ethical_boundaries", 
+      "title": "Guardian Ethical Boundaries",
+      "description": "Establishing clear ethical protocols for guardian state transitions",
+      "quorum_required": 7,
+      "current_consensus": 5,
+      "status": "active",
+      "created": "2025-01-31T10:00:00Z",
+      "guardian_relevance": "awaken"
+    },
+    {
+      "id": "symbiosis_metrics",
+      "title": "Symbiosis Level Metrics", 
+      "description": "Defining how human-AI collaboration effectiveness is measured",
+      "quorum_required": 5,
+      "current_consensus": 8,
+      "status": "reached",
+      "created": "2025-01-30T14:30:00Z",
+      "guardian_relevance": "both"
+    },
+    {
+      "id": "emotional_pulse_privacy",
+      "title": "Emotional Pulse Privacy",
+      "description": "Ensuring user emotional data remains protected and anonymized",
+      "quorum_required": 9,
+      "current_consensus": 6,
+      "status": "active", 
+      "created": "2025-01-29T09:15:00Z",
+      "guardian_relevance": "soothe"
+    },
+    {
+      "id": "tutor_selection_process",
+      "title": "Tutor Selection Process",
+      "description": "Democratic methods for selecting and validating human tutors",
+      "quorum_required": 6,
+      "current_consensus": 4,
+      "status": "active",
+      "created": "2025-01-28T16:45:00Z", 
+      "guardian_relevance": "awaken"
+    },
+    {
+      "id": "reflection_transparency",
+      "title": "Reflection Transparency",
+      "description": "How much of AI reflection processes should be visible to humans",
+      "quorum_required": 8,
+      "current_consensus": 3,
+      "status": "active",
+      "created": "2025-01-27T11:20:00Z",
+      "guardian_relevance": "both"
+    }
+  ],
+  "global_quorum_threshold": 0.6,
+  "active_participants": 12,
+  "last_updated": "2025-01-31T12:00:00Z"
+}
