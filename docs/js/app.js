@@ -48,7 +48,7 @@ class EuystacioDashboard {
 
     async loadRedCode() {
         try {
-            const response = await fetch('/api/red_code');
+            const response = await fetch('/api/red-code');
             const redCode = await response.json();
             this.displayRedCode(redCode);
         } catch (error) {
