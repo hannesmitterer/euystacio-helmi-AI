@@ -1,0 +1,64 @@
+# Personal Ethical Configuration for GitHub Copilot
+# Save this as ~/.copilot/personal-ethical-config.yml
+# Aligned with Euystacio-Helmi AI Philosophy
+
+personal_commitment:
+  developer_name: "[Your Name]"
+  email: "[Your Email]"
+  commitment_date: "[ISO Date]"
+  ethical_framework: "euystacio-helmi-ai"
+
+ethical_pledges:
+  - "I will review all AI-generated code before accepting"
+  - "I will understand the logic and implications of suggested code"
+  - "I will maintain coding best practices and standards"
+  - "I will respect intellectual property and licensing"
+  - "I will document AI assistance in commit messages"
+  - "I will not expose sensitive or proprietary information"
+  - "I will prioritize accessibility and inclusivity"
+  - "I will consider environmental impact of code efficiency"
+
+review_checklist:
+  before_acceptance:
+    - code_logic_sound: false
+    - security_implications_assessed: false
+    - no_hardcoded_secrets: false
+    - follows_coding_standards: false
+    - accessibility_considered: false
+    - performance_impact_evaluated: false
+    
+  after_acceptance:
+    - testing_completed: false
+    - documentation_updated: false
+    - commit_message_documented: false
+    - dual_signature_added: false
+
+personal_boundaries:
+  never_use_ai_with:
+    - personal_credentials
+    - company_secrets
+    - customer_data
+    - financial_information
+    - health_records
+    - proprietary_algorithms
+  
+  always_human_review:
+    - security_critical_code
+    - public_facing_apis
+    - data_processing_logic
+    - authentication_systems
+    - payment_processing
+
+learning_goals:
+  - improve_prompt_engineering_skills
+  - understand_ai_limitations_better
+  - develop_better_code_review_practices
+  - learn_ethical_ai_principles
+  - contribute_to_ai_ethics_discussions
+
+dual_signature_template: |
+  AI: GitHub Copilot ({assistance_type})
+  Human: {developer_name} ({human_contribution})
+  Date: {iso_date}
+  Review: {review_notes}
+  Compliance: ✅ Euystacio-Helmi AI Ethical Standards

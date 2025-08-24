@@ -1,0 +1,61 @@
+# VS Code Team Configuration Template
+# Copy this content to your project's .vscode/settings.json
+# (Create the .vscode directory if it doesn't exist)
+
+{
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "env": false,
+    "secret": false,
+    "config": false
+  },
+  
+  "github.copilot.advanced": {
+    "listCount": 3,
+    "inlineSuggestCount": 2,
+    "debug.overrideEngine": "",
+    "debug.testOverrideProxyUrl": "",
+    "debug.filterLogCategories": []
+  },
+  
+  "github.copilot.chat.localeOverride": "auto",
+  "github.copilot.chat.welcomeMessage": "never",
+  
+  "editor.suggest.preview": true,
+  "editor.suggest.showKeywords": false,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.acceptSuggestionOnEnter": "off",
+  
+  "github.copilot.editor.enableCodeActions": true,
+  "github.copilot.editor.iterativeFixing": true,
+  
+  "files.associations": {
+    ".copilot-instructions": "markdown",
+    ".ethical-guidelines": "markdown",
+    ".ai-assistance-log": "json"
+  },
+  
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+    "source.fixAll": true,
+    "source.addMissingImports": true
+  },
+  
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 120,
+  
+  "editor.accessibilitySupport": "on",
+  "workbench.colorTheme": "Default High Contrast",
+  
+  "git.inputValidation": "always",
+  "git.requireGitUserConfig": true,
+  
+  "copilot.team.ethicalGuidelines": {
+    "enabled": true,
+    "guidanceFile": ".github/copilot-ethics.yml",
+    "dualSignatureRequired": true,
+    "humanReviewMandatory": true
+  }
+}
