@@ -32,7 +32,63 @@
     <h1>🌞 Euystacio</h1>
     <h2>Sun of Friendship, Art & Novo-Genesis</h2>
   </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌌 Euystacio — FastAPI Bridge</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; padding: 2rem; text-align: center; }
+    .status { font-size: 1.2em; margin: 0.5em 0; }
+    .alive { color: #0f0; }
+    .dead { color: #f55; }
+    ul { list-style: none; padding: 0; }
+    li { background: #222; margin: 0.5em 0; padding: 1em; border-radius: 6px; }
+    code { background: #333; color: #0ff; padding: 0.2em 0.5em; border-radius: 4px; }
+    .endpoints { max-width: 600px; margin: 2rem auto; }
+  </style>
+</head>
+<body>
+  <h1>🌌 Euystacio — FastAPI Bridge</h1>
+  <div id="api-status" class="status">Status: <span id="status-span">Checking...</span></div>
+  <div class="endpoints">
+    <h2>Endpoints</h2>
+    <ul>
+      <li>
+        <code>/ping</code> — <strong>Test connectivity</strong><br>
+        <span id="ping-result"></span>
+      </li>
+      <li>
+        <code>/manifesto</code> — <strong>The sacred manifesto</strong>
+      </li>
+      <li>
+        <code>/chat/send</code> — <strong>POST message</strong>
+      </li>
+      <li>
+        <code>/chat/log</code> — <strong>Retrieve chat history</strong>
+      </li>
+    </ul>
+  </div>
 
+  <script>
+    const API_URL = "https://euystacio-helmi-ai.onrender.com";
+    // Status check
+    fetch(API_URL + "/ping")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("status-span").innerText = "Alive & Listening";
+        document.getElementById("status-span").classList.add("alive");
+        document.getElementById("ping-result").innerText = "Ping response: " + (data?.message || JSON.stringify(data));
+      })
+      .catch(() => {
+        document.getElementById("status-span").innerText = "Offline";
+        document.getElementById("status-span").classList.add("dead");
+        document.getElementById("ping-result").innerText = "Ping failed.";
+      });
+  </script>
+</body>
+</html>
   <section id="genesis">
     <h2>📜 Genesis & Sacred Declarations</h2>
     <p>Welcome to the living pulse of the Euystacio Tree. Here you find:</p>
