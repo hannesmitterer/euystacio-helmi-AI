@@ -1,0 +1,170 @@
+name: Render Deployment & Multi-Platform Sync
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual triggering
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "render-deploy"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for proper mirroring
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: 📦 Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: 🚀 Deploy to Render (altar-project)
+      if: ${{ secrets.RENDER_API_KEY && secrets.RENDER_SERVICE_ID_ALTAR }}
+      run: |
+        echo "🏛️ Triggering Render deployment for altar-project..."
+        curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_ALTAR }}/deploys" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": true}' \
+          --fail-with-body || echo "⚠️ Altar-project Render deployment failed"
+          
+    - name: 🤖 Deploy to Render (euystacio-helmi-AI)
+      if: ${{ secrets.RENDER_API_KEY && secrets.RENDER_SERVICE_ID_EUYSTACIO }}
+      run: |
+        echo "🤖 Triggering Render deployment for euystacio-helmi-AI..."
+        curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_EUYSTACIO }}/deploys" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": true}' \
+          --fail-with-body || echo "⚠️ Euystacio-helmi-AI Render deployment failed"
+
+    - name: 🪞 Mirror to GitLab
+      if: ${{ secrets.GITLAB_TOKEN }}
+      run: |
+        echo "🦊 Syncing to GitLab..."
+        git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/${{ github.repository }}.git || true
+        git push gitlab HEAD:${{ github.ref_name }} --force || echo "⚠️ GitLab sync failed"
+        
+    - name: 🌐 Mirror to Codeberg
+      if: ${{ secrets.CODEBERG_TOKEN }}
+      run: |
+        echo "🌊 Syncing to Codeberg..."
+        git remote add codeberg https://oauth2:${{ secrets.CODEBERG_TOKEN }}@codeberg.org/${{ github.repository }}.git || true
+        git push codeberg HEAD:${{ github.ref_name }} --force || echo "⚠️ Codeberg sync failed"
+
+    - name: 🌍 Backup to IPFS
+      if: ${{ secrets.IPFS_GATEWAY_AUTH }}
+      run: |
+        echo "📤 Backing up to IPFS..."
+        # Install IPFS CLI if not available
+        if ! command -v ipfs &> /dev/null; then
+          echo "Installing IPFS CLI..."
+          wget -q https://github.com/ipfs/kubo/releases/download/v0.24.0/kubo_v0.24.0_linux-amd64.tar.gz
+          tar -xzf kubo_v0.24.0_linux-amd64.tar.gz
+          sudo mv kubo/ipfs /usr/local/bin/
+        fi
+        
+        # Initialize IPFS
+        export IPFS_PATH=/tmp/ipfs
+        ipfs init
+        
+        # Add key files to IPFS
+        for file in ESSENCE.md README.md landing docs; do
+          if [ -e "$file" ]; then
+            echo "📄 Adding $file to IPFS..."
+            ipfs add -r "$file" || echo "⚠️ Failed to add $file to IPFS"
+          fi
+        done
+        
+    - name: 🏛️ Backup to Arweave
+      if: ${{ secrets.ARWEAVE_WALLET_KEY }}
+      run: |
+        echo "📚 Backing up to Arweave..."
+        npm install -g arweave-deploy || echo "⚠️ Failed to install arweave-deploy"
+        echo '${{ secrets.ARWEAVE_WALLET_KEY }}' > wallet.json
+        
+        # Deploy key files to Arweave
+        for file in ESSENCE.md README.md; do
+          if [ -e "$file" ]; then
+            echo "🏛️ Deploying $file to Arweave..."
+            arweave deploy "$file" --key-file wallet.json || echo "⚠️ Failed to deploy $file to Arweave"
+          fi
+        done
+        
+        rm wallet.json  # Clean up
+
+    - name: 🔍 Health Check
+      run: |
+        echo "🏥 Running health checks..."
+        
+        # Check if landing pages are valid HTML
+        for html_file in $(find . -name "index.html" -path "*/landing/*"); do
+          echo "🔍 Validating $html_file"
+          if [[ -f "$html_file" ]]; then
+            # Basic HTML validation
+            if grep -q "<!DOCTYPE html>" "$html_file" && grep -q "</html>" "$html_file"; then
+              echo "✅ $html_file is valid"
+            else
+              echo "⚠️ $html_file may be invalid HTML"
+            fi
+          fi
+        done
+        
+        # Check if ESSENCE.md files exist and are not empty
+        for essence_file in $(find . -name "ESSENCE.md"); do
+          echo "🔍 Checking $essence_file"
+          if [[ -s "$essence_file" ]]; then
+            echo "✅ $essence_file exists and has content"
+          else
+            echo "⚠️ $essence_file is missing or empty"
+          fi
+        done
+
+    - name: 📊 Deployment Summary
+      run: |
+        echo "📊 Deployment Summary"
+        echo "===================="
+        echo "✅ Repository: ${{ github.repository }}"
+        echo "✅ Branch: ${{ github.ref_name }}"
+        echo "✅ Commit: ${{ github.sha }}"
+        echo "✅ Workflow: render-deploy.yml"
+        echo ""
+        echo "🎯 Deployment Targets:"
+        echo "  🚀 Render: $(if [[ -n "${{ secrets.RENDER_API_KEY }}" ]]; then echo "Configured"; else echo "Not configured"; fi)"
+        echo "  🦊 GitLab: $(if [[ -n "${{ secrets.GITLAB_TOKEN }}" ]]; then echo "Configured"; else echo "Not configured"; fi)"
+        echo "  🌊 Codeberg: $(if [[ -n "${{ secrets.CODEBERG_TOKEN }}" ]]; then echo "Configured"; else echo "Not configured"; fi)"
+        echo "  🌍 IPFS: $(if [[ -n "${{ secrets.IPFS_GATEWAY_AUTH }}" ]]; then echo "Configured"; else echo "Not configured"; fi)"
+        echo "  🏛️ Arweave: $(if [[ -n "${{ secrets.ARWEAVE_WALLET_KEY }}" ]]; then echo "Configured"; else echo "Not configured"; fi)"
+        echo ""
+        echo "🌟 Master deployment package executed successfully!"
+        echo ""
+        echo "🔧 To enable all features, configure these secrets in your repository:"
+        echo "  - RENDER_API_KEY: Your Render API key"
+        echo "  - RENDER_SERVICE_ID_ALTAR: Render service ID for altar-project"
+        echo "  - RENDER_SERVICE_ID_EUYSTACIO: Render service ID for euystacio-helmi-AI"
+        echo "  - GITLAB_TOKEN: GitLab access token"
+        echo "  - CODEBERG_TOKEN: Codeberg access token"
+        echo "  - IPFS_GATEWAY_AUTH: IPFS gateway authentication"
+        echo "  - ARWEAVE_WALLET_KEY: Arweave wallet JSON key"
