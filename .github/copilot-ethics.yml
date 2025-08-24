@@ -1,0 +1,118 @@
+# Euystacio-Helmi AI Ethical Configuration for GitHub Copilot
+version: "1.2"
+ethical_framework: "euystacio-helmi-ai"
+
+# Core Ethical Principles
+core_principles:
+  human_centric: true
+  transparency_required: true
+  accountability_maintained: true
+  privacy_first: true
+  accessibility_focused: true
+  environmental_conscious: true
+
+# Dual Signature Requirements
+dual_signature:
+  required: true
+  ai_provider: "GitHub Copilot"
+  human_guardian_required: true
+  signature_format: "AI: {ai_provider} | Human: {developer_name} | Date: {iso_date}"
+
+# Red Code Integration
+red_code_compliance:
+  enabled: true
+  boundaries_file: "red_code.json"
+  validation_level: "strict"
+  auto_check: true
+
+# Assistance Level Configuration
+assistance_levels:
+  basic:
+    description: "Simple completions, low risk"
+    oversight: "basic_human_review"
+    documentation: "standard_commit_message"
+    
+  moderate:
+    description: "Complex logic, medium risk" 
+    oversight: "thorough_review_and_testing"
+    documentation: "detailed_dual_signature"
+    
+  advanced:
+    description: "Security-sensitive, high risk"
+    oversight: "multiple_reviewer_approval"
+    documentation: "comprehensive_audit_trail"
+    
+  critical:
+    description: "Public-facing, critical risk"
+    oversight: "ethics_committee_review"
+    documentation: "full_transparency_report"
+
+# File Type Configuration
+file_types:
+  allowed:
+    - "*.py"
+    - "*.js" 
+    - "*.ts"
+    - "*.java"
+    - "*.cs"
+    - "*.cpp"
+    - "*.go"
+    - "*.rs"
+    - "*.php"
+    - "*.rb"
+    - "*.md"  # For documentation only
+    
+  restricted:
+    - "*.env"      # Environment files
+    - "*.key"      # Private keys
+    - "*.pem"      # Certificates
+    - "*secret*"   # Secret files
+    - "*password*" # Password files
+    
+  prohibited:
+    - "*.sql"      # Database scripts (sensitive)
+    - "*.conf"     # Configuration files
+    - ".htaccess"  # Server configuration
+
+# Privacy Protection
+privacy_settings:
+  collect_minimal_context: true
+  anonymize_sensitive_data: true
+  respect_user_privacy: true
+  no_personal_data: true
+  
+  sensitive_patterns:
+    - email_addresses
+    - phone_numbers
+    - credit_card_numbers
+    - social_security_numbers
+    - api_keys
+    - passwords
+
+# Team Collaboration Settings  
+team_settings:
+  require_code_review: true
+  ai_assistance_declaration: true
+  ethical_guidelines_training: true
+  regular_ethics_review: true
+  
+  review_checklist:
+    - security_validation
+    - privacy_compliance
+    - accessibility_check
+    - performance_assessment
+    - ethical_review
+
+# Monitoring and Reporting
+monitoring:
+  track_usage: true
+  ethical_compliance_metrics: true
+  generate_monthly_reports: true
+  transparency_logs: true
+  
+# Emergency Procedures
+emergency_procedures:
+  ethical_concern_reporting: true
+  immediate_escalation_path: "team-lead -> ethics-committee -> project-owner"
+  incident_documentation: true
+  learning_from_incidents: true
