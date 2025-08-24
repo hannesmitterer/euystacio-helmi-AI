@@ -189,7 +189,7 @@ section h4 {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-green);
-    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--primary-green-rgb), 0.1);
 }
 
 /* Touch feedback for form elements */
