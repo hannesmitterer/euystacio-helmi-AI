@@ -40,3 +40,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Build artifacts
+github_pages_deploy/
+docs/

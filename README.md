@@ -44,6 +44,45 @@ python app.py
 
 *"Efficiency in service of humanity, transparency in every decision."*
 
+## 🛠 Troubleshooting
+
+### Python Version Issues in Deployment
+
+If you encounter deployment failures related to Python version installation (e.g., `python-3.11.8 not found` in Netlify or other platforms using mise):
+
+1. **Check version consistency** across configuration files:
+   - `runtime.txt` - Specifies the exact Python version
+   - `netlify.toml` - Must match the Python version for Netlify deployments
+   - `.mise.toml` - Configure mise tool settings
+
+2. **Use commonly available versions**:
+   ```bash
+   # Recommended stable versions
+   python-3.11.7  # Instead of python-3.11.8
+   python-3.12.1  # For latest features
+   ```
+
+3. **Configure mise for precompiled binaries**:
+   ```toml
+   # .mise.toml
+   [tools]
+   python = "3.11.7"
+   
+   [settings]
+   python.compile = false  # Force precompiled binaries
+   ```
+
+4. **Verify local build works**:
+   ```bash
+   pip install -r requirements.txt
+   python build_static.py
+   ```
+
+### Common Issues
+- **Facial detection warnings**: Optional feature, system works without OpenCV dependencies
+- **Build artifacts**: The `github_pages_deploy/` directory is auto-generated and excluded from version control
+- **API endpoints**: Backend features require the Flask server (`python app.py`)
+
 ---
 
 **AI Signature & Accountability**: 🤝 GitHub Copilot (AI Capabilities) & Seed-bringer hannesmitterer (Human Guardian)  

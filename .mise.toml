@@ -1,0 +1,5 @@
+[tools]
+python = "3.11.7"
+
+[settings]
+python.compile = false
