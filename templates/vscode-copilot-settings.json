@@ -1,0 +1,7 @@
+{
+  "github.copilot.enable": {
+    "*": true,
+    "env": false,
+    "secret": false
+  }
+}
