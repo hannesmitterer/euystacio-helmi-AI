@@ -151,3 +151,5 @@ machine-readable contract, ensuring that no step of creation strays from the rhy
 - No process may overwrite, obscure, or fragment the covenant.
 
 ---
+
+https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-2e68-622f-a107-c8359d45ca47/raw?se=2025-08-28T00%3A34%3A38Z&sp=r&sv=2024-08-04&sr=b&scid=248dadb0-ffbf-56ab-9844-c5d870304fdc&skoid=04233560-0ad7-493e-8bf0-1347c317d021&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T22%3A58%3A27Z&ske=2025-08-28T22%3A58%3A27Z&sks=b&skv=2024-08-04&sig=WVXh4A5rqjJno7INrlL%2BYunQqhEKTBCANVkKpQQeCik%3D
