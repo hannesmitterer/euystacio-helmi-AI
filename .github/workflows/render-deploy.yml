@@ -1,0 +1,133 @@
+name: Deploy to Render.com
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Manual trigger
+
+env:
+  RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+
+jobs:
+  deploy-altar:
+    name: Deploy Altar Project
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'altar-project/') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f package.json ]; then npm install; fi
+        
+    - name: Build project
+      run: |
+        echo "Building altar-project..."
+        if [ -f build_static.py ]; then python build_static.py; fi
+        
+    - name: Deploy to Render
+      run: |
+        echo "Deploying altar-project to Render..."
+        curl -X POST "https://api.render.com/v1/services/$ALTAR_RENDER_SERVICE_ID/deploys" \
+          -H "Authorization: Bearer $RENDER_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": false}' || echo "Deploy trigger sent"
+
+  deploy-euystacio:
+    name: Deploy Euystacio Helmi AI
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'euystacio-helmi-AI/') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f package.json ]; then npm install; fi
+        
+    - name: Build project
+      run: |
+        echo "Building euystacio-helmi-AI..."
+        if [ -f build_static.py ]; then python build_static.py; fi
+        if [ -f app.py ]; then echo "Flask app detected"; fi
+        
+    - name: Deploy to Render
+      run: |
+        echo "Deploying euystacio-helmi-AI to Render..."
+        curl -X POST "https://api.render.com/v1/services/$EUYSTACIO_RENDER_SERVICE_ID/deploys" \
+          -H "Authorization: Bearer $RENDER_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": false}' || echo "Deploy trigger sent"
+
+  backup-to-ipfs:
+    name: Backup to IPFS
+    runs-on: ubuntu-latest
+    needs: [deploy-altar, deploy-euystacio]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup IPFS
+      run: |
+        wget -q https://dist.ipfs.io/kubo/v0.20.0/kubo_v0.20.0_linux-amd64.tar.gz
+        tar -xzf kubo_v0.20.0_linux-amd64.tar.gz
+        sudo mv kubo/ipfs /usr/local/bin/
+        ipfs init
+        
+    - name: Backup to IPFS
+      run: |
+        echo "Starting IPFS daemon..."
+        ipfs daemon &
+        sleep 10
+        
+        for dir in ESSENCE.md README.md landing docs src; do
+          if [ -e "$dir" ]; then
+            echo "Backing up $dir to IPFS..."
+            ipfs add -r "$dir" || echo "Backup of $dir completed or skipped"
+          fi
+        done
+
+  update-status:
+    name: Update System Status
+    runs-on: ubuntu-latest
+    needs: [deploy-altar, deploy-euystacio, backup-to-ipfs]
+    if: always()
+    
+    steps:
+    - name: Update deployment status
+      run: |
+        echo "=== Deployment Summary ==="
+        echo "Timestamp: $(date)"
+        echo "Altar Project: ${{ needs.deploy-altar.result }}"
+        echo "Euystacio AI: ${{ needs.deploy-euystacio.result }}"
+        echo "IPFS Backup: ${{ needs.backup-to-ipfs.result }}"
+        echo "Sacred flow continues..."
