@@ -40,3 +40,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# GitHub Pages deployment directory - build artifacts
+github_pages_deploy/
