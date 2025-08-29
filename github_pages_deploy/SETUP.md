@@ -259,6 +259,67 @@ euystacio-helmi-AI/
    - Check file permissions
    - Verify output in `github_pages_deploy/`
 
+4. **mise Python Installation Issues**:
+   - Ensure Python version is specified correctly in `.mise.toml`
+   - Update mise plugins and definitions
+   - Use precompiled binaries if compilation fails
+   - Clean mise cache if experiencing persistent issues
+
+### mise Python Installation Troubleshooting
+
+If you're experiencing Python installation issues with mise, follow these steps:
+
+#### 1. Update mise Plugins and Definitions
+```bash
+mise plugins update
+mise plugins install python
+```
+
+#### 2. Verify Python Version Configuration
+Ensure your `.mise.toml` file contains the correct Python version:
+```toml
+[tools]
+python = "3.11.9"
+```
+
+#### 3. Use Precompiled Binaries (Recommended for faster installation)
+```bash
+mise settings set python.compile false
+mise install python@3.11.9
+```
+
+#### 4. Clean mise Cache
+If you encounter persistent installation issues:
+```bash
+mise cache clean
+mise install
+```
+
+#### 5. Fallback: Manual Python Installation
+If all else fails, install Python manually and run:
+```bash
+# Install Python via your system package manager or from python.org
+# Then tell mise to recognize it
+mise reshim
+```
+
+#### Troubleshooting Summary Table
+
+| Issue | Solution | Command |
+|-------|----------|---------|
+| Invalid Python version format | Use `python@3.11.9` or `python = "3.11.9"` | Edit `.mise.toml` |
+| Plugin not found | Update and install python plugin | `mise plugins update && mise plugins install python` |
+| Compilation errors | Use precompiled binaries | `mise settings set python.compile false` |
+| Cache corruption | Clean mise cache | `mise cache clean` |
+| Installation hangs | Use precompiled binaries and clean cache | `mise settings set python.compile false && mise cache clean` |
+| Python not recognized | Reshim mise | `mise reshim` |
+
+#### Next Steps After Resolving Python Installation
+1. Verify Python installation: `python --version`
+2. Install project dependencies: `pip install -r requirements.txt`  
+3. Test application startup: `python app.py`
+4. Run integration tests: `curl http://localhost:5000/api/system_status`
+
 ### Debug Mode
 
 ```bash
