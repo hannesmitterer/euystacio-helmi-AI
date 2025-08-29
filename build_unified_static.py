@@ -118,7 +118,11 @@ def copy_essential_files():
         'genesis.md',
         'public_commit_log.md',
         'Euystacio_sacred_interface.html',
-        'red_code.json'
+        'red_code.json',
+        # SeedBringer Festival Files
+        'woodstone.md',
+        'woodstone_emblem.svg',
+        'harmonic_bridge_map.js'
     ]
     
     essential_dirs = [
