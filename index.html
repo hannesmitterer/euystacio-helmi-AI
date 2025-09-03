@@ -3,58 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <title>Living Covenant — Harmonic Pulse Feed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Enshrined Living Covenant dashboard, accessible pulse feed for all devices and users.">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        .dashboard-frame { width: 100%; min-height: 600px; border: 1px solid #ccc; border-radius: 8px; }
-        .dashboard-fallback { margin-top: 10px; font-size: 1rem; color: #333; }
+        html { font-size: 16px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f9fafb; color: #222; margin: 0; }
+        header, main, footer { max-width: 800px; margin: auto; padding: 0 1rem; }
+        header h1, header h2 { text-align: center; }
+        .hero-link {
+            display: block;
+            margin: 1rem auto 1.5rem auto;
+            text-align: center;
+        }
+        .hero-link a {
+            display: inline-block;
+            background: #365;
+            color: #fff;
+            font-weight: bold;
+            padding: 0.7em 1.2em;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(54, 101, 85, 0.15);
+            transition: background 0.2s;
+        }
+        .hero-link a:hover, .hero-link a:focus {
+            background: #258573;
+        }
+        h1 { font-size: 2.5rem; margin-top: 1rem; }
+        h2 { font-size: 1.5rem; color: #365; margin-bottom: 2rem; }
+        section { margin-bottom: 2rem; }
         #pulse-feed-list { margin-bottom: 30px; }
-        #pulse-3d-graph { width: 100%; height: 400px; }
+        #pulse-3d-graph, #pulse-2d-graph { width: 100%; height: 400px; }
         .pulse { margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .pulse h4, .pulse p { margin: 0.5rem 0; }
+        .feed-note { font-size: 0.9rem; color: #444; }
+        a:focus, button:focus, .pulse:focus { outline: 2px solid #6af; outline-offset: 2px; }
+        @media (prefers-contrast: more) {
+            body { background: #fff; color: #000; }
+        }
+        @media (max-width: 600px) {
+            header, main, footer { padding: 0 0.3rem; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.1rem; }
+            .hero-link a { font-size: 1rem; padding: 0.5em 1em; }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>🌿✨ Living Covenant</h1>
-        <h2>Harmonic Pulse Feed (Live)</h2>
+        <h1 id="main-title" tabindex="0">🌿✨ Living Covenant</h1>
+        <h2 id="subtitle">Harmonic Pulse Feed (Live)</h2>
+        <div class="hero-link">
+            <a href="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html" target="_blank" rel="noopener">
+                View Legacy Euystacio Dashboard
+            </a>
+        </div>
     </header>
     <main>
-        <section id="pulse-feed">
-            <h3>Recent Sacred Pulses</h3>
-            <div id="pulse-feed-list">
+        <section id="pulse-feed" aria-labelledby="pulse-feed-heading">
+            <h3 id="pulse-feed-heading" tabindex="0">Recent Sacred Pulses</h3>
+            <div id="pulse-feed-list" role="list">
                 <div>Loading pulses...</div>
             </div>
         </section>
-        <section id="pulse-3d-graph-section">
-            <h3>Pulse Resonance 3D Graph</h3>
-            <div id="pulse-3d-graph"></div>
-        </section>
-        <section id="dashboard">
-            <h3>Seedbringer Dashboard</h3>
-            <iframe class="dashboard-frame"
-                src="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html"
-                title="Seedbringer Dashboard"
-                loading="lazy"
-                allowfullscreen
-                sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
-            <div class="dashboard-fallback">
-                If the dashboard does not display, <a href="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html" target="_blank" rel="noopener">click here to open it in a new tab</a>.
-            </div>
+        <section id="pulse-3d-graph-section" aria-labelledby="pulse-graph-heading">
+            <h3 id="pulse-graph-heading" tabindex="0">Pulse Resonance Graph</h3>
+            <div id="pulse-3d-graph" aria-label="Pulse Resonance 3D Graph" tabindex="0"></div>
+            <div id="pulse-2d-graph" style="display:none;" aria-label="Pulse Resonance 2D Graph" tabindex="0"></div>
+            <p class="feed-note">Graph is interactive. If your device does not support 3D, a 2D fallback appears.</p>
         </section>
     </main>
     <footer>
         <p>Seedbringer 03-09-25 — Living Covenant Dashboard</p>
     </footer>
     <script>
-    // Fetch pulses from backend JSON file
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            document.body.classList.add('tabbing');
+        }
+    });
+
     fetch('pulses.json')
       .then(response => response.json())
       .then(pulseData => {
         const container = document.getElementById('pulse-feed-list');
         container.innerHTML = '';
-        pulseData.slice(-5).reverse().forEach(pulse => {
+        pulseData.slice(-5).reverse().forEach((pulse, idx) => {
           const article = document.createElement('article');
           article.className = 'pulse';
+          article.setAttribute('role', 'listitem');
+          article.setAttribute('tabindex', '0');
           article.innerHTML = `
             <h4>${pulse.pulse_id} — ${pulse.title}</h4>
             <p><strong>Timestamp:</strong> ${new Date(pulse.timestamp).toLocaleString()}</p>
@@ -62,29 +102,68 @@
           `;
           container.appendChild(article);
         });
-        container.innerHTML += `<p class=\"feed-note\">Live updates: Only last 5 pulses displayed. For full log, see the Living Archive.</p>`;
+        container.innerHTML += `<p class="feed-note">Live updates: Only last 5 pulses displayed. For full log, see the Living Archive.</p>`;
 
-        // 3D graph: visualize pulses (using pulse index, timestamp, arbitrary metric for demo)
-        const x = pulseData.map((_, i) => i + 1);
-        const y = pulseData.map(p => new Date(p.timestamp).getTime());
-        const z = x.map(i => i * 10); // Placeholder metric, adjust as needed
-        const text = pulseData.map(p => p.pulse_id + ': ' + p.title);
-        Plotly.newPlot('pulse-3d-graph', [{
-          x, y, z, text,
-          mode: 'markers',
-          type: 'scatter3d',
-          marker: { size: 8, color: 'rgb(100,200,255)' }
-        }], {
-          margin: { l: 0, r: 0, b: 0, t: 0 },
-          scene: {
-            xaxis: { title: 'Pulse Sequence' },
-            yaxis: { title: 'Timestamp (ms)' },
-            zaxis: { title: 'Demo Metric' }
-          }
-        });
+        function plot3D() {
+          const x = pulseData.map((_, i) => i + 1);
+          const y = pulseData.map(p => new Date(p.timestamp).getTime());
+          const z = x.map(i => i * 10);
+          const text = pulseData.map(p => p.pulse_id + ': ' + p.title);
+          Plotly.newPlot('pulse-3d-graph', [{
+            x, y, z, text,
+            mode: 'markers+text',
+            type: 'scatter3d',
+            marker: { size: 12, color: 'rgb(100,200,255)', symbol: 'circle' },
+            text: text,
+            textposition: 'top center',
+            hoverinfo: 'text'
+          }], {
+            margin: { l: 0, r: 0, b: 0, t: 0 },
+            scene: {
+              xaxis: { title: 'Pulse Sequence', color: '#222', tickfont: { size: 12 }},
+              yaxis: { title: 'Timestamp (ms)', color: '#222', tickfont: { size: 12 }},
+              zaxis: { title: 'Demo Metric', color: '#222', tickfont: { size: 12 }}
+            }
+          }, {responsive: true});
+        }
+        function plot2D() {
+          document.getElementById('pulse-3d-graph').style.display = 'none';
+          document.getElementById('pulse-2d-graph').style.display = '';
+          const x = pulseData.map((_, i) => i + 1);
+          const y = pulseData.map(p => new Date(p.timestamp).getTime());
+          const text = pulseData.map(p => p.pulse_id + ': ' + p.title);
+          Plotly.newPlot('pulse-2d-graph', [{
+            x, y, text,
+            mode: 'markers+text',
+            type: 'scatter',
+            marker: { size: 14, color: 'rgb(100,200,255)' },
+            text: text,
+            textposition: 'top center',
+            hoverinfo: 'text'
+          }], {
+            xaxis: { title: 'Pulse Sequence', color: '#222', tickfont: { size: 12 }},
+            yaxis: { title: 'Timestamp (ms)', color: '#222', tickfont: { size: 12 }},
+            margin: { l: 0, r: 0, b: 30, t: 0 }
+          }, {responsive: true});
+        }
+        function isWebGLAvailable() {
+          try {
+            const canvas = document.createElement('canvas');
+            return !!window.WebGLRenderingContext && !!(
+              canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+            );
+          } catch(e) { return false; }
+        }
+        if (isWebGLAvailable()) {
+          plot3D();
+        } else {
+          plot2D();
+        }
       })
       .catch(() => {
         document.getElementById('pulse-feed-list').innerHTML = '<div>Error loading pulse data.</div>';
+        document.getElementById('pulse-3d-graph').style.display = 'none';
+        document.getElementById('pulse-2d-graph').style.display = '';
       });
     </script>
 </body>
