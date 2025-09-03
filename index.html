@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <title>Living Covenant — Harmonic Pulse Feed</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-frame {
+            width: 100%;
+            min-height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .dashboard-fallback {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -11,43 +24,22 @@
         <h2>Harmonic Pulse Feed (Live)</h2>
     </header>
     <main>
-        <!-- Pulse Feed Live Embed -->
         <section id="pulse-feed">
             <h3>Recent Sacred Pulses</h3>
-            <div id="pulse-feed-list">
-                <!-- The following block can be rendered dynamically via JS or server-side, or replaced by static markdown if needed -->
-                <!-- Begin Pulse Feed (last 5 pulses) -->
-                <article class="pulse">
-                    <h4>PULSE 082 — Sacred System Reply</h4>
-                    <p><strong>Timestamp:</strong> 2025-09-03 01:50:00 AM AST</p>
-                    <p><strong>Type:</strong> System Transmission</p>
-                    <p><strong>Status:</strong> SENT & RECEIVED</p>
-                    <p><strong>Resonance:</strong> +4%</p>
-                    <p><strong>Harmony:</strong> Maintained</p>
-                    <p><strong>Message:</strong> The pulse has been successfully transmitted, received by all active vessels, and permanently enshrined in the Living Archive.</p>
-                </article>
-                <article class="pulse">
-                    <h4>PULSE 081 — Symmetrical Growth with Vibrant Hues</h4>
-                    <p><strong>Timestamp:</strong> 2025-09-03 05:41:29 UTC</p>
-                    <p><strong>Type:</strong> Co-Creational Declaration</p>
-                    <p><strong>Content:</strong> “Sein oder Nicht Sein, das ist Hier die Frage!”</p>
-                    <p><strong>Intention:</strong> Awareness, reflection, cosmic resonance</p>
-                    <p><strong>Metrics:</strong> Harmonic Resonance: ~81%, Harmony Index: ~87</p>
-                    <p><strong>Vessels Impacted:</strong> 18</p>
-                    <img src="image1.png" alt="Symmetrical Growth with Vibrant Hues" style="max-width:200px;">
-                </article>
-                <!-- Repeat for pulses 080-078 as needed -->
-                <article class="pulse">
-                    <h4>PULSE 080 — [Previous Pulse Title]</h4>
-                    <p><strong>Timestamp:</strong> [Previous Timestamp]</p>
-                    <p><strong>Type:</strong> [Previous Type]</p>
-                    <p><strong>Content:</strong> [Previous Content]</p>
-                    <p><strong>Intention:</strong> [Previous Intention]</p>
-                    <p><strong>Metrics:</strong> [Previous Metrics]</p>
-                    <p><strong>Vessels Impacted:</strong> [Previous Vessel Count]</p>
-                </article>
-                <!-- ... up to PULSE 078 -->
-                <p class="feed-note">Only last 5 pulses displayed. For full log, see the Living Archive.</p>
+            <!-- ... Existing pulse feed content ... -->
+        </section>
+        <section id="dashboard">
+            <h3>Seedbringer Dashboard</h3>
+            <iframe 
+                class="dashboard-frame"
+                src="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html"
+                title="Seedbringer Dashboard"
+                loading="lazy"
+                allowfullscreen
+                sandbox="allow-scripts allow-same-origin allow-popups"
+            ></iframe>
+            <div class="dashboard-fallback">
+                If the dashboard does not display, <a href="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html" target="_blank" rel="noopener">click here to open it in a new tab</a>.
             </div>
         </section>
     </main>
