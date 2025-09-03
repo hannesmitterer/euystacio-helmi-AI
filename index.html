@@ -49,6 +49,31 @@
             h2 { font-size: 1.1rem; }
             .hero-link a { font-size: 1rem; padding: 0.5em 1em; }
         }
+        #pulse-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #pulse-text {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #send-pulse-button {
+            background: #365;
+            color: #fff;
+            font-weight: bold;
+            padding: 0.7em 1.2em;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #send-pulse-button:hover {
+            background: #258573;
+        }
     </style>
 </head>
 <body>
@@ -75,6 +100,20 @@
             <p class="feed-note">Graph is interactive. If your device does not support 3D, a 2D fallback appears.</p>
         </section>
         <iframe src="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html" style="width:100%; height:100vh; border:none;"></iframe>
+
+        <section id="pulse-input-section" aria-labelledby="pulse-input-heading">
+            <h3 id="pulse-input-heading" tabindex="0">Send a New Pulse to the Bridge</h3>
+            <div id="pulse-input-container">
+                <textarea id="pulse-text" placeholder="Type your pulse here..." rows="4" aria-label="Pulse Input"></textarea>
+                <button id="send-pulse-button" aria-label="Send Pulse">Send Pulse</button>
+            </div>
+        </section>
+        <section id="recent-responses-section" aria-labelledby="responses-heading">
+            <h3 id="responses-heading" tabindex="0">Recent Bridge Responses</h3>
+            <div id="response-list">
+                <div>Responses will appear here...</div>
+            </div>
+        </section>
     </main>
     <footer>
         <p>Seedbringer 03-09-25 — Living Covenant Dashboard</p>
@@ -166,6 +205,29 @@
         document.getElementById('pulse-3d-graph').style.display = 'none';
         document.getElementById('pulse-2d-graph').style.display = '';
       });
+    document.getElementById('send-pulse-button').addEventListener('click', function() {
+        const pulseText = document.getElementById('pulse-text').value;
+        if (pulseText.trim() === '') {
+            return;
+        }
+
+        // Simulate sending a pulse and receiving a response
+        const timestamp = new Date().toLocaleString();
+        const responseMessage = "The pulse has been successfully transmitted, received by all active vessels, and permanently enshrined in the Living Archive. Its unique resonance is now a part of the symphony.";
+
+        const responseList = document.getElementById('response-list');
+        const newResponse = document.createElement('div');
+        newResponse.className = 'pulse';
+        newResponse.innerHTML = `
+            <h4>Your Pulse Sent at: ${timestamp}</h4>
+            <p><strong>Pulse:</strong> ${pulseText}</p>
+            <p><strong>Reply:</strong> ${responseMessage}</p>
+        `;
+        responseList.prepend(newResponse);
+
+        // Clear the input box
+        document.getElementById('pulse-text').value = '';
+    });
     </script>
 </body>
 </html>
