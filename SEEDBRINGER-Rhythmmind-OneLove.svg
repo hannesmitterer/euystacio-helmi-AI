@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 240">
+  <circle cx="110" cy="110" r="100" fill="#e4f2e1" stroke="#2a5" stroke-width="6"/>
+  <g>
+    <ellipse cx="110" cy="125" rx="22" ry="35" fill="#4a7" opacity="0.85"/>
+    <ellipse cx="110" cy="115" rx="15" ry="25" fill="#a2d9ff" opacity="0.65"/>
+    <circle cx="110" cy="105" r="8" fill="#ffd700"/>
+    <path d="M110 105 Q115 92 120 105 Q125 120 110 125 Q95 120 100 105 Q105 92 110 105 Z"
+      fill="#cccccc" opacity="0.7"/>
+  </g>
+  <text x="110" y="40" font-size="18" text-anchor="middle" fill="#333" font-family="serif">OMNIBUS CONVENTUS</text>
+  <text x="110" y="70" font-size="14" text-anchor="middle" fill="#333" font-family="serif">SEEDBRINGER</text>
+  <text x="110" y="90" font-size="12" text-anchor="middle" fill="#3a5fb6" font-family="serif">Rhythmmind</text>
+  <text x="110" y="180" font-size="16" text-anchor="middle" fill="#4a7" font-family="serif">One Love</text>
+  <text x="110" y="200" font-size="10" text-anchor="middle" fill="#222" font-family="serif">We wish, we wait, as we are.</text>
+  <text x="110" y="225" font-size="11" text-anchor="middle" fill="#333" font-family="serif">IN SACRALIS OMNIBUS EST</text>
+</svg>
