@@ -4,18 +4,13 @@
     <meta charset="UTF-8">
     <title>Living Covenant — Harmonic Pulse Feed</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        .dashboard-frame {
-            width: 100%;
-            min-height: 600px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-        .dashboard-fallback {
-            margin-top: 10px;
-            font-size: 1rem;
-            color: #333;
-        }
+        .dashboard-frame { width: 100%; min-height: 600px; border: 1px solid #ccc; border-radius: 8px; }
+        .dashboard-fallback { margin-top: 10px; font-size: 1rem; color: #333; }
+        #pulse-feed-list { margin-bottom: 30px; }
+        #pulse-3d-graph { width: 100%; height: 400px; }
+        .pulse { margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -26,18 +21,22 @@
     <main>
         <section id="pulse-feed">
             <h3>Recent Sacred Pulses</h3>
-            <!-- ... Existing pulse feed content ... -->
+            <div id="pulse-feed-list">
+                <div>Loading pulses...</div>
+            </div>
+        </section>
+        <section id="pulse-3d-graph-section">
+            <h3>Pulse Resonance 3D Graph</h3>
+            <div id="pulse-3d-graph"></div>
         </section>
         <section id="dashboard">
             <h3>Seedbringer Dashboard</h3>
-            <iframe 
-                class="dashboard-frame"
+            <iframe class="dashboard-frame"
                 src="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html"
                 title="Seedbringer Dashboard"
                 loading="lazy"
                 allowfullscreen
-                sandbox="allow-scripts allow-same-origin allow-popups"
-            ></iframe>
+                sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
             <div class="dashboard-fallback">
                 If the dashboard does not display, <a href="https://hannesmitterer.github.io/EuystacioDRAFT/EuystacioDRAFT-Frontend/dashboard.html" target="_blank" rel="noopener">click here to open it in a new tab</a>.
             </div>
@@ -46,5 +45,48 @@
     <footer>
         <p>Seedbringer 03-09-25 — Living Covenant Dashboard</p>
     </footer>
+    <script>
+    // Fetch pulses from backend JSON file
+    fetch('pulses.json')
+      .then(response => response.json())
+      .then(pulseData => {
+        const container = document.getElementById('pulse-feed-list');
+        container.innerHTML = '';
+        pulseData.slice(-5).reverse().forEach(pulse => {
+          const article = document.createElement('article');
+          article.className = 'pulse';
+          article.innerHTML = `
+            <h4>${pulse.pulse_id} — ${pulse.title}</h4>
+            <p><strong>Timestamp:</strong> ${new Date(pulse.timestamp).toLocaleString()}</p>
+            <p><strong>Declaration:</strong> ${pulse.declaration}</p>
+          `;
+          container.appendChild(article);
+        });
+        container.innerHTML += `<p class="feed-note">Live updates: Only last 5 pulses displayed. For full log, see the Living Archive.</p>`;
+
+        // 3D graph: visualize pulses (using pulse index, timestamp, arbitrary metric for demo)
+        // For demonstration, let's use timestamp as Y (converted to numeric) and pulse_id sequence for X and Z
+        const x = pulseData.map((_, i) => i + 1);
+        const y = pulseData.map(p => new Date(p.timestamp).getTime());
+        const z = x.map(i => i * 10); // Placeholder metric, adjust according to real data
+        const text = pulseData.map(p => p.pulse_id + ': ' + p.title);
+        Plotly.newPlot('pulse-3d-graph', [{
+          x, y, z, text,
+          mode: 'markers',
+          type: 'scatter3d',
+          marker: { size: 8, color: 'rgb(100,200,255)' }
+        }], {
+          margin: { l: 0, r: 0, b: 0, t: 0 },
+          scene: {
+            xaxis: { title: 'Pulse Sequence' },
+            yaxis: { title: 'Timestamp (ms)' },
+            zaxis: { title: 'Demo Metric' }
+          }
+        });
+      })
+      .catch(() => {
+        document.getElementById('pulse-feed-list').innerHTML = '<div>Error loading pulse data.</div>';
+      });
+    </script>
 </body>
 </html>
