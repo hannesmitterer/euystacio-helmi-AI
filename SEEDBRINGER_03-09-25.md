@@ -1,0 +1,1 @@
+Resonance Mandala: Second Pillar Declaration and its full ceremonial text
