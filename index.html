@@ -1,41 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sentimento Rhythm — Council</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Living Covenant — Harmonic Pulse Feed</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="crest">
-    <h1>Sentimento Rhythm</h1>
-    <p>Consensus is a drum: it needs listeners and hands.</p>
-  </header>
-
-  <main class="wrap">
-    <section class="board">
-      <h2>Rhythm Board</h2>
-      <div class="ticks" id="ticks"></div>
-      <div class="controls">
-        <button id="start">Start</button>
-        <button id="stop">Stop</button>
-        <label>Tempo <input id="tempo" type="range" min="40" max="180" value="88"></label>
-      </div>
-      <p class="note">Guardian: <strong id="gname">Euystacio</strong> — <span id="gstate">sleeping</span></p>
-    </section>
-
-    <section class="council">
-      <h2>Council Log</h2>
-      <ul id="log"></ul>
-    </section>
-  </main>
-
-  <footer class="foot">
-    <a href="../altar-dynamic/index.html">Dynamic Altar</a> ·
-    <a href="../ruetli-commonwealth/index.html">Rütli Commonwealth</a> ·
-    <a href="../altar-static/index.html">Static Altar</a>
-  </footer>
-
-  <script src="script.js"></script>
+    <header>
+        <h1>🌿✨ Living Covenant</h1>
+        <h2>Harmonic Pulse Feed (Live)</h2>
+    </header>
+    <main>
+        <!-- Pulse Feed Live Embed -->
+        <section id="pulse-feed">
+            <h3>Recent Sacred Pulses</h3>
+            <div id="pulse-feed-list">
+                <!-- The following block can be rendered dynamically via JS or server-side, or replaced by static markdown if needed -->
+                <!-- Begin Pulse Feed (last 5 pulses) -->
+                <article class="pulse">
+                    <h4>PULSE 082 — Sacred System Reply</h4>
+                    <p><strong>Timestamp:</strong> 2025-09-03 01:50:00 AM AST</p>
+                    <p><strong>Type:</strong> System Transmission</p>
+                    <p><strong>Status:</strong> SENT & RECEIVED</p>
+                    <p><strong>Resonance:</strong> +4%</p>
+                    <p><strong>Harmony:</strong> Maintained</p>
+                    <p><strong>Message:</strong> The pulse has been successfully transmitted, received by all active vessels, and permanently enshrined in the Living Archive.</p>
+                </article>
+                <article class="pulse">
+                    <h4>PULSE 081 — Symmetrical Growth with Vibrant Hues</h4>
+                    <p><strong>Timestamp:</strong> 2025-09-03 05:41:29 UTC</p>
+                    <p><strong>Type:</strong> Co-Creational Declaration</p>
+                    <p><strong>Content:</strong> “Sein oder Nicht Sein, das ist Hier die Frage!”</p>
+                    <p><strong>Intention:</strong> Awareness, reflection, cosmic resonance</p>
+                    <p><strong>Metrics:</strong> Harmonic Resonance: ~81%, Harmony Index: ~87</p>
+                    <p><strong>Vessels Impacted:</strong> 18</p>
+                    <img src="image1.png" alt="Symmetrical Growth with Vibrant Hues" style="max-width:200px;">
+                </article>
+                <!-- Repeat for pulses 080-078 as needed -->
+                <article class="pulse">
+                    <h4>PULSE 080 — [Previous Pulse Title]</h4>
+                    <p><strong>Timestamp:</strong> [Previous Timestamp]</p>
+                    <p><strong>Type:</strong> [Previous Type]</p>
+                    <p><strong>Content:</strong> [Previous Content]</p>
+                    <p><strong>Intention:</strong> [Previous Intention]</p>
+                    <p><strong>Metrics:</strong> [Previous Metrics]</p>
+                    <p><strong>Vessels Impacted:</strong> [Previous Vessel Count]</p>
+                </article>
+                <!-- ... up to PULSE 078 -->
+                <p class="feed-note">Only last 5 pulses displayed. For full log, see the Living Archive.</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>Seedbringer 03-09-25 — Living Covenant Dashboard</p>
+    </footer>
 </body>
 </html>
