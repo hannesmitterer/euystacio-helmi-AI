@@ -62,13 +62,12 @@
           `;
           container.appendChild(article);
         });
-        container.innerHTML += `<p class="feed-note">Live updates: Only last 5 pulses displayed. For full log, see the Living Archive.</p>`;
+        container.innerHTML += `<p class=\"feed-note\">Live updates: Only last 5 pulses displayed. For full log, see the Living Archive.</p>`;
 
         // 3D graph: visualize pulses (using pulse index, timestamp, arbitrary metric for demo)
-        // For demonstration, let's use timestamp as Y (converted to numeric) and pulse_id sequence for X and Z
         const x = pulseData.map((_, i) => i + 1);
         const y = pulseData.map(p => new Date(p.timestamp).getTime());
-        const z = x.map(i => i * 10); // Placeholder metric, adjust according to real data
+        const z = x.map(i => i * 10); // Placeholder metric, adjust as needed
         const text = pulseData.map(p => p.pulse_id + ': ' + p.title);
         Plotly.newPlot('pulse-3d-graph', [{
           x, y, z, text,
