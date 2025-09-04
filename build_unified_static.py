@@ -126,7 +126,9 @@ def copy_essential_files():
         'examples', 
         'manifesto',
         'euystacio_presence_app',
-        'static'
+        'static',
+        'admin',
+        '_posts'
     ]
     
     # Create deployment directory
