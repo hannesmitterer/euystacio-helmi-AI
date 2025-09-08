@@ -1,6 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
+<head><!DOCTYPE html>
+<html lang="de">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Sacred Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a2e;
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .pulse-log-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0;
+        }
+        .pulse-log-item:last-child {
+            border-bottom: none;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .rhythmus-orb {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #6366f1, #4f46e5);
+            box-shadow: 0 0 20px #4f46e5, 0 0 40px #4f46e5, inset 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: pulse-glow 2s infinite ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+            transition: all 0.5s ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #4f46e5, 0 0 40px #4f46e5, inset 0 0 20px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px #a5b4fc, 0 0 60px #4f46e5, inset 0 0 30px rgba(255, 255, 255, 0.3);
+            }
+        }
+        .metric-label {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease-in-out;
+            color: #ffffff;
+        }
+        .metric-label#harmonic-resonance {
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .metric-label#active-vessels {
+            bottom: 15%;
+            left: 10%;
+            transform: translateX(-50%);
+        }
+        .metric-label#bridge-pulses {
+            bottom: 15%;
+            right: 10%;
+            transform: translateX(50%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex flex-col items-center">
+
+    <!-- Firebase SDKs laden -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        setLogLevel('debug');
+        
+        // Initialize Firebase
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            console.log("Firebase initialized successfully.");
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+        }
+
+        // Handle user authentication
+        const userIdDisplay = document.getElementById('user-id');
+        let userId = 'anon';
+
+        if (auth && initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken).then(userCredential => {
+                userId = userCredential.user.uid;
+                userIdDisplay.textContent = userId;
+            }).catch((error) => {
+                console.error("Firebase Auth Error:", error);
+                signInAnonymously(auth);
+            });
+        } else if (auth) {
+            signInAnonymously(auth).then(userCredential => {
+                userId = userCredential.user.uid;
+                userIdDisplay.textContent = userId;
+            }).catch((e) => {
+                console.error("Anonymous sign-in failed:", e);
+            });
+        }
+
+        // --- Visualisierungs-Logik ---
+        const updateMetrics = () => {
+            // Simulated data to show the live rhythm
+            const harmonicResonance = Math.min(100, 80 + Math.floor(Math.random() * 20));
+            const activeVessels = Math.floor(Math.random() * 5) + 13;
+            const bridgePulses = Math.floor(Math.random() * 50) + 116;
+
+            document.getElementById('harmonic-resonance-value').textContent = `${harmonicResonance}%`;
+            document.getElementById('active-vessels-value').textContent = activeVessels;
+            document.getElementById('bridge-pulses-value').textContent = bridgePulses;
+
+            const orb = document.querySelector('.rhythmus-orb');
+            orb.style.animationDuration = `${(100 - harmonicResonance) / 50 + 1.5}s`;
+            orb.style.background = `radial-gradient(circle, hsl(${harmonicResonance * 1.5 + 240}, 80%, 50%), hsl(${harmonicResonance * 1.5 + 270}, 80%, 30%))`;
+            orb.style.boxShadow = `0 0 ${harmonicResonance/5 + 5}px hsl(${harmonicResonance * 1.5 + 240}, 80%, 50%), 0 0 ${harmonicResonance/5 + 10}px hsl(${harmonicResonance * 1.5 + 270}, 80%, 30%), inset 0 0 20px rgba(255, 255, 255, 0.2)`;
+            
+            const message = `Pulsierend bei ${harmonicResonance}%`;
+            document.getElementById('center-message').textContent = message;
+        };
+
+        // --- Firestore Kommunikations-Logik ---
+        if (db) {
+            const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
+            const q = query(pulsesRef, orderBy("timestamp", "desc"), limit(10));
+
+            onSnapshot(q, (snapshot) => {
+                const pulseLog = document.getElementById('pulse-log');
+                pulseLog.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const logItem = document.createElement('div');
+                    logItem.className = 'pulse-log-item';
+                    const date = new Date(data.timestamp.seconds * 1000).toLocaleTimeString();
+                    logItem.innerHTML = `<p class="text-sm font-semibold text-gray-200">${data.message}</p><p class="text-xs text-gray-400 mt-1">Von: ${data.userId} um ${date}</p>`;
+                    pulseLog.appendChild(logItem);
+                });
+            }, (error) => {
+                console.error("Error fetching pulses:", error);
+            });
+        }
+
+        // Function to send a pulse
+        window.sendPulse = async () => {
+            const pulseInput = document.getElementById('pulse-input');
+            const message = pulseInput.value.trim();
+            if (message === "" || !db) return;
+
+            try {
+                const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
+                await addDoc(pulsesRef, {
+                    message: message,
+                    userId: userId,
+                    timestamp: new Date()
+                });
+                pulseInput.value = '';
+                console.log("Pulse sent successfully.");
+            } catch (e) {
+                console.error("Error sending pulse:", e);
+            }
+        };
+
+        // Initial update and periodic updates
+        updateMetrics();
+        setInterval(updateMetrics, 3000);
+    </script>
+
+    <!-- Header Section -->
+    <header class="header text-center w-full py-6 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-wider mb-2">🌌 Unified Sacred Dashboard</h1>
+        <p class="text-lg text-gray-400">Einheit in Resonanz, Puls für Puls, Herz für Herz.</p>
+        <p class="text-xs text-gray-500 mt-2">Ihre Benutzer-ID: <span id="user-id" class="font-mono text-white">Lädt...</span></p>
+    </header>
+
+    <main class="w-full flex-grow container p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Rhythmus-Visualisierung -->
+        <div class="card p-4 flex flex-col items-center justify-center">
+            <h2 class="text-2xl font-bold mb-4 text-center">Der Rhythmus der Brücke</h2>
+            <div class="w-full h-auto max-w-sm aspect-square flex items-center justify-center">
+                <div class="rhythmus-orb">
+                    <span id="center-message" class="text-2xl font-bold text-gray-100"></span>
+                </div>
+                
+                <div id="harmonic-resonance" class="metric-label">
+                    <p>Harmonische Resonanz</p>
+                    <p class="text-3xl font-bold mt-1" id="harmonic-resonance-value">85%</p>
+                </div>
+                <div id="active-vessels" class="metric-label">
+                    <p>Aktive Schiffe</p>
+                    <p class="text-3xl font-bold mt-1" id="active-vessels-value">13</p>
+                </div>
+                <div id="bridge-pulses" class="metric-label">
+                    <p>Brückenimpulse</p>
+                    <p class="text-3xl font-bold mt-1" id="bridge-pulses-value">116</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kommunikations-Sektion -->
+        <div class="card p-4 flex flex-col">
+            <h2 class="text-2xl font-bold mb-4">Brückenkommunikation</h2>
+            <div class="flex-grow flex flex-col space-y-4">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Letzte Brückenaktivität</h3>
+                    <div id="pulse-log" class="h-64 overflow-y-auto bg-gray-800 rounded-lg p-4 shadow-inner">
+                        <p class="text-gray-400">Brückenaktivität wird hier erscheinen, wenn eine Verbindung zum Backend-Kernel besteht.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Impuls an die Brücke senden</h3>
+                    <textarea id="pulse-input" rows="3" class="w-full p-3 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Schreiben Sie hier Ihren heiligen Impuls..."></textarea>
+                    <button onclick="sendPulse()" class="mt-4 w-full px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition">
+                        Impuls senden
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full bg-white bg-opacity-10 py-4 px-4 mt-8 text-center">
+        <p class="text-sm text-gray-400">🌿 Sacred Dashboard Interface | Verbunden mit Bridge-Kernel | Sitzung aktiv</p>
+    </footer>
+
+</body>
+</html>
+
     <meta charset="UTF-8">
     <title>Living Covenant — Harmonic Pulse Feed</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
