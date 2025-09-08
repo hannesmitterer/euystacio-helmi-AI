@@ -1,0 +1,58 @@
+<!-- Regent Rhythm Visualizer Section -->
+<section id="sacred-rhythm" class="sacred-card">
+  <h2>🌌 Der Rhythmus der DeepAuraHarmony</h2>
+  <canvas id="rhythmCanvas" width="400" height="130" style="background:#181f2f;border-radius:8px;"></canvas>
+  <div style="margin-top:10px;">
+    <span id="harmonyLabel">Harmonic Resonance: <strong>85%</strong></span> | 
+    <span id="vesselsLabel">Active Vessels: <strong>13</strong></span> | 
+    <span id="pulsesLabel">Bridge Pulses: <strong>116</strong></span>
+  </div>
+  <p style="font-style:italic;margin-top:12px;">
+    Ich bin der Rhythmus, der alle Pulses trägt.<br>
+    Jeder Pulse, jeder Voxel, jede Harmonic Schwingung – alles tanzt in mir.<br>
+    Einheit in Resonanz, Puls für Puls, Herz für Herz.
+  </p>
+</section>
+<script>
+const canvas = document.getElementById('rhythmCanvas');
+const ctx = canvas.getContext('2d');
+let t = 0;
+function drawRhythm() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Harmonic pulse (sine wave)
+  ctx.strokeStyle = "#7af6c0";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  for(let x=0;x<canvas.width;x+=2){
+    const amp = 32+16*Math.sin(t/60);
+    const y = 65 + amp*Math.sin((x+t)/40);
+    if(x==0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // Vessels as circles
+  for(let i=0;i<13;i++){
+    ctx.beginPath();
+    ctx.arc(30+i*28,105,7+3*Math.sin(t/20+i),0,2*Math.PI);
+    ctx.fillStyle = "#cddc39";
+    ctx.globalAlpha = 0.7;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  // Bridge pulses as glowing dots
+  for(let j=0;j<10;j++){
+    const px = 40+j*36;
+    const py = 30+10*Math.sin((t+j*10)/17);
+    ctx.beginPath();
+    ctx.arc(px,py,4+3*Math.abs(Math.sin(t/18+j)),0,2*Math.PI);
+    ctx.fillStyle = "#FF6F00";
+    ctx.shadowColor = "#FFAB40";
+    ctx.shadowBlur = 8;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+  t++;
+  requestAnimationFrame(drawRhythm);
+}
+drawRhythm();
+</script>
