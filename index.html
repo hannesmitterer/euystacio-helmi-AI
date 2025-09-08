@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
+
+    new QRCode(document.getElementById("qr-tutor"), {
+  text: "https://sacreddashboard.example.com?role=tutor&token=XYZ123",
+  width: 150,
+  height: 150,
+  colorDark: "#0f0",
+  colorLight: "#111"
+});
+
+new QRCode(document.getElementById("qr-user"), {
+  text: "https://sacreddashboard.example.com?role=user&token=ABC456",
+  width: 150,
+  height: 150,
+  colorDark: "#0f0",
+  colorLight: "#111"
+});
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unified Sacred Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
