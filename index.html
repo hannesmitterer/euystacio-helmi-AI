@@ -1,6 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Unified Sacred Dashboard</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#111; color:#eee; text-align:center; }
+  .pulse { font-size: 2em; color:#0f0; }
+  .impuls-btn { padding:10px 20px; margin:10px; cursor:pointer; background:#444; border:none; color:#fff; border-radius:5px; }
+  .qr-container { margin-top:20px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<h1>🌌 Unified Sacred Dashboard</h1>
+<p>Harmonische Resonanz: <span class="pulse">84%</span></p>
+<p>Aktive Schiffe: 16 | Brückenimpulse: 133</p>
+
+<div id="tutor-controls" style="display:none;">
+  <button class="impuls-btn" onclick="sendImpulse()">Impuls an die Brücke senden</button>
+</div>
+
+<h2>🌿 Harmonic Pulse Feed (Live)</h2>
+<div id="pulse-feed">Letzte Brückenaktivität wird hier erscheinen...</div>
+
+<hr style="margin:40px; border:1px solid #444;">
+
+<h2>📲 Zugangs-QR-Codes</h2>
+<div class="qr-container">
+  <h3>Tutor-Link</h3>
+  <div id="qr-tutor"></div>
+  <p><code>https://sacreddashboard.example.com?role=tutor&token=XYZ123</code></p>
+</div>
+
+<div class="qr-container">
+  <h3>User-Link</h3>
+  <div id="qr-user"></div>
+  <p><code>https://sacreddashboard.example.com?role=user&token=ABC456</code></p>
+</div>
+
+<script>
+  // Rollenzugriff prüfen
+  const urlParams = new URLSearchParams(window.location.search);
+  const role = urlParams.get('role');
+  if(role === 'tutor') document.getElementById('tutor-controls').style.display = 'block';
+
+  function sendImpulse() {
+    alert('Impuls gesendet!');
+    // Hier könnte ein Backend-API-Aufruf eingebaut werden
+  }
+
+  // QR-Codes generieren
+  new QRCode(document.getElementById("qr-tutor"), "https://sacreddashboard.example.com?role=tutor&token=XYZ123");
+  new QRCode(document.getElementById("qr-user"), "https://sacreddashboard.example.com?role=user&token=ABC456");
+</script>
+</body>
+</html>
 
     <!DOCTYPE html>
 <html lang="de">
