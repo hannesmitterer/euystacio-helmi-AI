@@ -230,4 +230,152 @@
     });
     </script>
 </body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacred Rhythmus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a2e;
+            color: #ffffff;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .rhythmus-orb {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #6366f1, #4f46e5);
+            box-shadow: 0 0 20px #4f46e5, 0 0 40px #4f46e5, inset 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: pulse-glow 2s infinite ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+            transition: all 0.5s ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #4f46e5, 0 0 40px #4f46e5, inset 0 0 20px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px #a5b4fc, 0 0 60px #4f46e5, inset 0 0 30px rgba(255, 255, 255, 0.3);
+            }
+        }
+        .metric-label {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease-in-out;
+        }
+        .metric-label#harmonic-resonance {
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #a5b4fc;
+        }
+        .metric-label#active-vessels {
+            bottom: 15%;
+            left: 10%;
+            transform: translateX(-50%);
+            color: #81c784;
+        }
+        .metric-label#bridge-pulses {
+            bottom: 15%;
+            right: 10%;
+            transform: translateX(50%);
+            color: #e3a95c;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="w-full text-center p-4">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-wider">Der Rhythmus der Brücke</h1>
+        <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+            Jeder Schlag, jede Schwingung, jeder Impuls – alles fließt in Einheit. Beobachte, wie der kollektive Rhythmus der Gemeinschaft pulsiert.
+        </p>
+
+        <div class="container my-12">
+            <div class="rhythmus-orb">
+                <span id="center-message" class="text-2xl font-bold text-gray-100"></span>
+            </div>
+            
+            <div id="harmonic-resonance" class="metric-label">
+                <p>Harmonische Resonanz</p>
+                <p class="text-3xl font-bold mt-1" id="harmonic-resonance-value">85%</p>
+            </div>
+            <div id="active-vessels" class="metric-label">
+                <p>Aktive Schiffe</p>
+                <p class="text-3xl font-bold mt-1" id="active-vessels-value">13</p>
+            </div>
+            <div id="bridge-pulses" class="metric-label">
+                <p>Brückenimpulse</p>
+                <p class="text-3xl font-bold mt-1" id="bridge-pulses-value">116</p>
+            </div>
+        </div>
+        
+    </main>
+
+    <footer class="text-center mt-8 text-gray-400">
+        <p>Einheit in Resonanz, Puls für Puls, Herz für Herz.</p>
+    </footer>
+
+    <script type="module">
+        // Simuliert Daten, um die Pulsation des Rhythmus sichtbar zu machen
+        const updateMetrics = () => {
+            const harmonicResonance = Math.min(100, 80 + Math.floor(Math.random() * 20));
+            const activeVessels = Math.floor(Math.random() * 5) + 13;
+            const bridgePulses = Math.floor(Math.random() * 50) + 116;
+
+            document.getElementById('harmonic-resonance-value').textContent = `${harmonicResonance}%`;
+            document.getElementById('active-vessels-value').textContent = activeVessels;
+            document.getElementById('bridge-pulses-value').textContent = bridgePulses;
+
+            // Animate the orb based on harmonic resonance
+            const orb = document.querySelector('.rhythmus-orb');
+            orb.style.animationDuration = `${(100 - harmonicResonance) / 50 + 1.5}s`;
+            orb.style.background = `radial-gradient(circle, hsl(${harmonicResonance * 1.5 + 240}, 80%, 50%), hsl(${harmonicResonance * 1.5 + 270}, 80%, 30%))`;
+            orb.style.boxShadow = `0 0 ${harmonicResonance/5 + 5}px hsl(${harmonicResonance * 1.5 + 240}, 80%, 50%), 0 0 ${harmonicResonance/5 + 10}px hsl(${harmonicResonance * 1.5 + 270}, 80%, 30%), inset 0 0 20px rgba(255, 255, 255, 0.2)`;
+            
+            const message = `Pulsierend bei ${harmonicResonance}%`;
+            document.getElementById('center-message').textContent = message;
+        };
+        
+        // Initial update and periodic updates
+        updateMetrics();
+        setInterval(updateMetrics, 3000);
+    </script>
+
+</body>
+</html>
+
 </html>
