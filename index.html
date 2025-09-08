@@ -5,633 +5,253 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unified Sacred Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@700&display=swap');
-
-        /* Farbpalette für Sand, Erde und Wald */
-        :root {
-            --color-sand: #d4a373;
-            --color-earth: #a0522d;
-            --color-forest-dark: #22332c;
-            --color-forest-light: #5f7a63;
-            --color-accent-gold: #c29f42;
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.128/build/three.module.js",
+                "three/examples/jsm/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.128/examples/jsm/controls/OrbitControls.js"
+            }
         }
-
-        /* Globale Stile und Hintergrundanimation */
+    </script>
+    <style>
         body {
             font-family: 'Inter', sans-serif;
-            color: #ffffff;
-            line-height: 1.6;
-            min-height: 100vh;
+            background-color: #f3f4f6;
+            color: #374151;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            background: radial-gradient(at 70% 30%, var(--color-earth), transparent), 
-                        radial-gradient(at 10% 90%, var(--color-forest-dark), transparent), 
-                        radial-gradient(at 90% 90%, var(--color-sand), transparent), 
-                        var(--color-forest-light);
-            background-size: 200% 200%;
-            animation: background-pulse 18s infinite ease-in-out;
-            background-attachment: fixed;
-            background-position: center;
         }
 
-        @keyframes background-pulse {
-            0% { background-position: 50% 50%; background-color: var(--color-forest-light); }
-            25% { background-position: 30% 70%; background-color: var(--color-forest-dark); }
-            50% { background-position: 70% 30%; background-color: var(--color-earth); }
-            75% { background-position: 90% 10%; background-color: var(--color-sand); }
-            100% { background-position: 50% 50%; background-color: var(--color-forest-light); }
-        }
-
-        h1, h2, #harmonic-resonance-value {
-            font-family: 'Orbitron', sans-serif;
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            gap: 2rem;
+            grid-template-areas:
+                "header header"
+                "visual visual"
+                "pulse pulse"
+                "metrics metrics";
+            grid-template-columns: 1fr 1fr;
         }
         
-        /* Karten- und Panel-Stile */
-        .panel {
-            background-color: rgba(34, 51, 44, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-        .panel:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1);
+        @media (min-width: 1024px) {
+            .dashboard-container {
+                grid-template-areas:
+                    "header header"
+                    "visual visual"
+                    "pulse metrics";
+            }
         }
 
-        /* Puls-Feed Stile */
-        .pulse-log-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.75rem 0;
-            animation: fade-in 0.5s ease-out;
-        }
-        .pulse-log-item:first-child { animation: fade-in 0.5s ease-out; }
-        .pulse-log-item:last-child { border-bottom: none; }
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .pulse-feed-container {
-            border: 1px solid var(--color-accent-gold);
-            background-color: rgba(0, 0, 0, 0.2);
-        }
-        .pulse-feed-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        .pulse-feed-container::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        .pulse-feed-container::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        /* Ewiger Ring Stile */
-        .ewiger-ring {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--color-sand), var(--color-earth), var(--color-forest-light));
-            box-shadow: 0 0 20px var(--color-forest-dark), 0 0 40px var(--color-earth), 0 0 60px var(--color-sand);
-            animation: ring-glow 3s infinite ease-in-out;
+        .header {
+            grid-area: header;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            transition: all 0.5s ease-in-out;
-            border: 2px solid var(--color-sand);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .panel {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 2rem;
         }
-        @keyframes ring-glow {
-            0%, 100% {
-                box-shadow: 0 0 20px var(--color-forest-dark), 0 0 40px var(--color-earth), 0 0 60px var(--color-sand);
-            }
-            50% {
-                box-shadow: 0 0 30px var(--color-earth), 0 0 60px var(--color-sand), 0 0 90px var(--color-forest-light);
-            }
-        }
 
-        /* Lade- und Trend-Indikatoren */
-        .loader {
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top: 4px solid var(--color-forest-light);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .trend-up { color: var(--color-forest-light); }
-        .trend-down { color: var(--color-sand); }
-        
-        /* Benutzerfreundliche Buttons und Formulare */
-        .impuls-btn {
-            background-color: var(--color-earth);
-            color: #fff;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        .impuls-btn:hover {
-            background-color: var(--color-accent-gold);
-            transform: scale(1.02);
-        }
-        .copy-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .copy-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
-        /* 3D Canvas Styles */
-        #three-container {
+        .visualizer-panel {
+            grid-area: visual;
+            height: 500px;
             position: relative;
-            width: 100%;
-            height: 100%;
-            min-height: 200px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            border-radius: 1rem;
+        }
+
+        .pulse-panel {
+            grid-area: pulse;
+        }
+
+        .metrics-panel {
+            grid-area: metrics;
+        }
+
+        .button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .pulse-log-item {
+            padding: 0.5rem 1rem;
+            background-color: #f9f9f9;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .logo-image {
+            width: 150px;
+            height: auto;
+            border-radius: 0.75rem;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script type="module" defer>
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, onSnapshot, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Globale Variablen, die von der Umgebung bereitgestellt werden
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        
-        setLogLevel('debug');
-        
-        let app, db, auth;
-        let previousMetrics = {};
-        
-        // Funktion, um einen visuellen Puls auf der 3D-Grafik auszulösen
-        let triggerPulseEffect = () => {};
-
-        // Initialisiert die Firebase-Verbindung und die Benutzeroberfläche
-        const initApp = async () => {
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const contentArea = document.getElementById('content-area');
-            const connectionIndicator = document.getElementById('connection-indicator');
-            
-            loadingSpinner.style.display = 'flex';
-            connectionIndicator.classList.remove('bg-green-500', 'bg-red-500');
-            connectionIndicator.classList.add('bg-yellow-500');
-
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                loadingSpinner.style.display = 'none';
-                contentArea.style.display = 'flex';
-                connectionIndicator.classList.remove('bg-yellow-500');
-                connectionIndicator.classList.add('bg-green-500');
-                setupRealtimeListeners();
-            } catch (e) {
-                console.error("Firebase-Initialisierung fehlgeschlagen:", e);
-                loadingSpinner.style.display = 'none';
-                contentArea.innerHTML = `<p class="text-red-400">Fehler beim Initialisieren der App. Bitte überprüfen Sie die Konfiguration.</p>`;
-                connectionIndicator.classList.remove('bg-yellow-500');
-                connectionIndicator.classList.add('bg-red-500');
-                showMessage('Fehler bei der Verbindung zum Dashboard.', 'error');
-            }
-        };
-
-        // Richten Sie Echtzeit-Listener für den Puls-Feed ein
-        const setupRealtimeListeners = () => {
-            const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
-            const q = query(pulsesRef);
-
-            onSnapshot(q, (snapshot) => {
-                // Check for new documents to trigger the 3D pulse effect
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        triggerPulseEffect();
-                    }
-                });
-
-                const pulseLog = document.getElementById('pulse-feed');
-                const fragment = document.createDocumentFragment();
-                let hasPulses = false;
-                
-                const pulses = [];
-                snapshot.forEach(doc => pulses.push(doc.data()));
-                
-                pulses.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds);
-                
-                pulses.forEach((data) => {
-                    const logItem = document.createElement('div');
-                    logItem.className = 'pulse-log-item text-gray-300';
-                    const date = new Date(data.timestamp.seconds * 1000).toLocaleTimeString();
-                    const isCurrentUser = auth.currentUser?.uid === data.userId;
-                    
-                    if (isCurrentUser) {
-                        logItem.innerHTML = `<p class="text-sm font-semibold text-white text-right">${data.message}</p><p class="text-xs text-gray-500 mt-1 text-right">Sie um ${date}</p>`;
-                    } else {
-                        logItem.innerHTML = `<p class="text-sm font-semibold text-white">${data.message}</p><p class="text-xs text-gray-500 mt-1">von: ${data.userId} um ${date}</p>`;
-                    }
-                    
-                    fragment.appendChild(logItem);
-                    hasPulses = true;
-                });
-                
-                if (hasPulses) {
-                    pulseLog.innerHTML = '';
-                    pulseLog.appendChild(fragment);
-                    pulseLog.scrollTop = pulseLog.scrollHeight; // Scrollt nach unten
-                } else {
-                    pulseLog.innerHTML = '<p class="text-sm text-gray-500">Es wurden noch keine Impulse gesendet...</p>';
-                }
-            }, (error) => {
-                console.error("Fehler beim Abrufen der Impulse:", error);
-                showMessage('Konnte den Live-Feed nicht laden.', 'error');
-            });
-        };
-
-        // Update der Metrikwerte alle 3 Sekunden
-        const updateMetrics = () => {
-            const metrics = {
-                harmonicResonance: Math.min(100, 80 + Math.floor(Math.random() * 20)),
-                activeVessels: Math.floor(Math.random() * 5) + 13,
-                bridgePulses: Math.floor(Math.random() * 50) + 116
-            };
-
-            const harmonicResonanceEl = document.getElementById('harmonic-resonance-value');
-            const activeVesselsEl = document.getElementById('active-vessels-value');
-            const bridgePulsesEl = document.getElementById('bridge-pulses-value');
-
-            harmonicResonanceEl.textContent = `${metrics.harmonicResonance}%`;
-            activeVesselsEl.textContent = metrics.activeVessels;
-            bridgePulsesEl.textContent = metrics.bridgePulses;
-            
-            updateTrend(harmonicResonanceEl.parentElement, metrics.harmonicResonance, previousMetrics.harmonicResonance);
-            updateTrend(activeVesselsEl.parentElement, metrics.activeVessels, previousMetrics.activeVessels);
-            updateTrend(bridgePulsesEl.parentElement, metrics.bridgePulses, previousMetrics.bridgePulses);
-
-            previousMetrics = metrics;
-        };
-
-        // Trendindikator hinzufügen (aufwärts/abwärts)
-        const updateTrend = (el, current, previous) => {
-            const trendEl = el.querySelector('.trend-indicator');
-            if (trendEl) trendEl.remove();
-
-            if (previous !== undefined) {
-                const newTrendEl = document.createElement('span');
-                newTrendEl.className = 'trend-indicator ml-2 text-base';
-                if (current > previous) {
-                    newTrendEl.innerHTML = '&#9650;';
-                    newTrendEl.classList.add('trend-up');
-                    newTrendEl.setAttribute('aria-label', 'Wert gestiegen');
-                } else if (current < previous) {
-                    newTrendEl.innerHTML = '&#9660;';
-                    newTrendEl.classList.add('trend-down');
-                    newTrendEl.setAttribute('aria-label', 'Wert gesunken');
-                } else {
-                    return;
-                }
-                el.appendChild(newTrendEl);
-            }
-        };
-        
-        // Impuls an die Datenbank senden
-        window.sendImpulse = async () => {
-            const pulseInput = document.getElementById('pulse-input');
-            const message = pulseInput.value.trim();
-            if (message === "") {
-                showMessage('Bitte geben Sie eine Nachricht ein.', 'info');
-                return;
-            }
-            if (!db || !auth.currentUser) {
-                showMessage('Verbindung zur Datenbank nicht bereit.', 'error');
-                return;
-            }
-            
-            try {
-                const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
-                await addDoc(pulsesRef, {
-                    message: message,
-                    userId: auth.currentUser.uid,
-                    timestamp: new Date()
-                });
-                pulseInput.value = '';
-                showMessage('Impuls gesendet!', 'success');
-            } catch (e) {
-                console.error("Fehler beim Senden des Impulses:", e);
-                showMessage('Fehler beim Senden des Impulses.', 'error');
-            }
-        };
-        
-        // Fügt Enter-Taste für den Impulsversand hinzu
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const activeElement = document.activeElement;
-                if (activeElement && activeElement.id === 'pulse-input') {
-                    sendImpulse();
-                }
-            }
-        });
-
-        // Text in die Zwischenablage kopieren
-        window.copyToClipboard = async (elementId) => {
-            const copyText = document.getElementById(elementId).textContent;
-            try {
-                await navigator.clipboard.writeText(copyText);
-                showMessage('URL in die Zwischenablage kopiert!', 'success');
-            } catch (err) {
-                console.error('Fehler beim Kopieren der URL:', err);
-                showMessage('Fehler beim Kopieren.', 'error');
-            }
-        };
-
-        // Feedback-Nachrichten anzeigen
-        function showMessage(message, type = 'info') {
-            const messageBox = document.getElementById('message-box');
-            messageBox.textContent = message;
-            
-            messageBox.classList.remove('bg-green-400', 'bg-yellow-400', 'bg-red-400');
-            messageBox.classList.add('bg-white', 'text-gray-900', 'p-4', 'rounded-lg', 'shadow-lg');
-
-            if (type === 'success') {
-                messageBox.classList.add('bg-green-400', 'text-green-800');
-            } else if (type === 'error') {
-                messageBox.classList.add('bg-red-400', 'text-red-800');
-            } else {
-                messageBox.classList.add('bg-yellow-400', 'text-yellow-800');
-            }
-
-            messageBox.style.display = 'block';
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 3000);
-        }
-
-        // QR-Codes und Links generieren
-        const generateQRCodes = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const role = urlParams.get('role');
-            
-            const tutorUrl = `${window.location.origin}${window.location.pathname}?role=tutor`;
-            const userUrl = `${window.location.origin}${window.location.pathname}?role=user`;
-
-            document.getElementById("tutor-url").textContent = tutorUrl;
-            document.getElementById("user-url").textContent = userUrl;
-            document.getElementById('role-status').textContent = role || 'User';
-
-            if (role === 'tutor') {
-                document.getElementById('tutor-controls').style.display = 'block';
-            }
-
-            // QR-Code für Tutor
-            const qrTutorDiv = document.getElementById("qr-tutor");
-            qrTutorDiv.innerHTML = '';
-            new QRCode(qrTutorDiv, {
-                text: tutorUrl,
-                width: 128,
-                height: 128
-            });
-
-            // QR-Code für User
-            const qrUserDiv = document.getElementById("qr-user");
-            qrUserDiv.innerHTML = '';
-            new QRCode(qrUserDiv, {
-                text: userUrl,
-                width: 128,
-                height: 128
-            });
-        };
-        
-        // 3D-Visualisierung mit Three.js
-        const setup3DScene = () => {
-            const container = document.getElementById('three-container');
-            if (!container) return;
-
-            // Szene, Kamera und Renderer initialisieren
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setClearColor(0x000000, 0); // Transparenter Hintergrund
-            container.appendChild(renderer.domElement);
-
-            // Geometrie und Material erstellen (sanfte, erdige Farben)
-            const geometry = new THREE.IcosahedronGeometry(2, 1);
-            const initialColor = new THREE.Color(0x5f7a63);
-            const pulseColor = new THREE.Color(0xc29f42); // Golden accent color
-            const material = new THREE.MeshPhongMaterial({
-                color: initialColor,
-                specular: 0xc29f42,
-                shininess: 30,
-                transparent: true,
-                opacity: 0.8
-            });
-            const icosahedron = new THREE.Mesh(geometry, material);
-            scene.add(icosahedron);
-
-            // Lichtquellen hinzufügen
-            const ambientLight = new THREE.AmbientLight(0x404040); // Sanftes Umgebungslicht
-            scene.add(ambientLight);
-            const pointLight1 = new THREE.PointLight(0xd4a373, 1, 100);
-            pointLight1.position.set(5, 5, 5);
-            scene.add(pointLight1);
-            const pointLight2 = new THREE.PointLight(0xa0522d, 1, 100);
-            pointLight2.position.set(-5, -5, -5);
-            scene.add(pointLight2);
-
-            camera.position.z = 5;
-
-            // Mausinteraktion für die Rotation
-            let mouseX = 0, mouseY = 0;
-            let targetX = 0, targetY = 0;
-            const windowHalfX = window.innerWidth / 2;
-            const windowHalfY = window.innerHeight / 2;
-
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX - windowHalfX) * 0.0001;
-                mouseY = (event.clientY - windowHalfY) * 0.0001;
-            });
-
-            // Puls-Effekt-Variablen
-            let pulseScale = 1;
-            let targetScale = 1;
-
-            // Funktion, um den Puls-Effekt auszulösen
-            triggerPulseEffect = () => {
-                targetScale = 1.2; // Skaliert nach oben
-                material.color.lerp(pulseColor, 1); // Sofortige Farbänderung
-                
-                setTimeout(() => {
-                    targetScale = 1; // Skaliert nach unten
-                    material.color.lerp(initialColor, 1); // Sofortige Rückkehr zur Originalfarbe
-                }, 500);
-            };
-
-            // Animations-Loop
-            const animate = () => {
-                requestAnimationFrame(animate);
-
-                // Reibungslose Rotation basierend auf der Mausposition
-                targetX = mouseX * 2;
-                targetY = mouseY * 2;
-                icosahedron.rotation.y += (targetX - icosahedron.rotation.y) * 0.05;
-                icosahedron.rotation.x += (targetY - icosahedron.rotation.x) * 0.05;
-
-                // Reibungslose Animation der Skalierung für den Puls-Effekt
-                icosahedron.scale.x += (targetScale - icosahedron.scale.x) * 0.1;
-                icosahedron.scale.y += (targetScale - icosahedron.scale.y) * 0.1;
-                icosahedron.scale.z += (targetScale - icosahedron.scale.z) * 0.1;
-                
-                renderer.render(scene, camera);
-            };
-
-            // Responsive Anpassung
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-            
-            animate();
-        };
-
-        window.onload = () => {
-            initApp();
-            generateQRCodes();
-            setInterval(updateMetrics, 3000);
-            setup3DScene(); // Starten Sie die 3D-Szene, nachdem alles geladen ist
-        };
-    </script>
 </head>
-<body class="bg-gray-900 min-h-screen flex flex-col items-center p-8">
-
-    <!-- Lade-Spinner für den Start -->
-    <div id="loading-spinner" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
-        <div class="loader" role="status" aria-label="Dashboard wird geladen..."></div>
-    </div>
-
-    <!-- Feedback-Nachrichten-Box -->
-    <div id="message-box" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 rounded-lg shadow-lg z-50" role="alert" aria-live="polite" style="display:none;"></div>
-
-    <div id="content-area" class="w-full flex flex-col items-center" style="display:none;">
-        <!-- Header -->
-        <header class="w-full max-w-7xl mx-auto flex justify-between items-center py-4 px-6 rounded-xl shadow-lg mb-8 panel" role="banner" aria-label="Dashboard-Header">
-            <div class="flex items-center space-x-4">
-                <img src="/Euystacio_Core_Kernel .jpg" alt="Euystacio Core Kernel Logo" class="w-12 h-12 rounded-full border-2 border-yellow-300" />
-                <h1 class="text-2xl font-bold text-yellow-300">🌌 Unified Sacred Dashboard</h1>
-            </div>
-            <div class="flex items-center space-x-4 text-sm text-gray-400">
-                <div class="flex items-center">
-                    <span id="connection-indicator" class="w-2 h-2 rounded-full mr-2 bg-yellow-500" aria-label="Verbindungsstatus"></span>
-                    <span class="font-semibold">Status: <span class="text-pink-400" id="role-status" role="status">User</span></span>
-                </div>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <h1 class="text-4xl font-extrabold text-gray-900">Unified Sacred Dashboard</h1>
+            <p class="text-gray-500">Das spirituelle und technische Gleichgewicht überwachen.</p>
+            <div class="logo-container">
+                <img src="https://placehold.co/256x256/E5E7EB/1F2937?text=Euystacio%20Core%20Kernel" alt="Euystacio Core Kernel Logo" class="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/256x256/E5E7EB/1F2937?text=Euystacio%20Core%20Kernel';">
             </div>
         </header>
 
-        <!-- Hauptinhalt -->
-        <main class="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8" role="main" aria-label="Hauptinhalt des Dashboards">
-            <!-- 3D-Visualisierung -->
-            <div class="p-8 rounded-xl shadow-lg flex flex-col items-center justify-center panel" role="region" aria-label="3D-Visualisierung">
-                <h2 class="text-2xl font-bold text-yellow-300 mb-6">Harmonische Visualisierung</h2>
-                <div id="three-container" class="w-full h-full min-h-[300px] rounded-lg"></div>
-            </div>
+        <div class="visualizer-panel panel">
+            <h2 class="text-2xl font-bold mb-4">Core Kernel Visualisierung</h2>
+            <canvas id="visualizerCanvas"></canvas>
+        </div>
 
-            <!-- Kommunikations-Sektion (Chat) -->
-            <div class="p-8 rounded-xl shadow-lg flex flex-col panel" role="region" aria-label="Harmonischer Puls-Feed">
-                <h2 class="text-2xl font-bold text-yellow-300 mb-6">Harmonic Pulse Feed (Live)</h2>
-                <div id="pulse-feed" class="flex-grow rounded-lg p-4 shadow-inner overflow-y-auto mb-6 h-64 pulse-feed-container" role="log" aria-live="polite">
-                    <p class="text-sm text-gray-500">Es wurden noch keine Impulse gesendet...</p>
-                </div>
-                
-                <div class="flex flex-col">
-                    <label for="pulse-input" class="sr-only">Impuls-Nachricht eingeben</label>
-                    <textarea id="pulse-input" rows="3" class="w-full p-3 bg-gray-900 text-white rounded-lg border border-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-4 bg-opacity-50" placeholder="Senden Sie einen Impuls an die Brücke..."></textarea>
-                    <button onclick="sendImpulse()" class="impuls-btn w-full hover:bg-yellow-700 font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring-yellow-500" aria-label="Impuls senden">
-                        Impuls senden
-                    </button>
-                </div>
+        <div class="pulse-panel panel">
+            <h2 class="text-2xl font-bold">Harmonic Pulse Feed</h2>
+            <div id="pulseLog" class="bg-gray-100 p-4 rounded-lg h-64 overflow-y-auto mt-4">
+                <p class="text-gray-400">Keine Impulse empfangen.</p>
             </div>
+        </div>
 
-            <!-- Metrik-Sektion -->
-            <div class="p-8 rounded-xl shadow-lg flex flex-col items-center text-center panel" role="region" aria-label="Brückenstatus-Metriken">
-                <h2 class="text-2xl font-bold text-yellow-300 mb-6">Brückenstatus</h2>
-                <div class="w-full max-w-sm aspect-square flex flex-col items-center justify-center mb-6">
-                    <div class="ewiger-ring p-8 w-full h-full">
-                        <p class="text-5xl font-bold text-white flex items-center" id="harmonic-resonance-value" role="status" aria-live="polite">84%</p>
-                        <p class="text-sm text-gray-300 mt-2">Harmonische Resonanz</p>
-                    </div>
+        <div class="metrics-panel panel">
+            <h2 class="text-2xl font-bold mb-4">Zustandsmetriken</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg">Energiestatus:</span>
+                    <span id="energyStatus" class="font-semibold text-green-500">Normal</span>
                 </div>
-                
-                <div class="grid grid-cols-3 gap-4 w-full text-sm mt-4">
-                    <div>
-                        <p class="text-3xl font-bold text-white flex items-center justify-center" id="active-vessels-value" role="status" aria-live="polite">16</p>
-                        <p class="text-xs text-gray-400">Aktive Schiffe</p>
-                    </div>
-                    <div>
-                        <p class="text-3xl font-bold text-white flex items-center justify-center" id="bridge-pulses-value" role="status" aria-live="polite">133</p>
-                        <p class="text-xs text-gray-400">Brückenimpulse</p>
-                    </div>
-                    <div>
-                        <p class="text-3xl font-bold text-white">95</p>
-                        <p class="text-xs text-gray-400">Harmonie-Index</p>
-                    </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg">Harmonielevel:</span>
+                    <span id="harmonyLevel" class="font-semibold">85%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg">Latency:</span>
+                    <span id="latency" class="font-semibold">32ms</span>
                 </div>
             </div>
-
-            <!-- Dokumente & Ressourcen Sektion -->
-            <div class="p-8 rounded-xl shadow-lg flex flex-col panel md:col-span-2">
-                <h3 class="text-yellow-300 mb-4 text-center">Dokumente & Ressourcen</h3>
-                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
-                    <a href="https://www.nationalmuseum.ch/de/wissen/sammlung-online/details/eidgenossischer-bundesbrief-von-1291-58479/" target="_blank" rel="noopener noreferrer" class="impuls-btn text-center w-full md:w-auto" aria-label="Link zu Rütli Dokumenten">Rütli Dokumente</a>
-                    <a href="https://hannesmitterer.github.io/cleanrise/connect.html" target="_blank" rel="noopener noreferrer" class="impuls-btn text-center w-full md:w-auto" aria-label="Link zu Cleanrise-Website">Cleanrise Connect</a>
-                </div>
-            </div>
-            
-            <!-- QR-Code und Link-Sektionen -->
-            <div class="p-8 rounded-xl shadow-lg flex flex-col panel">
-                <h3 class="text-yellow-300 mb-4">Verbindungsteilung</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="qr-container flex flex-col items-center text-center">
-                        <h4 class="text-lg font-semibold text-gray-200">Tutor-Link</h4>
-                        <div id="qr-tutor" class="flex justify-center mt-2" role="img" aria-label="QR-Code für Tutor-Login"></div>
-                        <div class="flex items-center justify-center space-x-2 mt-4">
-                            <code id="tutor-url" class="text-xs text-gray-400 break-all"></code>
-                            <button onclick="copyToClipboard('tutor-url')" class="copy-btn text-xs px-2 py-1 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400" aria-label="Tutor-URL in die Zwischenablage kopieren">Kopieren</button>
-                        </div>
-                    </div>
-                    <div class="qr-container flex flex-col items-center text-center">
-                        <h4 class="text-lg font-semibold text-gray-200">User-Link</h4>
-                        <div id="qr-user" class="flex justify-center mt-2" role="img" aria-label="QR-Code für Benutzer-Login"></div>
-                        <div class="flex items-center justify-center space-x-2 mt-4">
-                            <code id="user-url" class="text-xs text-gray-400 break-all"></code>
-                            <button onclick="copyToClipboard('user-url')" class="copy-btn text-xs px-2 py-1 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400" aria-label="Benutzer-URL in die Zwischenablage kopieren">Kopieren</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+        // ------------------
+        // THREE.js Scene Setup
+        // ------------------
+        const canvas = document.getElementById('visualizerCanvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Core object setup (sacred geometry shape)
+        const geometry = new THREE.IcosahedronGeometry(2, 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x4B5563, // Dark grey
+            emissive: 0x1F2937,
+            shininess: 50,
+            flatShading: true,
+        });
+        const coreObject = new THREE.Mesh(geometry, material);
+        scene.add(coreObject);
+
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Add a directional light for highlights
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        camera.position.z = 5;
+
+        // ------------------
+        // Animation Loop
+        // ------------------
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Continuous rotation
+            coreObject.rotation.x += 0.005;
+            coreObject.rotation.y += 0.005;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        });
+
+        // Start the animation on window load.
+        window.onload = function () {
+            animate();
+        };
+
+        // ------------------
+        // Dashboard Logic (Simulated data)
+        // ------------------
+        const energyStatus = document.getElementById('energyStatus');
+        const harmonyLevel = document.getElementById('harmonyLevel');
+        const latency = document.getElementById('latency');
+
+        function updateMetrics() {
+            const newEnergyStatus = Math.random() > 0.1 ? 'Normal' : 'Anomalie';
+            energyStatus.textContent = newEnergyStatus;
+            energyStatus.className = newEnergyStatus === 'Normal' ? 'font-semibold text-green-500' : 'font-semibold text-red-500';
+
+            const newHarmonyLevel = Math.floor(Math.random() * 20) + 80; // 80-100
+            harmonyLevel.textContent = `${newHarmonyLevel}%`;
+
+            const newLatency = Math.floor(Math.random() * 50) + 20; // 20-70ms
+            latency.textContent = `${newLatency}ms`;
+        }
+        
+        // Initial update and subsequent updates every 5 seconds
+        updateMetrics();
+        setInterval(updateMetrics, 5000);
+    </script>
 </body>
 </html>
