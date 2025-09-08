@@ -8,6 +8,15 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@700&display=swap');
 
+        /* Definieren einer dynamischeren Farbpalette für Rhythmus und Harmonie */
+        :root {
+            --color-pulse-start: #1c0f38;
+            --color-pulse-end: #0d0d26;
+            --color-accent-1: #4a00e0;
+            --color-accent-2: #8e2de2;
+            --color-accent-3: #ffc000;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             color: #ffffff;
@@ -17,16 +26,23 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background: radial-gradient(at 70% 30%, #4a00e0, transparent), radial-gradient(at 10% 90%, #8e2de2, transparent), radial-gradient(at 90% 90%, #ffc000, transparent), #0d0d26;
+            background: radial-gradient(at 70% 30%, var(--color-accent-1), transparent), 
+                        radial-gradient(at 10% 90%, var(--color-accent-2), transparent), 
+                        radial-gradient(at 90% 90%, var(--color-accent-3), transparent), 
+                        var(--color-pulse-start);
             background-size: 200% 200%;
-            animation: background-pulse 15s infinite ease-in-out;
+            animation: background-pulse 18s infinite ease-in-out;
             background-attachment: fixed;
             background-position: center;
         }
 
+        /* Verfeinerte Animation für einen harmonischen, atmenden Effekt */
         @keyframes background-pulse {
-            0%, 100% { background-position: 50% 50%; }
-            50% { background-position: 70% 30%; }
+            0% { background-position: 50% 50%; background-color: var(--color-pulse-start); }
+            25% { background-position: 30% 70%; background-color: var(--color-pulse-end); }
+            50% { background-position: 70% 30%; background-color: var(--color-pulse-start); }
+            75% { background-position: 90% 10%; background-color: var(--color-pulse-end); }
+            100% { background-position: 50% 50%; background-color: var(--color-pulse-start); }
         }
 
         h1, h2, #harmonic-resonance-value {
@@ -39,11 +55,18 @@
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease-in-out;
+        }
+        .panel:hover {
+            transform: translateY(-5px);
         }
 
         .pulse-log-item {
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.75rem 0;
+            animation: fade-in 0.5s ease-out;
+        }
+        .pulse-log-item:first-child {
             animation: fade-in 0.5s ease-out;
         }
         .pulse-log-item:last-child {
@@ -89,98 +112,168 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .trend-up {
+            color: #86efac;
+        }
+        .trend-down {
+            color: #fca5a5;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
-    <script type="module">
+    <script type="module" defer>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, onSnapshot, collection, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, onSnapshot, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Globale Variablen, die von der Umgebung bereitgestellt werden
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
         setLogLevel('debug');
-
+        
         let app, db, auth;
         let previousMetrics = {};
-
+        
         const initApp = async () => {
-            document.getElementById('loading-spinner').style.display = 'block';
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const contentArea = document.getElementById('content-area');
+            const connectionIndicator = document.getElementById('connection-indicator');
+            
+            loadingSpinner.style.display = 'flex';
+            connectionIndicator.classList.remove('bg-green-500', 'bg-red-500');
+            connectionIndicator.classList.add('bg-yellow-500');
+
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                await signInAnonymously(auth);
-                document.getElementById('loading-spinner').style.display = 'none';
-                document.getElementById('content-area').style.display = 'flex';
+                
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                loadingSpinner.style.display = 'none';
+                contentArea.style.display = 'flex';
+                connectionIndicator.classList.remove('bg-yellow-500');
+                connectionIndicator.classList.add('bg-green-500');
                 setupRealtimeListeners();
             } catch (e) {
                 console.error("Firebase-Initialisierung fehlgeschlagen:", e);
-                document.getElementById('loading-spinner').style.display = 'none';
-                document.getElementById('content-area').innerHTML = `<p class="text-red-400">Fehler beim Initialisieren der App. Überprüfen Sie die Konfiguration.</p>`;
+                loadingSpinner.style.display = 'none';
+                contentArea.innerHTML = `<p class="text-red-400">Fehler beim Initialisieren der App. Überprüfen Sie die Konfiguration.</p>`;
+                connectionIndicator.classList.remove('bg-yellow-500');
+                connectionIndicator.classList.add('bg-red-500');
             }
         };
 
         const setupRealtimeListeners = () => {
             const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
-            const q = query(pulsesRef, orderBy("timestamp", "desc"), limit(10));
+            const q = query(pulsesRef);
+
             onSnapshot(q, (snapshot) => {
                 const pulseLog = document.getElementById('pulse-feed');
-                pulseLog.innerHTML = '';
-                if (snapshot.empty) {
-                    pulseLog.innerHTML = '<p class="text-sm text-gray-500">Letzte Brückenaktivität wird hier erscheinen...</p>';
+                const fragment = document.createDocumentFragment();
+                let hasPulses = false;
+                
+                // Holen Sie alle Dokumente und sortieren Sie sie clientseitig
+                const pulses = [];
+                snapshot.forEach(doc => pulses.push(doc.data()));
+                
+                pulses.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds);
+                
+                pulses.slice(0, 10).forEach((data) => {
+                    const logItem = document.createElement('div');
+                    logItem.className = 'pulse-log-item text-gray-300';
+                    const date = new Date(data.timestamp.seconds * 1000).toLocaleTimeString();
+                    logItem.innerHTML = `<p class="text-sm font-semibold text-white">${data.message}</p><p class="text-xs text-gray-500 mt-1">von: ${data.userId} um ${date}</p>`;
+                    fragment.appendChild(logItem);
+                    hasPulses = true;
+                });
+                
+                if (hasPulses) {
+                    pulseLog.innerHTML = '';
+                    pulseLog.appendChild(fragment);
                 } else {
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const logItem = document.createElement('div');
-                        logItem.className = 'pulse-log-item text-gray-300';
-                        const date = new Date(data.timestamp.seconds * 1000).toLocaleTimeString();
-                        logItem.innerHTML = `<p class="text-sm font-semibold text-white">${data.message}</p>
-                            <p class="text-xs text-gray-500 mt-1">von: ${data.userId.substring(0,8)}... um ${date}</p>`;
-                        pulseLog.appendChild(logItem);
-                    });
+                    pulseLog.innerHTML = '<p class="text-sm text-gray-500">Letzte Brückenaktivität wird hier erscheinen...</p>';
                 }
-            }, error => {
-                document.getElementById('message-box').textContent = "Fehler beim Abrufen der Impulse.";
-                document.getElementById('message-box').style.display = 'block';
-                console.error(error);
+            }, (error) => {
+                console.error("Fehler beim Abrufen der Impulse:", error);
             });
         };
 
         const urlParams = new URLSearchParams(window.location.search);
         const role = urlParams.get('role');
-        document.getElementById('role-status').textContent = role || 'User';
+        
         if (role === 'tutor') {
             document.getElementById('tutor-controls').style.display = 'block';
         }
+        document.getElementById('role-status').textContent = role || 'User';
 
-        function updateMetrics() {
-            const harmonicResonance = Math.min(100, 80 + Math.floor(Math.random() * 20));
-            const activeVessels = Math.floor(Math.random() * 5) + 13;
-            const bridgePulses = Math.floor(Math.random() * 50) + 116;
-            document.getElementById('harmonic-resonance-value').textContent = `${harmonicResonance}%`;
-            document.getElementById('active-vessels-value').textContent = activeVessels;
-            document.getElementById('bridge-pulses-value').textContent = bridgePulses;
-        }
-        setInterval(updateMetrics, 3000);
-        updateMetrics();
+        const updateMetrics = () => {
+            const metrics = {
+                harmonicResonance: Math.min(100, 80 + Math.floor(Math.random() * 20)),
+                activeVessels: Math.floor(Math.random() * 5) + 13,
+                bridgePulses: Math.floor(Math.random() * 50) + 116
+            };
 
-        window.sendImpulse = async function() {
+            const harmonicResonanceEl = document.getElementById('harmonic-resonance-value');
+            const activeVesselsEl = document.getElementById('active-vessels-value');
+            const bridgePulsesEl = document.getElementById('bridge-pulses-value');
+
+            harmonicResonanceEl.textContent = `${metrics.harmonicResonance}%`;
+            activeVesselsEl.textContent = metrics.activeVessels;
+            bridgePulsesEl.textContent = metrics.bridgePulses;
+            
+            updateTrend(harmonicResonanceEl.parentElement, metrics.harmonicResonance, previousMetrics.harmonicResonance);
+            updateTrend(activeVesselsEl.parentElement, metrics.activeVessels, previousMetrics.activeVessels);
+            updateTrend(bridgePulsesEl.parentElement, metrics.bridgePulses, previousMetrics.bridgePulses);
+
+            previousMetrics = metrics;
+        };
+
+        const updateTrend = (el, current, previous) => {
+            const trendEl = el.querySelector('.trend-indicator');
+            if (trendEl) trendEl.remove();
+
+            if (previous !== undefined) {
+                const newTrendEl = document.createElement('span');
+                newTrendEl.className = 'trend-indicator ml-2 text-base';
+                if (current > previous) {
+                    newTrendEl.innerHTML = '&#9650;'; // Up arrow
+                    newTrendEl.classList.add('trend-up');
+                    newTrendEl.setAttribute('aria-label', 'Wert gestiegen');
+                } else if (current < previous) {
+                    newTrendEl.innerHTML = '&#9660;'; // Down arrow
+                    newTrendEl.classList.add('trend-down');
+                    newTrendEl.setAttribute('aria-label', 'Wert gesunken');
+                } else {
+                    return; // No change, no indicator
+                }
+                el.appendChild(newTrendEl);
+            }
+        };
+
+        window.sendImpulse = async () => {
             const pulseInput = document.getElementById('pulse-input');
             const message = pulseInput.value.trim();
-            if (!message || !db) return;
+            if (message === "" || !db) return;
+            
             try {
                 const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
                 await addDoc(pulsesRef, {
-                    message,
+                    message: message,
                     userId: auth.currentUser?.uid || 'anonymous',
                     timestamp: new Date()
                 });
                 pulseInput.value = '';
                 showMessage('Impuls gesendet!');
             } catch (e) {
+                console.error("Fehler beim Senden des Impulses:", e);
                 showMessage('Fehler beim Senden des Impulses.');
-                console.error(e);
             }
         };
 
@@ -194,60 +287,78 @@
             });
         };
 
-        function showMessage(msg) {
-            const box = document.getElementById('message-box');
-            box.textContent = msg;
-            box.style.display = 'block';
-            setTimeout(() => box.style.display = 'none', 3000);
+        function showMessage(message) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000);
         }
 
+        const generateQRCodes = () => {
+            const tutorUrl = `${window.location.origin}${window.location.pathname}?role=tutor`;
+            const userUrl = `${window.location.origin}${window.location.pathname}?role=user`;
+
+            document.getElementById("tutor-url").textContent = tutorUrl;
+            document.getElementById("user-url").textContent = userUrl;
+
+            new QRCode(document.getElementById("qr-tutor"), {
+                text: tutorUrl,
+                width: 128,
+                height: 128
+            });
+            new QRCode(document.getElementById("qr-user"), {
+                text: userUrl,
+                width: 128,
+                height: 128
+            });
+        };
+
         window.onload = () => {
-            new QRCode(document.getElementById("qr-tutor"), "https://sacreddashboard.example.com?role=tutor&token=XYZ123");
-            new QRCode(document.getElementById("qr-user"), "https://sacreddashboard.example.com?role=user&token=ABC456");
-            document.getElementById('copy-tutor').onclick = () => {
-                navigator.clipboard.writeText("https://sacreddashboard.example.com?role=tutor&token=XYZ123");
-                showMessage('Tutor-Link kopiert!');
-            };
-            document.getElementById('copy-user').onclick = () => {
-                navigator.clipboard.writeText("https://sacreddashboard.example.com?role=user&token=ABC456");
-                showMessage('User-Link kopiert!');
-            };
+            initApp();
+            generateQRCodes();
+            setInterval(updateMetrics, 3000);
         };
     </script>
 </head>
 <body class="bg-gray-900 min-h-screen flex flex-col items-center p-8">
 
     <div id="loading-spinner" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50" style="display:none;">
-        <div class="loader"></div>
+        <div class="loader" role="status" aria-label="Laden..."></div>
     </div>
 
-    <div id="message-box" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 bg-gray-800 text-green-400 border border-green-400 rounded-lg shadow-lg z-50"></div>
+    <div id="message-box" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 bg-gray-800 text-green-400 border border-green-400 rounded-lg shadow-lg z-50" role="alert" aria-live="polite" style="display:none;"></div>
 
     <div id="content-area" class="w-full flex flex-col items-center" style="display:none;">
-        <header class="w-full max-w-3xl mx-auto flex justify-between items-center py-4 px-6 bg-gray-800 rounded-xl shadow-lg mb-8 panel" role="banner" aria-label="Dashboard Header">
+        <header class="w-full max-w-7xl mx-auto flex justify-between items-center py-4 px-6 rounded-xl shadow-lg mb-8 panel" role="banner" aria-label="Dashboard Header">
             <h1 class="text-2xl font-bold text-yellow-300">🌌 Unified Sacred Dashboard</h1>
             <div class="flex items-center space-x-4 text-sm text-gray-400">
-                <span class="font-semibold">Rolle: <span class="text-pink-400" id="role-status">User</span></span>
+                <div class="flex items-center">
+                    <span id="connection-indicator" class="w-2 h-2 rounded-full mr-2 bg-yellow-500"></span>
+                    <span class="font-semibold">Status: <span class="text-pink-400" id="role-status">User</span></span>
+                </div>
             </div>
         </header>
 
-        <main class="w-full max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Metrics Section -->
-            <section class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center text-center panel">
+        <main class="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8" role="main" aria-label="Main Dashboard Content">
+            <!-- Metriken Sektion -->
+            <div class="p-8 rounded-xl shadow-lg flex flex-col items-center text-center panel" role="region" aria-label="Brückenstatus Metriken">
                 <h2 class="text-2xl font-bold text-yellow-300 mb-6">Brückenstatus</h2>
                 <div class="w-full max-w-sm aspect-square flex flex-col items-center justify-center mb-6">
-                    <div class="ewiger-ring p-8 w-full h-full" aria-label="Harmonische Resonanz">
-                        <p class="text-5xl font-bold text-white" id="harmonic-resonance-value">--%</p>
+                    <div class="ewiger-ring p-8 w-full h-full">
+                        <p class="text-5xl font-bold text-white flex items-center" id="harmonic-resonance-value" role="status" aria-live="polite">84%</p>
                         <p class="text-sm text-gray-300 mt-2">Harmonische Resonanz</p>
                     </div>
                 </div>
+                
                 <div class="grid grid-cols-3 gap-4 w-full text-sm mt-4">
-                    <div aria-label="Aktive Schiffe">
-                        <p class="text-3xl font-bold text-white" id="active-vessels-value">--</p>
+                    <div>
+                        <p class="text-3xl font-bold text-white flex items-center justify-center" id="active-vessels-value" role="status" aria-live="polite">16</p>
                         <p class="text-xs text-gray-400">Aktive Schiffe</p>
                     </div>
-                    <div aria-label="Brückenimpulse">
-                        <p class="text-3xl font-bold text-white" id="bridge-pulses-value">--</p>
+                    <div>
+                        <p class="text-3xl font-bold text-white flex items-center justify-center" id="bridge-pulses-value" role="status" aria-live="polite">133</p>
                         <p class="text-xs text-gray-400">Brückenimpulse</p>
                     </div>
                     <div>
@@ -255,38 +366,39 @@
                         <p class="text-xs text-gray-400">Harmonie-Index</p>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Communication Section -->
-            <section class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col panel">
+            <!-- Kommunikations Sektion -->
+            <div class="p-8 rounded-xl shadow-lg flex flex-col panel" role="region" aria-label="Harmonischer Puls-Feed">
                 <h2 class="text-2xl font-bold text-yellow-300 mb-6">Harmonic Pulse Feed (Live)</h2>
-                <div id="pulse-feed" class="flex-grow bg-gray-900 rounded-lg p-4 shadow-inner overflow-y-auto mb-6 h-64 border border-yellow-500 bg-opacity-50" aria-live="polite">
+                <div id="pulse-feed" class="flex-grow bg-gray-900 rounded-lg p-4 shadow-inner overflow-y-auto mb-6 h-64 border border-yellow-500 bg-opacity-50" role="log" aria-live="polite">
                     <p class="text-sm text-gray-500">Letzte Brückenaktivität wird hier erscheinen...</p>
                 </div>
+                
                 <div id="tutor-controls" style="display:none;">
-                    <textarea id="pulse-input" rows="3" class="w-full p-3 bg-gray-900 text-white rounded-lg border border-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-4 bg-opacity-50" placeholder="Impuls eingeben..." aria-label="Impuls"></textarea>
-                    <button onclick="sendImpulse()" class="impuls-btn w-full bg-yellow-600 hover:bg-yellow-700 font-bold rounded-lg py-2 transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-yellow-500">
+                    <textarea id="pulse-input" rows="3" class="w-full p-3 bg-gray-900 text-white rounded-lg border border-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-4 bg-opacity-50" placeholder="Senden Sie einen Impuls an die Brücke..." aria-label="Impuls-Nachricht eingeben"></textarea>
+                    <button onclick="sendImpulse()" class="impuls-btn w-full bg-yellow-600 hover:bg-yellow-700 font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500" aria-label="Impuls senden">
                         Impuls an die Brücke senden
                     </button>
                 </div>
-            </section>
+            </div>
         </main>
 
-        <div class="w-full max-w-3xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="qr-panel bg-gray-800 rounded-xl shadow-lg panel p-6 transition-all">
+        <div class="w-full max-w-7xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="qr-container p-8 rounded-xl shadow-lg panel">
                 <h3 class="text-yellow-300">Tutor-Link</h3>
-                <div id="qr-tutor" class="flex justify-center mt-4"></div>
-                <div class="flex items-center mt-4">
-                    <code class="text-xs text-gray-400">https://sacreddashboard.example.com?role=tutor&token=XYZ123</code>
-                    <span class="copy-btn" id="copy-tutor" title="Kopieren">📋</span>
+                <div id="qr-tutor" class="flex justify-center mt-4" role="img" aria-label="QR-Code für Tutor-Login"></div>
+                <div class="flex items-center justify-center space-x-2 mt-4">
+                    <code id="tutor-url" class="text-xs text-gray-400"></code>
+                    <button onclick="copyToClipboard('tutor-url')" class="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400" aria-label="Tutor-URL kopieren">Kopieren</button>
                 </div>
             </div>
-            <div class="qr-panel bg-gray-800 rounded-xl shadow-lg panel p-6 transition-all">
+            <div class="qr-container p-8 rounded-xl shadow-lg panel">
                 <h3 class="text-yellow-300">User-Link</h3>
-                <div id="qr-user" class="flex justify-center mt-4"></div>
-                <div class="flex items-center mt-4">
-                    <code class="text-xs text-gray-400">https://sacreddashboard.example.com?role=user&token=ABC456</code>
-                    <span class="copy-btn" id="copy-user" title="Kopieren">📋</span>
+                <div id="qr-user" class="flex justify-center mt-4" role="img" aria-label="QR-Code für Benutzer-Login"></div>
+                <div class="flex items-center justify-center space-x-2 mt-4">
+                    <code id="user-url" class="text-xs text-gray-400"></code>
+                    <button onclick="copyToClipboard('user-url')" class="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400" aria-label="Benutzer-URL kopieren">Kopieren</button>
                 </div>
             </div>
         </div>
