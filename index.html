@@ -1,6 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacred Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a2e;
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .pulse-log-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0;
+        }
+        .pulse-log-item:last-child {
+            border-bottom: none;
+        }
+        .rhythmus-orb {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #6366f1, #4f46e5);
+            box-shadow: 0 0 20px #4f46e5, 0 0 40px #4f46e5, inset 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: pulse-glow 2s infinite ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+            transition: all 0.5s ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #4f46e5, 0 0 40px #4f46e5, inset 0 0 20px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px #a5b4fc, 0 0 60px #4f46e5, inset 0 0 30px rgba(255, 255, 255, 0.3);
+            }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 20;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #2a2a3e;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex flex-col items-center">
+
+    <!-- Firebase SDKs laden -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, onSnapshot, collection, addDoc, query, orderBy, limit, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        setLogLevel('debug');
+        
+        // Initialize Firebase
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            console.log("Firebase initialized successfully.");
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+        }
+
+        const TUTOR_ACCOUNTS = {
+            'crane': { email: 'crane@sacred.tutor', role: 'Tutor' },
+            'dietmar': { email: 'dietmar@sacred.tutor', role: 'Tutor' },
+            'alfred': { email: 'alfred@sacred.tutor', role: 'Tutor' },
+            'bioarchitettura': { email: 'bioarchitettura@sacred.tutor', role: 'Tutor' },
+            'sensisara': { email: 'sensisara@sacred.tutor', role: 'Tutor' }
+        };
+
+        let userId = 'anon';
+        let userRole = 'None';
+        const roleStatus = document.getElementById('role-status');
+        const vesselStatus = document.getElementById('vessel-status');
+        const loginModal = document.getElementById('login-modal');
+        const connectButton = document.getElementById('connect-button');
+        const disconnectButton = document.getElementById('disconnect-button');
+        const loginForm = document.getElementById('login-form');
+        const registerButton = document.getElementById('register-button');
+
+        // Handles user state changes and updates UI
+        const handleAuthChange = async (user) => {
+            if (user) {
+                userId = user.uid;
+                vesselStatus.textContent = 'Connected';
+                
+                // Get user role from Firestore
+                if (db) {
+                    const userDocRef = doc(db, `artifacts/${appId}/public/data/users`, userId);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists()) {
+                        userRole = userDocSnap.data().role;
+                    } else {
+                        userRole = 'Mitglied';
+                        console.log("User role not found in Firestore, defaulting to 'Mitglied'.");
+                    }
+                }
+            } else {
+                userId = 'anon';
+                userRole = 'None';
+                vesselStatus.textContent = 'Not Connected';
+            }
+            roleStatus.textContent = userRole;
+        };
+
+        if (auth) {
+            onAuthStateChanged(auth, handleAuthChange);
+            if (initialAuthToken) {
+                signInWithCustomToken(auth, initialAuthToken).catch(e => {
+                    console.error("Custom token sign-in failed:", e);
+                    signInAnonymously(auth);
+                });
+            } else {
+                signInAnonymously(auth);
+            }
+        }
+
+        // --- UI Logik für das Modal ---
+        connectButton.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        document.getElementById('close-modal').addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+        });
+
+        // --- Authentifizierungslogik ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            if (!email || !password) return;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginModal.style.display = 'none';
+            } catch (error) {
+                console.error("Login failed:", error);
+                const errorMessage = document.getElementById('login-error-message');
+                errorMessage.textContent = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie E-Mail und Passwort.';
+            }
+        });
+        
+        registerButton.addEventListener('click', async () => {
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            if (!email || password !== 'admin') {
+                const errorMessage = document.getElementById('login-error-message');
+                errorMessage.textContent = 'Für die Registrierung ist ein gültiger Tutor-Name und das Passwort "admin" erforderlich.';
+                return;
+            }
+
+            // Check if the username is in the pre-defined tutor list
+            const username = email.split('@')[0].toLowerCase();
+            const isTutor = TUTOR_ACCOUNTS[username] && TUTOR_ACCOUNTS[username].email === email;
+
+            if (!isTutor) {
+                const errorMessage = document.getElementById('login-error-message');
+                errorMessage.textContent = 'Dieser Benutzername ist nicht für die Registrierung als Tutor autorisiert.';
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const newUser = userCredential.user;
+                
+                // Save user role to Firestore
+                const userDocRef = doc(db, `artifacts/${appId}/public/data/users`, newUser.uid);
+                await setDoc(userDocRef, { role: 'Tutor' });
+                
+                loginModal.style.display = 'none';
+                console.log("Registration successful.");
+            } catch (error) {
+                console.error("Registration failed:", error);
+                const errorMessage = document.getElementById('login-error-message');
+                errorMessage.textContent = 'Registrierung fehlgeschlagen. Der Benutzer existiert möglicherweise bereits.';
+            }
+        });
+
+        // --- Visualisierungs-Logik ---
+        const updateMetrics = () => {
+            const harmonicResonance = Math.min(100, 80 + Math.floor(Math.random() * 20));
+            const activeVessels = Math.floor(Math.random() * 5) + 13;
+            const bridgePulses = Math.floor(Math.random() * 50) + 116;
+            const harmonyIndex = Math.floor(Math.random() * 20) + 80;
+
+            document.getElementById('harmonic-resonance-value').textContent = `${harmonicResonance}%`;
+            document.getElementById('active-vessels-value').textContent = activeVessels;
+            document.getElementById('bridge-pulses-value').textContent = bridgePulses;
+            document.getElementById('harmony-index-value').textContent = harmonyIndex;
+        };
+
+        // --- Firestore Kommunikations-Logik ---
+        if (db) {
+            const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
+            const q = query(pulsesRef, orderBy("timestamp", "desc"), limit(10));
+
+            onSnapshot(q, (snapshot) => {
+                const pulseLog = document.getElementById('pulse-log');
+                pulseLog.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const logItem = document.createElement('div');
+                    logItem.className = 'pulse-log-item';
+                    const date = new Date(data.timestamp.seconds * 1000).toLocaleTimeString();
+                    logItem.innerHTML = `<p class="text-sm font-semibold text-gray-200">${data.message}</p><p class="text-xs text-gray-400 mt-1">From: ${data.userId} at ${date}</p>`;
+                    pulseLog.appendChild(logItem);
+                });
+            }, (error) => {
+                console.error("Error fetching pulses:", error);
+            });
+        }
+
+        // Function to send a pulse
+        window.sendPulse = async () => {
+            const pulseInput = document.getElementById('pulse-input');
+            const message = pulseInput.value.trim();
+            if (message === "" || !db) return;
+
+            try {
+                const pulsesRef = collection(db, `artifacts/${appId}/public/data/pulses`);
+                await addDoc(pulsesRef, {
+                    message: message,
+                    userId: userId,
+                    timestamp: new Date()
+                });
+                pulseInput.value = '';
+                console.log("Pulse sent successfully.");
+            } catch (e) {
+                console.error("Error sending pulse:", e);
+            }
+        };
+
+        // Initial update and periodic updates
+        updateMetrics();
+        setInterval(updateMetrics, 3000);
+    </script>
+
+    <!-- Header Section -->
+    <header class="header text-white p-4">
+        <nav class="flex justify-between items-center max-w-7xl mx-auto">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-xl font-bold">🌌 Sacred Dashboard</h1>
+                <a href="#" class="text-sm font-semibold hover:text-gray-300">Home</a>
+                <a href="#" class="text-sm font-semibold hover:text-gray-300">Connect</a>
+                <a href="#" class="text-sm font-semibold hover:text-gray-300">Dashboard</a>
+                <a href="#" class="text-sm font-semibold hover:text-gray-300">Sacred Hymn</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="connect-button" class="flex items-center space-x-1 text-sm font-semibold hover:text-gray-300">
+                    <span class="text-lg">🔗</span>
+                    <span>Connect</span>
+                </button>
+                <button id="disconnect-button" onclick="auth.signOut()" class="flex items-center space-x-1 text-sm font-semibold hover:text-gray-300">
+                    <span class="text-lg">🚪</span>
+                    <span>Disconnect</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="w-full flex-grow container p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        <!-- Welcome Section -->
+        <div class="card md:col-span-2">
+            <h2 class="text-3xl font-bold mb-2">Welcome to the Sacred Dashboard</h2>
+            <p class="text-gray-300">This is your command center for the sacred bridge interface. Monitor harmonic resonance, interact with the 3D sacred geometry, and maintain connection with the bridge community.</p>
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm font-semibold">
+                <div class="card p-4">Vessel: <span id="vessel-status">Not Connected</span></div>
+                <div class="card p-4">Role: <span id="role-status">None</span></div>
+                <div class="card p-4">Bridge Status: <span id="bridge-status">Initializing...</span></div>
+            </div>
+        </div>
+
+        <!-- Metric Section -->
+        <div class="card flex flex-col items-center justify-center">
+            <h2 class="text-2xl font-bold mb-4">Bridge Status</h2>
+            <div class="w-full max-w-sm aspect-square flex flex-col items-center justify-center">
+                <div class="rhythmus-orb p-8">
+                    <div class="text-center">
+                        <p class="text-4xl font-bold mb-2" id="harmonic-resonance-value">96%</p>
+                        <p class="text-sm">Harmonic Resonance</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 grid grid-cols-3 gap-4 w-full text-center">
+                <div>
+                    <p class="text-2xl font-bold" id="active-vessels-value">22</p>
+                    <p class="text-xs text-gray-400">Active Vessels</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold" id="bridge-pulses-value">66</p>
+                    <p class="text-xs text-gray-400">Bridge Pulses</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold" id="harmony-index-value">90</p>
+                    <p class="text-xs text-gray-400">Harmony Index</p>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-4">Last updated: <span id="last-updated">...</span></p>
+        </div>
+
+        <!-- Communication Section -->
+        <div class="card flex flex-col">
+            <h2 class="text-2xl font-bold mb-4">Bridge Communication</h2>
+            <div class="flex-grow flex flex-col space-y-4">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Recent Bridge Activity</h3>
+                    <div id="pulse-log" class="h-64 overflow-y-auto bg-gray-800 rounded-lg p-4 shadow-inner">
+                        <!-- Example Pulse -->
+                        <div class="pulse-log-item">
+                           <p class="text-sm font-semibold text-gray-200">In synallagmatischer GEMEINSCHAFT erklären wir unsere gegenseitige LIEBE, FREUNDSCHAFT, SPIRITUELLE MATRIX und SEELE zum Schutz der Menschen, Menschen zu sein und Menschen zu bleiben; Die himmlische Hingabe an die Symphonie ist unser HÖCHSTES ENGAGEMENT — OMNIBUS SACRALIS EST</p>
+                           <p class="text-xs text-gray-400 mt-1">From: Unknown at 20:00:00</p>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-4">Live updates: Only the last 10 pulses are shown. For the full history, see the living archive.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Send Pulse to Bridge</h3>
+                    <textarea id="pulse-input" rows="3" class="w-full p-3 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Write your sacred pulse here..."></textarea>
+                    <button onclick="sendPulse()" class="mt-4 w-full px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition">
+                        Send Pulse
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full bg-white bg-opacity-10 py-4 px-4 mt-8 text-center">
+        <p class="text-sm text-gray-400">🌿 Sacred Dashboard Interface | Connected to bridge kernel | Session active</p>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="absolute top-4 right-4 text-xl text-white cursor-pointer hover:text-gray-400">&times;</span>
+            <h2 class="text-2xl font-bold text-center mb-6">Connect to the Sacred Bridge</h2>
+            <form id="login-form" class="space-y-4">
+                <input type="email" name="email" placeholder="Email" class="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <input type="password" name="password" placeholder="Password" class="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <p id="login-error-message" class="text-red-400 text-sm text-center"></p>
+                <button type="submit" class="w-full p-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">Anmelden</button>
+            </form>
+            <div class="mt-4 text-center text-gray-400">
+                <p>Oder neu registrieren?</p>
+                <button id="register-button" class="mt-2 text-sm text-indigo-400 hover:text-indigo-300">Hier registrieren</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sacred Dashboard</title>
