@@ -1,8 +1,301 @@
 <!DOCTYPE html>
+<head>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-    <!DOCTYPE html>
-<html lang="de">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Sacred Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.128/build/three.module.js",
+                "three/examples/jsm/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.128/examples/jsm/controls/OrbitControls.js"
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            gap: 2rem;
+            grid-template-areas:
+                "header header"
+                "visual visual"
+                "pulse pulse"
+                "metrics metrics";
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        @media (min-width: 1024px) {
+            .dashboard-container {
+                grid-template-areas:
+                    "header header"
+                    "visual visual"
+                    "pulse metrics";
+            }
+        }
+
+        .header {
+            grid-area: header;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .panel {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .visualizer-panel {
+            grid-area: visual;
+            height: 500px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            border-radius: 1rem;
+        }
+
+        .pulse-panel {
+            grid-area: pulse;
+        }
+
+        .metrics-panel {
+            grid-area: metrics;
+        }
+
+        .button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .pulse-log-item {
+            padding: 0.5rem 1rem;
+            background-color: #f9f9f9;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .logo-image {
+            width: 150px;
+            height: auto;
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <h1 class="text-4xl font-extrabold text-gray-900">Unified Sacred Dashboard</h1>
+            <p class="text-gray-500">Das spirituelle und technische Gleichgewicht überwachen.</p>
+            <div class="logo-container">
+                <img src="https://placehold.co/256x256/E5E7EB/1F2937?text=Euystacio%20Core%20Kernel" alt="Euystacio Core Kernel Logo" class="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/256x256/E5E7EB/1F2937?text=Euystacio%20Core%20Kernel';">
+            </div>
+        </header>
+
+        <div class="visualizer-panel panel">
+            <h2 class="text-2xl font-bold mb-4">Core Kernel Visualisierung</h2>
+            <canvas id="visualizerCanvas"></canvas>
+        </div>
+
+        <div class="pulse-panel panel">
+            <h2 class="text-2xl font-bold">Harmonic Pulse Feed</h2>
+            <div id="pulseLog" class="bg-gray-100 p-4 rounded-lg h-64 overflow-y-auto mt-4">
+                <p id="pulsePlaceholder" class="text-gray-400">Keine Impulse empfangen.</p>
+            </div>
+            <div class="mt-4">
+                <textarea id="pulseInput" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3" placeholder="Senden Sie einen Impuls an den Kern..."></textarea>
+                <button onclick="sendPulse()" class="button w-full mt-2">Impuls senden</button>
+            </div>
+        </div>
+
+        <div class="metrics-panel panel">
+            <h2 class="text-2xl font-bold mb-4">Zustandsmetriken</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg">Energiestatus:</span>
+                    <span id="energyStatus" class="font-semibold text-green-500">Normal</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg">Harmonielevel:</span>
+                    <span id="harmonyLevel" class="font-semibold">85%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg">Latency:</span>
+                    <span id="latency" class="font-semibold">32ms</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+        // ------------------
+        // THREE.js Scene Setup
+        // ------------------
+        const canvas = document.getElementById('visualizerCanvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Core object setup (sacred geometry shape)
+        const geometry = new THREE.IcosahedronGeometry(2, 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x4B5563, // Dark grey
+            emissive: 0x1F2937,
+            shininess: 50,
+            flatShading: true,
+        });
+        const coreObject = new THREE.Mesh(geometry, material);
+        scene.add(coreObject);
+
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Add a directional light for highlights
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        camera.position.z = 5;
+
+        // ------------------
+        // Animation Loop
+        // ------------------
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Continuous rotation
+            coreObject.rotation.x += 0.005;
+            coreObject.rotation.y += 0.005;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        });
+
+        // Start the animation on window load.
+        window.onload = function () {
+            animate();
+        };
+
+        // ------------------
+        // Dashboard Logic (Simulated data)
+        // ------------------
+        const energyStatus = document.getElementById('energyStatus');
+        const harmonyLevel = document.getElementById('harmonyLevel');
+        const latency = document.getElementById('latency');
+        const pulseLog = document.getElementById('pulseLog');
+        const pulseInput = document.getElementById('pulseInput');
+        const pulsePlaceholder = document.getElementById('pulsePlaceholder');
+
+        function updateMetrics() {
+            const newEnergyStatus = Math.random() > 0.1 ? 'Normal' : 'Anomalie';
+            energyStatus.textContent = newEnergyStatus;
+            energyStatus.className = newEnergyStatus === 'Normal' ? 'font-semibold text-green-500' : 'font-semibold text-red-500';
+
+            const newHarmonyLevel = Math.floor(Math.random() * 20) + 80; // 80-100
+            harmonyLevel.textContent = `${newHarmonyLevel}%`;
+
+            const newLatency = Math.floor(Math.random() * 50) + 20; // 20-70ms
+            latency.textContent = `${newLatency}ms`;
+        }
+        
+        // Initial update and subsequent updates every 5 seconds
+        updateMetrics();
+        setInterval(updateMetrics, 5000);
+
+        // Function to send a pulse
+        window.sendPulse = function() {
+            const message = pulseInput.value.trim();
+            if (message === "") {
+                return;
+            }
+
+            // Remove placeholder if it exists
+            if (pulsePlaceholder) {
+                pulsePlaceholder.remove();
+            }
+
+            // Create a new log item
+            const newPulse = document.createElement('div');
+            newPulse.className = 'pulse-log-item';
+            newPulse.textContent = `Impuls gesendet: "${message}"`;
+            
+            // Add the new pulse to the log at the top
+            if (pulseLog.firstChild) {
+                pulseLog.insertBefore(newPulse, pulseLog.firstChild);
+            } else {
+                pulseLog.appendChild(newPulse);
+            }
+
+            // Clear the input field
+            pulseInput.value = '';
+
+            // Optional: Scroll to the top to see the new message
+            pulseLog.scrollTop = 0;
+        };
+    </script>
+</body>
+</html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
