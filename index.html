@@ -8,13 +8,13 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@700&display=swap');
 
-        /* Definieren einer dynamischeren Farbpalette für Rhythmus und Harmonie */
+        /* Definieren einer dynamischen Farbpalette für Sand, Erde und Wald */
         :root {
-            --color-pulse-start: #1c0f38;
-            --color-pulse-end: #0d0d26;
-            --color-accent-1: #4a00e0;
-            --color-accent-2: #8e2de2;
-            --color-accent-3: #ffc000;
+            --color-sand: #d4a373;
+            --color-earth: #a0522d;
+            --color-forest-dark: #22332c;
+            --color-forest-light: #5f7a63;
+            --color-accent-gold: #c29f42;
         }
 
         body {
@@ -26,10 +26,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background: radial-gradient(at 70% 30%, var(--color-accent-1), transparent), 
-                        radial-gradient(at 10% 90%, var(--color-accent-2), transparent), 
-                        radial-gradient(at 90% 90%, var(--color-accent-3), transparent), 
-                        var(--color-pulse-start);
+            background: radial-gradient(at 70% 30%, var(--color-earth), transparent), 
+                        radial-gradient(at 10% 90%, var(--color-forest-dark), transparent), 
+                        radial-gradient(at 90% 90%, var(--color-sand), transparent), 
+                        var(--color-forest-light);
             background-size: 200% 200%;
             animation: background-pulse 18s infinite ease-in-out;
             background-attachment: fixed;
@@ -38,11 +38,11 @@
 
         /* Verfeinerte Animation für einen harmonischen, atmenden Effekt */
         @keyframes background-pulse {
-            0% { background-position: 50% 50%; background-color: var(--color-pulse-start); }
-            25% { background-position: 30% 70%; background-color: var(--color-pulse-end); }
-            50% { background-position: 70% 30%; background-color: var(--color-pulse-start); }
-            75% { background-position: 90% 10%; background-color: var(--color-pulse-end); }
-            100% { background-position: 50% 50%; background-color: var(--color-pulse-start); }
+            0% { background-position: 50% 50%; background-color: var(--color-forest-light); }
+            25% { background-position: 30% 70%; background-color: var(--color-forest-dark); }
+            50% { background-position: 70% 30%; background-color: var(--color-earth); }
+            75% { background-position: 90% 10%; background-color: var(--color-sand); }
+            100% { background-position: 50% 50%; background-color: var(--color-forest-light); }
         }
 
         h1, h2, #harmonic-resonance-value {
@@ -50,7 +50,7 @@
         }
         
         .panel {
-            background-color: rgba(30, 41, 59, 0.4);
+            background-color: rgba(34, 51, 44, 0.4); /* Dunkler Waldgrün-Ton */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -81,28 +81,28 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: radial-gradient(circle, #fbcfe8, #d8b4fe, #a5b4fc);
-            box-shadow: 0 0 20px #86efac, 0 0 40px #f9a8d4, 0 0 60px #c4b5fd;
+            background: radial-gradient(circle, var(--color-sand), var(--color-earth), var(--color-forest-light));
+            box-shadow: 0 0 20px var(--color-forest-dark), 0 0 40px var(--color-earth), 0 0 60px var(--color-sand);
             animation: ring-glow 3s infinite ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             transition: all 0.5s ease-in-out;
-            border: 2px solid #a5b4fc;
+            border: 2px solid var(--color-sand);
             padding: 2rem;
         }
         @keyframes ring-glow {
             0%, 100% {
-                box-shadow: 0 0 20px #a5b4fc, 0 0 40px #6366f1, 0 0 60px #4f46e5;
+                box-shadow: 0 0 20px var(--color-forest-dark), 0 0 40px var(--color-earth), 0 0 60px var(--color-sand);
             }
             50% {
-                box-shadow: 0 0 30px #f9a8d4, 0 0 60px #a78bfa, 0 0 90px #8b5cf6;
+                box-shadow: 0 0 30px var(--color-earth), 0 0 60px var(--color-sand), 0 0 90px var(--color-forest-light);
             }
         }
         .loader {
             border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top: 4px solid #86efac;
+            border-top: 4px solid var(--color-forest-light);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -113,10 +113,10 @@
             100% { transform: rotate(360deg); }
         }
         .trend-up {
-            color: #86efac;
+            color: var(--color-forest-light);
         }
         .trend-down {
-            color: #fca5a5;
+            color: var(--color-sand);
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
@@ -371,7 +371,7 @@
             <!-- Kommunikations Sektion -->
             <div class="p-8 rounded-xl shadow-lg flex flex-col panel" role="region" aria-label="Harmonischer Puls-Feed">
                 <h2 class="text-2xl font-bold text-yellow-300 mb-6">Harmonic Pulse Feed (Live)</h2>
-                <div id="pulse-feed" class="flex-grow bg-gray-900 rounded-lg p-4 shadow-inner overflow-y-auto mb-6 h-64 border border-yellow-500 bg-opacity-50" role="log" aria-live="polite">
+                <div id="pulse-feed" class="flex-grow bg-gray-900 rounded-lg p-4 shadow-inner overflow-y-auto mb-6 h-64 border border-yellow-700 bg-opacity-50" role="log" aria-live="polite">
                     <p class="text-sm text-gray-500">Letzte Brückenaktivität wird hier erscheinen...</p>
                 </div>
                 
