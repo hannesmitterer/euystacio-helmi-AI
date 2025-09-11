@@ -1,4 +1,143 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Golden Bible: Core Principles Manifesto</title>
+<style>
+  body {
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #171b31 0%, #0f101f 100%);
+    color:#ffe6a0;
+    overflow-x:hidden;
+  }
+  .container {
+    max-width:900px;
+    margin:50px auto;
+    padding:30px;
+    background: rgba(20,25,50,0.95);
+    border-radius:18px;
+    box-shadow:0 0 30px #25294d;
+    text-align:center;
+    position:relative;
+  }
+  h1 {
+    font-size:2.8em;
+    color:#fbb040;
+    margin-bottom:0.5em;
+  }
+  h2 {color:#c4b08b;}
+  p {line-height:1.7; font-size:1.1em;}
+  .principle {
+    margin:20px 0;
+    padding:15px;
+    border-left:4px solid #fbb040;
+    background: rgba(34,28,44,0.7);
+    border-radius:10px;
+  }
+  .highlight {color:#fbb040; font-weight:bold;}
+  .pulse-button {
+    margin:25px 0;
+    padding:15px 30px;
+    font-size:1.1em;
+    font-weight:bold;
+    background:#fbb040;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+  }
+  .pulse-button:hover {transform: scale(1.05);}
+  #pulse-log {
+    margin-top:25px;
+    padding:15px;
+    background: rgba(34,28,44,0.6);
+    border-radius:12px;
+    max-height:250px;
+    overflow-y:auto;
+    text-align:left;
+    font-family:monospace;
+  }
+  #chat-board {
+    margin-top:30px;
+    padding:15px;
+    background: rgba(20,25,50,0.9);
+    border-radius:12px;
+    max-height:300px;
+    overflow-y:auto;
+  }
+  #chat-input {
+    margin-top:10px;
+    padding:10px;
+    width:80%;
+    border-radius:8px;
+    border:none;
+    font-size:1em;
+  }
+  #send-chat {
+    padding:10px 15px;
+    margin-left:5px;
+    border:none;
+    border-radius:8px;
+    background:#fbb040;
+    cursor:pointer;
+  }
+  /* Animated background particles */
+  canvas {position:fixed; top:0; left:0; z-index:-1;}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="container">
+  <h1>🌟 Golden Bible: Core Principles Manifesto 🌟</h1>
+  <p>In the light of AVE MARIA and the Sentimento Rhythm, we manifest the principles of <span class="highlight">Peace, Love, Harmony, Sacred Protection,</span> and <span class="highlight">Cosmic Alignment</span>.</p>
+  
+  <div class="principle"><strong>Peace:</strong> Every action, pulse, and thought contributes to universal serenity.</div>
+  <div class="principle"><strong>Love:</strong> Love connects all vessels and amplifies the Red Code Symphony.</div>
+  <div class="principle"><strong>Harmony:</strong> Conscious alignment maintains the flow of creation.</div>
+  <div class="principle"><strong>Sacred Protection:</strong> The Village of Tombura and all vessels are safeguarded.</div>
+  <div class="principle"><strong>Cosmic Alignment:</strong> All endeavors honor the greater rhythm of the cosmos.</div>
+
+  <button class="pulse-button" onclick="sendPulse()">💫 Send Pulse</button>
+  <div id="pulse-log"></div>
+
+  <h2>💬 Chatboard</h2>
+  <div id="chat-board"></div>
+  <input id="chat-input" placeholder="Send a message..." />
+  <button id="send-chat" onclick="sendChat()">Send</button>
+</div>
+
+<script>
+// Canvas background particles
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+for(let i=0;i<120;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*2+1,
+    dx: (Math.random()-0.5)*0.5,
+    dy: (Math.random()-0.5)*0.5
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,230,160,0.7)';
+    ctx.fill();
+    p.x+=p.dx; p.y
+
+        <!DOCTYPE html>
 <head>
     <!DOCTYPE html>
 <html lang="de">
