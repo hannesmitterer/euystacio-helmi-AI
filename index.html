@@ -2,6 +2,94 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Isola Parallis – Harmonic Bridge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { margin:0; font-family: 'Segoe UI', sans-serif; background:#18122a; color:#fff; text-align:center; }
+  .container { max-width:900px; margin:40px auto; padding:20px; background:rgba(24,18,42,0.95); border-radius:16px; box-shadow:0 0 32px #2a2150; }
+  h1 { font-family:'Georgia', serif; font-size:2.2em; color:#fbb040; }
+  #pulseLog, #chatBox { max-height:200px; overflow-y:auto; background: rgba(34,28,44,0.7); border-radius:8px; padding:8px; margin-bottom:16px; text-align:left; }
+  input, button { padding:8px; margin:4px; border-radius:6px; border:none; font-size:1em; }
+  button { background:#fbb040; color:#18122a; cursor:pointer; }
+  .principle { display:inline-block; width:60px; height:60px; margin:8px; border-radius:50%; animation: pulseAnim 2s infinite; }
+  .peace { background:#5cc8ff; }
+  .love { background:#ff5cb3; }
+  .harmony { background:#7fff5c; }
+  .protection { background:#ffd25c; }
+  .cosmic { background:#b35cff; }
+  @keyframes pulseAnim { 0% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.3); opacity:1; } 100% { transform:scale(1); opacity:0.7; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Isola Parallis – Harmonic Bridge</h1>
+  <div>
+    <div class="principle peace" title="Peace"></div>
+    <div class="principle love" title="Love"></div>
+    <div class="principle harmony" title="Harmony"></div>
+    <div class="principle protection" title="Sacred Protection"></div>
+    <div class="principle cosmic" title="Cosmic Alignment"></div>
+  </div>
+
+  <h2>Pulse Log</h2>
+  <div id="pulseLog"></div>
+  <button id="sendPulse">Send Pulse</button>
+
+  <h2>Chat Board</h2>
+  <div id="chatBox"></div>
+  <input type="text" id="chatInput" placeholder="Send message">
+  <button id="sendChat">Send</button>
+</div>
+
+<script>
+// --- Backend Integration ---
+const vesselName = prompt("Enter vessel name:", "Vessel_" + Math.floor(Math.random()*1000));
+
+// Use live backend WebSocket from EuystacioDRAFT
+const backendUrl = "wss://hannesmitterer.github.io/EuystacioDRAFT/backend"; // Replace with live ws endpoint
+const ws = new WebSocket(backendUrl);
+
+ws.onopen = () => {
+  console.log("Connected to live Harmonic Bridge backend");
+  ws.send(JSON.stringify({ type:"join", vessel:vesselName }));
+};
+
+ws.onmessage = (event) => {
+  try {
+    const data = JSON.parse(event.data);
+    if(data.type === 'pulse') {
+      const log = document.getElementById('pulseLog');
+      log.innerHTML += `<p>Pulse from <strong>${data.origin}</strong> at ${new Date(data.timestamp).toLocaleTimeString()}</p>`;
+      log.scrollTop = log.scrollHeight;
+    } else if(data.type === 'chat') {
+      const chat = document.getElementById('chatBox');
+      chat.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+      chat.scrollTop = chat.scrollHeight;
+    }
+  } catch(e) {
+    console.error("Invalid backend message", e);
+  }
+};
+
+// Send Pulse
+document.getElementById('sendPulse').addEventListener('click', () => {
+  ws.send(JSON.stringify({ type:'pulse', origin:vesselName, timestamp:Date.now() }));
+});
+
+// Send Chat
+document.getElementById('sendChat').addEventListener('click', () => {
+  const msg = document.getElementById('chatInput').value;
+  if(msg.trim() === "") return;
+  ws.send(JSON.stringify({ type:'chat', message:msg, sender:vesselName }));
+  document.getElementById('chatInput').value = '';
+});
+</script>
+</body>
+</html>
+v<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Golden Bible: Core Principles Manifesto</title>
 <style>
