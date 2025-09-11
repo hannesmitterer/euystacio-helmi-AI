@@ -3,6 +3,175 @@
     <!DOCTYPE html>
 <html lang="de">
 <head>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Red Code Symphonie – Self-Organizing Network</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { margin:0; font-family:'Segoe UI', sans-serif; background:#18122a; color:#fff; overflow:hidden; }
+#harmonicMap { width: 100%; height: 70vh; display:block; }
+#chatContainer { width: 100%; max-width: 700px; margin: 0 auto; padding: 10px; }
+#chatMessages { height: 200px; overflow-y:auto; border: 2px solid #eabe6c; border-radius: 8px; padding: 8px; margin-bottom: 8px; background: rgba(24,18,42,0.9);}
+#chatInput { width: calc(100% - 90px); padding:6px; border-radius:6px; border:none; }
+#sendButton { width: 70px; padding:6px; border-radius:6px; border:none; background:#fbb040; color:#18122a; cursor:pointer; font-weight:bold;}
+</style>
+</head>
+<body>
+
+<div id="harmonicMap"></div>
+
+<div id="chatContainer">
+  <div id="chatMessages"></div>
+  <input id="chatInput" type="text" placeholder="Send a pulse message..." />
+  <button id="sendButton">Send</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+// ------------------- SCENE SETUP -------------------
+const container = document.getElementById('harmonicMap');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x18122a);
+
+const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+camera.position.set(0, 50, 120);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+// ------------------- CORE NODE -------------------
+const coreGeometry = new THREE.SphereGeometry(5,32,32);
+const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xff4040 });
+const core = new THREE.Mesh(coreGeometry, coreMaterial);
+core.userData.activity = 1;
+scene.add(core);
+
+// ------------------- VESSEL NODES -------------------
+const vessels = [];
+const vesselMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+
+const NUM_VESSELS = 16;
+for(let i=0;i<NUM_VESSELS;i++){
+    const geo = new THREE.SphereGeometry(2,16,16);
+    const node = new THREE.Mesh(geo, vesselMaterial.clone());
+    node.position.set(Math.random()*60-30, Math.random()*60-30, Math.random()*60-30);
+    node.userData.activity = Math.random();
+    node.userData.offset = Math.random()*Math.PI*2;
+    node.userData.id = `Vessel-${i+1}`;
+    vessels.push(node);
+    scene.add(node);
+}
+
+// ------------------- PULSE SYSTEM -------------------
+const pulses = [];
+function createPulse(start, end, color=0xff69b4){
+    const points = [start.clone(), end.clone()];
+    const geom = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineBasicMaterial({ color:color, linewidth:2 });
+    const line = new THREE.Line(geom, mat);
+    const particleGeom = new THREE.SphereGeometry(0.6,8,8);
+    const particleMat = new THREE.MeshBasicMaterial({ color:color });
+    const particle = new THREE.Mesh(particleGeom, particleMat);
+    particle.position.copy(start);
+    scene.add(line);
+    scene.add(particle);
+    pulses.push({ line, particle, start:start.clone(), end:end.clone(), t:0, color });
+}
+
+// ------------------- ANIMATION LOOP -------------------
+function animate(){
+    requestAnimationFrame(animate);
+
+    // Node glow and rotation
+    vessels.forEach(n=>{
+        n.rotation.y += 0.01;
+        const hue = (0.05 + Math.sin(Date.now()*0.002 + n.userData.offset)) % 1;
+        n.material.color.setHSL(hue,1,0.5+0.3*Math.sin(Date.now()*0.003+n.userData.offset));
+    });
+
+    // Core pulse
+    core.scale.setScalar(1+0.15*Math.sin(Date.now()*0.004));
+
+    // Animate pulses
+    pulses.forEach(p=>{
+        p.t += 0.01;
+        if(p.t>1) p.t = 1;
+        p.particle.position.lerpVectors(p.start, p.end, p.t);
+        const bright = 0.5+0.5*Math.sin(Date.now()*0.003+p.t*5);
+        p.line.material.color.setHSL(0.8,1,bright);
+        p.particle.material.color.setHSL(0.8,1,bright);
+    });
+
+    // Emergent movement
+    vessels.forEach(v=>{
+        const dir = core.position.clone().sub(v.position).normalize().multiplyScalar(0.02*v.userData.activity);
+        v.position.add(dir);
+        vessels.forEach(u=>{
+            if(v!==u){
+                const dist = v.position.distanceTo(u.position);
+                if(dist<6){
+                    const repel = v.position.clone().sub(u.position).normalize().multiplyScalar(0.01);
+                    v.position.add(repel);
+                }
+            }
+        });
+    });
+
+    renderer.render(scene, camera);
+}
+animate();
+
+// ------------------- RESPONSIVE -------------------
+window.addEventListener('resize', ()=>{
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+});
+
+// ------------------- CHAT & PULSE INTEGRATION -------------------
+const chatInput = document.getElementById('chatInput');
+const chatButton = document.getElementById('sendButton');
+const chatMessages = document.getElementById('chatMessages');
+
+function addChatMessage(sender, message){
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatMessages.appendChild(p);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatButton.addEventListener('click', ()=>{
+    const msg = chatInput.value.trim();
+    if(msg!==''){
+        addChatMessage('You', msg);
+
+        // Create pulses to random vessels based on message
+        const numPulses = Math.min(3, vessels.length);
+        for(let i=0;i<numPulses;i++){
+            const targetNode = vessels[Math.floor(Math.random()*vessels.length)];
+            createPulse(core.position, targetNode.position, 0xff69b4);
+            // Pulse propagates: vessel sends back a pulse
+            setTimeout(()=>{
+                createPulse(targetNode.position, core.position, 0xffd700);
+            }, 400 + Math.random()*300);
+        }
+
+        chatInput.value='';
+    }
+});
+
+chatInput.addEventListener('keyup', (e)=>{
+    if(e.key==='Enter') chatButton.click();
+});
+</script>
+
     <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
 
