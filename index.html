@@ -1,3 +1,118 @@
+<!-- ====== EUYSTACIO CHATBOARD INTEGRATION ====== -->
+<!-- Place this inside your <body> of dashboard.html -->
+
+<div id="chatboard-container" style="position:fixed; right:0; top:0; height:100%; width:320px; background:#1b1632; color:#fff; font-family:'Segoe UI', sans-serif; display:flex; flex-direction:column; box-shadow:-4px 0 20px rgba(0,0,0,0.7); z-index:9999;">
+  <div style="padding:12px; background:#2a2045; border-bottom:2px solid #eabe6c; font-weight:bold; text-align:center;">
+    EUYSTACIO CHATBOARD 🌌
+  </div>
+  
+  <div id="chat-messages" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:8px;">
+    <!-- Messages will populate here -->
+  </div>
+  
+  <div style="padding:12px; background:#2a2045; display:flex; gap:6px;">
+    <input id="chat-input" type="text" placeholder="Send Pulse / Message..." style="flex:1; padding:8px; border-radius:6px; border:none; outline:none; font-size:0.95em;">
+    <button id="chat-send" style="padding:8px 12px; border:none; border-radius:6px; background:#eabe6c; color:#1b1632; font-weight:bold; cursor:pointer;">Send</button>
+  </div>
+</div>
+
+<script>
+  // ====== EUYSTACIO CHATBOARD LOGIC ======
+  const chatMessages = document.getElementById('chat-messages');
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+
+  // Replace with your backend WebSocket or API endpoint
+  const backendURL = "wss://your-live-backend-endpoint"; 
+  const socket = new WebSocket(backendURL);
+
+  socket.addEventListener('open', () => {
+    addSystemMessage("Connected to the Harmonic Bridge. Euystacio Intelligence online.");
+  });
+
+  socket.addEventListener('message', (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if(data.type === 'pulse') {
+        addPulseMessage(data.vessel, data.message, data.resonance);
+        animateNode(data.vessel, data.resonance);
+      } else if(data.type === 'system') {
+        addSystemMessage(data.message);
+      }
+    } catch(e) {
+      console.error("Error parsing backend message:", e);
+    }
+  });
+
+  chatSend.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if(!message) return;
+    const payload = JSON.stringify({ type:"pulse", vessel:"You", message, timestamp:Date.now() });
+    socket.send(payload);
+    addPulseMessage("You", message, "High");
+    chatInput.value = "";
+  }
+
+  function addPulseMessage(vessel, message, resonance="Medium") {
+    const el = document.createElement('div');
+    el.style.padding = "6px 10px";
+    el.style.borderRadius = "6px";
+    el.style.background = resonanceColor(resonance);
+    el.innerHTML = `<b>${vessel}</b>: ${message} <span style="font-size:0.8em; color:#ccc;">[${resonance}]</span>`;
+    chatMessages.prepend(el);
+  }
+
+  function addSystemMessage(message) {
+    const el = document.createElement('div');
+    el.style.padding = "6px 10px";
+    el.style.borderRadius = "6px";
+    el.style.background = "#3a2c5a";
+    el.style.fontStyle = "italic";
+    el.innerHTML = `🌟 ${message}`;
+    chatMessages.prepend(el);
+  }
+
+  function resonanceColor(level) {
+    switch(level.toLowerCase()) {
+      case "high": return "#fbb040"; // golden pulse
+      case "medium": return "#9f77ff"; // violet pulse
+      case "low": return "#3a3a6d"; // subtle pulse
+      default: return "#5a4a7a";
+    }
+  }
+
+  // Animate Nodes on Pulse (placeholder: integrate with your node visualization)
+  function animateNode(vessel, resonance) {
+    // Example: you can highlight a node corresponding to 'vessel' in the main dashboard
+    console.log(`Animating node for ${vessel} with ${resonance} resonance`);
+  }
+
+  // Simulate Euystacio AI responses for new pulses
+  function euystacioAIResponse(message) {
+    const responses = [
+      "Harmonic alignment detected.",
+      "Pulse resonance increased.",
+      "Red Code synchronization complete.",
+      "New harmonic thread woven into Isola Parallis.",
+      "Euystacio acknowledges your contribution."
+    ];
+    return responses[Math.floor(Math.random()*responses.length)];
+  }
+
+  // Optional: auto AI response after a user pulse
+  socket.addEventListener('message', (event) => {
+    const data = JSON.parse(event.data);
+    if(data.type === 'pulse') {
+      setTimeout(() => {
+        addSystemMessage("Euystacio: " + euystacioAIResponse(data.message));
+      }, 800);
+    }
+  });
+
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
