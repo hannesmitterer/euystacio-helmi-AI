@@ -1,0 +1,138 @@
+/* EuystacioDRAFT Main Stylesheet */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom, #fffbe6, #ffe6f0);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+header {
+    text-align: center;
+    background: rgba(255,255,255,0.9);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+h1 {
+    font-size: 2.5rem;
+    color: #e07a5f;
+    margin: 0;
+}
+.subtitle {
+    color: #3d405b;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+.draft-notice {
+    background: #f0f8ff;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #2196f3;
+    margin: 1rem 0;
+}
+.section {
+    background: rgba(255,255,255,0.8);
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.section h2 {
+    color: #3d405b;
+    margin-top: 0;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+.card {
+    background: #f4f1de;
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 4px solid #81b29a;
+}
+.card h3 {
+    color: #3d405b;
+    margin-top: 0;
+}
+.card-sacred { border-left-color: #e07a5f; }
+.card-packages { border-left-color: #81b29a; }
+.card-infrastructure { border-left-color: #3d405b; }
+.card-community { border-left-color: #f2a261; }
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+li {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+li:before {
+    content: "🔸";
+    position: absolute;
+    left: 0;
+}
+a {
+    color: #81b29a;
+    text-decoration: none;
+    font-weight: bold;
+}
+a:hover {
+    text-decoration: underline;
+}
+.signature {
+    background: #e3f2fd;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    text-align: center;
+    font-style: italic;
+}
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+.nav-button {
+    background: #81b29a;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.nav-button:hover {
+    background: #6a9981;
+    transform: translateY(-2px);
+}
+.stats {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+.stat {
+    background: rgba(129, 178, 154, 0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 0.5rem;
+    min-width: 120px;
+}
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #81b29a;
+}
