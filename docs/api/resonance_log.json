@@ -128,5 +128,104 @@
     "amplitude": 0.745,
     "phase": "harmonizing",
     "cycle": 7
+  },
+  {
+    "timestamp": "2025-09-15T05:52:06.609042+00:00",
+    "resonance": 0.246,
+    "colour": "#4c30d8",
+    "frequency": 431.74,
+    "amplitude": 0.246,
+    "phase": "initiating",
+    "cycle": 0
+  },
+  {
+    "timestamp": "2025-09-15T05:52:08.669983+00:00",
+    "resonance": 0.335,
+    "colour": "#5a2cdd",
+    "frequency": 431.76,
+    "amplitude": 0.335,
+    "phase": "ascending",
+    "cycle": 8
+  },
+  {
+    "timestamp": "2025-09-15T05:52:21.624097+00:00",
+    "resonance": 0.263,
+    "colour": "#4f30d9",
+    "frequency": 431.87,
+    "amplitude": 0.263,
+    "phase": "initiating",
+    "cycle": 1
+  },
+  {
+    "timestamp": "2025-09-15T05:52:23.685151+00:00",
+    "resonance": 0.24,
+    "colour": "#4b31d8",
+    "frequency": 431.89,
+    "amplitude": 0.24,
+    "phase": "initiating",
+    "cycle": 9
+  },
+  {
+    "timestamp": "2025-09-15T05:52:36.639137+00:00",
+    "resonance": 0.733,
+    "colour": "#b113f1",
+    "frequency": 432.02,
+    "amplitude": 0.733,
+    "phase": "harmonizing",
+    "cycle": 2
+  },
+  {
+    "timestamp": "2025-09-15T05:52:38.700319+00:00",
+    "resonance": 0.702,
+    "colour": "#a915ef",
+    "frequency": 432.04,
+    "amplitude": 0.702,
+    "phase": "harmonizing",
+    "cycle": 10
+  },
+  {
+    "timestamp": "2025-09-15T05:52:53.715323+00:00",
+    "resonance": 0.846,
+    "colour": "#d10bf7",
+    "frequency": 432.19,
+    "amplitude": 0.846,
+    "phase": "harmonizing",
+    "cycle": 11
+  },
+  {
+    "timestamp": "2025-09-15T05:53:08.730537+00:00",
+    "resonance": 0.306,
+    "colour": "#552ddb",
+    "frequency": 432.32,
+    "amplitude": 0.306,
+    "phase": "ascending",
+    "cycle": 12
+  },
+  {
+    "timestamp": "2025-09-15T05:53:23.745135+00:00",
+    "resonance": 0.1,
+    "colour": "#3838d1",
+    "frequency": 432.42,
+    "amplitude": 0.1,
+    "phase": "initiating",
+    "cycle": 13
+  },
+  {
+    "timestamp": "2025-09-15T05:53:38.758965+00:00",
+    "resonance": 0.66,
+    "colour": "#9e18ed",
+    "frequency": 432.48,
+    "amplitude": 0.66,
+    "phase": "stable",
+    "cycle": 14
+  },
+  {
+    "timestamp": "2025-09-15T05:53:53.771744+00:00",
+    "resonance": 0.893,
+    "colour": "#df08f9",
+    "frequency": 432.5,
+    "amplitude": 0.893,
+    "phase": "resonant",
+    "cycle": 15
   }
 ]
