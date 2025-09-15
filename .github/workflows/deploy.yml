@@ -1,10 +1,29 @@
+# GitHub Pages Auto-Deployment Workflow for EuystacioDraft Project
+# 
+# This workflow automatically builds and deploys the Euystacio project to GitHub Pages
+# whenever changes are pushed to the main branch. The deployment process includes:
+# 
+# 1. Building the static site using the unified build system (build_static.py)
+# 2. Generating optimized HTML, CSS, and JavaScript for the Sacred Dashboard interface
+# 3. Deploying the built artifacts to GitHub Pages using the official deploy-pages action
+# 
+# The workflow uses the github_pages_deploy directory as the deployment source,
+# which contains the complete static site including:
+# - Interactive 3D visualizations
+# - Sacred Dashboard interface 
+# - Documentation and examples
+# - Static assets and configurations
+#
+# Auto-deployment triggers on every push to main branch to ensure the live site
+# stays synchronized with the latest developments.
+
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  # Only deploy on main branch pushes for automatic deployment
+  # Remove pull_request trigger to avoid unnecessary builds
 
 permissions:
   contents: read
@@ -16,38 +35,42 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
+    name: Build and Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
-    - name: Setup Python
+    - name: Setup Python environment
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
         
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
         pip install -r requirements.txt
         
-    - name: Build static version
-      run: python build_static.py
+    - name: Build static site using unified build system
+      run: |
+        echo "🌱 Building Euystacio static site for GitHub Pages deployment..."
+        python build_static.py
+        echo "✅ Build completed. Output available in github_pages_deploy/"
       
-    - name: Setup Pages
+    - name: Setup GitHub Pages
       uses: actions/configure-pages@v4
       
-    - name: Upload artifact
+    - name: Upload GitHub Pages artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './docs'
+        # Deploy from the correct build output directory
+        path: './github_pages_deploy'
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+      
+    - name: Log deployment status
+      run: |
+        echo "🌸 Deployment completed successfully!"
+        echo "🔗 Site URL: ${{ steps.deployment.outputs.page_url }}"
