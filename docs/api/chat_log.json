@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "timestamp": "2025-09-15T06:00:00Z",
+    "sender": "Astrodeepaura System",
+    "message": "Pulse Layer initialization complete. All systems nominal.",
+    "type": "system"
+  },
+  {
+    "timestamp": "2025-09-15T06:01:30Z",
+    "sender": "Resonance Monitor",
+    "message": "Dynamic Resonance Spectrum calibrated. Frequency locked at 7.83 Hz.",
+    "type": "system"
+  },
+  {
+    "timestamp": "2025-09-15T06:02:15Z",
+    "sender": "Red Code Guardian",
+    "message": "Compliance verified. All safety protocols active.",
+    "type": "security"
+  }
+]

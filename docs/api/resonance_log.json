@@ -1,3 +1,62 @@
 [
-  {"timestamp": "2025-09-15T05:34:46", "resonance": 0.79, "colour": "#8A2BE2"}
+  {
+    "timestamp": "2025-09-15T05:30:00",
+    "resonance": 0.45,
+    "colour": "#FF8800"
+  },
+  {
+    "timestamp": "2025-09-15T05:31:00",
+    "resonance": 0.52,
+    "colour": "#FFDD00"
+  },
+  {
+    "timestamp": "2025-09-15T05:32:00",
+    "resonance": 0.61,
+    "colour": "#FFDD00"
+  },
+  {
+    "timestamp": "2025-09-15T05:33:00",
+    "resonance": 0.74,
+    "colour": "#FFDD00"
+  },
+  {
+    "timestamp": "2025-09-15T05:34:46",
+    "resonance": 0.79,
+    "colour": "#44FF44"
+  },
+  {
+    "timestamp": "2025-09-15T05:35:30",
+    "resonance": 0.83,
+    "colour": "#44FF44"
+  },
+  {
+    "timestamp": "2025-09-15T05:36:15",
+    "resonance": 0.76,
+    "colour": "#44FF44"
+  },
+  {
+    "timestamp": "2025-09-15T06:00:00",
+    "resonance": 0.68,
+    "colour": "#FFDD00"
+  },
+  {
+    "timestamp": "2025-09-15T06:01:00",
+    "resonance": 0.72,
+    "colour": "#FFDD00"
+  },
+  {
+    "timestamp": "2025-09-15T06:02:00",
+    "resonance": 0.81,
+    "colour": "#44FF44"
+  },
+  {
+    "timestamp": "2025-09-15T06:10:28",
+    "resonance": 0.65,
+    "colour": "#FFDD00"
+  },
+  {
+    "timestamp": "2025-09-15T06:10:34",
+    "resonance": 0.65,
+    "colour": "#FFDD00"
+  }
 ]
