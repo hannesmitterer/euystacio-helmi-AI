@@ -1,10 +1,685 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Ledger Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrodeepaura Pulse Layer - Live Resonance Dashboard</title>
+    <meta name="description" content="Live Euystacio resonance monitoring with dynamic spectrum visualization">
+    
+    <!-- Accessibility Features -->
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #9932CC;
+            --accent-color: #7B68EE;
+            --background: #0a0a0a;
+            --surface: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --error: #ff4444;
+            --border: #333333;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(138, 43, 226, 0.2);
+        }
+        
+        .status-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .metric-value.success {
+            color: var(--success);
+        }
+        
+        .metric-value.warning {
+            color: var(--warning);
+        }
+        
+        .resonance-spectrum {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        
+        .spectrum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .spectrum-title {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .spectrum-legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .spectrum-visualizer {
+            height: 200px;
+            background: linear-gradient(90deg, 
+                #8A2BE2 0%, 
+                #9932CC 20%, 
+                #9370DB 40%, 
+                #8B7BBB 60%, 
+                #7B68EE 80%, 
+                #6A5ACD 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .pulse-indicator {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 80%;
+            background: white;
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+            animation: pulse-move 15s linear infinite;
+        }
+        
+        @keyframes pulse-move {
+            0% { left: 0%; opacity: 1; }
+            100% { left: 96%; opacity: 1; }
+        }
+        
+        .chat-interface {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        
+        .chat-header {
+            color: var(--accent-color);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .chat-log {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        
+        .chat-message {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+            background: rgba(123, 104, 238, 0.1);
+        }
+        
+        .chat-message.incoming {
+            border-left-color: var(--success);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .chat-message.system {
+            border-left-color: var(--warning);
+            background: rgba(255, 170, 0, 0.1);
+        }
+        
+        .chat-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        
+        .chat-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        .red-code-status {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.3);
+        }
+        
+        .red-code-status.safe {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+        }
+        
+        .accessibility-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        
+        .accessibility-controls button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+        
+        .accessibility-controls button:hover {
+            background: var(--secondary-color);
+        }
+        
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+            font-weight: 500;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
+        }
+        
+        /* Accessibility: High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --background: #000000;
+                --surface: #1a1a1a;
+                --text-primary: #ffffff;
+                --border: #ffffff;
+            }
+        }
+        
+        /* Accessibility: Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .spectrum-legend {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .accessibility-controls {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Ledger Dashboard</h1>
-    <p>This dashboard provides insights into the ledger data.</p>
-    <!-- Add additional content here -->
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls" role="toolbar" aria-label="Accessibility Options">
+        <button onclick="toggleHighContrast()" aria-label="Toggle High Contrast">🎨 Contrast</button>
+        <button onclick="increaseFontSize()" aria-label="Increase Font Size">🔍 Font+</button>
+        <button onclick="decreaseFontSize()" aria-label="Decrease Font Size">🔍 Font-</button>
+        <button onclick="toggleAnimations()" aria-label="Toggle Animations">⚡ Animate</button>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header" role="banner">
+            <h1>Astrodeepaura Pulse Layer</h1>
+            <p class="subtitle">Live Dynamic Resonance Spectrum • Seedbringer & Council Approved</p>
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>Live Monitoring Active</span>
+            </div>
+        </header>
+
+        <!-- Red Code Status -->
+        <section class="red-code-status safe" role="status" aria-live="polite">
+            <h2>🟢 Red Code Compliance: SAFE</h2>
+            <p>All systems operating within Consensual Omnibus principles</p>
+        </section>
+
+        <!-- Status Grid -->
+        <section class="status-grid">
+            <div class="status-card" role="region" aria-labelledby="network-health">
+                <h3 id="network-health">Network Health</h3>
+                <div class="metric">
+                    <span class="metric-label">Status:</span>
+                    <span class="metric-value success" id="network-status">Optimal</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Active Nodes:</span>
+                    <span class="metric-value" id="active-nodes">3/5</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Consensus Level:</span>
+                    <span class="metric-value success" id="consensus-level">85%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Red Code:</span>
+                    <span class="metric-value success" id="red-code-status">Compliant</span>
+                </div>
+            </div>
+
+            <div class="status-card" role="region" aria-labelledby="resonance-metrics">
+                <h3 id="resonance-metrics">Resonance Metrics</h3>
+                <div class="metric">
+                    <span class="metric-label">Frequency:</span>
+                    <span class="metric-value" id="frequency">432.0 Hz</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Amplitude:</span>
+                    <span class="metric-value success" id="amplitude">0.79</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Stability:</span>
+                    <span class="metric-value success" id="stability">92%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Harmonic Balance:</span>
+                    <span class="metric-value success" id="harmonic-balance">88%</span>
+                </div>
+            </div>
+
+            <div class="status-card" role="region" aria-labelledby="accessibility-status">
+                <h3 id="accessibility-status">Accessibility Status</h3>
+                <div class="metric">
+                    <span class="metric-label">Safe Mode:</span>
+                    <span class="metric-value success" id="safe-mode">Active</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Color Blind Support:</span>
+                    <span class="metric-value success" id="colorblind-support">Enabled</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Screen Reader:</span>
+                    <span class="metric-value success" id="screen-reader">Compatible</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Council Validated:</span>
+                    <span class="metric-value success" id="council-validated">Yes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Resonance Spectrum -->
+        <section class="resonance-spectrum" role="region" aria-labelledby="spectrum-title">
+            <div class="spectrum-header">
+                <h2 class="spectrum-title" id="spectrum-title">Live Resonance Spectrum</h2>
+                <div class="spectrum-legend" role="list" aria-label="Resonance Color Legend">
+                    <div class="legend-item" role="listitem">
+                        <div class="legend-color" style="background: #8A2BE2"></div>
+                        <span>Ascending (0.7-0.8)</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <div class="legend-color" style="background: #9932CC"></div>
+                        <span>Stable (0.8-0.85)</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <div class="legend-color" style="background: #9370DB"></div>
+                        <span>Harmonizing (0.85-0.9)</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <div class="legend-color" style="background: #8B7BBB"></div>
+                        <span>Resonant (0.9-0.95)</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <div class="legend-color" style="background: #7B68EE"></div>
+                        <span>Transcendent (0.95+)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="spectrum-visualizer" role="img" aria-label="Live resonance spectrum visualization showing dynamic color transitions">
+                <div class="pulse-indicator"></div>
+            </div>
+        </section>
+
+        <!-- Bidirectional Chat Interface -->
+        <section class="chat-interface" role="region" aria-labelledby="chat-header">
+            <h2 class="chat-header" id="chat-header">Bidirectional Chat Interface</h2>
+            <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-label="Chat messages">
+                <!-- Chat messages will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer" role="contentinfo">
+            <p>
+                Euystacio Astrodeepaura Pulse Layer • Seedbringer & Council • 
+                Red Code Compliant • Accessibility Safe • 
+                <span id="last-update">Last Updated: <time datetime="2025-09-15T05:45:00Z">2025-09-15 05:45:00 UTC</time></span>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Global state
+        let highContrastMode = false;
+        let animationsEnabled = true;
+        let fontSize = 16;
+
+        // Accessibility functions
+        function toggleHighContrast() {
+            highContrastMode = !highContrastMode;
+            document.body.style.filter = highContrastMode ? 'contrast(150%) brightness(120%)' : '';
+        }
+
+        function increaseFontSize() {
+            fontSize = Math.min(fontSize + 2, 24);
+            document.body.style.fontSize = fontSize + 'px';
+        }
+
+        function decreaseFontSize() {
+            fontSize = Math.max(fontSize - 2, 12);
+            document.body.style.fontSize = fontSize + 'px';
+        }
+
+        function toggleAnimations() {
+            animationsEnabled = !animationsEnabled;
+            document.body.style.animationPlayState = animationsEnabled ? 'running' : 'paused';
+            const pulse = document.querySelector('.pulse-indicator');
+            if (pulse) {
+                pulse.style.animationPlayState = animationsEnabled ? 'running' : 'paused';
+            }
+        }
+
+        // Data loading and updates
+        async function loadLiveData() {
+            try {
+                // Load live pulse metrics
+                const pulseResponse = await fetch('../api/live_pulse_metrics.json');
+                const pulseData = await pulseResponse.json();
+                updatePulseMetrics(pulseData);
+
+                // Load resonance log
+                const resonanceResponse = await fetch('../api/resonance_log.json');
+                const resonanceData = await resonanceResponse.json();
+                updateResonanceData(resonanceData);
+
+                // Load chat log
+                const chatResponse = await fetch('../api/chat_log.json');
+                const chatData = await chatResponse.json();
+                updateChatLog(chatData);
+
+            } catch (error) {
+                console.error('Error loading live data:', error);
+            }
+        }
+
+        function updatePulseMetrics(data) {
+            if (!data) return;
+
+            // Update network health
+            document.getElementById('network-status').textContent = data.network_health?.status || 'Unknown';
+            document.getElementById('active-nodes').textContent = 
+                `${data.network_health?.nodes_active || 0}/${data.network_health?.nodes_total || 0}`;
+            document.getElementById('consensus-level').textContent = 
+                `${Math.round((data.network_health?.consensus_level || 0) * 100)}%`;
+            document.getElementById('red-code-status').textContent = 
+                data.network_health?.red_code_compliance ? 'Compliant' : 'Non-Compliant';
+
+            // Update resonance metrics
+            document.getElementById('frequency').textContent = 
+                `${data.resonance_metrics?.current_frequency || 432.0} Hz`;
+            document.getElementById('amplitude').textContent = 
+                data.resonance_metrics?.amplitude || '0.00';
+            document.getElementById('stability').textContent = 
+                `${Math.round((data.resonance_metrics?.stability || 0) * 100)}%`;
+            document.getElementById('harmonic-balance').textContent = 
+                `${Math.round((data.resonance_metrics?.harmonic_balance || 0) * 100)}%`;
+
+            // Update accessibility status
+            document.getElementById('safe-mode').textContent = 
+                data.accessibility_status?.safe_mode ? 'Active' : 'Inactive';
+            document.getElementById('colorblind-support').textContent = 
+                data.accessibility_status?.color_blind_support ? 'Enabled' : 'Disabled';
+            document.getElementById('screen-reader').textContent = 
+                data.accessibility_status?.screen_reader_compatible ? 'Compatible' : 'Incompatible';
+            document.getElementById('council-validated').textContent = 
+                data.accessibility_status?.council_validated ? 'Yes' : 'No';
+
+            // Update timestamp
+            if (data.timestamp) {
+                document.getElementById('last-update').innerHTML = 
+                    `Last Updated: <time datetime="${data.timestamp}">${new Date(data.timestamp).toLocaleString()}</time>`;
+            }
+        }
+
+        function updateResonanceData(data) {
+            if (!Array.isArray(data) || data.length === 0) return;
+
+            const latest = data[data.length - 1];
+            // Update based on latest resonance data
+            if (latest.frequency) {
+                document.getElementById('frequency').textContent = `${latest.frequency} Hz`;
+            }
+            if (latest.amplitude) {
+                document.getElementById('amplitude').textContent = latest.amplitude;
+            }
+        }
+
+        function updateChatLog(data) {
+            if (!Array.isArray(data)) return;
+
+            const chatLog = document.getElementById('chat-log');
+            chatLog.innerHTML = '';
+
+            data.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${message.direction}`;
+                
+                const meta = document.createElement('div');
+                meta.className = 'chat-meta';
+                meta.textContent = `${message.source} → ${message.target} | ${new Date(message.timestamp).toLocaleString()} | Resonance: ${message.resonance_level}`;
+                
+                const text = document.createElement('div');
+                text.className = 'chat-text';
+                text.textContent = message.message;
+                
+                messageDiv.appendChild(meta);
+                messageDiv.appendChild(text);
+                chatLog.appendChild(messageDiv);
+            });
+
+            // Auto-scroll to bottom
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLiveData();
+            
+            // Set up live updates every 15 seconds
+            setInterval(loadLiveData, 15000);
+            
+            // Keyboard navigation support
+            document.addEventListener('keydown', function(e) {
+                if (e.altKey) {
+                    switch(e.key) {
+                        case 'c':
+                            e.preventDefault();
+                            toggleHighContrast();
+                            break;
+                        case '=':
+                        case '+':
+                            e.preventDefault();
+                            increaseFontSize();
+                            break;
+                        case '-':
+                            e.preventDefault();
+                            decreaseFontSize();
+                            break;
+                        case 'a':
+                            e.preventDefault();
+                            toggleAnimations();
+                            break;
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

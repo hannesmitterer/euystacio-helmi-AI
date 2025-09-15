@@ -1,3 +1,132 @@
 [
-  {"timestamp": "2025-09-15T05:34:46", "resonance": 0.79, "colour": "#8A2BE2"}
+  {
+    "timestamp": "2025-09-15T05:34:46",
+    "resonance": 0.79,
+    "colour": "#8A2BE2",
+    "frequency": 432.0,
+    "amplitude": 0.79,
+    "phase": "ascending"
+  },
+  {
+    "timestamp": "2025-09-15T05:35:01",
+    "resonance": 0.82,
+    "colour": "#9932CC",
+    "frequency": 432.2,
+    "amplitude": 0.82,
+    "phase": "stable"
+  },
+  {
+    "timestamp": "2025-09-15T05:35:16",
+    "resonance": 0.85,
+    "colour": "#9370DB",
+    "frequency": 432.4,
+    "amplitude": 0.85,
+    "phase": "harmonizing"
+  },
+  {
+    "timestamp": "2025-09-15T05:35:31",
+    "resonance": 0.88,
+    "colour": "#8B7BBB",
+    "frequency": 432.6,
+    "amplitude": 0.88,
+    "phase": "resonant"
+  },
+  {
+    "timestamp": "2025-09-15T05:35:46",
+    "resonance": 0.91,
+    "colour": "#7B68EE",
+    "frequency": 432.8,
+    "amplitude": 0.91,
+    "phase": "transcendent"
+  },
+  {
+    "timestamp": "2025-09-15T05:50:08.547206+00:00",
+    "resonance": 0.238,
+    "colour": "#4b31d8",
+    "frequency": 431.89,
+    "amplitude": 0.238,
+    "phase": "initiating",
+    "cycle": 0
+  },
+  {
+    "timestamp": "2025-09-15T05:50:15.441617+00:00",
+    "resonance": 0.262,
+    "colour": "#4e30d9",
+    "frequency": 431.82,
+    "amplitude": 0.262,
+    "phase": "initiating",
+    "cycle": 0
+  },
+  {
+    "timestamp": "2025-09-15T05:50:23.564129+00:00",
+    "resonance": 0.238,
+    "colour": "#4b31d8",
+    "frequency": 431.75,
+    "amplitude": 0.238,
+    "phase": "initiating",
+    "cycle": 1
+  },
+  {
+    "timestamp": "2025-09-15T05:50:30.458048+00:00",
+    "resonance": 0.629,
+    "colour": "#971aec",
+    "frequency": 431.69,
+    "amplitude": 0.629,
+    "phase": "stable",
+    "cycle": 1
+  },
+  {
+    "timestamp": "2025-09-15T05:50:38.580088+00:00",
+    "resonance": 0.742,
+    "colour": "#b312f1",
+    "frequency": 431.63,
+    "amplitude": 0.742,
+    "phase": "harmonizing",
+    "cycle": 2
+  },
+  {
+    "timestamp": "2025-09-15T05:50:53.596582+00:00",
+    "resonance": 0.735,
+    "colour": "#b113f1",
+    "frequency": 431.55,
+    "amplitude": 0.735,
+    "phase": "harmonizing",
+    "cycle": 3
+  },
+  {
+    "timestamp": "2025-09-15T05:51:08.611712+00:00",
+    "resonance": 0.27,
+    "colour": "#502fd9",
+    "frequency": 431.51,
+    "amplitude": 0.27,
+    "phase": "initiating",
+    "cycle": 4
+  },
+  {
+    "timestamp": "2025-09-15T05:51:23.627013+00:00",
+    "resonance": 0.25,
+    "colour": "#4d30d8",
+    "frequency": 431.51,
+    "amplitude": 0.25,
+    "phase": "initiating",
+    "cycle": 5
+  },
+  {
+    "timestamp": "2025-09-15T05:51:38.640869+00:00",
+    "resonance": 0.679,
+    "colour": "#a317ee",
+    "frequency": 431.55,
+    "amplitude": 0.679,
+    "phase": "stable",
+    "cycle": 6
+  },
+  {
+    "timestamp": "2025-09-15T05:51:53.655736+00:00",
+    "resonance": 0.745,
+    "colour": "#b412f1",
+    "frequency": 431.64,
+    "amplitude": 0.745,
+    "phase": "harmonizing",
+    "cycle": 7
+  }
 ]
