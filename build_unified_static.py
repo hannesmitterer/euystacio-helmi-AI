@@ -30,72 +30,48 @@ def create_static_unified_page():
     """Create static version of unified landing page"""
     red_code = load_red_code()
     
-    # Read the template
-    with open('unified_index.html', 'r') as f:
+    # Read the enhanced Euystacio Sacred Interface template
+    with open('Euystacio_sacred_interface.html', 'r') as f:
         html_content = f.read()
     
-    # Create static data injection
+    # Create simple static data injection for the sacred interface
     static_data_script = f"""
     <script>
-        // Static data for GitHub Pages
+        // Static data for GitHub Pages - Sacred Interface
         const STATIC_RED_CODE = {json.dumps(red_code, indent=2)};
         
-        // Override the loadLiveData function with static data
-        function loadLiveData() {{
-            console.log('Loading static data for GitHub Pages deployment');
-            
-            // Set static values
-            document.getElementById('current-emotion').textContent = 'Contemplative';
-            document.getElementById('symbiosis-level').textContent = (STATIC_RED_CODE.symbiosis_level * 100).toFixed(1) + '%';
-            document.getElementById('active-tutors').textContent = '2';
-            document.getElementById('total-reflections').textContent = STATIC_RED_CODE.optimization_history.length + 47;
-            
-            // Update symbiosis meter
-            const bar = document.getElementById('symbiosis-bar');
-            if (bar) {{
-                bar.style.width = (STATIC_RED_CODE.symbiosis_level * 100) + '%';
-            }}
-        }}
+        // Console logging for developers
+        console.log('🌌 Euystacio Sacred Interface - Static GitHub Pages Version');
+        console.log('Red Code Status:', STATIC_RED_CODE);
         
-        // Override interactive functions for static deployment
-        function loadFullDashboard() {{
-            // Try dynamic version first, fallback to static
-            fetch('/dashboard')
-                .then(() => {{ window.location.href = '/dashboard'; }})
-                .catch(() => {{ 
-                    alert('🌲 Full dynamic dashboard available when running local server!\\n\\nTo experience the complete Euystacio ecosystem:\\n\\n1. Clone the repository\\n2. Install dependencies: pip install -r requirements.txt\\n3. Run: python app_unified.py\\n4. Visit: http://localhost:5000'); 
+        // Add click handlers for access cards if they need interaction
+        document.addEventListener('DOMContentLoaded', function() {{
+            // Add accessibility enhancements
+            const cards = document.querySelectorAll('.access-card');
+            cards.forEach(card => {{
+                card.addEventListener('click', function() {{
+                    // Future: Add navigation to specific sections
+                    console.log('Access card clicked:', this.querySelector('h3').textContent);
                 }});
-        }}
-        
-        function sendPulse() {{
-            const emotion = prompt('What emotion would you like to send? (happy, contemplative, curious, etc.)');
-            if (emotion) {{
-                // Try to send to backend, fallback to simulation
-                fetch('/api/pulse', {{
-                    method: 'POST',
-                    headers: {{'Content-Type': 'application/json'}},
-                    body: JSON.stringify({{emotion: emotion, intensity: 0.7, clarity: 'medium', note: 'From unified interface'}})
-                }})
-                .then(response => response.json())
-                .then(data => {{
-                    alert(`✨ Emotional pulse "${{emotion}}" received by Euystacio!\\n\\nResponse: ${{data.response || 'The forest listens...'}}`);
-                }})
-                .catch(() => {{
-                    alert(`💫 Pulse "${{emotion}}" sent to the digital forest!\\n\\n(Connect to live server for full interaction)`);
+                
+                // Keyboard support
+                card.addEventListener('keydown', function(e) {{
+                    if (e.key === 'Enter' || e.key === ' ') {{
+                        e.preventDefault();
+                        this.click();
+                    }}
+                }});
+            }});
+            
+            // Enhanced download placeholder functionality
+            const downloadBtn = document.querySelector('.download-placeholder');
+            if (downloadBtn) {{
+                downloadBtn.addEventListener('click', function(e) {{
+                    e.preventDefault();
+                    alert('🌿 Sacred documents portal\\n\\nDocuments are being prepared and will be available soon.\\n\\nFor the complete interactive experience with live documents,\\nvisit the full repository and run the local server.');
                 }});
             }}
-        }}
-        
-        function triggerReflection() {{
-            fetch('/api/reflect')
-                .then(response => response.json())
-                .then(data => {{
-                    alert('🌸 Reflection triggered successfully!\\n\\n' + (data.reflection || 'Euystacio is contemplating...'));
-                }})
-                .catch(() => {{
-                    alert('🌸 Reflection cycle initiated...\\n\\nEuystacio is contemplating recent interactions and growth patterns.\\n\\n(Connect to live server for real-time reflections)');
-                }});
-        }}
+        }});
     </script>
     """
     
