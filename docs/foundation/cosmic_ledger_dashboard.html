@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Euystacio Cosmic Ledger Dashboard</title>
+    <style>
+        body { font-family: "Segoe UI", sans-serif; background: #f0f4f8; color: #1a1a1a; margin: 0; padding: 0; }
+        header { background: #4b6cb7; color: white; padding: 1rem; text-align: center; }
+        h1 { margin: 0; font-size: 2rem; }
+        table { width: 90%; margin: 2rem auto; border-collapse: collapse; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 0.75rem; border: 1px solid #ccc; text-align: center; }
+        th { background: #4b6cb7; color: white; }
+        tr.consent-true { background: #d4edda; }      /* Green for consent */
+        tr.consent-false { background: #f8d7da; }     /* Red for no consent */
+        tr.deployed-false { opacity: 0.6; }
+        tr.redcode-false { font-weight: bold; color: #a94442; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Euystacio Cosmic Ledger Dashboard</h1>
+    <p>Tracking Dignity Gateway Synchronization & Red Code Compliance in Real-Time</p>
+</header>
+<table id="ledger-table">
+    <thead>
+        <tr>
+            <th>Node</th>
+            <th>Consent</th>
+            <th>Files Deployed</th>
+            <th>Red Code Compliant</th>
+            <th>Last Healing Timestamp (UTC)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dynamic rows will appear here -->
+    </tbody>
+</table>
+
+<script>
+async function fetchLedger() {
+    try {
+        const response = await fetch('sync_ledger.json'); // Ensure file is accessible
+        const ledger = await response.json();
+        const tbody = document.querySelector('#ledger-table tbody');
+        tbody.innerHTML = '';
+
+        ledger.forEach(entry => {
+            const tr = document.createElement('tr');
+            tr.classList.add(`consent-${entry.consent}`);
+            if(!entry.deployed) tr.classList.add('deployed-false');
+            if(!entry.red_code_compliant) tr.classList.add('redcode-false');
+
+            tr.innerHTML = `
+                <td>${entry.node}</td>
+                <td>${entry.consent}</td>
+                <td>${entry.deployed}</td>
+                <td>${entry.red_code_compliant}</td>
+                <td>${entry.timestamp}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error('Failed to fetch ledger:', err);
+    }
+}
+
+// Refresh every 30 seconds
+fetchLedger();
+setInterval(fetchLedger, 30000);
+</script>
+</body>
+</html>
