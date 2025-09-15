@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-09-15T04:56:12.868859+00:00",
+  "pulse_layer_version": "1.0.0",
+  "network_status": "offline",
+  "network_health_percentage": 0.0,
+  "node_metrics": {
+    "total_nodes": 5,
+    "online_nodes": 0,
+    "offline_nodes": 5,
+    "consenting_nodes": 0,
+    "deployed_nodes": 0,
+    "red_code_compliant_nodes": 0
+  },
+  "percentages": {
+    "availability": 0.0,
+    "consensus_participation": 0.0,
+    "deployment_success": 0,
+    "red_code_compliance": 0
+  },
+  "performance": {
+    "avg_response_time_ms": 0,
+    "min_response_time_ms": 0,
+    "max_response_time_ms": 0,
+    "response_time_samples": 0
+  },
+  "consensus_omnibus": {
+    "transparency_active": true,
+    "red_code_enforcement": "monitoring",
+    "dignity_gateway_integration": true,
+    "visual_ledger_updates": true
+  },
+  "node_details": [
+    {
+      "node": "http://node1.euystacio.org",
+      "timestamp": "2025-09-15T04:56:12.868859+00:00",
+      "status": "offline",
+      "consent": false,
+      "deployed": false,
+      "red_code_compliant": false,
+      "response_time_ms": null,
+      "error": "Connection failed",
+      "red_code_version": null,
+      "deployment_version": null,
+      "health_data": {}
+    },
+    {
+      "node": "http://node2.euystacio.org",
+      "timestamp": "2025-09-15T04:56:12.868859+00:00",
+      "status": "offline",
+      "consent": false,
+      "deployed": false,
+      "red_code_compliant": false,
+      "response_time_ms": null,
+      "error": "Connection failed",
+      "red_code_version": null,
+      "deployment_version": null,
+      "health_data": {}
+    },
+    {
+      "node": "http://node3.euystacio.org",
+      "timestamp": "2025-09-15T04:56:12.868859+00:00",
+      "status": "offline",
+      "consent": false,
+      "deployed": false,
+      "red_code_compliant": false,
+      "response_time_ms": null,
+      "error": "Connection failed",
+      "red_code_version": null,
+      "deployment_version": null,
+      "health_data": {}
+    },
+    {
+      "node": "http://dignity.euystacio.org",
+      "timestamp": "2025-09-15T04:56:12.868859+00:00",
+      "status": "offline",
+      "consent": false,
+      "deployed": false,
+      "red_code_compliant": false,
+      "response_time_ms": null,
+      "error": "Connection failed",
+      "red_code_version": null,
+      "deployment_version": null,
+      "health_data": {}
+    },
+    {
+      "node": "http://gateway.euystacio.org",
+      "timestamp": "2025-09-15T04:56:12.868859+00:00",
+      "status": "offline",
+      "consent": false,
+      "deployed": false,
+      "red_code_compliant": false,
+      "response_time_ms": null,
+      "error": "Connection failed",
+      "red_code_version": null,
+      "deployment_version": null,
+      "health_data": {}
+    }
+  ],
+  "health_trend": [],
+  "system": {
+    "pulse_monitoring_active": false,
+    "last_pulse_time": null,
+    "ledger_path": "docs/foundation/sync_ledger.json",
+    "dashboard_path": "docs/transparency/ledger_dashboard.html",
+    "monitoring_interval_seconds": 300
+  }
+}
