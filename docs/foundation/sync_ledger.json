@@ -1,0 +1,47 @@
+[
+  {
+    "node": "http://node1.euystacio.local:5001",
+    "timestamp": "2025-09-15T04:56:01.879156+00:00",
+    "consent": true,
+    "deployed": true,
+    "red_code_compliant": true,
+    "response_time_ms": 53,
+    "uptime_seconds": 58841
+  },
+  {
+    "node": "http://node2.euystacio.local:5002",
+    "timestamp": "2025-09-15T04:56:01.879156+00:00",
+    "consent": true,
+    "deployed": false,
+    "red_code_compliant": false,
+    "response_time_ms": 55,
+    "uptime_seconds": 80769
+  },
+  {
+    "node": "http://node3.euystacio.local:5003",
+    "timestamp": "2025-09-15T04:56:01.879156+00:00",
+    "consent": true,
+    "deployed": true,
+    "red_code_compliant": true,
+    "response_time_ms": 258,
+    "uptime_seconds": 67895
+  },
+  {
+    "node": "http://node4.euystacio.local:5004",
+    "timestamp": "2025-09-15T04:56:01.879156+00:00",
+    "consent": true,
+    "deployed": true,
+    "red_code_compliant": true,
+    "response_time_ms": 107,
+    "uptime_seconds": 75902
+  },
+  {
+    "node": "http://test-node.euystacio.local:5005",
+    "timestamp": "2025-09-15T04:56:01.879156+00:00",
+    "consent": true,
+    "deployed": true,
+    "red_code_compliant": true,
+    "response_time_ms": 99,
+    "uptime_seconds": 81190
+  }
+]

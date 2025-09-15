@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Euystacio Visual Ledger Dashboard</title>
+    <style>
+        body { 
+            font-family: "Segoe UI", sans-serif; 
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f5e8 100%); 
+            color: #1a1a1a; 
+            margin: 0; 
+            padding: 0; 
+        }
+        header { 
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%); 
+            color: white; 
+            padding: 1.5rem; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { margin: 0; font-size: 2.5rem; }
+        .subtitle { margin: 0.5rem 0 0 0; font-size: 1.1rem; opacity: 0.9; }
+        .stats-bar {
+            background: rgba(255,255,255,0.95);
+            padding: 1rem;
+            margin: 1rem auto;
+            max-width: 1200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+            margin: 0.5rem;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4b6cb7;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        table { 
+            width: 95%; 
+            max-width: 1200px;
+            margin: 2rem auto; 
+            border-collapse: collapse; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td { 
+            padding: 1rem; 
+            border: 1px solid #e0e0e0; 
+            text-align: center; 
+        }
+        th { 
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%); 
+            color: white; 
+            font-weight: 600;
+        }
+        tr.consent-true { background: #d4edda; border-left: 4px solid #28a745; }
+        tr.consent-false { background: #f8d7da; border-left: 4px solid #dc3545; }
+        tr.deployed-false { opacity: 0.7; }
+        tr.redcode-false { font-weight: bold; color: #a94442; }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge-true { background: #28a745; color: white; }
+        .badge-false { background: #dc3545; color: white; }
+        .timestamp {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .refresh-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4b6cb7;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .refresh-indicator.active {
+            opacity: 1;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .pulse { animation: pulse 2s infinite; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Euystacio Visual Ledger Dashboard</h1>
+    <p class="subtitle">Live Dignity Gateway Synchronization & Red Code Compliance Monitoring</p>
+</header>
+
+<div class="refresh-indicator" id="refresh-indicator">Refreshing...</div>
+
+<div class="stats-bar" id="stats-bar">
+    <div class="stat">
+        <div class="stat-value" id="total-nodes">0</div>
+        <div class="stat-label">Total Nodes</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="consenting-nodes">0</div>
+        <div class="stat-label">Consenting</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="deployed-nodes">0</div>
+        <div class="stat-label">Deployed</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="compliant-nodes">0</div>
+        <div class="stat-label">Red Code Compliant</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="last-sync">Never</div>
+        <div class="stat-label">Last Sync</div>
+    </div>
+</div>
+
+<table id="ledger-table">
+    <thead>
+        <tr>
+            <th>Node</th>
+            <th>Consent Status</th>
+            <th>Files Deployed</th>
+            <th>Red Code Compliant</th>
+            <th>Last Healing Timestamp (UTC)</th>
+        </tr>
+    </thead>
+    <tbody id="ledger-tbody">
+        <tr>
+            <td colspan="5" style="padding: 3rem; color: #666; font-style: italic;">
+                Loading ledger data...
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+let lastUpdateTime = null;
+
+async function fetchLedger() {
+    const indicator = document.getElementById('refresh-indicator');
+    indicator.classList.add('active');
+    
+    try {
+        const response = await fetch('/api/ledger');
+        const ledger = await response.json();
+        
+        updateStats(ledger);
+        updateTable(ledger);
+        
+        lastUpdateTime = new Date();
+        updateLastSyncTime();
+        
+    } catch (err) {
+        console.error('Failed to fetch ledger:', err);
+        showError('Failed to load ledger data. Check network connection.');
+    } finally {
+        setTimeout(() => {
+            indicator.classList.remove('active');
+        }, 500);
+    }
+}
+
+function updateStats(ledger) {
+    const totalNodes = ledger.length;
+    const consentingNodes = ledger.filter(entry => entry.consent).length;
+    const deployedNodes = ledger.filter(entry => entry.deployed).length;
+    const compliantNodes = ledger.filter(entry => entry.red_code_compliant).length;
+    
+    document.getElementById('total-nodes').textContent = totalNodes;
+    document.getElementById('consenting-nodes').textContent = consentingNodes;
+    document.getElementById('deployed-nodes').textContent = deployedNodes;
+    document.getElementById('compliant-nodes').textContent = compliantNodes;
+}
+
+function updateTable(ledger) {
+    const tbody = document.getElementById('ledger-tbody');
+    tbody.innerHTML = '';
+    
+    if (ledger.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="padding: 3rem; color: #666; font-style: italic;">
+                    No ledger entries found. Network synchronization pending.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    ledger.forEach(entry => {
+        const tr = document.createElement('tr');
+        tr.classList.add(`consent-${entry.consent}`);
+        if (!entry.deployed) tr.classList.add('deployed-false');
+        if (!entry.red_code_compliant) tr.classList.add('redcode-false');
+        
+        tr.innerHTML = `
+            <td><strong>${entry.node}</strong></td>
+            <td><span class="status-badge badge-${entry.consent}">${entry.consent ? 'GRANTED' : 'DENIED'}</span></td>
+            <td><span class="status-badge badge-${entry.deployed}">${entry.deployed ? 'DEPLOYED' : 'PENDING'}</span></td>
+            <td><span class="status-badge badge-${entry.red_code_compliant}">${entry.red_code_compliant ? 'COMPLIANT' : 'NON-COMPLIANT'}</span></td>
+            <td class="timestamp">${formatTimestamp(entry.timestamp)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function formatTimestamp(isoString) {
+    if (!isoString) return 'Unknown';
+    
+    const date = new Date(isoString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'UTC'
+    }) + ' UTC';
+}
+
+function updateLastSyncTime() {
+    if (lastUpdateTime) {
+        const now = new Date();
+        const diffSeconds = Math.floor((now - lastUpdateTime) / 1000);
+        const lastSyncElement = document.getElementById('last-sync');
+        
+        if (diffSeconds < 60) {
+            lastSyncElement.textContent = `${diffSeconds}s ago`;
+        } else if (diffSeconds < 3600) {
+            lastSyncElement.textContent = `${Math.floor(diffSeconds / 60)}m ago`;
+        } else {
+            lastSyncElement.textContent = formatTimestamp(lastUpdateTime.toISOString()).replace(' UTC', '');
+        }
+    }
+}
+
+function showError(message) {
+    const tbody = document.getElementById('ledger-tbody');
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="5" style="padding: 3rem; color: #dc3545; font-weight: bold;">
+                ⚠️ ${message}
+            </td>
+        </tr>
+    `;
+}
+
+// Initialize dashboard
+fetchLedger();
+
+// Refresh every 15 seconds for live monitoring
+setInterval(fetchLedger, 15000);
+
+// Update "last sync" display every 10 seconds
+setInterval(updateLastSyncTime, 10000);
+
+// Add pulse effect to refresh indicator during updates
+setInterval(() => {
+    const indicator = document.getElementById('refresh-indicator');
+    if (!indicator.classList.contains('active')) {
+        indicator.classList.add('pulse');
+        setTimeout(() => indicator.classList.remove('pulse'), 2000);
+    }
+}, 30000);
+</script>
+</body>
+</html>

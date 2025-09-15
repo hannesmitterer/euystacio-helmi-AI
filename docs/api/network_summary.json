@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-15T04:56:01.881257+00:00",
+  "network_status": "active",
+  "total_nodes": 5,
+  "consenting_nodes": 5,
+  "deployed_nodes": 4,
+  "compliant_nodes": 4,
+  "consensus_percentage": 100.0,
+  "deployment_success_rate": 80.0,
+  "red_code_compliance_rate": 100.0,
+  "avg_response_time_ms": 114.4,
+  "last_sync": "2025-09-15T04:56:01.879156+00:00",
+  "pulse_layer_active": true,
+  "transparency_mode": true
+}
