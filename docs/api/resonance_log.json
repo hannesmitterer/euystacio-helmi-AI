@@ -227,5 +227,14 @@
     "amplitude": 0.893,
     "phase": "resonant",
     "cycle": 15
+  },
+  {
+    "timestamp": "2025-09-15T05:54:08.785722+00:00",
+    "resonance": 0.346,
+    "colour": "#5c2bdd",
+    "frequency": 432.47,
+    "amplitude": 0.346,
+    "phase": "ascending",
+    "cycle": 16
   }
 ]
