@@ -1,2 +1,2 @@
-#!/bin/bash
-# isola_deploy.sh - Placeholder safeguard package
+Placeholder for isola_deploy.sh
+Generated safeguard package.

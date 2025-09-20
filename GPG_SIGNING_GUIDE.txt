@@ -1,0 +1,42 @@
+GPG Signing Guide & Public Key (INSTRUCTIONS - do not paste private key here)
+=======================================================================
+Purpose: sign DECLARATIO.md and create a signed, verifiable tag for immutability.
+
+1) Generate a GPG keypair (on an air-gapped machine if possible)
+   Replace name and email with Council identity (Seedbringer Council).
+
+   gpg --full-generate-key
+   # Choose RSA and RSA (default), 4096 bits, expiry as desired (or none)
+   # Real Name: "Seedbringer Council"
+   # Email: seedbringer@euystacio.local (or use a council address)
+
+2) Export public key (publish this)
+   gpg --armor --export "Seedbringer Council" > public-key.asc
+
+3) Sign DECLARATIO.md (clearsign - human readable) 
+   gpg --clearsign DECLARATIO.md
+   # This produces DECLARATIO.md.asc (text with signature)
+
+4) Create a detached signature (useful for verification)
+   gpg --output DECLARATIO.md.sig --detach-sig DECLARATIO.md
+
+5) Create a signed git tag (requires your GPG key added to git config and GitHub)
+   git tag -s declaratio-v1.0-20250916 -m "Signed declaratio v1.0 (Seedbringer Council)"
+   git push origin --tags
+
+6) Verification (anyone can verify)
+   gpg --verify DECLARATIO.md.sig DECLARATIO.md
+   # or view clearsigned file:
+   gpg --verify DECLARATIO.md.asc
+
+NOTES & BEST PRACTICES
+- Keep private keys on a hardware token (YubiKey) or air-gapped machine.
+- Share only the public-key.asc file; never reveal private key material here.
+- For GitHub, add the public key to your account (Settings -> SSH and GPG keys -> New GPG key).
+
+SAMPLE public-key.asc placeholder (replace with real exported key):
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: OpenPGP
+
+mQENBF...FAKEPLACEHOLDER...IDAQAB
+-----END PGP PUBLIC KEY BLOCK-----

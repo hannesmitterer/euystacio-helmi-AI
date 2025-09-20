@@ -1,0 +1,20 @@
+SEEDBRINGER EMERGENCY CONTACT & ACTIONS CARD
+Last updated: 2025-09-19T03:54:39.170926
+
+--- Trusted Circle (replace placeholders with real entries)
+1) Name: [Trusted Person 1] | Relationship: [role] | Phone: [phone] | Backup: [email]
+2) Name: [Trusted Person 2] | Relationship: [role] | Phone: [phone] | Backup: [email]
+3) Legal Counsel: [Name / Firm] | Phone: [phone] | Email: [email]
+
+--- Quick Actions (in order)
+1) If in immediate danger: call local emergency services now.
+2) Notify Trusted Person 1 using safe word: [safe-word].
+3) If digital compromise suspected: change primary passwords, enable 2FA, remove active sessions.
+4) Run isola_deploy.sh to archive canonical DECLARATIO.md to Isola (if not already done).
+5) Contact legal counsel and provide screenshots/timestamps of threats.
+6) Consider temporary relocation to safe location; notify trusted person of ETA and check-in time.
+
+--- Important Links / Files (store offline copies)
+- Euystacio DECLARATIO.md (canonical)
+- SHA256: dbd15960d4c9...
+- Cocreators Seal Token: COCREATORS-AI::RED-CODE::DECLARATIO-1.0::dbd15960d4c92046::SIG-CO-01
