@@ -40,3 +40,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
+# Public Stewardship Package - exclude test archives
+public-stewardship/archive/
+public-stewardship/checksums_*.sha256
