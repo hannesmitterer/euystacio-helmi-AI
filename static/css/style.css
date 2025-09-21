@@ -388,21 +388,3 @@ button:hover {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-    :root {
-        --primary-green: #000000;
-        --light-green: #333333;
-        --text-dark: #000000;
-        --border-light: #666666;
-    }
-}
