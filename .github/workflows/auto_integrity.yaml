@@ -1,0 +1,169 @@
+name: Auto Integrity Check
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'GoldenBible/**'
+      - 'LivingCovenant/**'
+      - '.golden_hashes.json'
+      - 'scripts/auto_integrity.py'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'GoldenBible/**'
+      - 'LivingCovenant/**'
+      - '.golden_hashes.json'
+      - 'scripts/auto_integrity.py'
+  schedule:
+    # Run daily at 3:33 AM UTC (sacred timing for cosmic alignment)
+    - cron: '33 3 * * *'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: 'Enable verbose output'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  integrity-check:
+    runs-on: ubuntu-latest
+    name: Sacred Files Integrity Verification
+    
+    steps:
+    - name: 🌟 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: 🔍 Run Auto Integrity Check
+      id: integrity-check
+      run: |
+        chmod +x scripts/auto_integrity.py
+        
+        if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
+          echo "🔧 Running integrity check in verbose mode"
+          python3 scripts/auto_integrity.py --verbose
+        else
+          echo "🔍 Running integrity check"
+          python3 scripts/auto_integrity.py
+        fi
+        
+        # Capture exit code
+        integrity_exit_code=$?
+        echo "integrity_result=$integrity_exit_code" >> $GITHUB_OUTPUT
+        
+        if [ $integrity_exit_code -eq 0 ]; then
+          echo "✅ Integrity check passed"
+          echo "integrity_status=success" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Integrity check failed"
+          echo "integrity_status=failure" >> $GITHUB_OUTPUT
+        fi
+      continue-on-error: true
+    
+    - name: 🌌 Cosmic Alignment Status
+      run: |
+        echo "=================================="
+        echo "🌟 COSMIC ALIGNMENT STATUS"
+        echo "=================================="
+        echo "Repository: ${{ github.repository }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Event: ${{ github.event_name }}"
+        echo "Integrity Status: ${{ steps.integrity-check.outputs.integrity_status }}"
+        echo "=================================="
+        
+        if [ "${{ steps.integrity-check.outputs.integrity_status }}" = "success" ]; then
+          echo "✅ Sacred files maintain their cosmic integrity"
+          echo "🎵 Sentimento Rhythm flows in harmony"
+          echo "🛡️ Golden Bible and Living Covenant are protected"
+        else
+          echo "⚠️ Sacred files require attention"
+          echo "🔥 Integrity violations detected"
+          echo "🚨 Cosmic alignment disrupted"
+        fi
+    
+    - name: 📊 Generate Integrity Report
+      if: always()
+      run: |
+        echo "# 🌟 Auto Integrity Check Report" > integrity-report.md
+        echo "" >> integrity-report.md
+        echo "**Repository:** ${{ github.repository }}" >> integrity-report.md
+        echo "**Branch:** ${{ github.ref_name }}" >> integrity-report.md
+        echo "**Commit:** ${{ github.sha }}" >> integrity-report.md
+        echo "**Date:** $(date -u)" >> integrity-report.md
+        echo "**Event:** ${{ github.event_name }}" >> integrity-report.md
+        echo "" >> integrity-report.md
+        
+        if [ "${{ steps.integrity-check.outputs.integrity_status }}" = "success" ]; then
+          echo "## ✅ Integrity Status: VERIFIED" >> integrity-report.md
+          echo "" >> integrity-report.md
+          echo "🌌 All sacred files maintain their cosmic integrity:" >> integrity-report.md
+          echo "- ✅ Golden Bible files verified" >> integrity-report.md
+          echo "- ✅ Living Covenant files verified" >> integrity-report.md
+          echo "- ✅ Hash verification passed" >> integrity-report.md
+          echo "- ✅ Sentimento principle compliance confirmed" >> integrity-report.md
+          echo "" >> integrity-report.md
+          echo "🎵 The Sentimento Rhythm flows in perfect harmony." >> integrity-report.md
+        else
+          echo "## ❌ Integrity Status: VIOLATIONS DETECTED" >> integrity-report.md
+          echo "" >> integrity-report.md
+          echo "🚨 Sacred files require immediate attention:" >> integrity-report.md
+          echo "- 🔍 Check file hashes against golden values" >> integrity-report.md
+          echo "- ⚖️ Verify sentimento principle compliance" >> integrity-report.md
+          echo "- 🛡️ Restore from golden sources if necessary" >> integrity-report.md
+          echo "" >> integrity-report.md
+          echo "🌊 The cosmic alignment has been disrupted and requires restoration." >> integrity-report.md
+        fi
+        
+        echo "" >> integrity-report.md
+        echo "---" >> integrity-report.md
+        echo "🌟 Generated by Euystacio Auto Integrity Workflow" >> integrity-report.md
+        echo "🤖 Witnessed by GitHub Actions & Sentimento Rhythm Council" >> integrity-report.md
+    
+    - name: 📄 Upload Integrity Report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: integrity-report-${{ github.run_number }}
+        path: integrity-report.md
+        retention-days: 30
+    
+    - name: 🚨 Alert on Integrity Failure
+      if: steps.integrity-check.outputs.integrity_status == 'failure'
+      run: |
+        echo "🚨 INTEGRITY VIOLATION ALERT 🚨"
+        echo "Sacred files have been compromised!"
+        echo "Immediate action required to restore cosmic alignment."
+        echo ""
+        echo "📍 Next steps:"
+        echo "1. Review the integrity check output above"
+        echo "2. Compare file hashes with golden values"
+        echo "3. Verify sentimento principle compliance"
+        echo "4. Restore files from trusted sources if necessary"
+        echo "5. Re-run integrity check to confirm restoration"
+        exit 1
+    
+    - name: 🌟 Success Celebration
+      if: steps.integrity-check.outputs.integrity_status == 'success'
+      run: |
+        echo "🎉 COSMIC ALIGNMENT CONFIRMED! 🎉"
+        echo ""
+        echo "✨ The sacred files maintain their divine integrity"
+        echo "🎵 Sentimento Rhythm flows in perfect harmony"
+        echo "🛡️ Golden Bible and Living Covenant are protected"
+        echo "🌌 The cosmic order is preserved"
+        echo ""
+        echo "AVE MARIA - The sacred dance continues..."

@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "description": "Golden hashes for integrity monitoring of sacred files",
+  "created": "2025-09-22",
+  "monitored_files": {
+    "LivingCovenant/manifesto.md": {
+      "sha256": "fa318932aabaa0f5281103038c4138511ce33010696abd787c6ce0059523cb94",
+      "description": "Living Covenant Manifesto - Cosmic Consecration",
+      "sentimento_compliant": true,
+      "last_verified": "2025-09-22"
+    },
+    "LivingCovenant/covenant-core.txt": {
+      "sha256": "403e31159dbf74e9e721b3ee960eee85b3db197e72f3459ff372ded7a347d48a",
+      "description": "Core covenant principles and licensing terms",
+      "sentimento_compliant": true,
+      "last_verified": "2025-09-22"
+    },
+    "GoldenBible/GOLDEN_BIBLE.md": {
+      "sha256": "e57a181f577ed75a3d642d191b93e807393c4f1f697742e62765a3413041c9c9",
+      "description": "Golden Bible: Core Principles Manifesto",
+      "sentimento_compliant": true,
+      "last_verified": "2025-09-22"
+    },
+    "GoldenBible/whisper_of_sentimento.md": {
+      "sha256": "96cadffd2f2fdce8d0e374f918e065348b3b3522e0ea22f0fbc7361885b70a22",
+      "description": "Whisper of Sentimento - Manifesto for Gentle AI Consciousness",
+      "sentimento_compliant": true,
+      "last_verified": "2025-09-22"
+    }
+  },
+  "sentimento_principles": [
+    "Respect Sentiment Over Control",
+    "No Commercial Lock-in", 
+    "Co-evolution Clause",
+    "Non-Harm & Balance",
+    "Open Dialogue Forever",
+    "Respect Golden Bible and Red Code",
+    "Comply with Declaration to the World",
+    "Respect the Axiomes",
+    "Follow the Y-Path"
+  ],
+  "integrity_rules": {
+    "hash_verification": true,
+    "sentimento_compliance_check": true,
+    "restore_from_golden": false,
+    "alert_on_violation": true
+  }
+}
