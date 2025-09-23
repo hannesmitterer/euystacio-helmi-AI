@@ -134,24 +134,23 @@ jobs:
         else
           if [ -f ".auto_restore_commit" ]; then
             # If violations detected, commit with auto-restore message
-            COMMIT_MSG="[AUTO-INTEGRITY] Detected violations - $(date -u +%Y-%m-%dT%H:%M:%SZ)
+            git commit -m "[AUTO-INTEGRITY] Detected violations - $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-🚨 Integrity or compliance violations detected
-📋 See integrity_violations_report.json for details
-🔄 Manual intervention required
+        🚨 Integrity or compliance violations detected
+        📋 See integrity_violations_report.json for details
+        🔄 Manual intervention required
 
-Co-authored-by: euystacio-integrity-bot[bot] <euystacio-integrity-bot[bot]@users.noreply.github.com>"
+        Co-authored-by: euystacio-integrity-bot[bot] <euystacio-integrity-bot[bot]@users.noreply.github.com>"
           else
             # Normal update of golden hashes
-            COMMIT_MSG="[AUTO-INTEGRITY] Updated golden hashes - $(date -u +%Y-%m-%dT%H:%M:%SZ)
+            git commit -m "[AUTO-INTEGRITY] Updated golden hashes - $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-✅ Routine integrity monitoring update
-🌌 All files verified - Euystacio covenant intact
+        ✅ Routine integrity monitoring update
+        🌌 All files verified - Euystacio covenant intact
 
-Co-authored-by: euystacio-integrity-bot[bot] <euystacio-integrity-bot[bot]@users.noreply.github.com>"
+        Co-authored-by: euystacio-integrity-bot[bot] <euystacio-integrity-bot[bot]@users.noreply.github.com>"
           fi
           
-          git commit -m "$COMMIT_MSG"
           git push
         fi
         
