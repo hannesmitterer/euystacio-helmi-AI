@@ -66,6 +66,32 @@ deactivate
 - ✅ **Python-focused**: Optimized for Python-only projects like ours
 - ✅ **Simple Dependencies**: Our project uses requirements.txt as the single source of truth
 
+### Dependency Management Best Practices
+
+**Using requirements.txt (Recommended)**:
+```bash
+# Install all dependencies
+pip install -r requirements.txt
+
+# Install additional optional dependencies
+pip install opencv-python  # For facial detection feature
+
+# Update dependencies (be careful with version compatibility)
+pip install --upgrade package-name
+
+# Check installed packages
+pip list
+
+# Generate current environment snapshot
+pip freeze > current-environment.txt
+```
+
+**Environment Isolation Tips**:
+- Always use virtual environments for development
+- Keep different projects in separate environments  
+- Document any additional dependencies in requirements.txt
+- Test installations on clean environments before deployment
+
 ## 🌳 Unified Interface Features
 
 The new unified landing page integrates all Euystacio capabilities in a single, cohesive interface:
@@ -298,6 +324,30 @@ euystacio-helmi-AI/
    - For compilation errors: `pip install --no-cache-dir package-name`
    - Memory constraints: Install packages one by one if needed
    - Use `python -m venv` for virtual environments (works on mobile)
+
+### Frequently Asked Questions
+
+**Q: Why does this project use pip instead of conda?**
+
+A: We chose pip for several strategic reasons:
+- **Universal compatibility**: pip works identically on desktop and mobile platforms (Termux, iSH)
+- **Simplicity**: Our project is Python-focused and doesn't need conda's multi-language features
+- **Lightweight**: Faster installation and smaller footprint
+- **Mobile support**: conda is not available on mobile Python environments
+- **Consistency**: requirements.txt provides a single, clear source of dependencies
+
+**Q: Can I still use conda if I prefer it?**
+
+A: While you can install our requirements in a conda environment, we don't officially support or test conda configurations. For the best experience and mobile compatibility, we recommend pip + venv.
+
+**Q: What about dependency conflicts?**
+
+A: We carefully manage our requirements.txt to avoid conflicts. If you encounter issues, try installing in a fresh virtual environment:
+```bash
+python -m venv fresh-env
+source fresh-env/bin/activate  # Windows: fresh-env\Scripts\activate
+pip install -r requirements.txt
+```
 
 ### Debug Mode
 

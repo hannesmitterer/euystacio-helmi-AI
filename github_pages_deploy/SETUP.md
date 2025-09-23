@@ -292,6 +292,13 @@ euystacio-helmi-AI/
    - Check file permissions
    - Verify output in `github_pages_deploy/`
 
+4. **📱 Mobile Environment Issues (Termux/iSH)**:
+   - Use pip exclusively (conda not available on mobile)
+   - Install build tools: `pkg install python-dev clang` (Termux)
+   - For compilation errors: `pip install --no-cache-dir package-name`
+   - Memory constraints: Install packages one by one if needed
+   - Use `python -m venv` for virtual environments (works on mobile)
+
 ### Debug Mode
 
 ```bash
@@ -556,6 +563,32 @@ euystacio-helmi-AI/
 - **Ethical Framework**: Ensure all features align with Euystacio principles
 - **AI-Assisted Development**: Follow the **[GitHub Copilot Setup & Usage Guide](./GITHUB_COPILOT.md)** for ethical AI collaboration in development
 - **Human-AI Symbiosis**: Use AI tools to enhance human capabilities while maintaining oversight and accountability
+
+### 📱 Mobile Development (Termux/iSH)
+
+For developers working on mobile platforms, pip is the only supported dependency manager:
+
+```bash
+# Termux setup (Android)
+pkg update && pkg upgrade
+pkg install python git
+python -m venv euystacio-mobile
+source euystacio-mobile/bin/activate
+pip install -r requirements.txt
+
+# iSH setup (iOS)
+apk update
+apk add python3 py3-pip git
+python3 -m venv euystacio-mobile
+source euystacio-mobile/bin/activate
+pip install -r requirements.txt
+```
+
+**Mobile-specific considerations:**
+- Use pip exclusively (conda not available)
+- Install build tools if needed: `pkg install clang` (Termux)
+- Memory constraints may require installing packages individually
+- Virtual environments work identically to desktop platforms
 
 ## Deployment
 
