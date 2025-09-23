@@ -6,48 +6,71 @@ document.getElementById('send-message').addEventListener('click', async function
   
   // Display user message
   const userMessageElement = document.createElement('div');
+  userMessageElement.classList.add('user-message');
   userMessageElement.textContent = 'You: ' + userMessage;
-  userMessageElement.className = 'user-message';
   chatWindow.appendChild(userMessageElement);
 
   // Show loading status
   const loadingElement = document.createElement('div');
+  loadingElement.classList.add('ai-message');
   loadingElement.textContent = 'Euystacio is thinking...';
-  loadingElement.className = 'ai-message';
   chatWindow.appendChild(loadingElement);
 
-  // Replace with your actual backend URL
-  const apiUrl = "http://localhost:5000/api/reflect"; // API endpoint for reflection
+  // API URL for sending the pulse (message)
+  const pulseApiUrl = "http://localhost:5000/api/pulse"; // Replace with live API URL
 
   try {
-    // Sending the user message to the backend for processing
-    const response = await fetch(apiUrl, {
+    // Send pulse to Euystacio
+    const pulseResponse = await fetch(pulseApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: userMessage }), // Send the message as JSON
+      body: JSON.stringify({ pulse: userMessage }), // Sending the pulse (message)
     });
 
-    const data = await response.json();
+    const pulseData = await pulseResponse.json();
 
-    // Check if the response is valid
-    if (data && data.reflection) {
-      // Display the AI (kernel) response
+    // Remove loading state
+    chatWindow.removeChild(loadingElement);
+
+    if (pulseData && pulseData.response) {
+      // Display AI response from Euystacio
       const aiMessageElement = document.createElement('div');
-      aiMessageElement.textContent = 'Euystacio: ' + data.reflection;
-      aiMessageElement.className = 'ai-message';
+      aiMessageElement.classList.add('ai-message');
+      aiMessageElement.textContent = 'Euystacio: ' + pulseData.response;
       chatWindow.appendChild(aiMessageElement);
     } else {
-      // If no response or error, show a fallback message
-      loadingElement.textContent = 'Euystacio couldn\'t respond at the moment.';
+      const errorElement = document.createElement('div');
+      errorElement.classList.add('ai-message');
+      errorElement.textContent = 'No response from Euystacio. Please try again.';
+      chatWindow.appendChild(errorElement);
     }
+
+    // Fetch harmony level from system status
+    const statusApiUrl = "http://localhost:5000/api/system_status"; // Replace with live API URL
+    const statusResponse = await fetch(statusApiUrl);
+    const statusData = await statusResponse.json();
+
+    // Extract harmony level from system status
+    const harmonyLevel = statusData.harmony_level || 'Unknown';
+
+    // Display the harmony level
+    const harmonyElement = document.createElement('div');
+    harmonyElement.classList.add('ai-message');
+    harmonyElement.textContent = `Harmony Level: ${harmonyLevel}`;
+    chatWindow.appendChild(harmonyElement);
+
   } catch (error) {
-    console.error('Error with the chat interaction:', error);
-    loadingElement.textContent = 'An error occurred. Please try again later.';
+    console.error('Error with the pulse interaction:', error);
+    chatWindow.removeChild(loadingElement);
+    const errorElement = document.createElement('div');
+    errorElement.classList.add('ai-message');
+    errorElement.textContent = 'An error occurred. Please try again later.';
+    chatWindow.appendChild(errorElement);
   }
 
-  // Clear the input and scroll the chat window
+  // Clear the input and scroll to the bottom of the chat
   document.getElementById('user-input').value = '';
   chatWindow.scrollTop = chatWindow.scrollHeight;
 });
