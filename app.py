@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request, send_from_directory
 from sentimento_pulse_interface import SentimentoPulseInterface
 from core.red_code import RED_CODE
 from core.reflector import reflect_and_suggest
+from core.euystacio_core import euystacio_kernel
 from tutor_nomination import TutorNomination
 from config import config
 import json
@@ -25,25 +26,52 @@ except ImportError as e:
     logging.warning(f"Facial detection not available: {e}")
 
 def get_pulses():
-    """Collect all pulses from logs and recent_pulses in red_code.json"""
+    """Collect all pulses from logs, red_code.json, and enhanced kernel"""
     pulses = []
-    # From red_code.json
+    
+    # Get pulses from enhanced kernel
+    try:
+        kernel_state = euystacio_kernel.get_current_state()
+        kernel_pulses = kernel_state.get("recent_pulses", [])
+        pulses.extend(kernel_pulses)
+    except Exception as e:
+        print(f"Error getting kernel pulses: {e}")
+    
+    # From red_code.json (legacy compatibility)
     try:
         with open('red_code.json', 'r') as f:
             red_code = json.load(f)
-            pulses += red_code.get("recent_pulses", [])
+            legacy_pulses = red_code.get("recent_pulses", [])
+            pulses.extend(legacy_pulses)
     except:
         pass
-    # From logs
+        
+    # From logs (legacy compatibility)
     if os.path.exists("logs"):
         for fname in sorted(os.listdir("logs")):
             if fname.startswith("log_") and fname.endswith(".json"):
-                with open(os.path.join("logs", fname)) as f:
-                    log = json.load(f)
-                    for k, v in log.items():
-                        if isinstance(v, dict) and "emotion" in v:
-                            pulses.append(v)
-    return pulses
+                try:
+                    with open(os.path.join("logs", fname)) as f:
+                        log = json.load(f)
+                        for k, v in log.items():
+                            if isinstance(v, dict) and "emotion" in v:
+                                pulses.append(v)
+                except:
+                    continue
+    
+    # Remove duplicates and sort by timestamp
+    unique_pulses = []
+    seen_timestamps = set()
+    for pulse in pulses:
+        timestamp = pulse.get("timestamp")
+        if timestamp and timestamp not in seen_timestamps:
+            seen_timestamps.add(timestamp)
+            unique_pulses.append(pulse)
+    
+    # Sort by timestamp (most recent first)
+    unique_pulses.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    return unique_pulses
 
 def get_reflections():
     """Get all reflection logs"""
@@ -62,8 +90,13 @@ def index():
 
 @app.route("/dashboard")
 def dashboard():
-    """Serve full dashboard"""  
-    return render_template("index.html")
+    """Serve enhanced dashboard"""  
+    return send_from_directory('EuystacioDRAFT', 'index.html')
+
+@app.route("/EuystacioDRAFT/")
+def euystacio_dashboard():
+    """Serve enhanced dashboard from EuystacioDRAFT"""  
+    return send_from_directory('EuystacioDRAFT', 'index.html')
 
 @app.route("/api/red_code")
 def api_red_code():
@@ -75,9 +108,23 @@ def api_pulses():
 
 @app.route("/api/reflect")
 def api_reflect():
-    # Run reflection, return latest
-    reflection = reflect_and_suggest()
-    return jsonify(reflection)
+    # Get enhanced kernel reflection
+    kernel_reflection = euystacio_kernel.reflect()
+    
+    # Get traditional reflection for compatibility
+    try:
+        traditional_reflection = reflect_and_suggest()
+    except:
+        traditional_reflection = {"note": "Traditional reflector unavailable"}
+    
+    # Combine both reflections
+    combined_reflection = {
+        "kernel_reflection": kernel_reflection,
+        "traditional_reflection": traditional_reflection,
+        "timestamp": kernel_reflection["timestamp"]
+    }
+    
+    return jsonify(combined_reflection)
 
 @app.route("/api/reflections")
 def api_reflections():
@@ -87,6 +134,23 @@ def api_reflections():
 def api_tutors():
     return jsonify(tutors.list_tutors())
 
+@app.route("/api/kernel/state")
+def api_kernel_state():
+    """Get current enhanced kernel state"""
+    return jsonify(euystacio_kernel.get_current_state())
+
+@app.route("/api/kernel/evolution")
+def api_kernel_evolution():
+    """Get evolution data for charts"""
+    hours = request.args.get('hours', 24, type=int)
+    return jsonify(euystacio_kernel.get_evolution_data_for_charts(hours))
+
+@app.route("/api/kernel/health")
+def api_kernel_health():
+    """Get kernel health metrics"""
+    state = euystacio_kernel.get_current_state()
+    return jsonify(state["health_metrics"])
+
 @app.route("/api/pulse", methods=["POST"])
 def api_pulse():
     data = request.get_json()
@@ -94,6 +158,7 @@ def api_pulse():
     intensity = float(data.get("intensity", 0.5))
     clarity = data.get("clarity", "medium")
     note = data.get("note", "")
+    context = data.get("context", "")
     
     # Process facial detection if image data is provided and feature is enabled
     facial_data = None
@@ -104,7 +169,18 @@ def api_pulse():
         except Exception as e:
             facial_data = {"error": f"Facial detection failed: {str(e)}"}
     
-    event = spi.receive_pulse(emotion, intensity, clarity, note)
+    # Process through enhanced kernel
+    kernel_event = euystacio_kernel.receive_pulse(emotion, intensity, context, note, clarity)
+    
+    # Also process through original interface for compatibility
+    spi_event = spi.receive_pulse(emotion, intensity, clarity, note)
+    
+    # Combine results
+    event = {
+        **kernel_event,
+        "ai_signature_status": spi_event.get("ai_signature_status", "verified"),
+        "kernel_evolution": True
+    }
     
     # Add facial detection data to the pulse event
     if facial_data:

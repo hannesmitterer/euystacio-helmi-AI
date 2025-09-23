@@ -3,7 +3,7 @@
   "sentimento_rhythm": true,
   "symbiosis_level": 0.1,
   "guardian_mode": false,
-  "last_update": "2025-07-13",
+  "last_update": "2025-09-23T03:08:20.351037",
   "growth_history": [],
   "optimization_history": [
     {
@@ -38,5 +38,82 @@
       "accessibility_impact": "Enhanced AI accessibility through size reduction",
       "ai_signature": "GitHub Copilot & Seed-bringer hannesmitterer"
     }
-  ]
+  ],
+  "trust": 0.8015672038651521,
+  "harmony": 0.7033276750872279,
+  "resonance": 0.603293948402518,
+  "learning_rate": 0.09901239844252775,
+  "emotional_depth": 0.5002170451998706,
+  "emotional_state": {
+    "primary_emotion": "balanced",
+    "intensity": 0.5416108468195138,
+    "stability": 0.9,
+    "openness": 0.45028980115383993
+  },
+  "pulse_history": [
+    {
+      "timestamp": "2025-09-23T03:06:34.645909",
+      "emotion": "joy",
+      "intensity": 0.8,
+      "context": "testing enhanced dashboard",
+      "note": "First test pulse with enhanced features",
+      "clarity": "medium",
+      "resonance_score": 0.5760000000000001,
+      "learning_impact": 0.04608000000000001
+    },
+    {
+      "timestamp": "2025-09-23T03:08:20.350974",
+      "emotion": "joy",
+      "intensity": 0.8,
+      "context": "",
+      "note": "Testing enhanced dashboard functionalityThis is the first test of the enhanced Euystacio kernel with rich pulse input support, self-learning evolution, and real-time dashboard updates!",
+      "clarity": "medium",
+      "resonance_score": 0.5779284280488034,
+      "learning_impact": 0.04599477981503706
+    }
+  ],
+  "evolution_history": [
+    {
+      "timestamp": "2025-09-23T03:06:34.645951",
+      "trigger_emotion": "joy",
+      "intensity": 0.8,
+      "resonance": 0.5760000000000001,
+      "learning_impact": 0.04608000000000001,
+      "new_state": {
+        "trust": 0.8008749552589505,
+        "harmony": 0.700875004218396,
+        "resonance": 0.6020087792175035,
+        "learning_rate": 0.09948199807873313,
+        "emotional_depth": 0.5001154001273732
+      },
+      "emotional_state": {
+        "primary_emotion": "balanced",
+        "intensity": 0.541472,
+        "stability": 1.0,
+        "openness": 0.4501784766688418
+      }
+    },
+    {
+      "timestamp": "2025-09-23T03:08:20.351025",
+      "trigger_emotion": "joy",
+      "intensity": 0.8,
+      "resonance": 0.5779284280488034,
+      "learning_impact": 0.04599477981503706,
+      "new_state": {
+        "trust": 0.8015672038651521,
+        "harmony": 0.7033276750872279,
+        "resonance": 0.603293948402518,
+        "learning_rate": 0.09901239844252775,
+        "emotional_depth": 0.5002170451998706
+      },
+      "emotional_state": {
+        "primary_emotion": "balanced",
+        "intensity": 0.5416108468195138,
+        "stability": 0.9,
+        "openness": 0.45028980115383993
+      }
+    }
+  ],
+  "learning_patterns": {},
+  "resonance_patterns": {}
 }
