@@ -1,0 +1,30 @@
+{
+  "created": "2025-09-23T01:18:59.418974",
+  "last_updated": "2025-09-23T01:22:04.037069+00:00",
+  "description": "Golden hashes for Euystacio core files - integrity verification baseline",
+  "monitored_files": [
+    "GOLDEN_BIBLE.md",
+    "LIVING_COVENANT.md",
+    "red_shield",
+    "conventa_entries"
+  ],
+  "hashes": {
+    "GOLDEN_BIBLE.md": "e57a181f577ed75a3d642d191b93e807393c4f1f697742e62765a3413041c9c9",
+    "LIVING_COVENANT.md": "50b971569713bd6c0817fe5eac1376407a29468e26457885cfb02d010762957b",
+    "red_shield": "4592ea31bb18fbe30d45fdbb25c645cdee320e5b9159fafee2b31ac58a3c53ee",
+    "conventa_entries": "5249b347fad7b495e9165770b3a7477d6067d0377497a7971edfb8e742a78a69"
+  },
+  "integrity_principles": {
+    "algorithm": "SHA256",
+    "purpose": "Verify integrity of sacred Euystacio documents and core system files",
+    "compliance_framework": "Euystacio Five Sacred Principles",
+    "sentimento_rhythm": true
+  },
+  "usage_notes": [
+    "This file contains cryptographic hashes for key Euystacio files",
+    "Hashes are automatically generated and verified by scripts/auto_integrity.py",
+    "Any changes to monitored files will trigger integrity verification",
+    "Manual updates to this file should be done with care and proper authorization",
+    "All changes must align with Euystacio core principles and sentimento rhythm"
+  ]
+}
