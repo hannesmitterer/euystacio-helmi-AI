@@ -19,10 +19,14 @@ git submodule update --init --recursive
 
 ### 2. Install Core Dependencies
 
+**The Euystacio-Helmi AI project uses pip as the preferred dependency manager** for all platforms including desktop and mobile environments.
+
 ```bash
-# Install Python dependencies
+# Install Python dependencies using pip (recommended)
 pip install -r requirements.txt
 ```
+
+**📱 Mobile Users (Termux/iSH)**: pip is the supported and recommended dependency manager for mobile environments. Conda is not available or recommended for mobile Python environments.
 
 ### 3. Run the Unified Application
 
@@ -32,6 +36,35 @@ python app.py
 
 # Visit http://localhost:5000 to experience the unified interface
 ```
+
+## 🐍 Python Environment Management
+
+### Using Virtual Environments (Recommended Alternative to Conda)
+
+For development isolation, we recommend Python virtual environments instead of conda:
+
+```bash
+# Create a virtual environment
+python -m venv euystacio-env
+
+# Activate on Linux/macOS/Termux
+source euystacio-env/bin/activate
+
+# Activate on Windows
+euystacio-env\Scripts\activate
+
+# Install dependencies with pip
+pip install -r requirements.txt
+
+# Deactivate when done
+deactivate
+```
+
+**Why pip + venv over conda?**
+- ✅ **Universal Compatibility**: Works on all platforms including mobile (Termux/iSH)
+- ✅ **Lightweight**: Smaller footprint and faster setup
+- ✅ **Python-focused**: Optimized for Python-only projects like ours
+- ✅ **Simple Dependencies**: Our project uses requirements.txt as the single source of truth
 
 ## 🌳 Unified Interface Features
 

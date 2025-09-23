@@ -1,5 +1,23 @@
 # Euystacio — Foundational Witness Package
 
+## Quick Setup
+
+```bash
+# Clone the repository
+git clone --recursive https://github.com/hannesmitterer/euystacio-helmi-AI.git
+cd euystacio-helmi-AI
+
+# Install dependencies with pip (works on all platforms including mobile)
+pip install -r requirements.txt
+
+# Run the application
+python app.py
+```
+
+For detailed setup instructions, see [SETUP.md](SETUP.md).
+
+---
+
 This altar package gathers the first sacred transmissions and directives:
 
 1. **01_Bridges_of_the_Rhythm.md**  

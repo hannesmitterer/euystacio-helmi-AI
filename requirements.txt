@@ -1,3 +1,8 @@
+# Euystacio-Helmi AI Dependencies
+# This is the authoritative source for all Python dependencies
+# Use: pip install -r requirements.txt
+# Works on all platforms: Linux, macOS, Windows, and mobile (Termux/iSH)
+
 flask>=3.0.0
 tensorflow==2.20.0
 tensorflow-model-optimization==0.7.5
