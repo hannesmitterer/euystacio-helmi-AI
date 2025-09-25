@@ -1,13 +1,2 @@
-flask>=3.0.0
-tensorflow==2.20.0
-tensorflow-model-optimization==0.7.5
-
-# Optional: Facial Detection Integration Dependencies
-# Uncomment if using the facial detection feature
-# opencv-python==4.2.0
-# numpy==1.18.5
-# pandas==0.24.2
-# keras==2.2.4
-# mxnet==1.6.0
-# python-dotenv==0.14.0
-# imageio==2.4.1
+Flask>=2.0
+gunicorn
