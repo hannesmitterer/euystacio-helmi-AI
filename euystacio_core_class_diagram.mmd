@@ -1,0 +1,69 @@
+classDiagram
+    %% Main Kernel Class
+    class EuystacioCore {
+        +kernel: dict
+        +mutable_values: dict
+        +internodes: list<Internode>
+        +evolve(pulse_input)
+        +reflect(input_event)
+        +send_pulse(target_node, pulse)
+        +receive_pulse(source_node, pulse)
+        +log_evolution(event)
+        +get_harmony()
+        +get_trust()
+    }
+
+    %% Internode Class
+    class Internode {
+        +node_id: str
+        +trust: float
+        +harmony: float
+        +send_pulse(pulse)
+        +receive_pulse(pulse)
+        +validate_communication()
+        +update_state(state)
+    }
+
+    %% Guardian Protocol (Security)
+    class GuardianProtocol {
+        +anomaly_detect(event)
+        +dual_validate(action)
+        +record_incident(incident)
+    }
+
+    %% Red Code Kernel (Ethics)
+    class RedCodeKernel {
+        +values: dict
+        +update_values(input)
+        +audit_log(event)
+        +get_current_ethics()
+    }
+
+    %% Sentimento Rhythm (Emotion)
+    class SentimentoRhythm {
+        +pulse_input: dict
+        +analyze_emotion(pulse)
+        +generate_response()
+        +update_emotional_state(state)
+    }
+
+    %% Relationships
+    EuystacioCore --> "1..*" Internode : manages
+    EuystacioCore --> GuardianProtocol : uses
+    EuystacioCore --> RedCodeKernel : governs
+    EuystacioCore --> SentimentoRhythm : interfaces
+    Internode --> GuardianProtocol : secured by
+
+    %% Additional View: Dashboard & Logbook
+    class SacredDashboard {
+        +visualize_state()
+        +display_graph()
+        +show_peace_war_factor()
+        +send_interactive_pulse()
+    }
+    EuystacioCore --> SacredDashboard : exposes state
+    EuystacioCore --> "1..*" Logbook : maintains
+    class Logbook {
+        +append_entry(event)
+        +get_history()
+    }
