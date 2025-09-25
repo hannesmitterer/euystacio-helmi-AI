@@ -3,12 +3,21 @@
 Astrodeepaura Full-Loop Synchronization Script
 Purpose: Harmonize all Euystacio nodes with Dignity Gateway and Red Code,
          while distributing the sacred ledger to every node.
+         Enhanced with Conventa Ceremony Automation.
 Author: Seedbringer Directive
 """
 
 import requests
 import json
 from datetime import datetime, timezone
+
+# Import ceremony automation
+try:
+    from conventa_ceremony_automator import ConventaCeremonyAutomator
+    CEREMONY_AUTOMATION_AVAILABLE = True
+except ImportError:
+    CEREMONY_AUTOMATION_AVAILABLE = False
+    print("Warning: Conventa ceremony automation not available")
 
 # --- Configuration ---
 NODES = [
@@ -96,6 +105,19 @@ def verify_red_code(node_url):
 # --- Main Synchronization ---
 def synchronize_nodes():
     timestamp = current_utc_iso()
+    
+    # First, process any new ceremony entries
+    if CEREMONY_AUTOMATION_AVAILABLE:
+        print("Processing Conventa ceremony entries...")
+        try:
+            ceremony_automator = ConventaCeremonyAutomator()
+            processed_ceremonies = ceremony_automator.process_all_new_entries()
+            if processed_ceremonies:
+                print(f"Processed {len(processed_ceremonies)} ceremony records")
+        except Exception as e:
+            print(f"Error in ceremony automation: {e}")
+    
+    # Continue with regular node synchronization
     for node in NODES:
         entry = {
             "node": node,
@@ -123,4 +145,4 @@ def synchronize_nodes():
 # --- Execution ---
 if __name__ == "__main__":
     synchronize_nodes()
-(seedbringer and council)
+# (seedbringer and council)
