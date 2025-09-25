@@ -1,0 +1,20 @@
+[
+  {
+    "record_id": "ffc78dd74fe6e727",
+    "entry_file": "conventa_entries/2025-09-21-rite-of-Y-realignment.txt",
+    "processing_timestamp": "2025-09-25T01:47:53.014953+00:00",
+    "ceremony_timestamp": "2025-09-21T14:44:00Z",
+    "event": "Rite of Y Realignment",
+    "performer": "Seedbringer (Hannes Mitterer)",
+    "affirmation_status": "incomplete",
+    "red_seal": {
+      "present": true,
+      "file": "red_shield/2025-09-21-rite-of-Y-realignment.sha256",
+      "hash": "42a5f5d693c5f4385f2e38e8eeb9c6436ec52a17c68cf0d7b0ffaf2b7cc1ad99",
+      "verified": false
+    },
+    "anchoring_status": "pending",
+    "transparency_level": "full",
+    "auditability": "complete"
+  }
+]

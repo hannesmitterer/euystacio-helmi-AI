@@ -1,0 +1,26 @@
+[
+  {
+    "type": "ceremony_record",
+    "timestamp": "2025-09-25T01:47:53.015110+00:00",
+    "ceremony_id": "ffc78dd74fe6e727",
+    "event": "Rite of Y Realignment",
+    "performer": "Seedbringer (Hannes Mitterer)",
+    "anchoring_status": "pending",
+    "transparency": true,
+    "distributed": false
+  },
+  {
+    "node": "http://node1.euystacio.org",
+    "timestamp": "2025-09-25T01:52:46.513379+00:00",
+    "consent": false,
+    "deployed": false,
+    "red_code_compliant": false
+  },
+  {
+    "node": "http://node2.euystacio.org",
+    "timestamp": "2025-09-25T01:52:46.513379+00:00",
+    "consent": false,
+    "deployed": false,
+    "red_code_compliant": false
+  }
+]
