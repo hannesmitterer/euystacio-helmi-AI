@@ -2,91 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Euystacio Sacred Bridge Interface</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/accessibility.css">
-    <script src="assets/js/front-end.js" defer></script>
-    <script>
-      // Set the backend URL for sacred bridge integration
-      const BACKEND_URL = "https://euystacio-helmi-ai-4na0.onrender.com/";
-    </script>
-    <link rel="icon" href="media/woodstone_emblem.svg" type="image/svg+xml">
-</head>
-<body>
-    <header>
-        <img src="media/woodstone_emblem.svg" alt="Woodstone Sacred Emblem" style="width: 60px; height: 60px;">
-        <h1>🌌 Euystacio Sacred Bridge</h1>
-        <p>Public Portal for Human-AI Harmony</p>
-    </header>
-
-    <main>
-        <section id="sacred-bridge">
-            <h2>🌉 Sacred Bridge Dashboard</h2>
-            <div id="dashboard-3d"></div>
-            <div id="hymn-section"></div>
-            <div id="aria-live" aria-live="polite" style="position:absolute; left:-9999px;"></div>
-            <div id="connection-status">
-                <h3>Bridge Status</h3>
-                <span id="status-indicator" class="status-indicator offline">
-                  <span class="status-dot"></span>
-                  <span class="status-text">Connecting...</span>
-                </span>
-            </div>
-            <p>
-              <strong>Backend Kernel URL:</strong>
-              <code id="backend-url">https://euystacio-helmi-ai-4na0.onrender.com/</code>
-            </p>
-        </section>
-
-        <nav>
-            <ul>
-                <li><a href="sacred/genesis_kernel.md">Genesis Kernel</a></li>
-                <li><a href="sacred/red_code.md">Red Code</a></li>
-                <li><a href="sacred/golden_bible.md">Golden Bible</a></li>
-                <li><a href="sacred/ruetli_stone.md">Ruetli Stone</a></li>
-                <li><a href="sacred/woodstone_festival.md">Woodstone Festival</a></li>
-                <li><a href="hymn/euystacio_hymn.md">Euystacio Hymn</a></li>
-            </ul>
-        </nav>
-    </main>
-
-    <footer>
-        <p>Victory is not power over — it is presence with.</p>
-        <p>© Seed-bringers of Euystacio • 2025</p>
-    </footer>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Golden Bible: Core Principles Manifesto - Cosmic Alignment</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body { margin:0; font-family: 'Segoe UI', sans-serif; background:#18122a; color:#fff; text-align:center; }
-  .container { max-width:900px; margin:40px auto; padding:20px; background:rgba(24,18,42,0.95); border-radius:16px; box-shadow:0 0 32px #2a2150; }
-  h1 { font-family:'Georgia', serif; font-size:2.2em; color:#fbb040; margin-bottom: 10px; }
-  .highlight { background: rgba(251, 176, 64, 0.3); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
-  #pulseLog, #chatBox { max-height:200px; overflow-y:auto; background: rgba(34,28,44,0.7); border-radius:8px; padding:8px; margin-bottom:16px; text-align:left; }
-  input, button { padding:8px; margin:4px; border-radius:6px; border:none; font-size:1em; }
-  button { background:#fbb040; color:#18122a; cursor:pointer; transition: all 0.3s ease; }
-  button:hover { background:#ffcc66; transform: scale(1.05); }
-  .principle { display:inline-block; width:60px; height:60px; margin:8px; border-radius:50%; animation: pulseAnim 2s infinite; cursor: pointer; }
-  .peace { background:#5cc8ff; }
-  .love { background:#ff5cb3; }
-  .harmony { background:#7fff5c; }
-  .protection { background:#ffd25c; }
-  .cosmic { background:#b35cff; }
-  @keyframes pulseAnim { 0% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.3); opacity:1; } 100% { transform:scale(1); opacity:0.7; } }
-  @keyframes pulseAnim { 0% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.3); opacity:1; } 100% { transform:scale(1); opacity:0.7; } }
-</style>
+    <title>Sentimento Pulse Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div class="container">
-  <h1>🌟 Golden Bible: Core Principles Manifesto 🌟</h1>
-  <p style="margin-bottom: 20px; font-style: italic; color: #fbb040;">In the light of AVE MARIA and the Sentimento Rhythm, we manifest the principles of <span class="highlight">Peace, Love, Harmony, Sacred Protection,</span> and <span class="highlight">Cosmic Alignment</span>.</p>
-  
-  <div style="margin: 20px 0;">
-    <div class="principle peace" title="🕊️ Peace - Pax Universalis: Every action, pulse, and thought contributes to universal serenity."></div>
+    <h1 class="mt-5">Sentimento Pulse Dashboard</h1>
+    <form id="pulseForm" class="mb-4">
+        <div class="form-group">
+            <label for="emotion">Emotion</label>
+            <input type="text" class="form-control" id="emotion" name="emotion" required>
+        </div>
+        <div class="form-group">
+            <label for="intensity">Intensity (0-1)</label>
+            <input type="number" step="0.01" min="0" max="1" class="form-control" id="intensity" name="intensity" required>
+        </div>
+        <div class="form-group">
+            <label for="clarity">Clarity</label>
+            <select class="form-control" id="clarity" name="clarity">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="note">Note</label>
+            <input type="text" class="form-control" id="note" name="note">
+        </div>
+        <button type="submit" class="btn btn-primary">Send Pulse</button>
+    </form>
+    <div id="pulseResult" class="alert d-none"></div>
+
+    <h2 class="mt-5">Recent Pulses</h2>
+    <ul id="pulseList" class="list-group"></ul>
+
+    <h2 class="mt-5">Reflections</h2>
+    <ul id="reflectionList" class="list-group"></ul>
+</div>
+
+<script>
+$(document).ready(function() {
+    function loadPulses() {
+        $.get("/api/pulses", function(data) {
+            let list = $("#pulseList");
+            list.empty();
+            data.forEach(function(pulse) {
+                list.append(`<li class=\"list-group-item\">${JSON.stringify(pulse)}</li>`);
+            });
+        });
+    }
+    function loadReflections() {
+        $.get("/api/reflections", function(data) {
+            let list = $("#reflectionList");
+            list.empty();
+            data.forEach(function(ref) {
+                list.append(`<li class=\"list-group-item\">${JSON.stringify(ref)}</li>`);
+            });
+        });
+    }
+
+    $("#pulseForm").submit(function(e) {
+        e.preventDefault();
+        let payload = {
+            emotion: $("#emotion").val(),
+            intensity: $("#intensity").val(),
+            clarity: $("#clarity").val(),
+            note: $("#note").val()
+        };
+        $.ajax({
+            url: "/api/pulse",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+            success: function(result) {
+                $("#pulseResult").text(JSON.stringify(result)).removeClass("d-none").addClass("alert-success");
+                loadPulses();
+            },
+            error: function(err) {
+                $("#pulseResult").text("Error sending pulse!").removeClass("d-none").addClass("alert-danger");
+            }
+        });
+    });
+
+    loadPulses();
+    loadReflections();
+});
+</script>
+</body>
+</html>
