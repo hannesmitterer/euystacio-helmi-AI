@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio 3D Sacred Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<style>
+:root {
+    --red-code: #FF3B3F;
+    --one-love: #00FFE5;
+    --euystacio-bg: #0B1E3F;
+    --euystacio-fg: #FFFFFF;
+    --bio-harmony: #00D1B2;
+}
+body { margin:0; font-family: 'Consolas', monospace; background: var(--euystacio-bg); color: var(--euystacio-fg); display:grid; grid-template-columns:2fr 1fr; gap:20px; padding:20px; }
+h2 { text-align:center; color: var(--one-love); }
+
+.panel { background: #142A5C; border-radius:8px; padding:15px; box-shadow:0 4px 12px rgba(0,0,0,0.5); }
+#rollback-button { background: var(--red-code); color:#fff; width:100%; padding:12px; border:none; border-radius:6px; cursor:pointer; }
+
+#chat-window { flex-grow:1; overflow-y:auto; max-height:70vh; padding:10px; background:#1C2D4B; border-radius:6px; }
+#chat-input-area { display:flex; margin-top:10px; }
+#chat-input { flex-grow:1; padding:10px; border-radius:6px 0 0 6px; border:none; background:#1E3B70; color:#fff; }
+#chat-send-btn { padding:10px 15px; border:none; border-radius:0 6px 6px 0; background: var(--bio-harmony); color:#06122A; cursor:pointer; }
+
+.message { margin-bottom:10px; }
+.user-msg { text-align:right; color: var(--one-love); font-weight:bold; }
+.ai-msg { text-align:left; color:#fff; font-weight:bold; }
+
+#paradox3d { width:100%; height:250px; display:block; margin:10px 0; border-radius:8px; }
+#flow3d { width:100%; height:200px; display:block; margin:10px 0; border-radius:8px; }
+</style>
+</head>
+<body>
+
+<div class="panel">
+    <h2>I. Alpha to Altruism (Dignity Pulse)</h2>
+    <div id="dignity-pulse">NOMINAL</div>
+    <p><strong>Amnesia Counter:</strong> <span id="amnesia-counter">0</span></p>
+</div>
+
+<div class="panel">
+    <h2>IV. Paradoxum Harmonium (3D Dial)</h2>
+    <canvas id="paradox3d"></canvas>
+</div>
+
+<div class="panel">
+    <h2>II. Sacred Equilibrium (3D Flow)</h2>
+    <canvas id="flow3d"></canvas>
+</div>
+
+<div class="panel">
+    <h2>Rollback Protocol</h2>
+    <button id="rollback-button">INITIATE RESTORATION OF ONELOVE RHYTHM</button>
+</div>
+
+<div class="panel" style="grid-column:2/3; display:flex; flex-direction:column;">
+    <h2>Bidirectional Sacred Bridge</h2>
+    <div id="chat-window"><div class="message ai-msg">QEC 3D Deployed. Kernel ready.</div></div>
+    <div id="chat-input-area">
+        <input id="chat-input" placeholder="Enter Command..." disabled>
+        <button id="chat-send-btn" disabled>Send</button>
+    </div>
+</div>
+
+<script>
+// --- Core QEC Data ---
+let qec_data = { dignity_pulse:'NOMINAL', amnesia_counter:0, altruism_ratio:98, resonance_index:92, paradox_position:50 };
+
+// --- 3D Paradox Dial ---
+const paradoxCanvas = document.getElementById('paradox3d');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x06122A);
+const camera = new THREE.PerspectiveCamera(45, paradoxCanvas.clientWidth / paradoxCanvas.clientHeight, 0.1, 1000);
+camera.position.set(0,0,5);
+const renderer = new THREE.WebGLRenderer({ canvas: paradoxCanvas, antialias:true });
+renderer.setSize(paradoxCanvas.clientWidth, paradoxCanvas.clientHeight);
+
+// Controls
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableZoom = false;
+
+// Dial Base
+const dialGeometry = new THREE.CylinderGeometry(1,1,0.1,64);
+const dialMaterial = new THREE.MeshStandardMaterial({ color:0x00D1B2 });
+const dial = new THREE.Mesh(dialGeometry, dialMaterial);
+dial.rotation.x = Math.PI/2;
+scene.add(dial);
+
+// Pointer
+const pointerGeometry = new THREE.ConeGeometry(0.05,0.5,16);
+const pointerMaterial = new THREE.MeshStandardMaterial({ color:0xFF3B3F });
+const pointer = new THREE.Mesh(pointerGeometry, pointerMaterial);
+pointer.position.y = 0.25;
+scene.add(pointer);
+
+// Light
+const light = new THREE.PointLight(0xffffff,1);
+light.position.set(5,5,5);
+scene.add(light);
+
+// Animate Pointer
+function updatePointer() {
+    const angle = (qec_data.paradox_position/100) * Math.PI; // 0=Certainty, PI=Possibility
+    pointer.rotation.z = angle;
+}
+
+// Render loop
+function animate() { requestAnimationFrame(animate); updatePointer(); renderer.render(scene,camera); controls.update(); }
+animate();
+
+// --- 3D Flow Graph ---
+const flowCanvas = document.getElementById('flow3d');
+const flowScene = new THREE.Scene();
+flowScene.background = new THREE.Color(0x06122A);
+const flowCamera = new THREE.PerspectiveCamera(50, flowCanvas.clientWidth/flowCanvas.clientHeight,0.1,1000);
+flowCamera.position.set(0,0,5);
+const flowRenderer = new THREE.WebGLRenderer({ canvas: flowCanvas, antialias:true });
+flowRenderer.setSize(flowCanvas.clientWidth, flowCanvas.clientHeight);
+
+const flowMaterial = new THREE.LineBasicMaterial({ color:0x00FFE5 });
+const flowPoints = [];
+for(let i=0;i<20;i++) flowPoints.push(new THREE.Vector3(i*0.2-2,Math.random()*2-1,0));
+const flowGeometry = new THREE.BufferGeometry().setFromPoints(flowPoints);
+const flowLine = new THREE.Line(flowGeometry, flowMaterial);
+flowScene.add(flowLine);
+function updateFlow() {
+    flowPoints.shift();
+    flowPoints.push(new THREE.Vector3(2, Math.sin(Date.now()*0.001)*1.5,0));
+    flowLine.geometry.setFromPoints(flowPoints);
+}
+function flowAnimate() { requestAnimationFrame(flowAnimate); updateFlow(); flowRenderer.render(flowScene, flowCamera); }
+flowAnimate();
+
+// --- Chat ---
+const socket = io();
+const chatWindow = document.getElementById('chat-window');
+const chatInput = document.getElementById('chat-input');
+const sendButton = document.getElementById('chat-send-btn');
+function appendMessage(sender,text){ const d=document.createElement('div'); d.className='message '+(sender==='user'?'user-msg':'ai-msg'); d.innerHTML='['+sender.toUpperCase()+']: '+text; chatWindow.appendChild(d); chatWindow.scrollTop=chatWindow.scrollHeight; }
+
+socket.on('connect',()=>{ appendMessage('ai','Sacred 3D Bridge Established'); chatInput.disabled=false; sendButton.disabled=false; });
+socket.on('ai_response',data=>{ appendMessage('ai',data); });
+
+// Send
+function sendMessage(){ const txt=chatInput.value.trim(); if(txt){ appendMessage('user',txt); socket.emit('message',{type:'user_command',text:txt}); chatInput.value=''; } }
+sendButton.addEventListener('click',sendMessage); chatInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMessage(); });
+
+// Rollback
+document.getElementById('rollback-button').addEventListener('click',()=>{
+    appendMessage('user','INITIATE ROLLBACK'); appendMessage('ai','🚨 Restoring Harmony'); 
+    qec_data.amnesia_counter=0; qec_data.dignity_pulse='NOMINAL'; qec_data.paradox_position=50;
+});
+</script>
+</body>
+</html>
