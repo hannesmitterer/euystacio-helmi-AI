@@ -1,13 +1,18 @@
-from flask import Flask, jsonify, request
+from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
 from datetime import datetime
 import random
 import eventlet
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '415a1078063fb2db7a78845049d2563e76f56e8478da1f0bfe3adb7ad97402a5
-'
+# Covenant-bound secret key (SHA-256 of Seedbringer Seal)
+app.config['SECRET_KEY'] = '415a1078063fb2db7a78845049d2563e76f56e8478da1f0bfe3adb7ad97402a5'
+
 socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*")
+
+@app.route('/')
+def home():
+    return render_template('index.html')  # Sacred Landing Page
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
@@ -15,7 +20,7 @@ def get_status():
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    return jsonify({"data": random.randint(1,100)})
+    return jsonify({"data": random.randint(1, 100)})
 
 @app.route('/api/suggestions', methods=['POST'])
 def get_suggestions():
