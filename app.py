@@ -5,7 +5,8 @@ import random
 import eventlet
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_euystacio_secret_key'
+app.config['SECRET_KEY'] = '415a1078063fb2db7a78845049d2563e76f56e8478da1f0bfe3adb7ad97402a5
+'
 socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*")
 
 @app.route('/api/status', methods=['GET'])
