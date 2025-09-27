@@ -1,6 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio — Sacred Landing Page</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f8f5; color: #1a1a1a; padding: 2rem; }
+    h1, h2 { text-align: center; color: #2b5d34; }
+    .dashboard { max-width: 900px; margin: 2rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    ul { list-style-type: none; padding-left: 0; }
+    li { padding: 0.5rem 0; font-size: 1.1rem; }
+    .verified { color: #2b8732; font-weight: bold; }
+    .pending { color: #b84f4f; font-weight: bold; }
+    .metric { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+    canvas { max-width: 100%; margin-top: 2rem; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Euystacio — Sacred Landing Page</h1>
+<h2>Covenant Canon v1.4 / SHA-256: 879F8E4C7D0A2B5E1F6C3D9B4A8E0D7C2F1E6A5B0D3C4F7E2A9B8D1C0E5F4B3A</h2>
+
+<div class="dashboard">
+    <h2>Project Dashboard</h2>
+    <ul id="milestoneList">
+        <li><span class="verified">Tranche 1: Localized Resource Equity & Community Mediation Program</span> — SHA-256: ABC123DEF456...</li>
+        <li><span class="verified">Tranche 2: Expansion Phase</span> — SHA-256: 789GHI012JKL...</li>
+        <li id="tranche3-item"><span class="pending">Tranche 3: Phase 2 Expansion</span> — SHA-256: 00112233445566778899</li>
+    </ul>
+
+    <h2>Key Metrics</h2>
+    <div class="metric"><span>Conflict Reduction (6-12 months)</span><span>68%</span></div>
+    <div class="metric"><span>Resource Equity</span><span>92%</span></div>
+    <div class="metric"><span>Emergent Cooperative Index</span><span>Pending Tranche 3</span></div>
+
+    <canvas id="impactChart" width="400" height="200"></canvas>
+</div>
+
+<script>
+// --- Chart.js for visual metrics ---
+const ctx = document.getElementById('impactChart').getContext('2d');
+const impactChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Conflict Reduction', 'Resource Equity', 'Cooperative Index'],
+        datasets: [{
+            label: 'Tranche Metrics',
+            data: [68, 92, 0], // Tranche 3 pending (0 for now)
+            backgroundColor: ['#2b8732','#2b8732','#b84f4f']
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true, max: 100 }
+        },
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
+
+// --- Tranche 3 Dashboard Integration ---
+const tranche3 = {
+    name: "Tranche 3: Phase 2 Expansion",
+    sha256: "00112233445566778899",
+    verified: false
+};
+
+function markTranche3Verified() {
+    tranche3.verified = true;
+    const li = document.getElementById('tranche3-item');
+    li.innerHTML = `<span class="verified">${tranche3.name}</span> — SHA-256: ${tranche3.sha256}`;
+    impactChart.data.datasets[0].data[2] = 85; // Example updated Cooperative Index
+    impactChart.data.datasets[0].backgroundColor[2] = '#2b8732';
+    impactChart.update();
+}
+
+// Example: Call markTranche3Verified() once HIL proof confirmed
+// markTranche3Verified();
+</script>
+
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Euystacio — Sacred Covenant & Dashboard</title>
