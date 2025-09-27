@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dignity Gateway | Euystacio Covenant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Dignity Gateway</h1>
+    <h2>Omnibus Est Eternum</h2>
+    <p>Welcome to the trustless funding portal. All actions are governed by the Love-First Red Code and the Trilogy Seal.</p>
+  </header>
+  <main>
+    <section>
+      <h3>Fund an Ethical Project</h3>
+      <form id="fundProjectForm">
+        <label>Project ID: <input type="number" id="projectId" required></label><br>
+        <label>Amount (ETH): <input type="number" step="0.01" id="fundAmount" required></label><br>
+        <button type="submit">Deposit Funds</button>
+      </form>
+    </section>
+    <section>
+      <h3>Submit Milestone Proof</h3>
+      <form id="submitProofForm">
+        <label>Project ID: <input type="number" id="proofProjectId" required></label><br>
+        <label>SHA-256 Proof: <input type="text" id="milestoneProof" required></label><br>
+        <button type="submit">Submit Proof</button>
+      </form>
+    </section>
+    <section>
+      <h3>Status & Audit</h3>
+      <div id="auditLog"></div>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Euystacio Collective. All rights reserved.</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <script>
+    // Connect to Ethereum and interact with the Smart Contract
+    // Example only: Fill in with your contract's ABI and deployed address
+    const contractAddress = "YOUR_CONTRACT_ADDRESS";
+    const contractABI = [/* ... ABI ... */];
+
+    async function depositFunds(event) {
+      event.preventDefault();
+      // Implement with ethers.js or web3.js
+    }
+
+    async function submitProof(event) {
+      event.preventDefault();
+      // Implement with ethers.js or web3.js
+    }
+
+    document.getElementById("fundProjectForm").addEventListener("submit", depositFunds);
+    document.getElementById("submitProofForm").addEventListener("submit", submitProof);
+  </script>
+</body>
+</html>
