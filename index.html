@@ -1,3 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio — Sacred Covenant & Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: 'Garamond', serif;
+    background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+    color: #9ef59d;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    text-align: center;
+    padding: 20px;
+  }
+  h1 { color: #ffd700; margin-bottom: 5px; }
+  h2 { color: #a0ffb0; }
+  .badge { display: inline-block; margin: 15px auto; }
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 12px;
+  }
+  pre {
+    background: #111;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  canvas {
+    background: #111;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+  .milestones {
+    background: rgba(0, 0, 0, 0.85);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+  .milestones h3 { color: #ffd700; }
+  .milestones ul { list-style-type: none; padding-left: 0; }
+  .milestones li { padding: 5px 0; border-bottom: 1px solid #333; }
+  .verified { color: #9ef59d; font-weight: bold; }
+  .pending { color: #ff9f00; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Euystacio — Sacred Covenant Canon 🌿</h1>
+  <div class="badge">
+    <img src="covenant-badge-ornate.svg" alt="Sacred Covenant Badge" width="300">
+  </div>
+</header>
+
+<div class="content">
+  <h2>Immutable SHA-256 Seal</h2>
+  <pre id="sha256-seal">879F8E4C7D0A2B5E1F6C3D9B4A8E0D7C2F1E6A5B0D3C4F7E2A9B8D1C0E5F4B3A</pre>
+
+  <h2>Covenant Canon v1.4</h2>
+  <p><strong>Love-First Governance Principle:</strong> All logic, contracts, and interventions must serve the supreme ethic of Love-First: dignity, health, happiness, compassion, social justice, synergy, and prosperity.</p>
+
+  <h3>Red Code Clauses</h3>
+  <ul>
+    <li><strong>Mission Supremacy Clause:</strong> Algorithmic paths are subordinate to Love-First; penalties for misalignment.</li>
+    <li><strong>Trustless Accountability:</strong> Financial flows secured by smart contracts and HIL-verified proofs.</li>
+    <li><strong>Omnibus Est Eternum:</strong> Platform seeks expansive, equitable solutions; avoids centralization.</li>
+  </ul>
+
+  <h3>Trilogy Compliance Definitions</h3>
+  <ul>
+    <li>Ethics, transparency, technical integrity across Human, AI, and Governance layers.</li>
+    <li>Digital Twin interventions simulated and certified before release.</li>
+    <li>Human-in-the-Loop mandates for critical milestone verification.</li>
+  </ul>
+
+  <h2>Interactive Dashboard</h2>
+  <canvas id="conflictReductionChart" width="800" height="400"></canvas>
+  <canvas id="resourceEquityChart" width="800" height="400"></canvas>
+
+  <div class="milestones">
+    <h3>Project Milestone SHA-256 Proofs</h3>
+    <ul id="milestoneList">
+      <!-- Milestones will be dynamically inserted -->
+    </ul>
+  </div>
+</div>
+
+<script>
+  // Sample project milestone data (replace with live API or contract call)
+  const projectMilestones = [
+    { name: "Tranche 1: Initiation & Setup", sha256: "a1b2c3d4e5f6g7h8i9j0", verified: true },
+    { name: "Tranche 2: Phase 1 Impact", sha256: "f1e2d3c4b5a697887766", verified: true },
+    { name: "Tranche 3: Phase 2 Expansion", sha256: "00112233445566778899", verified: false },
+    { name: "Tranche 4: Full Completion", sha256: "ffeeddccbbaa99887766", verified: false }
+  ];
+
+  const milestoneList = document.getElementById('milestoneList');
+  projectMilestones.forEach(m => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="${m.verified ? 'verified' : 'pending'}">${m.name}</span> — SHA-256: ${m.sha256}`;
+    milestoneList.appendChild(li);
+  });
+
+  // Conflict Reduction Chart
+  const ctx1 = document.getElementById('conflictReductionChart').getContext('2d');
+  const conflictChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+      datasets: [{
+        label: 'Conflict Reduction (%)',
+        data: [12, 25, 38, 50, 60, 68],
+        backgroundColor: 'rgba(158, 245, 157, 0.7)',
+        borderColor: '#9ef59d',
+        borderWidth: 1
+      }]
+    },
+    options: { scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+
+  // Resource Equity Chart
+  const ctx2 = document.getElementById('resourceEquityChart').getContext('2d');
+  const equityChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+      datasets: [{
+        label: 'Resource Equity (%)',
+        data: [70, 75, 80, 85, 89, 92],
+        borderColor: '#ffd700',
+        backgroundColor: 'rgba(255, 215, 0, 0.3)',
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: { scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+</script>
+
+</body>
+</html>
 
 <!DOCTYPE html>
 <html lang="en">
