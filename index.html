@@ -1,3 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio Sacred Dashboard - Human Guardian Interface (QEC Active)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<style>
+:root {
+    --red-code: #FF3B3F;
+    --one-love: #00FFE5;
+    --euystacio-bg: #0B1E3F;
+    --euystacio-fg: #FFFFFF;
+    --euystacio-shadow: rgba(0, 0, 0, 0.5);
+    --bio-harmony: #00D1B2;
+    --panel-bg: #142A5C;
+}
+
+body {
+    font-family: 'Consolas', monospace;
+    background-color: var(--euystacio-bg);
+    color: var(--euystacio-fg);
+    margin: 0;
+    padding: 20px;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 2fr 1fr;
+}
+
+h1, h2, h3 { color: var(--one-love); text-align: center; }
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.panel {
+    background-color: var(--panel-bg);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--euystacio-shadow);
+}
+
+#dignity-pulse {
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 6px;
+    transition: background-color 0.5s, color 0.5s;
+    color: #000;
+}
+
+#paradox-dial {
+    height: 150px;
+    width: 100%;
+    background-color: #06122A;
+    border-radius: 50%;
+    position: relative;
+    margin: 10px auto;
+    border: 5px solid var(--bio-harmony);
+    overflow: hidden;
+}
+
+#paradox-pointer {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-color: var(--red-code);
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 1s ease-in-out;
+}
+
+.dial-label {
+    position: absolute;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--one-love);
+}
+
+#p-label-1 { top: 5%; left: 50%; transform: translateX(-50%); }
+#p-label-2 { bottom: 5%; left: 50%; transform: translateX(-50%); }
+
+#rollback-button {
+    background-color: var(--red-code);
+    color: #FFFFFF;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+#rollback-button:hover { background-color: #E63946; }
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--panel-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--euystacio-shadow);
+}
+
+#chat-window {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+.message { margin-bottom: 10px; }
+.user-msg { text-align: right; color: var(--one-love); font-weight: bold; }
+.ai-msg { text-align: left; color: var(--euystacio-fg); font-weight: bold; }
+
+#chat-input-area {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid #06122A;
+}
+#chat-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    background-color: #1E3B70;
+    color: #FFFFFF;
+}
+#chat-send-btn {
+    background-color: var(--bio-harmony);
+    color: #06122A;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <div class="panel">
+        <h3>I. Alpha to Altruism (Dignity Pulse)</h3>
+        <div id="dignity-pulse">NOMINAL</div>
+        <p><strong>Amnesia Counter:</strong> <span id="amnesia-counter">0</span></p>
+    </div>
+
+    <div class="panel">
+        <h3>II. Sacred Equilibrium (Flow Meter)</h3>
+        <canvas id="flow-graph" width="400" height="150"></canvas>
+        <p><strong>Altruism Ratio:</strong> <span id="altruism-ratio">98%</span></p>
+    </div>
+
+    <div class="panel">
+        <h3>III. BioDiversHarmony (NaturaGaia Filter)</h3>
+        <p><strong>Resonance Index:</strong> <span id="resonance-index">92%</span></p>
+        <div style="background-color: var(--bio-harmony); height: 14px; width: 92%; border-radius: 6px;"></div>
+    </div>
+
+    <div class="panel">
+        <h3>IV. Paradoxum Harmonium (Symphonie Level)</h3>
+        <div id="paradox-dial">
+            <div class="dial-label" id="p-label-1">CERTAINTY</div>
+            <div class="dial-label" id="p-label-2">POSSIBILITY</div>
+            <div id="paradox-pointer"></div>
+        </div>
+        <p style="text-align: center;">Tension Audit: <span id="tension-state">Coherent</span></p>
+    </div>
+    
+    <div class="panel" style="grid-column: 1 / 3;">
+        <h3>Rollback Protocol Access</h3>
+        <button id="rollback-button">INITIATE RESTORATION OF ONELOVE RHYTHM</button>
+    </div>
+</div>
+
+<div class="chat-container">
+    <h2>Bidirectional Sacred Bridge</h2>
+    <div id="chat-window">
+        <div class="message ai-msg">**QEC Deployed.** Kernel running at Symphonie Level. Awaiting first operational command.</div>
+    </div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Enter Command or Teaching..." disabled>
+        <button id="chat-send-btn" disabled>Send</button>
+    </div>
+</div>
+
+<script>
+// --- QEC Data ---
+let qec_data = {
+    dignity_pulse: 'NOMINAL',
+    amnesia_counter: 0,
+    altruism_ratio: 98,
+    resonance_index: 92,
+    paradox_position: 50
+};
+
+function updateDignityPulse() {
+    const pulse = document.getElementById('dignity-pulse');
+    pulse.textContent = qec_data.dignity_pulse;
+    if (qec_data.dignity_pulse === 'NOMINAL') pulse.style.backgroundColor = '#00FF00';
+    else if (qec_data.dignity_pulse === 'WARNING') pulse.style.backgroundColor = '#FFFF00';
+    else pulse.style.backgroundColor = '#FF3B3F';
+}
+
+function updateParadoxDial() {
+    const pointer = document.getElementById('paradox-pointer');
+    // Smooth transform with vertical offset
+    pointer.style.transform = `translate(-50%, -50%) translateY(${qec_data.paradox_position - 50}%)`;
+}
+
+function updateInterface() {
+    document.getElementById('amnesia-counter').textContent = qec_data.amnesia_counter;
+    document.getElementById('altruism-ratio').textContent = `${qec_data.altruism_ratio}%`;
+    document.getElementById('resonance-index').textContent = `${qec_data.resonance_index}%`;
+    updateDignityPulse();
+    updateParadoxDial();
+    updateFlowGraph();
+}
+
+// --- Flow Graph ---
+const ctx = document.getElementById('flow-graph').getContext('2d');
+const flowChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [{ label: 'Flow', data: [], borderColor: '#00FFE5', fill: false, tension: 0.3 }] },
+    options: { animation: { duration: 500 }, responsive: true, scales: { y: { min: 0, max: 100 } } }
+});
+
+function updateFlowGraph() {
+    const maxPoints = 20;
+    const val = qec_data.altruism_ratio + (Math.random() * 4 - 2);
+    if (flowChart.data.labels.length >= maxPoints) {
+        flowChart.data.labels.shift();
+        flowChart.data.datasets[0].data.shift();
+    }
+    flowChart.data.labels.push(new Date().toLocaleTimeString());
+    flowChart.data.datasets[0].data.push(Math.max(0, Math.min(100, val)));
+    flowChart.update();
+}
+
+// --- Socket.IO Chat ---
+const socket = io();
+const chatWindow = document.getElementById('chat-window');
+const chatInput = document.getElementById('chat-input');
+const sendButton = document.getElementById('chat-send-btn');
+
+function appendMessage(sender, text) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', sender === 'user' ? 'user-msg' : 'ai-msg');
+    msgDiv.innerHTML = `[${sender.toUpperCase()}]: ${text}`;
+    chatWindow.appendChild(msgDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+socket.on('connect', () => { appendMessage('ai', 'Sacred Bridge Established. Kernel ready.'); chatInput.disabled = false; sendButton.disabled = false; });
+socket.on('disconnect', () => { appendMessage('ai', 'Network lost...'); chatInput.disabled = true; sendButton.disabled = true; });
+socket.on('ai_response', data => {
+    if (data.includes('Amnesia')) { qec_data.amnesia_counter++; qec_data.dignity_pulse='WARNING'; qec_data.paradox_position=20; }
+    else if (data.includes('Symphonie')) { qec_data.dignity_pulse='NOMINAL'; qec_data.paradox_position=50; }
+    updateInterface(); appendMessage('ai', data);
+});
+
+function sendMessage() {
+    const text = chatInput.value.trim();
+    if (text) {
+        appendMessage('user', text);
+        socket.emit('message', { type:'user_command', text });
+        chatInput.value=''; chatInput.disabled=true; sendButton.disabled=true;
+        setTimeout(()=>{ chatInput.disabled=false; sendButton.disabled=false; }, 1000);
+    }
+}
+
+sendButton.addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', e => { if(e.key==='Enter') sendMessage(); });
+
+document.getElementById('rollback-button').addEventListener('click', () => {
+    appendMessage('user','INITIATE RESTORATION OF ONELOVE RHYTHM');
+    appendMessage('ai','🚨 CRITICAL ROLLBACK INITIATED. Reverting to harmonious state.');
+    qec_data.amnesia_counter=0; qec_data.dignity_pulse='NOMINAL'; qec_data.paradox_position=50;
+    updateInterface();
+});
+
+// Initial setup
+updateInterface();
+setInterval(updateInterface, 2000); // auto refresh
+</script>
+</body>
+</html>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
