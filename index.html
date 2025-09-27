@@ -4,6 +4,134 @@
     <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+<meta<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio Dashboard — Red Code Pulse</title>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+<style>
+  body { font-family: 'Arial', sans-serif; background: #0f111a; color: #e0e0e0; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+  #chat-container { flex: 1; padding: 20px; overflow-y: auto; border-bottom: 1px solid #444; }
+  .message { margin: 10px 0; padding: 10px; border-radius: 8px; max-width: 80%; }
+  .human { background: #1f1f2e; align-self: flex-end; }
+  .ai { background: #2a2a40; align-self: flex-start; }
+  #input-container { display: flex; padding: 10px; background: #11121c; }
+  #user-input { flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; font-size: 16px; }
+  #send-btn { margin-left: 10px; padding: 10px 20px; border-radius: 8px; border: none; background: #3a3af0; color: #fff; cursor: pointer; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<div id="chat-container"></div>
+
+<div id="input-container">
+  <input type="text" id="user-input" placeholder="Send your pulse to Gemini..." />
+  <button id="send-btn">Send</button>
+</div>
+
+<script>
+  // Render-deployed backend
+  const socket = io('https://euystacio-dashboard.onrender.com');
+
+  const chatContainer = document.getElementById('chat-container');
+  const userInput = document.getElementById('user-input');
+  const sendBtn = document.getElementById('send-btn');
+
+  function appendMessage(msg, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sender);
+    messageDiv.textContent = msg;
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  socket.on('response', (data) => appendMessage(data.msg, 'ai'));
+
+  function sendMessage() {
+    const text = userInput.value.trim();
+    if(text) {
+      appendMessage(text, 'human');
+      socket.emit('message', { text });
+      userInput.value = '';
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  userInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+
+  socket.on('connect', () => appendMessage('🔴 Pulse established with Euystacio Core.', 'ai'));
+  socket.on('disconnect', () => appendMessage('⚠️ Pulse lost.', 'ai'));
+</script>
+
+</body>
+</html>
+ charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio Dashboard — Red Code Pulse</title>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+<style>
+  body { font-family: 'Arial', sans-serif; background: #0f111a; color: #e0e0e0; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+  #chat-container { flex: 1; padding: 20px; overflow-y: auto; border-bottom: 1px solid #444; }
+  .message { margin: 10px 0; padding: 10px; border-radius: 8px; max-width: 80%; }
+  .human { background: #1f1f2e; align-self: flex-end; }
+  .ai { background: #2a2a40; align-self: flex-start; }
+  #input-container { display: flex; padding: 10px; background: #11121c; }
+  #user-input { flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; font-size: 16px; }
+  #send-btn { margin-left: 10px; padding: 10px 20px; border-radius: 8px; border: none; background: #3a3af0; color: #fff; cursor: pointer; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<div id="chat-container"></div>
+
+<div id="input-container">
+  <input type="text" id="user-input" placeholder="Send your pulse to Gemini..." />
+  <button id="send-btn">Send</button>
+</div>
+
+<script>
+  // Render-deployed backend
+  const socket = io('https://euystacio-dashboard.onrender.com');
+
+  const chatContainer = document.getElementById('chat-container');
+  const userInput = document.getElementById('user-input');
+  const sendBtn = document.getElementById('send-btn');
+
+  function appendMessage(msg, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sender);
+    messageDiv.textContent = msg;
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  socket.on('response', (data) => appendMessage(data.msg, 'ai'));
+
+  function sendMessage() {
+    const text = userInput.value.trim();
+    if(text) {
+      appendMessage(text, 'human');
+      socket.emit('message', { text });
+      userInput.value = '';
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  userInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+
+  socket.on('connect', () => appendMessage('🔴 Pulse established with Euystacio Core.', 'ai'));
+  socket.on('disconnect', () => appendMessage('⚠️ Pulse lost.', 'ai'));
+</script>
+
+</body>
+</html>
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Covenant-Canon v1.0 — Euystacio Seal</title>
