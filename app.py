@@ -5,14 +5,12 @@ import random
 import eventlet
 
 app = Flask(__name__)
-# Covenant-bound secret key (SHA-256 of Seedbringer Seal)
-app.config['SECRET_KEY'] = '415a1078063fb2db7a78845049d2563e76f56e8478da1f0bfe3adb7ad97402a5'
-
+app.config['SECRET_KEY'] = 'your_euystacio_secret_key'
 socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*")
 
 @app.route('/')
 def home():
-    return render_template('index.html')  # Sacred Landing Page
+    return render_template('index.html')
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
@@ -20,7 +18,7 @@ def get_status():
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    return jsonify({"data": random.randint(1, 100)})
+    return jsonify({"data": random.randint(1,100)})
 
 @app.route('/api/suggestions', methods=['POST'])
 def get_suggestions():
