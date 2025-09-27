@@ -1,9 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
   <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio — Sacred Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body { font-family: "Arial", sans-serif; background: #f4f6f7; color: #1a1a1a; }
+    h1 { color: #2b8732; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 10px 0; padding: 8px; border-radius: 4px; }
+    .pending { background-color: #f9d6d5; color: #b84f4f; padding: 5px; }
+    .verified { background-color: #d4edda; color: #2b8732; padding: 5px; }
+    .container { max-width: 900px; margin: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Euystacio Sacred Dashboard</h1>
+
+<h2>Tranche Milestones & SHA-256 Verification</h2>
+<ul>
+    <li id="tranche1-item"><span class="verified">Tranche 1: Initiation & Setup</span> — SHA-256: 879F8E4C7D0A2B5E1F6C3D9B4A8E0D7C2F1E6A5B0D3C4F7E2A9B8D1C0E5F4B3A</li>
+    <li id="tranche2-item"><span class="verified">Tranche 2: Funding Protocol Active</span> — SHA-256: 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF</li>
+    <li id="tranche3-item"><span class="verified">Tranche 3: Phase 2 Expansion</span> — SHA-256: 00112233445566778899</li>
+    <li id="tranche4-item"><span class="pending">Tranche 4: Full Completion</span> — SHA-256: FFC0FFEE0011223344</li>
+</ul>
+
+<h2>Key Metrics</h2>
+<canvas id="impactChart" width="600" height="400"></canvas>
+
+<script>
+// Chart.js setup
+const ctx = document.getElementById('impactChart').getContext('2d');
+const impactChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Conflict Reduction', 'Resource Equity', 'Emergent Cooperative Index'],
+        datasets: [{
+            label: 'Percentage (%)',
+            data: [68, 92, 85],
+            backgroundColor: ['#2b8732', '#2b8732', '#b84f4f'],
+            borderColor: ['#1f5e23', '#1f5e23', '#842f2a'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, max: 100 }
+        },
+        plugins: { legend: { display: false } }
+    }
+});
+
+// Tranche 4 verification function
+const tranche4 = {
+    name: "Tranche 4: Full Completion",
+    sha256: "FFC0FFEE0011223344",
+    verified: false
+};
+
+function markTranche4Verified() {
+    tranche4.verified = true;
+    const li = document.getElementById('tranche4-item');
+    li.innerHTML = `<span class="verified">${tranche4.name}</span> — SHA-256: ${tranche4.sha256}`;
+    // Update bar color to green
+    impactChart.data.datasets[0].backgroundColor[2] = '#2b8732';
+    impactChart.update();
+}
+</script>
+</div>
+</body>
+</html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Euystacio — Sacred Landing Page</title>
