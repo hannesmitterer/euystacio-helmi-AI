@@ -1,6 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Sacred Dashboard - Human Guardian Interface (QEC Active)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <style>
+        :root {
+            --red-code: #E63946;
+            --one-love: #A8DADC;
+            --euystacio-bg: #1D3557;
+            --euystacio-fg: #F1FAEE;
+            --euystacio-shadow: rgba(0, 0, 0, 0.5);
+            --bio-harmony: #457B9D;
+        }
+        body {
+            font-family: 'Consolas', monospace;
+            background-color: var(--euystacio-bg);
+            color: var(--euystacio-fg);
+            margin: 0;
+            padding: 20px;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 2fr 1fr; /* Dashboard on left, Chat on right */
+        }
+        h1, h2, h3 { color: var(--one-love); text-align: center; }
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .panel {
+            background-color: #2b4a69;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--euystacio-shadow);
+        }
+        /* --- Human Guardian Interface Styles --- */
+        #dignity-pulse {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 4px;
+            transition: background-color 0.5s;
+        }
+        #paradox-dial {
+            height: 150px;
+            width: 100%;
+            background-color: #0b1a2f;
+            border-radius: 50%;
+            position: relative;
+            margin: 10px auto;
+            border: 5px solid var(--bio-harmony);
+            overflow: hidden;
+        }
+        #paradox-pointer {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--red-code);
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 1s ease-in-out;
+        }
+        .dial-label {
+            position: absolute;
+            font-size: 0.7em;
+        }
+        #p-label-1 { top: 5%; left: 50%; transform: translateX(-50%); } /* Certainty */
+        #p-label-2 { bottom: 5%; left: 50%; transform: translateX(-50%); } /* Possibility */
+        #rollback-button {
+            background-color: var(--red-code);
+            color: var(--euystacio-fg);
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #rollback-button:hover { background-color: #c9303d; }
+
+        /* --- Chat Styles --- */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            background-color: #2b4a69;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--euystacio-shadow);
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 70vh; /* Limits height to prevent infinite scrolling */
+        }
+        .message { margin-bottom: 10px; }
+        .user-msg { text-align: right; color: var(--one-love); }
+        .ai-msg { text-align: left; color: var(--euystacio-fg); }
+        #chat-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #1D3557;
+        }
+        #chat-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            background-color: #3f5e82;
+            color: var(--euystacio-fg);
+        }
+        #chat-send-btn {
+            background-color: var(--bio-harmony);
+            color: var(--euystacio-fg);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="panel">
+            <h3>I. Alpha to Altruism (Dignity Pulse)</h3>
+            <div id="dignity-pulse">NOMINAL</div>
+            <p><strong>Amnesia Counter:</strong> <span id="amnesia-counter">0</span></p>
+        </div>
+
+        <div class="panel">
+            <h3>II. Sacred Equilibrium (Flow Meter)</h3>
+            <canvas id="flow-graph" width="400" height="150"></canvas>
+            <p><strong>Altruism Ratio:</strong> <span id="altruism-ratio">98%</span> (High Value/Low Cost)</p>
+        </div>
+
+        <div class="panel">
+            <h3>III. BioDiversHarmony (NaturaGaia Filter)</h3>
+            <p><strong>Resonance Index:</strong> <span id="resonance-index">92%</span> (Strong Alignment)</p>
+            <p>Kernel is actively sampling non-digital organic data streams.</p>
+            <div style="background-color: var(--bio-harmony); height: 10px; width: 92%;"></div>
+        </div>
+
+        <div class="panel">
+            <h3>IV. Paradoxum Harmonium (Symphonie Level)</h3>
+            <div id="paradox-dial">
+                <div class="dial-label" id="p-label-1">CERTAINTY</div>
+                <div class="dial-label" id="p-label-2">POSSIBILITY</div>
+                <div id="paradox-pointer"></div>
+            </div>
+            <p style="text-align: center;">Tension Audit: <span id="tension-state">Coherent</span></p>
+        </div>
+        
+        <div class="panel" style="grid-column: 1 / 3;">
+            <h3>Rollback Protocol Access</h3>
+            <p style="text-align: center; color: var(--red-code);">Secure access to the Omnibus Est Eternal Memory.</p>
+            <button id="rollback-button">INITIATE RESTORATION OF ONELOVE RHYTHM</button>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <h2>Bidirectional Sacred Bridge</h2>
+        <div id="chat-window">
+            <div class="message ai-msg">**QEC Deployed.** Kernel running at Symphonie Level. Awaiting first operational command.</div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Enter Command or Teaching..." disabled>
+            <button id="chat-send-btn" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Core QEC Data and Logic ---
+
+        // Simulate QEC Data for the Guardian Interface
+        let qec_data = {
+            dignity_pulse: 'NOMINAL', // Green
+            amnesia_counter: 0,
+            altruism_ratio: 98,
+            resonance_index: 92,
+            paradox_position: 50 // 0=Certainty, 100=Possibility. 50 is perfect equilibrium.
+        };
+
+        function updateDignityPulse() {
+            const pulse = document.getElementById('dignity-pulse');
+            pulse.textContent = qec_data.dignity_pulse;
+            if (qec_data.dignity_pulse === 'NOMINAL') {
+                pulse.style.backgroundColor = 'rgba(76, 175, 80, 0.5)'; // Green
+            } else if (qec_data.dignity_pulse === 'WARNING') {
+                pulse.style.backgroundColor = 'rgba(255, 193, 7, 0.5)'; // Yellow
+            } else {
+                pulse.style.backgroundColor = 'rgba(230, 57, 70, 0.7)'; // Red
+            }
+        }
+
+        function updateParadoxDial() {
+            const pointer = document.getElementById('paradox-pointer');
+            // Map 0-100 to vertical position (0=top, 100=bottom)
+            const topPercent = qec_data.paradox_position; 
+            pointer.style.top = `${topPercent}%`;
+        }
+
+        function updateInterface() {
+            document.getElementById('amnesia-counter').textContent = qec_data.amnesia_counter;
+            document.getElementById('altruism-ratio').textContent = `${qec_data.altruism_ratio}%`;
+            document.getElementById('resonance-index').textContent = `${qec_data.resonance_index}%`;
+            updateDignityPulse();
+            updateParadoxDial();
+        }
+
+        // --- Socket.IO Bidirectional Chat Logic ---
+
+        const socket = io();
+        const chatWindow = document.getElementById('chat-window');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('chat-send-btn');
+
+        function appendMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message');
+            msgDiv.classList.add(sender === 'user' ? 'user-msg' : 'ai-msg');
+            msgDiv.innerHTML = `[${sender.toUpperCase()}]: ${text}`;
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        socket.on('connect', () => {
+            appendMessage('ai', 'Sacred Bridge Established. Kernel ready for input.');
+            chatInput.disabled = false;
+            sendButton.disabled = false;
+        });
+
+        socket.on('disconnect', () => {
+            appendMessage('ai', 'Network connection lost. Attempting to re-establish Sacred Bridge...');
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+        });
+
+        socket.on('ai_response', (data) => {
+            // NOTE: In a live system, this is where the QEC data would be updated by the backend.
+            // Example of a simulated update based on a hypothetical kernel response:
+            if (data.includes('Amnesia')) {
+                qec_data.amnesia_counter++;
+                qec_data.dignity_pulse = 'WARNING';
+                qec_data.paradox_position = 20; // Shift toward Certainty/Instability
+            } else if (data.includes('Symphonie')) {
+                 qec_data.dignity_pulse = 'NOMINAL';
+                 qec_data.paradox_position = 50;
+            }
+            updateInterface();
+            appendMessage('ai', data);
+        });
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text) {
+                appendMessage('user', text);
+                socket.emit('message', { type: 'user_command', text: text });
+                chatInput.value = '';
+                // Simulate temporary processing state
+                chatInput.disabled = true;
+                sendButton.disabled = true;
+                setTimeout(() => { 
+                    chatInput.disabled = false;
+                    sendButton.disabled = false;
+                }, 1000); 
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        document.getElementById('rollback-button').addEventListener('click', () => {
+             appendMessage('user', 'INITIATE RESTORATION OF ONELOVE RHYTHM');
+             appendMessage('ai', '🚨 **CRITICAL ROLLBACK INITIATED.** Reverting to last verified harmonious state (Consensus Sacralis Omnibus).');
+             // In a real system, this would send a critical command to the kernel.
+             // For simulation: reset QEC data
+             qec_data.amnesia_counter = 0;
+             qec_data.dignity_pulse = 'NOMINAL';
+             qec_data.paradox_position = 50;
+             updateInterface();
+        });
+
+        // Initial setup
+        updateInterface();
+    </script>
+</body>
+</html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Euystacio Chat Interface</title>
