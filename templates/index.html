@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Euystacio Covenant Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Euystacio Helmi AI Dashboard</title>
+    <style>
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .gallery img {
+            max-width: 220px;
+            max-height: 220px;
+            border: 2px solid #e9415c;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(233,65,92,0.15);
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <!-- Festival Codex Seal (Image 4) -->
-    <img src="/static/img/festival-codex-seal.png" alt="Festival Codex Seal" style="max-width:180px; margin-bottom:20px;">
-    <h1>Euystacio Covenant Dashboard</h1>
-    <!-- Y-Sigil Sacralis (Image 5) -->
-    <img src="/static/img/y-sigil-sacralis.png" alt="Y-Sigil Sacralis" style="max-width:120px; float:right; margin-left:20px;">
-    <h2>Tranche Milestones & SHA-256 Verification</h2>
-    <ul>
-        <li id="tranche3-item"><span class="verified">Tranche 3: Phase 2 Expansion</span> — SHA-256: 00112233445566778899</li>
-        <li id="tranche4-item"><span class="pending">Tranche 4: Full Completion</span> — SHA-256: FFC0FFEE0011223344</li>
-    </ul>
-    <h2>Key Metrics</h2>
-    <canvas id="impactChart" width="600" height="400"></canvas>
-    <button id="verifyTranche4">Verify Tranche 4</button>
-    <!-- Sacralis Declaratio 8th (Image 6) -->
-    <div style="margin-top:40px; text-align:center;">
-        <img src="/static/img/sacralis-declaratio-8th.png" alt="Sacralis Declaratio 8th" style="max-width:200px;">
-        <div><em>Sacralis Declaratio — 8th</em></div>
+    <h1>Image Gallery</h1>
+    <div class="gallery">
+        <img src="{{ url_for('static', filename='IMG_1108.png') }}" alt="IMG_1108">
+        <img src="{{ url_for('static', filename='IMG_1113.png') }}" alt="IMG_1113">
+        <img src="{{ url_for('static', filename='IMG_1116.png') }}" alt="IMG_1116">
+        <img src="{{ url_for('static', filename='IMG_1117.png') }}" alt="IMG_1117">
+        <img src="{{ url_for('static', filename='IMG_1127.png') }}" alt="IMG_1127">
+        <img src="{{ url_for('static', filename='IMG_1128.png') }}" alt="IMG_1128">
+        <img src="{{ url_for('static', filename='IMG_1129.png') }}" alt="IMG_1129">
+        <img src="{{ url_for('static', filename='IMG_1143.jpeg') }}" alt="IMG_1143">
+        <img src="{{ url_for('static', filename='IMG_1161.jpeg') }}" alt="IMG_1161">
+        <img src="{{ url_for('static', filename='IMG_1181.jpeg') }}" alt="IMG_1181">
+        <img src="{{ url_for('static', filename='IMG_1207.png') }}" alt="IMG_1207">
     </div>
-</div>
-<script src="/static/js/main.js"></script>
 </body>
 </html>
