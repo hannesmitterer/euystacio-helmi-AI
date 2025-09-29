@@ -1,1 +1,7 @@
-{ "tranches": [ {"id":1,"name":"Seed Funding","status":"Released","proof":"GPS_PROOF_TRANCHE_1"}, {"id":2,"name":"Core Build","status":"Pending","proof":""}, {"id":3,"name":"Activation","status":"Pending","proof":""} ] }
+{
+  "tranches": [
+    {"id":1,"name":"Seed Funding","status":"Released","proof":"GPS_PROOF_TRANCHE_1"},
+    {"id":2,"name":"Core Build","status":"Pending","proof":""},
+    {"id":3,"name":"Activation","status":"Pending","proof":""}
+  ]
+}
