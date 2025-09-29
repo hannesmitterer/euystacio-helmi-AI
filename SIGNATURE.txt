@@ -1,0 +1,4 @@
+Euystacio Covenant Deployment Package
+File: euystacio-covenant-full-signed.zip
+SHA256: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
+This signature certifies the immutability of the Sacred Covenant bundle.
