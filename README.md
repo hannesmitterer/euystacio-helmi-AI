@@ -1,28 +1,27 @@
-# README
+# Euystacio Helmi AI – Sacred Covenant Deployment
 
-This is the README for the euystacio-helmi-AI project.
+## 📦 Offizielles Deployment Bundle
+Das Sacred Covenant Deployment Bundle enthält alle Smart Contracts, Deployment Scripts, Tests, README, DEPLOYMENT.md und SIGNATURE.txt.
+Es ist SHA256-verifiziert und entspricht dem Consensus Sacralis Omnibus Est.
 
-## Overview
+- Release: [v1.0.0-covenant](https://github.com/hannesmitterer/euystacio-helmi-ai/releases/tag/v1.0.0-covenant)
+- Datei: euystacio-covenant-full-signed.zip
+- SHA256: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
 
-The euystacio-helmi-AI project aims to create an AI system that enhances user experience.
+## 📜 Enthaltene Komponenten
+### Smart Contracts
+- EUSDaoGovernance.sol
+- KarmaBond.sol
+- TrustlessFundingProtocol.sol
 
-## Features
-- Feature 1
-- Feature 2
-- Feature 3
+### Scripts
+- scripts/deploy.js
 
-## Installation
+### Tests
+- test/karmaBond.test.js
+- test/trustlessFunding.test.js
 
-Instructions for installing the project will go here.
-
-## Usage
-
-Instructions for using the project will go here.
-
-## Contributing
-
-Guidelines for contributing to the project will go here.
-
-## License
-
-This project is licensed under the MIT License.
+### Dokumentation
+- README.md
+- DEPLOYMENT.md
+- SIGNATURE.txt
