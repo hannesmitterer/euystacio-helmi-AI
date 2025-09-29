@@ -1,40 +1,19 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-contract TrustlessFundingProtocol {
-    enum ReleaseStatus { LOCKED, RELEASED }
-    ReleaseStatus public releaseStatus = ReleaseStatus.LOCKED;
-    bytes32 public ethicalCertID;
-    bytes32 public HIL_Proof;
-    bytes32 public projectHash;
-    uint256 public trancheAmount;
-    address public Project_Wallet;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-    GlobalAuditLedgerInterface public GlobalAuditLedger;
-    CovenantLedgerInterface public CovenantLedger;
+contract TrustlessFundingProtocol is Ownable {
+    address public foundationWallet;
+    mapping(uint256 => bool) public trancheReleased;
 
-    event Log_Event(string eventType, uint256 amount);
-
-    modifier onlyTreasuryAgent() {
-        // Implement access control here
-        _;
+    constructor(address _foundationWallet) {
+        foundationWallet = _foundationWallet;
     }
 
-    function Release_Tranche_1(bytes32 HIL_Proof_Input) public onlyTreasuryAgent {
-        require(releaseStatus == ReleaseStatus.LOCKED, "Already released");
-        require(GlobalAuditLedger.checkCertificate(ethicalCertID), "Invalid Ethical Certificate");
-        emit Log_Event("Ethical_Certificate_Verified", 0);
-        require(HIL_Proof_Input == HIL_Proof, "HIL proof failed");
-        emit Log_Event("HIL_Ratification_Verified", 0);
-        require(CovenantLedger.checkProjectHash(projectHash), "Covenant check failed");
-        payable(Project_Wallet).transfer(trancheAmount);
-        releaseStatus = ReleaseStatus.RELEASED;
-        emit Log_Event("Tranche_1_Funds_Executed", trancheAmount);
+    function releaseTranche(uint256 trancheId, bytes32 proofHash) external onlyOwner {
+        require(!trancheReleased[trancheId], "Already released");
+        require(proofHash != 0, "Invalid proof");
+        trancheReleased[trancheId] = true;
     }
-}
-
-interface GlobalAuditLedgerInterface {
-    function checkCertificate(bytes32 certID) external view returns (bool);
-}
-interface CovenantLedgerInterface {
-    function checkProjectHash(bytes32 projectHash) external view returns (bool);
 }
