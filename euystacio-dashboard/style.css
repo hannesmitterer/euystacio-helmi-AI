@@ -1,0 +1,8 @@
+body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1b1b1b; margin: 20px; }
+h1, h2 { color: #2a7f62; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #2a7f62; padding: 8px; text-align: center; }
+ul { list-style: none; padding: 0; }
+li { margin: 5px 0; }
+#ethics-status { font-weight: bold; color: #2a7f62; }
+#sha-status { font-family: monospace; }
