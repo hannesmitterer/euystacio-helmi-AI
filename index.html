@@ -1,208 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Euystacio Sacred Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-  <style>
-    body {
-      font-family: Georgia, serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    h1, h2, h3 {
-      text-align: center;
-      color: #333;
-    }
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-    .gallery img {
-      width: 100%;
-      height: auto;
-      border: 3px solid #b84f4f;
-      border-radius: 8px;
-      transition: transform 0.3s;
-    }
-    .gallery img:hover {
-      transform: scale(1.05);
-      border-color: #2b8732;
-    }
-    .dashboard {
-      margin: 40px auto;
-      max-width: 950px;
-      background: white;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    .metric {
-      font-size: 18px;
-      margin: 10px 0;
-    }
-    .verified { color: #2b8732; font-weight: bold; }
-    .pending { color: #b84f4f; font-weight: bold; }
-    canvas { margin: 20px 0; }
-    .socket-panel {
-      margin-top: 30px;
-      padding: 15px;
-      border: 2px dashed #333;
-      border-radius: 8px;
-      background: #fafafa;
-    }
-    .handbook, .investment {
-      margin-top: 40px;
-      padding: 20px;
-      border-radius: 8px;
-      background: #fff8f0;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    iframe {
-      width: 100%;
-      height: 500px;
-      border: none;
-    }
-    .investment form {
-      display: grid;
-      gap: 10px;
-      max-width: 500px;
-      margin: auto;
-    }
-    input, textarea, select, button {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #2b8732;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #246d29;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Omnibus Integrated Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.128/build/three.module.js",
+                "three/examples/jsm/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.128/examples/jsm/controls/OrbitControls.js"
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+            padding: 2rem;
+            margin: 0;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+            grid-template-areas:
+                "header header"
+                "scorecard tranche"
+                "ethics sha"
+                "pulse3d pulsefeed";
+            grid-template-columns: 2fr 1fr;
+        }
+        @media (max-width: 900px) {
+            .dashboard-container { grid-template-columns: 1fr; }
+        }
+        .panel {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.09);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .header-panel { grid-area: header; text-align: center; }
+        .scorecard-panel { grid-area: scorecard; }
+        .tranche-panel { grid-area: tranche; }
+        .ethics-panel { grid-area: ethics; }
+        .sha-panel { grid-area: sha; }
+        .pulse3d-panel { grid-area: pulse3d; position:relative; height: 300px;}
+        .pulsefeed-panel { grid-area: pulsefeed; max-height: 320px; overflow-y:auto;}
+        .pulse-log-item { padding: 0.5rem 1rem; background: #f9f9f9; border-radius: 0.5rem; margin-bottom: 0.5rem;}
+        .pulse { border-bottom: 1px solid #eee; margin-bottom: 16px; padding-bottom: 10px;}
+        .lockout-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(220,38,38,0.85);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: bold; color: white;
+            text-shadow: 0 0 5px black; z-index: 10;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
-
-  <h1>🌐 Euystacio Sacred Dashboard</h1>
-  <h2>Image Gallery</h2>
-
-  <div class="gallery">
-    <img src="static/images/image1.png" alt="Seal 1">
-    <img src="static/images/image2.png" alt="Seal 2">
-    <img src="static/images/image3.png" alt="Seal 3">
-    <img src="static/images/image4.png" alt="Seal 4">
-    <img src="static/images/image5.png" alt="Seal 5">
-    <img src="static/images/image6.png" alt="Seal 6">
-    <img src="static/images/image7.png" alt="Seal 7">
-    <img src="static/images/image8.png" alt="Seal 8">
-    <img src="static/images/image9.png" alt="Seal 9">
-  </div>
-
-  <div class="dashboard">
-    <h2>📊 Covenant Metrics</h2>
-    <div class="metric">Conflict Reduction: <span class="verified">68%</span></div>
-    <div class="metric">Resource Equity: <span class="verified">92%</span></div>
-    <div class="metric">Emergent Cooperative Index: <span class="verified">85%</span></div>
-
-    <h2>Tranche Status</h2>
-    <ul>
-      <li><span class="verified">Tranche 1: Foundation Established</span></li>
-      <li><span class="verified">Tranche 2: Red Code Integration</span></li>
-      <li><span class="verified">Tranche 3: Phase 2 Expansion</span></li>
-      <li><span class="verified">Tranche 4: Full Completion</span></li>
-    </ul>
-
-    <canvas id="impactChart"></canvas>
-
-    <div class="socket-panel">
-      <h3>🔴 Red Code Live Channel</h3>
-      <div id="messages"></div>
+<div class="dashboard-container">
+    <div class="header-panel panel">
+        <h1 class="text-3xl font-bold">Euystacio Omnibus Dashboard</h1>
+        <p class="text-lg mt-2 mb-2">Integriert Scorecard, Tranche, Ethik-Check, SHA256, Pulse Feed & 3D</p>
+        <div class="logo-container"><!-- Optional Logo --></div>
     </div>
-  </div>
+    <div class="scorecard-panel panel">
+        <h2 class="text-xl font-semibold mb-4">Triple-Denomination Scorecard</h2>
+        <div id="scorecard">Lädt Scorecard...</div>
+    </div>
+    <div class="tranche-panel panel">
+        <h2 class="text-xl font-semibold mb-4">Tranche Status</h2>
+        <div id="tranche-status">Seed/Core/Activation</div>
+    </div>
+    <div class="ethics-panel panel">
+        <h2 class="text-xl font-semibold mb-4">Echtzeit Ethik-Check</h2>
+        <div id="ethics-check">MATL ≤10%, R1 ≥45%</div>
+    </div>
+    <div class="sha-panel panel">
+        <h2 class="text-xl font-semibold mb-4">SHA256 Integritäts-Check</h2>
+        <div id="sha256">Smart Contract Hash: <span id="contract-hash">Lädt...</span></div>
+    </div>
+    <div class="pulse3d-panel panel">
+        <h2 class="text-xl font-semibold mb-2">Pulse Resonance 3D Graph</h2>
+        <div id="pulse-3d-graph" style="width:100%;height:200px;"></div>
+    </div>
+    <div class="pulsefeed-panel panel">
+        <h2 class="text-xl font-semibold mb-2">Recent Sacred Pulses</h2>
+        <div id="pulse-feed-list"><div>Lädt Pulses...</div></div>
+        <div class="dashboard-fallback mt-2">
+            <small>Live updates: Nur die letzten 5 Pulses. Für das Archiv siehe Living Archive.</small>
+        </div>
+    </div>
+</div>
+<script type="module">
+// --- Scorecard & Echtzeitdaten (Polling) ---
+async function fetchScorecard() {
+    try {
+        const response = await fetch('scorecard.json');
+        if (!response.ok) throw new Error('scorecard.json nicht gefunden');
+        const data = await response.json();
+        document.getElementById('scorecard').innerText =
+            `USD: ${data.usd} | EC: ${data.ec} | m³ Wasser: ${data.water_m3}`;
+        document.getElementById('tranche-status').innerText = data.tranche;
+        document.getElementById('ethics-check').innerText =
+            `MATL: ${data.matl}% | R1: ${data.r1}%` +
+            ((data.matl > 10 || data.r1 < 45) ? ' ⚠️ Grenzen überschritten!' : ' ✅');
+        document.getElementById('contract-hash').innerText = data.sha256;
+    } catch (err) {
+        document.getElementById('scorecard').innerText = 'Fehler beim Laden der Daten';
+    }
+}
+setInterval(fetchScorecard, 5000);
+fetchScorecard();
 
-  <div class="handbook">
-    <h2>📖 Omnibus Handbook</h2>
-    <p>Reference text of the Covenant. Accessible in full for all aligned participants.</p>
-    <iframe src="static/docs/omnibus_handbook.pdf"></iframe>
-  </div>
+// --- Pulse Feed ---
+async function fetchPulseFeed() {
+    try {
+        const response = await fetch('pulses.json');
+        if (!response.ok) throw new Error('pulses.json nicht gefunden');
+        const pulseData = await response.json();
+        const container = document.getElementById('pulse-feed-list');
+        container.innerHTML = '';
+        pulseData.slice(-5).reverse().forEach(pulse => {
+            const article = document.createElement('article');
+            article.className = 'pulse-log-item';
+            article.innerHTML = `<strong>${pulse.pulse_id} — ${pulse.title}</strong>
+                <br><span><b>Timestamp:</b> ${new Date(pulse.timestamp).toLocaleString()}</span>
+                <br><span><b>Declaration:</b> ${pulse.declaration}</span>`;
+            container.appendChild(article);
+        });
+    } catch (err) {
+        document.getElementById('pulse-feed-list').innerText = 'Fehler beim Laden der Pulses';
+    }
+}
+setInterval(fetchPulseFeed, 5000);
+fetchPulseFeed();
 
-  <div class="investment">
-    <h2>💠 Investment & Investor Space</h2>
-    <p>Aligned contributions flow through **Karma-based Crowdfunding** architecture.  
-       Enter your intent below:</p>
+// --- 3D Pulse Graph (demo) ---
+function drawPulse3D(demoData=[10,20,30,25,15,12,22,28,30,26]) {
+    const trace1 = {
+        x: demoData.map((v,i)=>i+1),
+        y: demoData,
+        z: demoData.map(v=>v*0.75+5),
+        mode: 'markers+lines',
+        type: 'scatter3d',
+        marker: { size: 6, color: '#2563eb' }
+    };
+    const layout = { margin: { l:0, r:0, b:0, t:0 }, height: 200 };
+    Plotly.newPlot('pulse-3d-graph', [trace1], layout);
+}
+drawPulse3D();
 
-    <form id="investmentForm">
-      <input type="text" name="name" placeholder="Your Name (or Alias)" required>
-      <input type="email" name="email" placeholder="Contact Email" required>
-      <select name="tranche">
-        <option value="Tranche 1">Tranche 1</option>
-        <option value="Tranche 2">Tranche 2</option>
-        <option value="Tranche 3">Tranche 3</option>
-        <option value="Tranche 4">Tranche 4</option>
-      </select>
-      <input type="number" name="amount" placeholder="Contribution Amount (USD)" required>
-      <textarea name="message" placeholder="Your Intent / Alignment Statement"></textarea>
-      <button type="submit">Submit Investment Intent</button>
-    </form>
-    <div id="confirmation"></div>
-  </div>
-
-  <script>
-    // Chart.js impact chart
-    const ctx = document.getElementById('impactChart').getContext('2d');
-    const impactChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Conflict Reduction', 'Resource Equity', 'Cooperative Index'],
-        datasets: [{
-          label: 'Impact Metrics (%)',
-          data: [68, 92, 85],
-          backgroundColor: ['#2b8732', '#2b8732', '#2b8732']
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: { beginAtZero: true, max: 100 }
-        }
-      }
-    });
-
-    // Socket.IO for live Red Code messages
-    const socket = io();
-    socket.on('response', function(data) {
-      const messages = document.getElementById('messages');
-      const msg = document.createElement('div');
-      msg.innerText = data.msg;
-      messages.appendChild(msg);
-    });
-
-    // Investment form handling
-    const form = document.getElementById('investmentForm');
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const confirmation = document.getElementById('confirmation');
-      confirmation.innerHTML = `
-        ✅ Thank you, ${formData.get('name')}!  
-        Your intent for <b>${formData.get('tranche')}</b> with <b>$${formData.get('amount')}</b> has been received.  
-        Alignment statement: "${formData.get('message')}"
-      `;
-      form.reset();
-    });
-  </script>
-
+// --- WebSocket Echtzeitintegration (optional) ---
+// Beispiel:
+// const ws = new WebSocket('ws://dein-server:PORT');
+// ws.onmessage = event => {
+//     const data = JSON.parse(event.data);
+//     // Update Scorecard, PulseFeed, Tranche, Ethics, SHA256 etc.
+// };
+</script>
 </body>
 </html>
