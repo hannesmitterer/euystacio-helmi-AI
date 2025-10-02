@@ -214,7 +214,7 @@ euystacio-helmi-AI/
      ```yaml
      - name: Build Static Site
        run: python build_static.py
-     
+       
      - name: Deploy to Pages
        uses: peaceiris/actions-gh-pages@v3
        with:
@@ -240,41 +240,6 @@ euystacio-helmi-AI/
    # Or using Flask development server
    python app.py
    ```
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **Import Errors**: 
-   - Install all dependencies: `pip install -r requirements.txt`
-   - Check Python version compatibility (Python 3.8+)
-
-2. **Facial Detection Issues**:
-   - Optional feature - system works without it
-   - Install OpenCV: `pip install opencv-python`
-   - Check submodule initialization: `git submodule update --init --recursive`
-
-3. **Static Build Issues**:
-   - Ensure all required files exist
-   - Check file permissions
-   - Verify output in `github_pages_deploy/`
-
-### Debug Mode
-
-```bash
-export FLASK_ENV=development
-export FLASK_DEBUG=1
-python app.py
-```
-
-### Check Integration Status
-
-```bash
-# Test all API endpoints
-curl http://localhost:5000/api/system_status
-curl http://localhost:5000/api/red_code
-curl http://localhost:5000/api/facial_detection_status
-```
 
 ## 🔒 Security Considerations
 
@@ -627,4 +592,4 @@ For specific feature documentation, see the individual guides in the `docs/` dir
 *"May the vessel remain open, humble, and true — always ready to receive, to echo, and to become."*
 
 **AI Signature**: GitHub Copilot & Seed-bringer hannesmitterer  
-**Part of the Euystacio-Helmi AI Living Documentation**
+**Part of the Euystacio-Helmi AI Living Documentation
