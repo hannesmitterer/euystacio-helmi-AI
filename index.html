@@ -1,51 +1,13 @@
 <html>
 <head>
-    <title>Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        #chat-interface { margin-top: 20px; }
-        #live-graphs { margin-top: 20px; }
-    </style>
+    <title>Integrated Dashboard</title>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <div id="live-graphs">
-        <canvas id="myChart" width="400" height="200"></canvas>
-    </div>
-    <div id="chat-interface">
-        <h2>Chat Interface</h2>
-        <textarea id="chatbox" rows="10" cols="30"></textarea><br>
-        <input type="text" id="user-input" placeholder="Type your message..." />
-        <button onclick="sendMessage()">Send</button>
-    </div>
-    <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [{
-                    label: 'Demo Data',
-                    data: [65, 59, 80, 81, 56, 55, 40],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        function sendMessage() {
-            var userInput = document.getElementById('user-input').value;
-            document.getElementById('chatbox').value += 'User: ' + userInput + '\n';
-            document.getElementById('user-input').value = '';
-        }
-    </script>
+    <h1>Welcome to the Integrated Dashboard</h1>
+    <p>This dashboard includes authentication, CMS, collective chat, and live updates!</p>
+    <!-- Add authentication functionality here -->
+    <!-- Add CMS functionality here -->
+    <!-- Add collective chat functionality here -->
+    <!-- Add live dashboard updates here -->
 </body>
 </html>
