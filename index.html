@@ -3,6 +3,249 @@
     <title>Integrated Dashboard</title>
 </head>
 <body>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Euystacio-Helmi AI Unified Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f3f6fa; color: #222;}
+    header { background: #25334d; color: #fff; padding: 1.5em 2em; }
+    .container { max-width: 1100px; margin: 2em auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 18px #25334d22; padding: 2em;}
+    h1 { font-size: 2em; margin-bottom: 0.1em;}
+    h2 { margin-top: 2em; font-size: 1.2em; }
+    #graphs { display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-bottom: 2em;}
+    .card { background: #f8fafc; border-radius: 8px; box-shadow: 0 1px 8px #25334d11; padding: 1em;}
+    .section { margin-bottom: 2em;}
+    #chat-container { margin: 2em 0; }
+    #chat { height: 300px; overflow-y: auto; background: #f4f5fb; border-radius: 8px; border: 1px solid #e2e8f0; padding: 1em; margin-bottom: 1em;}
+    .chat-message { margin-bottom: 1em; }
+    .chat-user { font-weight: bold; margin-right: 0.4em;}
+    .chat-assistant { color: #4073c8; }
+    #chat-form { display: flex; gap: 1em; }
+    #chat-input { flex: 1; padding: 0.7em; border-radius: 8px; border: 1px solid #cbd5e1;}
+    #chat-send { background: #25334d; color: #fff; border: none; border-radius: 8px; padding: 0.7em 1.2em; cursor: pointer;}
+    #chat-send:hover { background: #34507b;}
+    .auth-section { margin-bottom: 2em;}
+    .cms-section { margin-bottom: 2em; background:#eef2f7;}
+    .cms-header { font-size:1.1em; margin-bottom:1em;}
+    label {display:block;margin-bottom:0.3em;}
+    input[type="text"],input[type="password"],input[type="email"] {width:100%;padding:0.7em;margin-bottom:1em;border-radius:6px;border:1px solid #cbd5e1;}
+    button[type="submit"] {background:#25334d;color:#fff;border:none;border-radius:8px;padding:0.7em 1.2em;cursor:pointer;}
+    button[type="submit"]:hover {background:#34507b;}
+    .cms-role {font-weight:bold;color:#4073c8;}
+    @media (max-width: 700px) {
+      #graphs { grid-template-columns: 1fr; }
+      .container { padding: 1em;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌱 Euystacio-Helmi AI Unified Dashboard</h1>
+    <div>Live symbiosis metrics, system status, collective chat, CMS, and authentication</div>
+  </header>
+  <div class="container">
+    <!-- AUTHENTICATION -->
+    <div class="auth-section section card">
+      <h2><i class="fa fa-sign-in-alt"></i> Login</h2>
+      <form id="login-form">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" required>
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required>
+        <button type="submit">Login</button>
+      </form>
+      <div id="login-status"></div>
+    </div>
+    <div class="auth-section section card">
+      <h2><i class="fa fa-user-plus"></i> Register</h2>
+      <form id="register-form">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" required>
+        <label for="reg-username">Username</label>
+        <input type="text" id="reg-username" required>
+        <label for="reg-password">Password</label>
+        <input type="password" id="reg-password" required>
+        <button type="submit">Register</button>
+      </form>
+      <div id="register-status"></div>
+    </div>
+    <!-- CMS SECTION -->
+    <div class="cms-section section card">
+      <div class="cms-header"><i class="fa fa-cog"></i> CMS Content Management</div>
+      <div>User Role: <span class="cms-role" id="cms-role">guest</span></div>
+      <div id="cms-content">No content loaded.</div>
+      <button type="button" id="cms-refresh">Refresh Content</button>
+    </div>
+    <!-- DASHBOARD GRAPHS -->
+    <div id="graphs">
+      <div class="card">
+        <h2><i class="fa fa-heartbeat"></i> Symbiosis Level (Live)</h2>
+        <canvas id="symbiosisChart"></canvas>
+      </div>
+      <div class="card">
+        <h2><i class="fa fa-users"></i> Tutor Activity (Live)</h2>
+        <canvas id="tutorChart"></canvas>
+      </div>
+    </div>
+    <!-- COLLECTIVE CHAT -->
+    <div id="chat-container" class="card">
+      <h2><i class="fa fa-comments"></i> Collective Chat Interface</h2>
+      <div id="chat"></div>
+      <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off"/>
+        <button type="submit" id="chat-send"><i class="fa fa-paper-plane"></i> Send</button>
+      </form>
+    </div>
+  </div>
+  <footer style="text-align:center; color:#888; margin:2em 1em 1em;">
+    <small>Euystacio-Helmi AI &mdash; Unified Dashboard | <a href="https://github.com/hannesmitterer/euystacio-helmi-AI" style="color:#4073c8;">GitHub</a></small>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // AUTHENTICATION (Backend endpoints: /api/login, /api/register)
+    let currentUser = null;
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const response = await fetch('/api/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email,password})
+      });
+      const result = await response.json();
+      document.getElementById('login-status').textContent = result.success ? 'Login successful!' : 'Login failed: ' + (result.message || '');
+      if(result.success) {
+        currentUser = result.user;
+        document.getElementById('cms-role').textContent = result.user.role || 'user';
+      }
+    });
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value;
+      const username = document.getElementById('reg-username').value;
+      const password = document.getElementById('reg-password').value;
+      const response = await fetch('/api/register', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email,username,password})
+      });
+      const result = await response.json();
+      document.getElementById('register-status').textContent = result.success ? 'Registration successful!' : 'Registration failed: ' + (result.message || '');
+    });
+
+    // CMS (Backend endpoint: /api/cms/content)
+    async function loadCMSContent() {
+      const response = await fetch('/api/cms/content', {method:'GET'});
+      if(response.ok) {
+        const data = await response.json();
+        document.getElementById('cms-content').textContent = data.content || 'No content available.';
+        if(data.role) document.getElementById('cms-role').textContent = data.role;
+      } else {
+        document.getElementById('cms-content').textContent = 'Error loading content.';
+      }
+    }
+    document.getElementById('cms-refresh').addEventListener('click', loadCMSContent);
+
+    // Live Symbiosis Chart (Backend endpoint: /api/dashboard/symbiosis)
+    async function updateSymbiosisChart() {
+      const response = await fetch('/api/dashboard/symbiosis');
+      const data = response.ok ? await response.json() : {labels:[],levels:[]};
+      symbiosisChart.data.labels = data.labels || [];
+      symbiosisChart.data.datasets[0].data = data.levels || [];
+      symbiosisChart.update();
+    }
+    const symbiosisCtx = document.getElementById('symbiosisChart').getContext('2d');
+    const symbiosisChart = new Chart(symbiosisCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Symbiosis Level',
+          data: [],
+          borderColor: '#4073c8',
+          backgroundColor: '#dbeafe99',
+          tension: 0.4
+        }]
+      },
+      options: {responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 40, max: 100 } } }
+    });
+    setInterval(updateSymbiosisChart, 4000); updateSymbiosisChart();
+
+    // Tutor Activity Chart (Backend endpoint: /api/dashboard/tutor)
+    async function updateTutorChart() {
+      const response = await fetch('/api/dashboard/tutor');
+      const data = response.ok ? await response.json() : {labels:[],activity:[]};
+      tutorChart.data.labels = data.labels || [];
+      tutorChart.data.datasets[0].data = data.activity || [];
+      tutorChart.update();
+    }
+    const tutorCtx = document.getElementById('tutorChart').getContext('2d');
+    const tutorChart = new Chart(tutorCtx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Active Sessions',
+          data: [],
+          backgroundColor: '#4073c8aa'
+        }]
+      },
+      options: {responsive:true, plugins: { legend: { display: false }}, scales: { y: { beginAtZero: true, max: 15 }} }
+    });
+    setInterval(updateTutorChart, 4000); updateTutorChart();
+
+    // Bidirectional Chat Interface (Backend endpoint: /api/chat)
+    const chatDiv = document.getElementById('chat');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    let chatMessages = [];
+    async function loadChatMessages() {
+      const response = await fetch('/api/chat', {method:'GET'});
+      if(response.ok) {
+        chatMessages = await response.json();
+        renderChat();
+      }
+    }
+    function renderChat() {
+      chatDiv.innerHTML = "";
+      chatMessages.forEach(msg => {
+        const m = document.createElement('div');
+        m.className = "chat-message";
+        m.innerHTML = `<span class="chat-user${msg.role === 'assistant' ? ' chat-assistant' : ''}">${msg.user}:</span> <span>${msg.text}</span>`;
+        chatDiv.appendChild(m);
+      });
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+    chatForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const input = chatInput.value.trim();
+      if(input) {
+        // POST to backend
+        const response = await fetch('/api/chat', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({user: currentUser ? currentUser.username : "You", text: input})
+        });
+        if(response.ok) {
+          await loadChatMessages();
+        }
+        chatInput.value = "";
+      }
+    });
+    setInterval(loadChatMessages, 3000); loadChatMessages();
+
+    // Initial CMS load
+    loadCMSContent();
+  </script>
+
+    
+    
     <h1>Welcome to the Integrated Dashboard</h1>
     <p>This dashboard includes authentication, CMS, collective chat, and live updates!</p>
     <!-- Add authentication functionality here -->
