@@ -4,6 +4,42 @@
     <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Euystacio Helmi AI Dashboard</title>
+    <style>
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .gallery img {
+            max-width: 220px;
+            max-height: 220px;
+            border: 2px solid #e9415c;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(233,65,92,0.15);
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+    <div class="gallery">
+        <img src="{{ url_for('static', filename='IMG_1108.png') }}" alt="IMG_1108">
+        <img src="{{ url_for('static', filename='IMG_1113.png') }}" alt="IMG_1113">
+        <img src="{{ url_for('static', filename='IMG_1116.png') }}" alt="IMG_1116">
+        <img src="{{ url_for('static', filename='IMG_1117.png') }}" alt="IMG_1117">
+        <img src="{{ url_for('static', filename='IMG_1127.png') }}" alt="IMG_1127">
+        <img src="{{ url_for('static', filename='IMG_1128.png') }}" alt="IMG_1128">
+        <img src="{{ url_for('static', filename='IMG_1129.png') }}" alt="IMG_1129">
+        <img src="{{ url_for('static', filename='IMG_1143.jpeg') }}" alt="IMG_1143">
+        <img src="{{ url_for('static', filename='IMG_1161.jpeg') }}" alt="IMG_1161">
+        <img src="{{ url_for('static', filename='IMG_1181.jpeg') }}" alt="IMG_1181">
+        <img src="{{ url_for('static', filename='IMG_1207.png') }}" alt="IMG_1207">
+    </div>
+</body>
+</html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Euystacio Omnibus Dashboard</title>
