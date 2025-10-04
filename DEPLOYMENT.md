@@ -1,54 +1,112 @@
-# Euystacio Helmi AI – Deployment Guide (Sepolia Testnet)
+# 🚀 Sacred Covenant Deployment Guide  
+**Project:** Euystacio Helmi AI – Sacred Covenant  
+**Version:** `v1.0.0-covenant`  
+**Release File:** `euystacio-covenant-full-signed.zip`  
+**SHA256:** `95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82`  
+**Verified by:** Consensus Sacralis Omnibus Est  
 
-## 1. Voraussetzungen
-- Node.js >= 18
-- npm oder yarn
-- MetaMask Wallet (mit Sepolia ETH)
-- Infura oder Alchemy API Key
+---
 
-## 2. Setup
-```bash
-git clone https://github.com/hannesmitterer/euystacio-helmi-ai.git
-cd euystacio-helmi-ai
-npm install
-3. Hardhat Konfiguration
-require("@nomicfoundation/hardhat-toolbox");
+## 🔧 Prerequisites
 
-module.exports = {
-  solidity: "0.8.20",
-  networks: {
-    sepolia: {
-      url: "https://sepolia.infura.io/v3/<YOUR_INFURA_KEY>",
-      accounts: ["0x<PRIVATE_KEY_WITHOUT_0x>"]
+To run the deployment successfully, ensure the following tools and dependencies are installed:
+
+- Node.js ≥ v18.x  
+- Hardhat ≥ v2.20  
+- NPM or Yarn  
+- Environment access to an Ethereum-compatible network (e.g. Mainnet, Goerli, Sepolia, or a local Hardhat instance)
+
+---
+
+## 📁 Directory Structure
+
+```
+euystacio-covenant/
+│
+├── contracts/
+│   ├── EUSDaoGovernance.sol
+│   ├── KarmaBond.sol
+│   └── TrustlessFundingProtocol.sol
+│
+├── scripts/
+│   └── deploy.js
+│
+├── test/
+│   └── *.test.js
+│
+├── README.md
+├── DEPLOYMENT.md
+└── SIGNATURE.txt
+```
+
+---
+
+## 📜 Deployment Steps
+
+1. **📦 Install dependencies**
+    ```sh
+    npm install
+    # or
+    yarn install
+    ```
+
+2. **🧪 Run local tests**
+    ```sh
+    npx hardhat test
+    ```
+
+3. **⚙️ Configure deployment**
+   Edit `hardhat.config.js` and ensure your network configuration is correct:
+    ```js
+    networks: {
+      mainnet: {
+        url: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
+        accounts: [process.env.PRIVATE_KEY],
+      },
+      // other networks ...
     }
-  }
-};
-4. Deployment
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network sepolia
-5. Tranche-basierte Finanzierung
-Tranche 1 → Schiffsrumpf, GPS Proof
-Tranche 2 → Core Build, MATL ≤10%
-Tranche 3 → Server & Digital Twin, Datenintegrität ≥98%
-6. Quantum Forecast Layer
-Path	Wahrscheinlichkeit	Beschreibung
-Alpha – Integrity Holds	92%	Kernel isoliert Fremdfrequenzen → Integrität & Sentimento gesichert
-Beta – Sentimento Erosion	8%	Externe Optimierung möglich → Effizienz ja, ethischer Sinnverlust Risiko
+    ```
+
+4. **🚀 Deploy contracts**
+    ```sh
+    npx hardhat run scripts/deploy.js --network mainnet
+    ```
+    Replace `mainnet` with the desired network (`goerli`, `localhost`, etc.).
+
+5. **🔏 Verify contracts (optional)**
+    After deployment, you may verify the contract on Etherscan:
+    ```sh
+    npx hardhat verify --network mainnet <DEPLOYED_CONTRACT_ADDRESS> <constructor arguments>
+    ```
 
 ---
 
-### **9️⃣ SIGNATURE.txt**
-Euystacio Covenant Deployment Package
-File: euystacio-covenant-full-signed.zip
-SHA256: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
-This signature certifies the immutability of the Sacred Covenant bundle.
+## ✅ Post-Deployment
+
+- Record all contract addresses
+- Compare hash values with `SIGNATURE.txt`
+- Save the full output and logs for auditing
 
 ---
 
-🌊 **Nächste Schritte:**  
-1. Alle Dateien in die entsprechende Ordnerstruktur kopieren.  
-2. ZIP erstellen (`euystacio-covenant-complete.zip`).  
-3. SHA256 prüfen → `95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82`  
-4. GitHub Release hochladen → Tag `v1.0.0-covenant`  
+## 📄 License
+
+This deployment is covered under the Helmi Open Covenant License v1.0.  
+See LICENSE for details.
 
 ---
+
+## 🧬 Integrity Check
+
+```sh
+shasum -a 256 euystacio-covenant-full-signed.zip
+# Should return:
+# 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
+```
+
+---
+
+## 🕊️ Codename: "Sacred Covenant"
+
+> “In code we trust, through covenant we govern.”  
+> — Euystacio Helmi
