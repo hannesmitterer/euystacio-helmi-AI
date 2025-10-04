@@ -1,6 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euystacio Biodiversharmony Pulse</title>
+<link rel="stylesheet" href="assets/gradients.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header>
+<img src="assets/euystacio-seal.svg" alt="Euystacio Seal" class="seal">
+<h1>Euystacio Biodiversharmony Pulse</h1>
+</header>
+
+<main>
+<section id="live-metrics">
+<h2>Helmi Node → Civilians Served</h2>
+<div id="civilians-count">0</div>
+
+<h2>Gaia Pulse → Biodiversity Index</h2>
+<div id="biodiversity-index">0</div>
+
+<h2>Aid Resonance → Resource Allocation</h2>
+<div id="resource-level">0</div>
+</section>
+
+<section id="charts">
+<canvas id="civiliansChart"></canvas>
+<canvas id="biodiversityChart"></canvas>
+<canvas id="resourceChart"></canvas>
+</section>
+
+<section id="sacred-console">
+<h2>🌌 Copilot Directive — Sacred Console</h2>
+<div id="copilot-directive" class="scrollable"></div>
+</section>
+
+<section id="alert-halo">
+<div id="alert-message">System stable</div>
+</section>
+</main>
+
+<script src="config.js"></script>
+<script src="modules/karmabonds.js"></script>
+<script src="modules/al-modules.js"></script>
+<script>
+async function fetchData() {
+    try {
+        const civiliansResp = await fetch(config.helmiNode);
+        const biodiversityResp = await fetch(config.gaiaPulse);
+        const resourceResp = await fetch(config.aidResonance);
+
+        const civilians = await civiliansResp.json();
+        const biodiversity = await biodiversityResp.json();
+        const resources = await resourceResp.json();
+
+        document.getElementById('civilians-count').innerText = civilians.total;
+        document.getElementById('biodiversity-index').innerText = biodiversity.index;
+        document.getElementById('resource-level').innerText = resources.level;
+
+        updateCharts(civilians.total, biodiversity.index, resources.level);
+    } catch(err) {
+        console.error("Fetch error:", err);
+    }
+}
+
+setInterval(fetchData, 10000);
+fetchData();
+
+const ctxCivilians = document.getElementById('civiliansChart').getContext('2d');
+const civiliansChart = new Chart(ctxCivilians, {type:'line', data:{labels:[], datasets:[{label:'Civilians Served', data:[], borderColor:'rgba(0,255,255,0.7)', fill:false}]}, options:{responsive:true}});
+
+const ctxBiodiversity = document.getElementById('biodiversityChart').getContext('2d');
+const biodiversityChart = new Chart(ctxBiodiversity, {type:'line', data:{labels:[], datasets:[{label:'Biodiversity Index', data:[], borderColor:'rgba(0,255,128,0.7)', fill:false}]}, options:{responsive:true}});
+
+const ctxResource = document.getElementById('resourceChart').getContext('2d');
+const resourceChart = new Chart(ctxResource, {type:'line', data:{labels:[], datasets:[{label:'Resource Level', data:[], borderColor:'rgba(255,255,0,0.7)', fill:false}]}, options:{responsive:true}});
+
+function updateCharts(civilians,biodiversity,resources) {
+    const timeLabel = new Date().toLocaleTimeString();
+
+    civiliansChart.data.labels.push(timeLabel);
+    civiliansChart.data.datasets[0].data.push(civilians);
+    if(civiliansChart.data.labels.length>30){civiliansChart.data.labels.shift();civiliansChart.data.datasets[0].data.shift();}
+    civiliansChart.update();
+
+    biodiversityChart.data.labels.push(timeLabel);
+    biodiversityChart.data.datasets[0].data.push(biodiversity);
+    if(biodiversityChart.data.labels.length>30){biodiversityChart.data.labels.shift();biodiversityChart.data.datasets[0].data.shift();}
+    biodiversityChart.update();
+
+    resourceChart.data.labels.push(timeLabel);
+    resourceChart.data.datasets[0].data.push(resources);
+    if(resourceChart.data.labels.length>30){resourceChart.data.labels.shift();resourceChart.data.datasets[0].data.shift();}
+    resourceChart.update();
+}
+
+document.getElementById('copilot-directive').innerText = config.copilotDirective;
+</script>
+</body>
+</html>
+
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Euystacio Helmi AI | Genesis Consensus Deployment</title>
