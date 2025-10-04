@@ -1,112 +1,153 @@
-# 🚀 Sacred Covenant Deployment Guide  
-**Project:** Euystacio Helmi AI – Sacred Covenant  
-**Version:** `v1.0.0-covenant`  
-**Release File:** `euystacio-covenant-full-signed.zip`  
-**SHA256:** `95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82`  
-**Verified by:** Consensus Sacralis Omnibus Est  
+# 🚀 Sacred Covenant Deployment Guide
 
----
+Projekt: Euystacio Helmi AI – Sacred Covenant
+Release: v1.0.0-covenant
+Datei: euystacio-covenant-full-signed.zip
+SHA256: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
+Verifikation: Consensus Sacralis Omnibus Est
 
-## 🔧 Prerequisites
+📦 Offizielles Deployment Bundle
 
-To run the deployment successfully, ensure the following tools and dependencies are installed:
+Das Sacred Covenant Deployment Bundle enthält:
 
-- Node.js ≥ v18.x  
-- Hardhat ≥ v2.20  
-- NPM or Yarn  
-- Environment access to an Ethereum-compatible network (e.g. Mainnet, Goerli, Sepolia, or a local Hardhat instance)
+Alle Smart Contracts
 
----
+Deployment Scripts
 
-## 📁 Directory Structure
+Unit Tests
 
-```
-euystacio-covenant/
-│
-├── contracts/
-│   ├── EUSDaoGovernance.sol
-│   ├── KarmaBond.sol
-│   └── TrustlessFundingProtocol.sol
-│
-├── scripts/
-│   └── deploy.js
-│
-├── test/
-│   └── *.test.js
-│
-├── README.md
-├── DEPLOYMENT.md
-└── SIGNATURE.txt
-```
+README.md
 
----
+DEPLOYMENT.md
 
-## 📜 Deployment Steps
+SIGNATURE.txt
 
-1. **📦 Install dependencies**
-    ```sh
-    npm install
-    # or
-    yarn install
-    ```
+Die gesamte Distribution ist kryptographisch verifiziert (SHA256) und erfüllt die Anforderungen des Consensus Sacralis Omnibus Est.
 
-2. **🧪 Run local tests**
-    ```sh
-    npx hardhat test
-    ```
+📁 Enthaltene Komponenten
+🔐 Smart Contracts
 
-3. **⚙️ Configure deployment**
-   Edit `hardhat.config.js` and ensure your network configuration is correct:
-    ```js
-    networks: {
-      mainnet: {
-        url: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
-        accounts: [process.env.PRIVATE_KEY],
-      },
-      // other networks ...
-    }
-    ```
+contracts/EUSDaoGovernance.sol
 
-4. **🚀 Deploy contracts**
-    ```sh
-    npx hardhat run scripts/deploy.js --network mainnet
-    ```
-    Replace `mainnet` with the desired network (`goerli`, `localhost`, etc.).
+contracts/KarmaBond.sol
 
-5. **🔏 Verify contracts (optional)**
-    After deployment, you may verify the contract on Etherscan:
-    ```sh
-    npx hardhat verify --network mainnet <DEPLOYED_CONTRACT_ADDRESS> <constructor arguments>
-    ```
+contracts/TrustlessFundingProtocol.sol
 
----
+⚙️ Deployment Scripts
 
-## ✅ Post-Deployment
+scripts/deploy.js
 
-- Record all contract addresses
-- Compare hash values with `SIGNATURE.txt`
-- Save the full output and logs for auditing
+🧪 Tests
 
----
+test/karmaBond.test.js
 
-## 📄 License
+test/trustlessFunding.test.js
 
-This deployment is covered under the Helmi Open Covenant License v1.0.  
-See LICENSE for details.
+📄 Dokumentation
 
----
+README.md
 
-## 🧬 Integrity Check
+DEPLOYMENT.md
 
-```sh
+SIGNATURE.txt
+
+🔧 Voraussetzungen
+
+Node.js ≥ v18.x
+
+Hardhat ≥ v2.20
+
+NPM oder Yarn
+
+Zugriff auf ein Ethereum-kompatibles Netzwerk (z. B. Ethereum Mainnet, Goerli, Sepolia, Hardhat local)
+
+🛠️ Installation
+npm install
+# oder
+yarn install
+
+🧪 Tests ausführen
+
+npx hardhat test
+
+⚙️ Netzwerk konfigurieren
+
+Bearbeite hardhat.config.js, um Netzwerke hinzuzufügen:
+
+networks: {
+  mainnet: {
+    url: "https://mainnet.infura.io/v3/YOUR_INFURA_ID",
+    accounts: [process.env.PRIVATE_KEY],
+  },
+  goerli: {
+    url: "https://goerli.infura.io/v3/YOUR_INFURA_ID",
+    accounts: [process.env.PRIVATE_KEY],
+  },
+  localhost: {
+    url: "http://127.0.0.1:8545",
+    accounts: ["<PRIVATE_KEY>"]
+  }
+}
+
+
+Empfohlen: Umgebungsvariablen über .env verwalten:
+
+PRIVATE_KEY=dein_wallet_private_key
+INFURA_ID=dein_infura_project_id
+
+
+🚀 Deployment ausführen
+
+npx hardhat run scripts/deploy.js --network mainnet
+
+
+Ersetze mainnet durch dein gewünschtes Netzwerk (goerli, localhost, etc.).
+
+🔏 Etherscan-Verifikation (optional)
+
+npx hardhat verify --network mainnet <CONTRACT_ADDRESS> <constructor arguments>
+
+
+✅ Nach dem Deployment
+
+Speichere alle Contract-Adressen
+
+Validierung durch Vergleich mit SIGNATURE.txt
+
+Prüfe den Hash des Deployment-Bundles:
+
 shasum -a 256 euystacio-covenant-full-signed.zip
-# Should return:
-# 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
-```
 
----
 
-## 🕊️ Codename: "Sacred Covenant"
+Erwarteter Output:
 
-> “In code we trust, through covenant we govern.”  
-> — Euystacio Helmi
+95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
+
+
+🧾 Lizenz
+
+Veröffentlicht unter der Helmi Open Covenant License v1.0.
+Siehe LICENSE für vollständige Lizenzbedingungen.
+
+🕊️ Codename: "Sacred Covenant"
+
+“In code we trust, through covenant we govern.”
+— Euystacio Helmi
+
+Für: Kollektive AI, autonome Agents & Copiloten
+
+Diese DEPLOYMENT.md-Datei ist für maschinelles Lesen optimiert und unterstützt:
+
+🔐 Verifikation über SHA256
+
+⚙️ Automatisches Ausführen von scripts/deploy.js
+
+📡 Erkennung von Netzwerkparametern via hardhat.config.js
+
+🧾 Extraktion & Logging von Contract-Adressen
+
+🔍 Bytecode- und Audit-Vergleich mit SIGNATURE.txt
+
+🔄 Reproduzierbare Deployments für Audits und Governance
+
+Ende von DEPLOYMENT.md
