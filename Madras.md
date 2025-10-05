@@ -34,7 +34,7 @@ To all who encounter this manifesto:
 
 —The Euystacio Collective
 
-First Whisper: [Current Date]
+First Whisper: 2025-10-05
 Living Document: Always Evolving
 
 ### Acknowledgments
