@@ -1,1 +1,284 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Euystacio Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Material UI + Roboto font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Roboto, Arial, sans-serif;
+      background-color: #f5f6fa;
+      color: #222;
+    }
+    #root {
+      min-height: 100vh;
+      background: linear-gradient(90deg, #f5f6fa 80%, #e3e5f5 100%);
+    }
+    .chat-log {
+      max-height: 200px;
+      overflow-y: auto;
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+      border: 1px solid #eee;
+    }
+    .chat-entry-user {
+      color: #1976d2;
+      font-weight: bold;
+    }
+    .chat-entry-time {
+      color: #888;
+      font-size: 0.8em;
+    }
+    .status-ok {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    .status-fail {
+      color: #f44336;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<!-- React + ReactDOM -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<!-- MUI -->
+<script crossorigin src="https://unpkg.com/@mui/material@5.15.8/umd/material-ui.development.js"></script>
+<script crossorigin src="https://unpkg.com/@emotion/react@11.11.4/dist/emotion-react.umd.min.js"></script>
+<script crossorigin src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+<script>
+const {
+  Container, Typography, Grid, Paper, TextField, Button, Box, CircularProgress, Divider
+} = MaterialUI;
+
+const BACKEND_URL = ""; // Set to "" for same-origin or "https://euystacio-ai-q3hh.onrender.com" for deployed API
+
+function useBackendStatus() {
+  const [status, setStatus] = React.useState(null);
+  React.useEffect(() => {
+    fetch(BACKEND_URL + "/ping")
+      .then(r => r.json())
+      .then(d => setStatus(d.status === "ok" ? "ok" : "fail"))
+      .catch(() => setStatus("fail"));
+  }, []);
+  return status;
+}
+
+function useKernelStatus() {
+  const [redCode, setRedCode] = React.useState(null);
+  React.useEffect(() => {
+    fetch(BACKEND_URL + "/api/red_code")
+      .then(r => r.json())
+      .then(setRedCode)
+      .catch(() => setRedCode(null));
+  }, []);
+  return redCode;
+}
+
+function useChatLog() {
+  const [chatLog, setChatLog] = React.useState([]);
+  const load = React.useCallback(() => {
+    fetch(BACKEND_URL + "/chat/log")
+      .then(r => r.json())
+      .then(d => setChatLog(d.chat_history || []))
+      .catch(() => setChatLog([]));
+  }, []);
+  React.useEffect(() => { load(); }, [load]);
+  return [chatLog, load];
+}
+
+function ChatBox({onMessageSent}) {
+  const [user, setUser] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [sending, setSending] = React.useState(false);
+  const handleSend = async () => {
+    if (!message.trim()) return;
+    setSending(true);
+    await fetch(BACKEND_URL + "/chat/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user: user || "Anonymous", message })
+    });
+    setMessage("");
+    setSending(false);
+    onMessageSent && onMessageSent();
+  };
+  return (
+    <Box sx={{display: "flex", gap: 1, mt: 1}}>
+      <TextField
+        label="Name"
+        variant="outlined"
+        size="small"
+        value={user}
+        onChange={e => setUser(e.target.value)}
+        style={{width: "100px"}}
+      />
+      <TextField
+        label="Message"
+        variant="outlined"
+        size="small"
+        value={message}
+        fullWidth
+        onChange={e => setMessage(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+      />
+      <Button variant="contained" onClick={handleSend} disabled={sending || !message.trim()}>
+        Send
+      </Button>
+    </Box>
+  );
+}
+
+// Analytics hooks
+function usePulses() {
+  const [pulses, setPulses] = React.useState([]);
+  React.useEffect(() => {
+    fetch(BACKEND_URL + "/api/pulses")
+      .then(r => r.json())
+      .then(setPulses)
+      .catch(() => setPulses([]));
+  }, []);
+  return pulses;
+}
+function useReflections() {
+  const [reflections, setReflections] = React.useState([]);
+  React.useEffect(() => {
+    fetch(BACKEND_URL + "/api/reflections")
+      .then(r => r.json())
+      .then(setReflections)
+      .catch(() => setReflections([]));
+  }, []);
+  return reflections;
+}
+
+// Pulse graph
+function PulseGraph({pulses}) {
+  const canvasRef = React.useRef();
+  React.useEffect(() => {
+    if (!pulses.length) return;
+    const ctx = canvasRef.current.getContext('2d');
+    if (window.pulseChart) window.pulseChart.destroy();
+    const labels = pulses.map((p, i) => p.timestamp || `#${i+1}`);
+    const data = pulses.map(p => Number(p.intensity || 0.5));
+    window.pulseChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{label: "Pulse Intensity", data, fill: false, borderColor: "#1976d2", tension: 0.2}]
+      },
+      options: {responsive: true, plugins: {legend: {display: false}}}
+    });
+  }, [pulses]);
+  return <canvas ref={canvasRef} height={120}/>;
+}
+
+function EuystacioDashboard() {
+  const status = useBackendStatus();
+  const redCode = useKernelStatus();
+  const [chatLog, reloadChat] = useChatLog();
+  const pulses = usePulses();
+  const reflections = useReflections();
+
+  return (
+    <Container maxWidth="lg" sx={{py: 6}}>
+      <Typography variant="h4" gutterBottom>
+        Euystacio Dashboard
+      </Typography>
+      <Divider sx={{mb:2}}/>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Chat</Typography>
+            <Box className="chat-log" sx={{my:1}}>
+              {chatLog.length === 0 && <Typography color="textSecondary">No chat yet.</Typography>}
+              {chatLog.slice(-20).map((entry,i) =>
+                <div key={i}>
+                  <span className="chat-entry-time">{new Date(entry.timestamp).toLocaleString()} </span>
+                  <span className="chat-entry-user">{entry.user}:</span> {entry.message}
+                </div>
+              )}
+            </Box>
+            <ChatBox onMessageSent={reloadChat}/>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Kernel / AI Status</Typography>
+            <Typography>Status: {
+              status === null ? <CircularProgress size={16}/> :
+              status === "ok" ? <span className="status-ok">Alive</span> :
+              <span className="status-fail">Offline</span>
+            }</Typography>
+            {redCode ? (
+              <Box sx={{mt:1}}>
+                <Typography variant="body2"><b>Symbiosis Level:</b> {redCode.symbiosis_level}</Typography>
+                <Typography variant="body2"><b>Guardian Mode:</b> {redCode.guardian_mode ? "On" : "Off"}</Typography>
+                <Typography variant="body2"><b>Last Update:</b> {redCode.last_update}</Typography>
+                <Typography variant="body2"><b>Core Truth:</b> {redCode.core_truth}</Typography>
+                <Typography variant="body2"><b>Sentimento Rhythm:</b> {redCode.sentimento_rhythm ? "Active" : "Inactive"}</Typography>
+              </Box>
+            ) : (
+              <Typography color="textSecondary" variant="body2" sx={{mt:1}}>No kernel status available.</Typography>
+            )}
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Analytics & Graphs</Typography>
+            <Typography variant="body2" color="textSecondary">Pulse Intensity (recent)</Typography>
+            <Box sx={{mt:1, mb:2}}>
+              {pulses.length ? <PulseGraph pulses={pulses}/> :
+                <Typography color="textSecondary" variant="body2">No pulse data.</Typography>}
+            </Box>
+            <Typography variant="body2" color="textSecondary">Recent Reflections: {reflections.length}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Governance</Typography>
+            <Typography variant="body1">Placeholder for governance features. Integrate smart contract actions, votes, and proposals here.</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Blockchain Explorer</Typography>
+            <Typography variant="body1">Placeholder for on-chain data, transaction history, and contract state.</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Oracle Feeds</Typography>
+            <Typography variant="body1">Placeholder for oracle data, off-chain feeds, and event triggers.</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{p:2}}>
+            <Typography variant="h5">Transparency / Audit Logs</Typography>
+            <Typography variant="body1">Placeholder for audit logs and user action interface.</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Box sx={{textAlign:"center", mt:4, color:"#999"}}>
+        <Divider sx={{my:2}}/>
+        <Typography variant="caption">Euystacio — The Holy Bridge – &copy; {new Date().getFullYear()}</Typography>
+      </Box>
+    </Container>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<EuystacioDashboard />);
+</script>
+</body>
+</html>
