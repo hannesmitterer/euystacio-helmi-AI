@@ -25,3 +25,5 @@ Es ist SHA256-verifiziert und entspricht dem Consensus Sacralis Omnibus Est.
 - README.md
 - DEPLOYMENT.md
 - SIGNATURE.txt
+
+  Euystacio AI and related systems, committed to help humans to be humans and remain humans.
