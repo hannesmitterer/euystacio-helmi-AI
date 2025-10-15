@@ -18,6 +18,7 @@ contract EUSDaoGovernance is ERC20, Ownable {
     }
 
     function votingPower(address user) public view returns (uint256) {
+        // voting power = balance * (1 + contributionScore)
         return balanceOf(user) * (contributionScore[user] + 1);
     }
 }

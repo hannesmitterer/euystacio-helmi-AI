@@ -1,29 +1,28 @@
-# Euystacio Helmi AI – Sacred Covenant Deployment
+# Euystacio Helmi AI — Full Bundle (Real Crypto Flow)
 
-## 📦 Offizielles Deployment Bundle
-Das Sacred Covenant Deployment Bundle enthält alle Smart Contracts, Deployment Scripts, Tests, README, DEPLOYMENT.md und SIGNATURE.txt.
-Es ist SHA256-verifiziert und entspricht dem Consensus Sacralis Omnibus Est.
+This bundle contains smart contracts, frontend and scripts for the Euystacio Omnibus release.
 
-- Release: [v1.0.0-covenant](https://github.com/hannesmitterer/euystacio-helmi-ai/releases/tag/v1.0.0-covenant)
-- Datei: euystacio-covenant-full-signed.zip
-- SHA256: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
-
-## 📜 Enthaltene Komponenten
-### Smart Contracts
-- EUSDaoGovernance.sol
-- KarmaBond.sol
-- TrustlessFundingProtocol.sol
-
-### Scripts
+**Files**
+- contracts/
+  - EUSDaoGovernance.sol
+  - KarmaBond.sol
+  - TrustlessFundingProtocol.sol
 - scripts/deploy.js
-
-### Tests
-- test/karmaBond.test.js
-- test/trustlessFunding.test.js
-
-### Dokumentation
+- frontend/
+  - index.html
+  - main.js
 - README.md
-- DEPLOYMENT.md
+- manifest.json
 - SIGNATURE.txt
 
-  Euystacio AI and related systems, committed to help humans to be humans and remain humans.
+**Quick notes**
+- Configure your `hardhat.config.js` for Sepolia.
+- Deploy contracts with Hardhat, then update `frontend/main.js` with addresses.
+- The frontend uses MetaMask + ethers.js to perform real-value transactions:
+  - `KarmaBond.invest()` sends ETH (real crypto if on mainnet)
+  - `TrustlessFundingProtocol.releaseTranche()` is admin-only (use multisig)
+
+**Security**
+- DO NOT deploy to mainnet without audit.
+- Use multisig for foundation wallet.
+- Proof uploading should be EIP-712 signed in production.

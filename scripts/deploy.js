@@ -1,28 +1,31 @@
-const { ethers } = require("hardhat");
+const hre = require("hardhat");
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  const [deployer] = await hre.ethers.getSigners();
   console.log("Deploying with:", deployer.address);
 
-  const foundation = "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b";
+  const foundation = "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b"; // replace with Gnosis Safe in real use
 
-  const Governance = await ethers.getContractFactory("EUSDaoGovernance");
+  const Governance = await hre.ethers.getContractFactory("EUSDaoGovernance");
   const governance = await Governance.deploy();
   await governance.deployed();
-  console.log("EUSDaoGovernance at:", governance.address);
+  console.log("EUSDaoGovernance:", governance.address);
 
-  const Bond = await ethers.getContractFactory("KarmaBond");
-  const bond = await Bond.deploy(foundation, governance.address);
-  await bond.deployed();
-  console.log("KarmaBond at:", bond.address);
+  const KarmaBond = await hre.ethers.getContractFactory("KarmaBond");
+  const karmabond = await KarmaBond.deploy(foundation);
+  await karmabond.deployed();
+  console.log("KarmaBond:", karmabond.address);
 
-  const Trustless = await ethers.getContractFactory("TrustlessFundingProtocol");
+  const Trustless = await hre.ethers.getContractFactory("TrustlessFundingProtocol");
   const trustless = await Trustless.deploy(foundation);
   await trustless.deployed();
-  console.log("TrustlessFundingProtocol at:", trustless.address);
+  console.log("TrustlessFundingProtocol:", trustless.address);
+
+  // Print artifacts for front-end
+  console.log("Save these addresses to your front-end config.");
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
 });

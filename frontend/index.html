@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Euystacio Helmi AI — Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 18px; background:#f4f7f9; color:#0b2540; }
+    .card { background:#fff; padding:12px 16px; border-radius:8px; margin-bottom:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+    button{ background:#0f766e; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;}
+    input, select { padding:8px; border-radius:6px; border:1px solid #dbe7e2; }
+    .monos { font-family: monospace; background:#f3faf8; padding:6px; border-radius:4px; }
+    .events { max-height:240px; overflow:auto; background:#fcfffe; padding:8px; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <h1>Euystacio Helmi AI — Dashboard</h1>
+
+  <div class="card">
+    <strong>Wallet:</strong> <span id="address">Not connected</span>
+    <button id="connectBtn">Connect MetaMask</button>
+  </div>
+
+  <div class="card">
+    <h3>Invest (KarmaBond)</h3>
+    <p>Contract Address: <span id="bondAddress" class="monos">paste address</span></p>
+    <div>
+      <label>Amount (ETH): <input id="investAmt" value="0.01"/></label>
+      <button id="investBtn">Invest</button>
+    </div>
+    <p id="investStatus"></p>
+  </div>
+
+  <div class="card">
+    <h3>Seed Council — Upload Proof (admin)</h3>
+    <p>TrustlessFundingProtocol Address: <span id="trustAddress" class="monos">paste address</span></p>
+    <label>Tranche ID: <input id="trancheId" value="1" type="number"/></label>
+    <label>Proof text: <input id="proofText" value="GPS_PROOF_TRANCHE_1"/></label>
+    <button id="releaseBtn">Release Tranche (send proofHash)</button>
+    <p id="releaseStatus"></p>
+  </div>
+
+  <div class="card">
+    <h3>Events & Scorecard</h3>
+    <div class="events" id="events"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
