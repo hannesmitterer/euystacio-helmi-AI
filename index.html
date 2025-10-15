@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Euystacio Helmi AI — Omnibus Landing</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Euystacio Helmi AI — Omnibus Landing. Ethics-first sovereign node framework.">
+  <style>
+    /* ...[previous CSS omitted for brevity, same as previous block]... */
+    /* (Paste previous CSS here unchanged) */
+
+    /* --- DASHBOARD STYLES --- */
+    .dashboard-container {
+      max-width: 1100px;
+      margin: 40px auto 0 auto;
+      background: #fafbfc;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(15,23,42,0.07);
+      padding: 32px 16px 32px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .dashboard-section {
+      flex: 1 1 320px;
+      min-width: 300px;
+      margin-bottom: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 24px 18px 16px 18px;
+      position: relative;
+    }
+    .dashboard-section h2 {
+      color: var(--accent);
+      margin-top: 0;
+      font-size: 1.2em;
+      margin-bottom: 12px;
+    }
+    /* Chat */
+    .chat-log {
+      height: 220px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      background: #f5f7fa;
+      margin-bottom: 12px;
+      font-size: 1em;
+    }
+    .chat-msg {
+      margin: 0 0 10px 0;
+      line-height: 1.45;
+    }
+    .chat-msg .sender {
+      font-weight: bold;
+      margin-right: 6px;
+      color: #0f766e;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input-row input[type="text"] {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      padding: 9px 12px;
+      font-size: 1em;
+      outline: none;
+      background: #f9fafb;
+      color: #22223b;
+    }
+    .chat-input-row button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0 16px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .chat-input-row button:hover {
+      background: #0b5e57;
+    }
+    /* 3D Chart */
+    #three-canvas {
+      width: 100%;
+      height: 260px;
+      display: block;
+      background: #f7fafc;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin: 0 auto;
+      margin-bottom: 8px;
+    }
+    .chart-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+    .chart-controls select, .chart-controls button {
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      background: #f5f7fa;
+      color: #22223b;
+    }
+    .chart-controls button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 6px 18px;
+      transition: background 0.13s;
+    }
+    .chart-controls button:hover {
+      background: #0b5e57;
+    }
+    @media (max-width: 950px) {
+      .dashboard-container { flex-direction: column; }
+      .dashboard-section { width: 100%; min-width: 0; margin-bottom: 20px; }
+    }
+  </style>
+</head>
+<body>
+<!-- ...[existing content omitted for brevity, same as previous block]... -->
+
+<!-- DASHBOARD SECTION -->
+<div class="dashboard-container">
+  <!-- Live Chat -->
+  <div class="dashboard-section" style="max-width:430px;">
+    <h2>Live Chat</h2>
+    <div class="chat-log" id="chat-log"></div>
+    <form class="chat-input-row" id="chat-form" autocomplete="off">
+      <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <!-- 3D Kernel State Chart -->
+  <div class="dashboard-section" style="min-width:340px;">
+    <h2>Kernel State 3D Chart</h2>
+    <div class="chart-controls">
+      <select id="chart-mode">
+        <option value="network">Network</option>
+        <option value="sphere">Sphere</option>
+      </select>
+      <button id="reset-chart-btn" type="button">Reset</button>
+    </div>
+    <canvas id="three-canvas"></canvas>
+  </div>
+</div>
+
+<!-- ...[rest of the landing page as before]... -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* --- LIVE CHAT --- */
+const chatLog = document.getElementById('chat-log');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+
+// Mocked AI response for demonstration
+function aiResponse(userMsg) {
+  if (userMsg.toLowerCase().includes('hello')) return "Hello! How can I assist you?";
+  if (userMsg.toLowerCase().includes('help')) return "Sure! Ask me anything about the dashboard or the project.";
+  if (userMsg.toLowerCase().includes('trust')) return "The current kernel trust value is stable. You can send a pulse to influence it.";
+  return "Received: " + userMsg;
+}
+function addMsg(sender, text) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  div.innerHTML = `<span class="sender">${sender}:</span> ${text}`;
+  chatLog.appendChild(div);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+chatForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const val = chatInput.value.trim();
+  if (!val) return;
+  addMsg('You', val);
+  chatInput.value = '';
+  setTimeout(() => addMsg('AI', aiResponse(val)), 700);
+});
+
+/* --- 3D CHARTS (KERNEL NETWORK/SPHERE) --- */
+let scene, camera, renderer, animationId, kernelParticles = [];
+const canvas = document.getElementById('three-canvas');
+const chartModeSelect = document.getElementById('chart-mode');
+const resetBtn = document.getElementById('reset-chart-btn');
+
+function init3DChart(mode = 'network') {
+  if (renderer) {
+    cancelAnimationFrame(animationId);
+    renderer.dispose();
+    renderer.forceContextLoss();
+    canvas.width = canvas.width; // Clear canvas
+  }
+  // Scene setup
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setClearColor(0xf7fafc, 1);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  camera.position.z = 13;
+  // Kernel node
+  const geometry = new THREE.SphereGeometry(2, 32, 32);
+  const material = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.13 });
+  const kernelCore = new THREE.Mesh(geometry, material);
+  scene.add(kernelCore);
+  // Particles
+  kernelParticles = [];
+  const numParticles = 220;
+  const pGeom = new THREE.SphereGeometry(0.19, 10, 10);
+  for (let i = 0; i < numParticles; i++) {
+    const pm = new THREE.MeshBasicMaterial({ color: 0x0f766e, opacity: 0.8, transparent: true });
+    const p = new THREE.Mesh(pGeom, pm);
+    let phi = Math.random() * Math.PI * 2;
+    let theta = Math.random() * Math.PI;
+    let r = 5.7 + Math.random() * 1.6;
+    if (mode === 'network') {
+      // network: random shell, sphere: uniform shell
+      r = 5.7 + Math.random() * 1.6;
+    } else {
+      r = 6.3;
+      phi = 2 * Math.PI * (i / numParticles);
+      theta = Math.acos(2 * (i / numParticles) - 1);
+    }
+    p.position.set(
+      r * Math.sin(theta) * Math.cos(phi),
+      r * Math.sin(theta) * Math.sin(phi),
+      r * Math.cos(theta)
+    );
+    kernelParticles.push(p);
+    scene.add(p);
+  }
+  // Animate
+  let t = 0;
+  function animate() {
+    t += 0.01;
+    kernelCore.rotation.y += 0.004;
+    for (let i = 0; i < kernelParticles.length; i++) {
+      const p = kernelParticles[i];
+      if (mode === 'network') {
+        p.position.x += Math.sin(t + i) * 0.002;
+        p.position.y += Math.cos(t - i) * 0.002;
+      } else {
+        p.position.x += Math.sin(t + i) * 0.001;
+      }
+    }
+    renderer.render(scene, camera);
+    animationId = requestAnimationFrame(animate);
+  }
+  animate();
+}
+// Responsive
+window.addEventListener('resize', () => {
+  if (!renderer || !camera) return;
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height, false);
+});
+chartModeSelect.addEventListener('change', e => init3DChart(e.target.value));
+resetBtn.addEventListener('click', () => init3DChart(chartModeSelect.value));
+init3DChart('network');
+</script>
+<!-- ...[rest of the landing page, including Omnibus dark section and footer, as before]... -->
+</body>
+</html>
