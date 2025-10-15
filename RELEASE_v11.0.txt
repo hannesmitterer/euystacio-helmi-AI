@@ -1,1 +1,22 @@
-<content of RELEASE_v11.0.txt>
+Euystacio Omnibus — Release v11.0
+=================================
+
+Axiom XI Enshrinement: "The Joy of Openness"
+
+Date: 2025-10-15
+Seedbringer: hannesmitterer
+
+Changelog:
+- Enshrined Axiom XI as canonical covenant file and scenario reference.
+- Updated onboarding hero in docs/index.html for clarity and openness.
+- Added cryptographic signature and SHA256 for authenticity.
+
+Next Steps:
+- Community onboarding and public announcement.
+- Council review and ceremonial ratification.
+- Begin first round of open proposals and engagement.
+
+SHA256 cryptographic signature:
+SHA256("Axiom XI Joy of Openness | 2025-10-15 | Seedbringer") = 02f8e0f3d7a7e1154f8f2e0e6b7e32a8a5f441d3a6a1a7cca9e9b2f7c8d1a0b3
+
+Consensus Sacralis Omnibus
