@@ -8,9 +8,81 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!DOCTYPE html>
+
+  <!doctype html>
 <html lang="en">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Euystacio Helmi AI — Omnibus Landing</title>
+<style>
+  :root{--accent:#0f766e;--muted:#0f172a;--bg:#f7fafc;}
+  body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--muted);margin:0;padding:28px;}
+  .container{max-width:1100px;margin:20px auto;background:#fff;border-radius:10px;padding:26px;box-shadow:0 12px 32px rgba(15,23,42,0.06);}
+  h1{color:var(--accent);margin:0 0 8px;}
+  h2{color:#0b5e57;margin-top:18px;}
+  .feature{background:#f0fdf4;border-left:4px solid var(--accent);padding:12px;border-radius:6px;margin:12px 0;}
+  .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;margin-right:8px;}
+  pre.code{background:#0f172a;color:#e6fffa;padding:12px;border-radius:6px;overflow:auto;}
+  .small{font-size:13px;color:#475569;}
+  footer{margin-top:18px;text-align:center;color:#6b7280;font-size:13px;}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Euystacio Helmi AI — Omnibus Landing</h1>
+      <p class="small">Ethics-first sovereign node framework — Seedbringer stewardship.</p>
+      <p class="small">Bundle SHA256: <code>95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82</code></p>
+    </header>
+
+    <section class="feature">
+      <h2>Key Features</h2>
+      <ul>
+        <li>Ethics-Gated Smart Contracts: EUSDaoGovernance, KarmaBond, TrustlessFundingProtocol</li>
+        <li>Master Control: automated deploy, tranche management and live event listeners</li>
+        <li>Live Dashboard: Scorecard, Tranche status, KarmaBond charts, Ethics check, SHA256 verification</li>
+        <li>Open Source & Verifiable: Full SHA256-signed release bundle</li>
+      </ul>
+    </section>
+
+    <section class="feature">
+      <h2>How to Invest (KarmaBond)</h2>
+      <ol>
+        <li>Connect MetaMask to Sepolia network.</li>
+        <li>Open Dashboard → Invest. Enter USD/ETH and confirm.</li>
+        <li>Transaction emits <code>InvestmentMade(investor, amount)</code> and updates Scorecard in real time.</li>
+        <li>Monitor impact (m<sup>3</sup> water, MATL, R1) in the Ethics panel.</li>
+      </ol>
+      <a class="btn" href="Euystacio_Helmi_AI_Handbook_Complete_EN.pdf" download>Download Handbook (PDF)</a>
+      <a class="btn" href="https://github.com/hannesmitterer/euystacio-helmi-ai" target="_blank" rel="noopener">View on GitHub</a>
+    </section>
+
+    <section class="feature">
+      <h2>Tranche Release Process</h2>
+      <p>Seed Council uploads proof → compute SHA-256 → submit proofHash on-chain → TrustlessFundingProtocol verifies → emits TrancheReleased → dashboard updates. If invariants fail, funds redirect to the recirculation wallet.</p>
+    </section>
+
+    <section class="feature">
+      <h2>Deployment Quick Commands</h2>
+      <pre class="code">npx hardhat compile
+npx hardhat run scripts/deploy.js --network sepolia</pre>
+    </section>
+
+    <section>
+      <h2>Useful Addresses / Tags</h2>
+      <p>Foundation/Recirculation Wallet: <code>0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b</code></p>
+      <p>Release tag: <code>v1.0.0-covenant</code></p>
+    </section>
+
+    <footer>
+      <p>Seedbringer — Euystacio Helmi AI. For repo, guidance, and technical support see the GitHub project.</p>
+    </footer>
+  </div>
+</body>
+</html>
+
+
   <meta charset="utf-8">
   <title>Euystacio Helmi AI — Omnibus Landing</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
