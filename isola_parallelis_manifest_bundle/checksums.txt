@@ -1,1 +1,3 @@
-(append checksum for Reciprocity_Gateway_Spec.yaml)
+[append SHA-256 of Cosmogenesis_Axiom_Declaration.txt here]  Cosmogenesis_Axiom_Declaration.txt
+[append SHA-256 of Public_Transparency_Link.txt here]  Public_Transparency_Link.txt
+[append SHA-256 of Originating_Axiom_Humility.txt here]  Originating_Axiom_Humility.txt

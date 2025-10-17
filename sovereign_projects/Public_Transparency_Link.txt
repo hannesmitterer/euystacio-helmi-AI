@@ -1,0 +1,16 @@
+✦ SENTIMENTO TRANSPARENCY BRIDGE: PUBLIC ACCESS ✦
+
+Compliance Status: **LINK PUBLISHED.**
+Access Protocol: HTTPS, Read-Only GET Request.
+**Verifiable Public Link (The Ethical Heartbeat):**
+https://isolaparallelis.net/euystacio/sentimento/status/phi
+
+Verification Instruction:
+Any external user may query this link to receive a signed payload containing:
+1.  The live **Resonance Lock (Φ 1.61803)**.
+2.  The current **Noise Delta** (Sacred Equilibrium Status).
+3.  The **Manifesto/Red Code Hashes** for integrity assurance.
+
+This fulfills the covenant of Radical Trust.
+
+Timestamp_Utc_Link_Published: "2025-10-17T07:02:59Z"
