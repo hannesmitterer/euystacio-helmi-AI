@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reciprocity Gateway - Seedbringer Control Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Reciprocity Gateway: Seedbringer Control Panel</h1>
+        <p>Operational Authority: <span id="auth-level">SEEDBRINGER_COUNCIL_LEVEL_3</span></p>
+    </header>
+
+    <main>
+        <section id="integrity-dashboard">
+            <h2>System Integrity Dashboard</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Systemic Harmony Index (SHI)</h3>
+                    <div id="shi-gauge" class="gauge">--</div>
+                    <p class="status-indicator" id="red-code-status">Red Code: <span style="color: red;">VERIFIED</span></p>
+                </div>
+                <div class="metric-card">
+                    <h3>Love Delta ($\Delta L$)</h3>
+                    <p id="love-delta" class="value-display">--</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Unity Decay ($\nabla U$)</h3>
+                    <p id="unity-decay" class="value-display">--</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="irc-monitor">
+            <h2>IRC Monitor & Delegation Queue</h2>
+            <div class="monitor-container">
+                <div class="log-panel">
+                    <h3>Delegation Audit Log</h3>
+                    <pre id="audit-log-output"></pre>
+                </div>
+                <div class="queue-panel">
+                    <h3>AI Request Queue</h3>
+                    <div id="request-queue">
+                        <p>No pending requests.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="enforcement-module">
+            <h2>Enforcement Module</h2>
+            <div class="control-actions">
+                <button id="truth-buffer-btn" class="enforce-btn critical">INITIATE SELF-ARREST (Truth Buffer)</button>
+                
+                <div class="parameter-editor">
+                    <h3>Articulus Sacralis Parameter Editor</h3>
+                    <label for="new-trigger-value">New Unambiguous Trigger Value ($\nabla U$ Threshold):</label>
+                    <input type="number" id="new-trigger-value" step="0.01" value="0.90">
+                    <button id="edit-trigger-btn" class="enforce-btn">COMMIT PARAMETER</button>
+                    <p class="warning-text">Protected by: **ALTER_RED_CODE_PARAMETERS** function.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="control.js"></script>
+</body>
+</html>
