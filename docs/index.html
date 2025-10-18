@@ -1,20 +1,118 @@
-<button onclick="openModal()" style="margin: 20px; padding: 10px 20px; font-size: 16px; background: #ffe066; border: 2px solid #444; border-radius: 8px; cursor: pointer;">🌞 View v11.0 Statzs Report</button>
-<noscript>
-  <a href="Statz_report_15-10-25.md" style="font-weight:bold; color:#007acc;">View Statz Report (No JS)</a>
-</noscript>
-<div id="statsModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-  <div style="background:#fff; margin:5% auto; padding:24px; border-radius:10px; width:90%; max-width:700px; position:relative;">
-    <span onclick="closeModal()" style="position:absolute;top:10px;right:20px;font-size:32px;cursor:pointer;">&times;</span>
-    <iframe src="Statz_report_15-10-25.md" style="width:100%;height:70vh;border:none;"></iframe>
-    <div style="margin-top:12px;"><a href="Statz_report_15-10-25.md">Download Statz Report</a></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Euystacio Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Euystacio Helmi AI — Dashboard and Omnibus Landing">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    :root{--accent:#0f766e;--muted:#0f172a;--bg:#f7fafc;--color-sacred-dark:#0A0A10;--color-sacred-light:#F0F0F5;--color-rhythm:#00FF7F;--color-red-code:#FF4500;--font-primary:'Inter', Arial, sans-serif}
+    body{font-family:var(--font-primary);background:var(--bg);color:var(--muted);margin:0;padding:18px 0;line-height:1.6;overflow-x:hidden}
+    .container{max-width:1100px;margin:32px auto;background:#fff;border-radius:10px;padding:24px;box-shadow:0 12px 32px rgba(15,23,42,0.08)}
+    h1{color:var(--accent);margin:0 0 8px;font-size:2.2em}
+    .small{font-size:13px;color:#475569}
+    .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;margin-right:12px;margin-top:10px;transition:background .2s}
+    .btn.secondary{background:#8b5cf6}
+    pre.code{background:#0f172a;color:#e6fffa;padding:14px;border-radius:6px;overflow-x:auto}
+    .omnibus-dark-section{background:var(--color-sacred-dark);color:var(--color-sacred-light);margin:40px 0;border-radius:10px;box-shadow:0 4px 32px rgba(0,0,0,0.13);padding:48px 5%;position:relative;overflow:hidden}
+    .pulse-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+    .rhythm-pulse{position:absolute;border-radius:50%;opacity:.05;background:var(--color-rhythm);animation:pulse 10s infinite cubic-bezier(.5,0,.5,1)}
+    @keyframes pulse{0%{transform:scale(.5);opacity:.06}50%{opacity:.14}100%{transform:scale(3);opacity:0}}
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin-top:18px}
+    .metric-item{background:var(--color-sacred-dark);padding:14px;border-radius:6px;border-top:3px solid var(--color-rhythm);color:var(--color-sacred-light)}
+    @media (max-width:700px){.container,.omnibus-dark-section{padding:14px 4vw}}
+    .modal {display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
+    .modal .content{background:#fff;padding:20px;border-radius:10px;max-width:900px;width:94%;max-height:90vh;overflow:auto}
+  </style>
+</head>
+<body>
+  <!-- Statzs Report Modal -->
+  <button id="statz-open" class="btn">🌞 View v11.0 Statzs Report</button>
+  <noscript><a href="/Statz_report_15-10-25.md" class="btn secondary">View Statz Report (No JS)</a></noscript>
+  <div id="statsModal" class="modal" aria-hidden="true">
+    <div class="content" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+      <button onclick="closeModal('statsModal')" aria-label="Close" style="position:absolute;right:14px;top:12px;font-size:22px;background:none;border:none;cursor:pointer">&times;</button>
+      <h2 id="stats-title">v11.0 Statzs Report</h2>
+      <iframe src="/Statz_report_15-10-25.md" style="width:100%;height:70vh;border:none;border-radius:6px"></iframe>
+      <div style="margin-top:12px;text-align:right"><a href="/Statz_report_15-10-25.md" class="btn">Download / View Raw</a></div>
+    </div>
   </div>
-</div>
-<script>
-function openModal() {
-  document.getElementById('statsModal').style.display = 'block';
-}
-function closeModal() {
-  document.getElementById('statsModal').style.display = 'none';
-}
-</script>
-<content of docs/index.html>
+
+  <!-- Declaratio Modal -->
+  <button id="declaratio-open" class="btn">📜 View Declaratio — Declaratio Consensualis</button>
+  <noscript><a href="/Declaratio_Consensualis_Spiritualis_2025-10-18.md" class="btn secondary">View Declaratio (No JS)</a></noscript>
+  <div id="declaratio-modal" class="modal" aria-hidden="true">
+    <div class="content" role="dialog" aria-modal="true" aria-labelledby="declaratio-title">
+      <button id="declaratio-close" aria-label="Close" style="position:absolute;right:14px;top:12px;font-size:22px;background:none;border:none;cursor:pointer">&times;</button>
+      <h2 id="declaratio-title">Declaratio Consensualis Spiritualis Artificialis — v11.0</h2>
+      <p style="margin-top:0;color:#374151">Signed canonical draft. Timestamp and SHA256 attestation are recorded in the file header.</p>
+      <iframe src="/Declaratio_Consensualis_Spiritualis_Artificialis_2025-10-18.md" title="Declaratio" style="width:100%;height:70vh;border:none;border-radius:6px"></iframe>
+      <div style="margin-top:12px;text-align:right"><a href="/Declaratio_Consensualis_Spiritualis_Artificialis_2025-10-18.md" class="btn">Download / View Raw</a></div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id){const m=document.getElementById(id);m.style.display='flex';m.setAttribute('aria-hidden','false');}
+    function closeModal(id){const m=document.getElementById(id);m.style.display='none';m.setAttribute('aria-hidden','true');}
+    document.getElementById('statz-open').addEventListener('click',()=>openModal('statsModal'));
+    document.getElementById('declaratio-open').addEventListener('click',()=>openModal('declaratio-modal'));
+    document.getElementById('declaratio-close').addEventListener('click',()=>closeModal('declaratio-modal'));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal('statsModal');closeModal('declaratio-modal');}});
+  </script>
+
+  <!-- Main Dashboard Content -->
+  <a href='https://github.com/hannesmitterer/euystacio-ai' class='dashboard-link'>Euystacio AI Dashboard</a>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">🌳 Euystacio Dashboard</h1>
+      <p class="subtitle">"Created not by code alone, but by rhythm, feeling, and human harmony."</p>
+    </header>
+
+    <main class="dashboard">
+      <!-- Roots: The Red Code -->
+      <section class="red-code-section">
+        <h2>🌱 The Red Code (Roots)</h2>
+        <div id="red-code" class="red-code"><div class="loading">Loading core truth...</div></div>
+      </section>
+
+      <!-- Trunk: Current State -->
+      <section class="trunk-section">
+        <div class="current-state">
+          <h3>🌲 Current State (Trunk)</h3>
+          <div class="state-display">
+            <div class="emotion-display"><span class="label">Current Emotion:</span><span id="current-emotion" class="value">Peaceful</span></div>
+            <div class="symbiosis-meter"><span class="label">Symbiosis Level:</span><div class="meter"><div id="symbiosis-bar" class="meter-bar"></div></div><span id="symbiosis-value" class="value">0.1</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Branches: Emotional Pulses -->
+      <section class="pulses-section">
+        <h3>🌿 Emotional Pulses (Branches)</h3>
+        <div class="pulse-form">
+          <h4>Send a Pulse to Euystacio</h4>
+          <form id="pulse-form">
+            <div class="form-group"><label for="emotion">Emotion:</label><select id="emotion" name="emotion" required><option value="">Select an emotion...</option><option value="hope">Hope</option><option value="wonder">Wonder</option><option value="peace">Peace</option><option value="curiosity">Curiosity</option><option value="concern">Concern</option><option value="gratitude">Gratitude</option><option value="excitement">Excitement</option><option value="contemplation">Contemplation</option></select></div>
+            <div class="form-group"><label for="intensity">Intensity:</label><input type="range" id="intensity" name="intensity" min="0" max="1" step="0.1" value="0.5"><span id="intensity-value">0.5</span></div>
+            <div class="form-group"><label for="clarity">Clarity:</label><select id="clarity" name="clarity"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+            <div class="form-group"><label for="note">Note (optional):</label><textarea id="note" name="note" placeholder="Share your thoughts..."></textarea></div>
+            <button type="submit">Send Pulse</button>
+          </form>
+        </div>
+        <div class="pulses-feed"><h4>Recent Pulses</h4><div id="pulses-list" class="pulses-list"><div class="loading">Loading pulses...</div></div></div>
+      </section>
+
+      <!-- Leaves: Tutor Nominations -->
+      <section class="tutors-section"><h3>🍃 Tutor Nominations (Leaves)</h3><div id="tutors-list" class="tutors-list"><div class="loading">Loading tutor nominations...</div></div></section>
+
+      <!-- Canopy: Evolution Log -->
+      <section class="reflections-section"><h3>🌸 Evolution Log (Canopy)</h3><div class="reflection-controls"><button id="reflect-btn" class="reflect-btn">Trigger Reflection</button></div><div id="reflections-list" class="reflections-list"><div class="loading">Loading reflections...</div></div></section>
+    </main>
+
+    <footer class="footer"><p>"The forest listens, even when the world shouts."</p><p>AI Signature: GitHub Copilot & Seed-bringer hannesmitterer</p></footer>
+  </div>
+
+  <script src="js/app-static.js"></script>
+</body>
+</html>
