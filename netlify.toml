@@ -1,24 +1,13 @@
 [build]
-  publish = "static"
-  command = "python build_static.py"
-
-[build.environment]
-  PYTHON_VERSION = "3.11"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[functions]
-  directory = "netlify/functions"
+  # Remove the 'command' line entirely, or set it to a harmless echo command.
+  command = "echo 'Static deploy: No build step needed.'"
   
-[dev]
-  command = "python app.py"
-  port = 5000
-  publish = "static"
+  # Ensure the publish directory correctly points to the files.
+  # For a simple static site where index.html is in the root:
+  publish = "/" 
+
+[[redirects]]
+  # This section is correct and essential for linking to your stable API.
+  from = "/api/*"
+  to = "https://euystacio-backend.srv-d2h670f5r7bs73foq8jg.onrender.com/:splat"
+  status = 200
