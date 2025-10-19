@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Euystacio Multi-Graph Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:'Inter',sans-serif;background:#000;color:#e8f5ff;text-align:center;}
+canvas{width:90%;max-width:720px;height:220px;margin:1rem auto;display:block;}
+h1{color:#00c3ff;margin-top:1rem;}
+</style>
+</head>
+<body>
+<h1>Euystacio Global Metrics Dashboard</h1>
+<canvas id="gazaChart"></canvas>
+<canvas id="sudanChart"></canvas>
+<canvas id="trustChart"></canvas>
+<script>
+function makeChart(id,label,color){
+ const c=document.getElementById(id).getContext('2d');
+ return new Chart(c,{type:'line',
+  data:{labels:[],datasets:[{label,textColor:'#e8f5ff',data:[],borderColor:color,fill:false,tension:.3}]},
+  options:{responsive:true,plugins:{legend:{labels:{color:'#e8f5ff'}}}}});
+}
+const g=makeChart('gazaChart','Gaza TₓFW Progress','#00c3ff');
+const s=makeChart('sudanChart','South Sudan TₓTG Progress','#7cff9e');
+const t=makeChart('trustChart','Δ Regenerative Trust Index','#ffdf7c');
+setInterval(()=>{[g,s,t].forEach(ch=>{
+ const v=Math.random()*100;
+ ch.data.labels.push(new Date().toLocaleTimeString());
+ ch.data.datasets[0].data.push(v);
+ if(ch.data.labels.length>20){ch.data.labels.shift();ch.data.datasets[0].data.shift();}
+ ch.update();
+});},4000);
+</script>
+</body>
+</html>
