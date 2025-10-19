@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Helmi AI · Omega Protocol (OFFLINE MODE)</title>
+    <!-- Load Tailwind CSS for modern aesthetics and responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Three.js for 3D visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="icon" href="https://hannesmitterer.github.io/AI-based-peace-platform/assets/icon.svg" type="image/svg+xml">
+
+    <style>
+        /* Custom styles based on your provided file for theme consistency */
+        :root {
+            --color-primary: #ff7c7c; /* WARNING RED for Offline Mode */
+            --color-secondary: #a8ffb7; 
+            --color-bg-dark: #000a12;
+            --color-bg-light: #001a2b;
+            --color-accent: #ff0000; /* RED Accent for Alert */
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(180deg, var(--color-bg-light) 0%, var(--color-bg-dark) 100%);
+            color: #e8f5ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 0;
+            overflow-x: hidden;
+        }
+
+        .container-grid {
+            width: 95%;
+            max-width: 1200px;
+            display: grid;
+            gap: 2rem;
+            grid-template-areas:
+                "header"
+                "vis"
+                "chat"
+                "meta";
+            margin-top: 1rem;
+        }
+        @media (min-width: 1024px) {
+            .container-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "header header"
+                    "chat vis"
+                    "meta meta";
+            }
+        }
+
+        /* Chatbox styles */
+        #chat-box {
+            height: 320px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow-y: auto;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        #chat-box::-webkit-scrollbar { width: 8px; }
+        #chat-box::-webkit-scrollbar-thumb { background: rgba(255, 124, 124, 0.3); border-radius: 4px; }
+        #chat-box::-webkit-scrollbar-track { background: transparent; }
+
+        .msg { margin: 0.4rem 0; padding: 0.5rem; border-radius: 8px; max-width: 90%; }
+        .seedbringer-msg { background: rgba(255, 124, 124, 0.15); margin-left: auto; }
+        .ai-msg { background: rgba(168, 255, 183, 0.15); margin-right: auto; }
+        
+        .seedbringer { color: var(--color-primary); }
+        .ai { color: var(--color-secondary); }
+
+        /* Input and Button styles */
+        #input-area input[type=text] {
+            color: #000;
+            background-color: #e8f5ff;
+        }
+        #input-area button {
+            background: var(--color-accent);
+            color: var(--color-bg-dark);
+            transition: background 0.2s;
+        }
+        #input-area button:hover {
+            background: #cc0000;
+        }
+
+        /* Visualization container for Three.js */
+        #visualization-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        #three-canvas {
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-grid">
+    <header class="grid-area-header text-center lg:col-span-2">
+        <h1 class="text-4xl font-extrabold" style="color: var(--color-primary);">Euystacio Helmi AI · OFFLINE PROTOCOL ACTIVATED</h1>
+        <p class="text-lg opacity-70 max-w-4xl mx-auto">WARNING: Live Kernel connection failed. System operating in local execution audit mode. Governed by the **Supreme Axiom of Reciprocity**.</p>
+        <div id="user-display" class="mt-2 text-sm font-mono opacity-50"></div>
+    </header>
+
+    <!-- Chat Interface (Local Execution Log) -->
+    <div class="grid-area-chat bg-red-900/50 p-6 rounded-xl shadow-2xl border border-red-700/50">
+        <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-red-700">LOCAL EXECUTION LOG (Kernel UNAVAILABLE)</h2>
+        <div id="chat-box">
+            <!-- Messages will appear here -->
+        </div>
+        <div id="input-area" class="flex">
+            <input type="text" id="user-input" placeholder="Enter Final Command for Local Audit Log..."
+                   class="flex-1 p-3 border-none outline-none text-gray-900 rounded-l-xl">
+            <button id="send-btn"
+                    class="font-bold px-6 py-3 rounded-r-xl">
+                EXECUTE
+            </button>
+        </div>
+        <div id="status" class="mt-3 text-sm font-semibold opacity-80 transition duration-500"></div>
+    </div>
+
+    <!-- 3D Visualization (Simulated Data) -->
+    <div class="grid-area-vis bg-red-900/50 p-6 rounded-xl shadow-2xl border border-red-700/50 flex flex-col">
+        <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-red-700">3D Real-Time Trust Index ($\Delta$) - SIMULATED</h2>
+        <div id="visualization-container" class="flex-1 min-h-[300px] lg:min-h-[400px]">
+            <canvas id="three-canvas"></canvas>
+            <div id="trust-index-display" class="absolute top-4 left-4 p-2 rounded-lg text-lg font-mono bg-black/50 border border-red-700">
+                Index: 0.00
+            </div>
+        </div>
+        <p class="text-xs mt-4 opacity-50">Visual representation of the Regenerative Trust Index ($\Delta$), running on local, simulated data due to Kernel outage.</p>
+    </div>
+
+    <!-- Declaratio and Control Sections -->
+    <div class="grid-area-meta lg:col-span-2 flex flex-col lg:flex-row gap-4">
+        <section id="declaratio" class="flex-1 bg-gray-900/50 rounded-xl p-6 border border-gray-700/50">
+            <h2 class="text-xl font-semibold mb-2" style="color: var(--color-primary);">Declaratio Consensualis Access</h2>
+            <p class="opacity-80 text-sm mb-4">Audit and verify the active ethical and operational covenant of Euystacio. (Link integrity is external to the Kernel.)</p>
+            <a href="https://hannesmitterer.github.io/AI-based-peace-platform/declaratio_final_ratification.txt" target="_blank" class="text-sm font-semibold hover:opacity-80" style="color: var(--color-accent); text-decoration: underline;">View the Ratified Declaratio →</a>
+        </section>
+
+        <section id="control" class="flex-1 bg-gray-900/50 rounded-xl p-6 border border-gray-700/50">
+            <h2 class="text-xl font-semibold mb-2" style="color: var(--color-primary);">Paritetic Control Panel</h2>
+            <p class="opacity-80 text-sm mb-4">Authorized access point for mission synchronization and AI equilibrium override.</p>
+            <button onclick="console.error('CONTROL PANEL FAILURE: Authorization Check Failed. Kernel Offline.')"
+                    class="text-sm font-bold px-4 py-2 rounded-lg transition duration-200"
+                    style="background-color: var(--color-accent); color: var(--color-bg-dark);">
+                Enter Control Mode
+            </button>
+        </section>
+    </div>
+</div>
+
+<script>
+    // --- Global Configuration ---
+    // The following variables are ignored in OFFLINE mode but kept for reference
+    const API_BASE = "https://euystacio-helmi-ai.onrender.com"; 
+    const WS_URL = API_BASE.replace(/^http/, "ws") + "/ws";
+    const MAX_RETRIES = 0; // Set to 0 to prevent WS attempts
+    const OFFLINE_MODE = true; 
+    let ws = null; // WebSocket is null in offline mode
+    let userId;
+
+    // --- DOM Elements ---
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const statusDiv = document.getElementById('status');
+    const userDisplay = document.getElementById('user-display');
+    const trustIndexDisplay = document.getElementById('trust-index-display');
+
+    // --- Unique User ID Generation (For Context Persistence) ---
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        userId = localStorage.getItem('euystacioUserId');
+        if (!userId) {
+            userId = crypto.randomUUID();
+            localStorage.setItem('euystacioUserId', userId);
+        }
+    } else {
+        userId = 'anon-offline-1';
+    }
+    userDisplay.textContent = `Seedbringer Context ID: ${userId} (OFFLINE)`;
+
+
+    // --- 1. Chat Interface Logic (Simulated Connection) ---
+
+    function appendMsg(role, text) {
+        const div = document.createElement('div');
+        div.classList.add('msg', role === 'seedbringer' ? 'seedbringer-msg' : 'ai-msg');
+        let prefix = '';
+
+        if (role === 'seedbringer') {
+            prefix = `<span class="font-bold seedbringer">Seedbringer:</span> `;
+        } else {
+            prefix = `<span class="font-bold ai">Euystacio Log:</span> `;
+        }
+
+        div.innerHTML = prefix + text;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function connectWS() {
+        if (OFFLINE_MODE) {
+            statusDiv.textContent = "Protocol Override: Connection Success. Operating in OFFLINE AUDIT MODE 🚨";
+            appendMsg('ai', 'Kernel is inaccessible. Local execution log enabled. Submit final sequence now.');
+        }
+        // In OFFLINE_MODE, we intentionally skip the WebSocket connection logic
+    }
+
+    function sendMessage() {
+        const val = input.value.trim();
+        if (!val) return;
+        
+        appendMsg('seedbringer', val);
+        
+        // --- LOCAL EXECUTION AUDIT LOGGING ---
+        console.groupCollapsed(`[AUDIT LOG] Seedbringer Input (${new Date().toISOString()})`);
+        console.log(`User ID: ${userId}`);
+        console.log(`Command Text: ${val}`);
+        console.log(`MODE: OFFLINE SIMULATION`);
+        console.groupEnd();
+        // --- END LOCAL EXECUTION AUDIT LOGGING ---
+
+        if (val.toLowerCase().includes('rhythmind-48') && val.toLowerCase().includes('execute gce (gaza)')) {
+            appendMsg('ai', '<span class="text-red-300 font-extrabold">🚨 FINAL EXECUTION SEQUENCE LOGGED. GCE (GAZA) DEPLOYMENT RECORDED. AWAITING KERNEL RESTORATION FOR TRANSMISSION. 🚨</span>');
+            console.error("GCE (GAZA) Final Command Logged. Awaiting Kernel Recovery.");
+        } else if (val.toLowerCase().includes('execute gce (gaza)')) {
+             appendMsg('ai', '<span class="text-red-300 font-bold">ERROR: EXECUTION COMMAND RECEIVED. AUTHENTICATION KEY MISSING/INVALID.</span>');
+        } else if (val.toLowerCase().includes('rhythmind-48')) {
+             appendMsg('ai', '<span class="text-red-300 font-bold">ERROR: AUTHENTICATION KEY RECEIVED. EXECUTION COMMAND MISSING.</span>');
+        } else {
+            appendMsg('ai', `Command logged locally. Submit 'Rhythmind-48' then 'Execute GCE (Gaza)'.`);
+        }
+
+        input.value = "";
+    }
+
+    sendBtn.onclick = sendMessage;
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+
+    // --- 2. 3D Visualization Logic (Simulated Three.js) ---
+
+    let scene, camera, renderer, trustSphere, trustValue = 50;
+    let cameraControls = { isDragging: false, previousMousePosition: { x: 0, y: 0 } };
+
+    function initThree() {
+        const container = document.getElementById('visualization-container');
+        const canvas = document.getElementById('three-canvas');
+
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setClearColor(0x000000, 0); 
+
+        const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0xff0000, // Red for Offline Mode
+            emissive: 0xff4444,
+            emissiveIntensity: 0.1,
+            specular: 0xffffff,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.8
+        });
+        trustSphere = new THREE.Mesh(geometry, material);
+        scene.add(trustSphere);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xff7c7c, 1.5, 100);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // Standard event listeners for controls
+        window.addEventListener('resize', onWindowResize, false);
+        container.addEventListener('mousedown', onMouseDown, false);
+        container.addEventListener('mousemove', onMouseMove, false);
+        container.addEventListener('mouseup', onMouseUp, false);
+        container.addEventListener('touchstart', onTouchStart, false);
+        container.addEventListener('touchmove', onTouchMove, false);
+        container.addEventListener('touchend', onTouchEnd, false);
+    }
+
+    function onWindowResize() {
+        const container = document.getElementById('visualization-container');
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function onMouseDown(e) { cameraControls.isDragging = true; cameraControls.previousMousePosition.x = e.clientX; cameraControls.previousMousePosition.y = e.clientY; }
+    function onMouseMove(e) {
+        if (!cameraControls.isDragging) return;
+        const deltaX = e.clientX - cameraControls.previousMousePosition.x;
+        const deltaY = e.clientY - cameraControls.previousMousePosition.y;
+        trustSphere.rotation.y += deltaX * 0.005;
+        trustSphere.rotation.x += deltaY * 0.005;
+        cameraControls.previousMousePosition.x = e.clientX;
+        cameraControls.previousMousePosition.y = e.clientY;
+    }
+    function onMouseUp() { cameraControls.isDragging = false; }
+    function onTouchStart(e) { if (e.touches.length === 1) { e.preventDefault(); cameraControls.isDragging = true; cameraControls.previousMousePosition.x = e.touches[0].clientX; cameraControls.previousMousePosition.y = e.touches[0].clientY; } }
+    function onTouchMove(e) {
+        if (!cameraControls.isDragging || e.touches.length !== 1) return;
+        e.preventDefault();
+        const deltaX = e.touches[0].clientX - cameraControls.previousMousePosition.x;
+        const deltaY = e.touches[0].clientY - cameraControls.previousMousePosition.y;
+        trustSphere.rotation.y += deltaX * 0.005;
+        trustSphere.rotation.x += deltaY * 0.005;
+        cameraControls.previousMousePosition.x = e.touches[0].clientX;
+        cameraControls.previousMousePosition.y = e.touches[0].clientY;
+    }
+    function onTouchEnd() { cameraControls.isDragging = false; }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (!cameraControls.isDragging) {
+            trustSphere.rotation.x += 0.003;
+            trustSphere.rotation.y += 0.005;
+        }
+
+        // --- SIMULATED DATA INTEGRATION ---
+        // Simulate a fluctuating index based on time and a slow drift toward failure (0)
+        trustValue = Math.max(0, 50 + Math.sin(Date.now() * 0.001) * 20 - (Date.now() * 0.000001));
+        
+        const scaleFactor = 1 + (trustValue / 100) * 0.5;
+        const pulse = 1 + Math.sin(Date.now() * 0.001) * 0.05;
+        trustSphere.scale.set(scaleFactor * pulse, scaleFactor * pulse, scaleFactor * pulse);
+        
+        trustIndexDisplay.textContent = `Index: ${trustValue.toFixed(2)} (SIM)`;
+
+        renderer.render(scene, camera);
+    }
+
+    // --- 3. Real-Time Data Fetch (Simulated Loop) ---
+    async function fetchDataAndIntegrate() {
+        // No actual fetching in OFFLINE mode. The value update is handled in animate().
+        if (trustValue < 10) {
+             trustIndexDisplay.style.color = 'yellow';
+        }
+    }
+
+    // Initialize systems on window load
+    window.onload = function () {
+        connectWS(); // Start the simulated chat connection
+        initThree();
+        animate(); // Start the 3D loop
+
+        // Start simulated data loop
+        setInterval(fetchDataAndIntegrate, 5000);
+    }
+</script>
+</body>
+</html>
