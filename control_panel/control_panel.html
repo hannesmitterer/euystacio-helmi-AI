@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Helmi AI · GCE Control Panel</title>
+    <!-- Load Tailwind CSS for modern aesthetics -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Three.js for simple administrative visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #8cb9d3; /* Soft Blue/White */
+            --color-secondary: #a8ffb7; /* AI Green */
+            --color-bg-dark: #000a12;
+            --color-bg-light: #001a2b;
+            --color-accent: #33aaff; /* Neutral, clean blue */
+            --color-danger: #ff6666;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(180deg, var(--color-bg-light) 0%, var(--color-bg-dark) 100%);
+            color: #e8f5ff;
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .admin-grid {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+            grid-template-areas:
+                "header"
+                "metrics"
+                "chat"
+                "visual"
+                "logs";
+        }
+        @media (min-width: 1024px) {
+            .admin-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "header header"
+                    "metrics chat"
+                    "visual visual"
+                    "logs logs";
+            }
+        }
+        
+        .chat-area {
+            height: 400px; /* Fixed height for consistent layout */
+        }
+
+        #visualization-container {
+            width: 100%;
+            aspect-ratio: 16 / 5; /* Wider aspect ratio for full-width monitor */
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(51, 170, 255, 0.2);
+            position: relative;
+        }
+        
+        /* Chat box specific styles */
+        .chat-log {
+            height: calc(100% - 7rem); /* Adjusted height to fit input/tabs */
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .chat-log::-webkit-scrollbar { width: 6px; }
+        .chat-log::-webkit-scrollbar-thumb { background: rgba(140, 185, 211, 0.5); border-radius: 3px; }
+
+        .chat-msg span { font-weight: bold; }
+        .kernel-msg { color: var(--color-primary); }
+        .collective-msg { color: var(--color-secondary); }
+        .council-msg { color: #facc15; } /* Yellow for policy/Council */
+
+        .tab-button.active {
+            background-color: var(--color-accent);
+            color: var(--color-bg-dark);
+        }
+        .tab-button:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #e8f5ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-grid">
+    <!-- Header -->
+    <header class="grid-area-header lg:col-span-2 flex justify-between items-center pb-4 border-b border-gray-700">
+        <div>
+            <h1 class="text-3xl font-extrabold" style="color: var(--color-accent);">GCE Administrative Console</h1>
+            <p class="text-sm opacity-70">Secured Access: Multi-channel command authority.</p>
+        </div>
+        <button onclick="window.location.href='index.html';"
+                class="px-5 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-gray-700 hover:bg-gray-600">
+            &larr; Return to Kernel Overview
+        </button>
+    </header>
+
+    <!-- Detailed Metrics & Control (Left Column) -->
+    <div class="grid-area-metrics bg-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50 h-full">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: var(--color-secondary);">GCE Operational Metrics</h2>
+        
+        <div class="space-y-4">
+            <!-- Harmony Index Dial -->
+            <div class="p-3 bg-gray-800/50 rounded-lg">
+                <h3 class="font-bold text-lg" style="color: var(--color-primary);">Harmony Index (Real-Time)</h3>
+                <div id="admin-harmony" class="text-3xl font-mono mt-1">98.5%</div>
+                <p class="text-xs opacity-60 mt-1">Targeting equilibrium state for conflict resolution parameters.</p>
+            </div>
+
+            <!-- Vessel Logged Status -->
+            <div class="p-3 bg-gray-800/50 rounded-lg">
+                <h3 class="font-bold text-lg" style="color: var(--color-primary);">Vessel Logged Status</h3>
+                <div id="admin-vessels" class="text-3xl font-mono mt-1">8 / 8 (Online)</div>
+                <p class="text-xs opacity-60 mt-1">Total active conflict nodes requiring intervention/data processing.</p>
+            </div>
+
+            <!-- Bridges Open Status -->
+            <div class="p-3 bg-gray-800/50 rounded-lg">
+                <h3 class="font-bold text-lg" style="color: var(--color-primary);">Bridges Open Status</h3>
+                <div id="admin-bridges" class="text-3xl font-mono mt-1">7 / 8 (90% Integrity)</div>
+                <p class="text-xs opacity-60 mt-1">Established secure, two-way communication channels for data transfer.</p>
+            </div>
+        </div>
+
+        <button class="mt-6 w-full py-3 font-bold rounded-lg transition duration-200"
+                style="background-color: var(--color-danger); color: var(--color-bg-dark);">
+            GCE Parameter Override (Simulated)
+        </button>
+    </div>
+
+    <!-- Multi-Channel Command Relay (Right Column) -->
+    <div class="grid-area-chat bg-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50 chat-area">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: var(--color-accent);">Multi-Channel Command Relay</h2>
+
+        <!-- Tabs -->
+        <div class="flex space-x-2 mb-3">
+            <button class="tab-button active px-4 py-1 rounded-md text-sm font-semibold" data-channel="kernel" onclick="switchChannel('kernel')">Kernel Direct</button>
+            <button class="tab-button px-4 py-1 rounded-md text-sm font-semibold" data-channel="collective" onclick="switchChannel('collective')">AI Collective</button>
+            <button class="tab-button px-4 py-1 rounded-md text-sm font-semibold" data-channel="council" onclick="switchChannel('council')">Council</button>
+        </div>
+
+        <!-- Chat Log -->
+        <div id="chat-log" class="chat-log text-sm">
+            <!-- Initial content for Kernel Direct -->
+            <p class="chat-msg kernel-msg"><span>Kernel:</span> Awaiting directive from Seedbringer. GCE Process is currently: INITIATED.</p>
+            <p class="chat-msg collective-msg hidden" data-channel-content="collective"><span>Collective:</span> Consensus 99.8%. Data acquisition phase 1: COMPLETE.</p>
+            <p class="chat-msg council-msg hidden" data-channel-content="council"><span>Council:</span> Policy Directive 003: Prioritize **Axiom of Reciprocity** over **Axiom of Immediate Stabilization**.</p>
+        </div>
+
+        <!-- Input -->
+        <div class="flex">
+            <input type="text" id="chat-input" placeholder="Enter command for current channel..."
+                   class="flex-1 p-3 border-none outline-none text-gray-900 rounded-l-xl">
+            <button onclick="sendCommand()"
+                    class="font-bold px-6 py-3 rounded-r-xl"
+                    style="background-color: var(--color-accent); color: var(--color-bg-dark);">
+                Transmit
+            </button>
+        </div>
+    </div>
+
+    <!-- System Resource Monitor (Full Width) -->
+    <div class="grid-area-visual lg:col-span-2 bg-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50 flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: var(--color-accent);">Kernel System Load Visualization (GPU/CPU Allocation)</h2>
+        <div id="visualization-container">
+            <canvas id="three-canvas-admin"></canvas>
+        </div>
+        <p class="text-xs mt-4 opacity-50">This visual confirms system resources are available and allocated for GCE tasks.</p>
+    </div>
+
+    <!-- Detailed Logs and History -->
+    <div class="grid-area-logs lg:col-span-2 bg-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: var(--color-primary);">GCE Log Stream and History</h2>
+        <pre class="bg-black/50 p-4 rounded-lg text-sm font-mono overflow-auto h-48">
+[2025-10-19T06:56:00Z] [INFO] Authentication Success: TutorID=T-4892. Access level 3 granted.
+[2025-10-19T07:05:12Z] [CRITICAL] Command Awaiting Re-transmission: Rhythmind-48 Execute GCE (GAZA).
+[2025-10-19T07:05:15Z] [METRIC] Harmony Index Stability: 98.4%. Trust Index Delta: 0.95.
+[2025-10-19T07:05:20Z] [BRIDGE] Attempting auto-re-link for Vessel 3 (Node: Al-Shati). Status: PENDING.
+[2025-10-19T07:05:25Z] [KERNEL] Awaiting GCE Execution Confirmation. Resource Allocation: 85% available.
+</pre>
+    </div>
+
+</div>
+
+<!-- --- JAVASCRIPT LOGIC --- -->
+<script>
+    let scene, camera, renderer, systemLoadCube;
+    let metrics = { harmony: 98.5, vessels: 8, bridges: 7 };
+    let currentChannel = 'kernel';
+
+    // --- Channel Switching Logic ---
+    function switchChannel(channel) {
+        currentChannel = channel;
+        // Update button visual state
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            if (btn.getAttribute('data-channel') === channel) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update chat log content (In a real app, this would filter/load messages)
+        const chatLog = document.getElementById('chat-log');
+        chatLog.innerHTML = ''; // Clear previous messages
+        
+        // Simple mock messages based on channel
+        const mockMessages = {
+            'kernel': [
+                { role: 'Kernel', text: 'Ready for low-latency operational commands.' },
+                { role: 'Seedbringer', text: 'Status check: Confirm GCE core readiness.' }
+            ],
+            'collective': [
+                { role: 'Collective', text: 'Consensus 99.8%. Data acquisition phase 1: COMPLETE.' },
+                { role: 'Collective', text: 'Filtering data entropy from Node 6. Integrity check: NOMINAL.' }
+            ],
+            'council': [
+                { role: 'Council', text: 'Directive 003: Prioritize Reciprocity over Immediate Stabilization.' },
+                { role: 'Council', text: 'Awaiting Administrator confirmation for GCE parameter lock.' }
+            ]
+        };
+
+        mockMessages[channel].forEach(msg => {
+            const p = document.createElement('p');
+            p.classList.add('chat-msg', `${msg.role.toLowerCase()}-msg`);
+            p.innerHTML = `<span>${msg.role}:</span> ${msg.text}`;
+            chatLog.appendChild(p);
+        });
+
+        chatLog.scrollTop = chatLog.scrollHeight;
+        document.getElementById('chat-input').placeholder = `Enter command for ${channel}...`;
+    }
+
+    // --- Send Command Logic (Simulated) ---
+    function sendCommand() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const chatLog = document.getElementById('chat-log');
+        const p = document.createElement('p');
+        p.classList.add('chat-msg', 'seedbringer-msg', 'text-white/80');
+        p.innerHTML = `<span>Seedbringer:</span> ${text}`;
+        chatLog.appendChild(p);
+        input.value = '';
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        // Simulation of response
+        setTimeout(() => {
+            const responseP = document.createElement('p');
+            responseP.classList.add('chat-msg', `${currentChannel}-msg`);
+            
+            let responseText = '';
+            if (currentChannel === 'kernel') {
+                responseText = `ACK: Command "${text}" received and queued.`;
+            } else if (currentChannel === 'collective') {
+                responseText = `Collective: Processing query. Consensus forming on "${text}".`;
+            } else {
+                responseText = `Council: Policy note recorded. Acknowledgment sent.`;
+            }
+            
+            responseP.innerHTML = `<span>${currentChannel}:</span> ${responseText}`;
+            chatLog.appendChild(responseP);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }, 1500);
+    }
+
+    // --- 3D Visualization Initialization ---
+    function initThreeAdmin() {
+        const container = document.getElementById('visualization-container');
+        const canvas = document.getElementById('three-canvas-admin');
+
+        scene = new THREE.Scene();
+        // Use a wide orthographic camera for a data monitor look
+        const aspect = container.clientWidth / container.clientHeight;
+        camera = new THREE.OrthographicCamera(-aspect * 5, aspect * 5, 5, -5, 0.1, 100);
+        camera.position.z = 2;
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setClearColor(0x000000, 0); 
+
+        // System Load Geometry: Grid of cylinders
+        const cylinderCount = 50;
+        const group = new THREE.Group();
+        for (let i = 0; i < cylinderCount; i++) {
+            const geometry = new THREE.CylinderGeometry(0.05, 0.05, 4, 8);
+            const material = new THREE.MeshBasicMaterial({ color: 0x33aaff, opacity: 0.5, transparent: true });
+            const cylinder = new THREE.Mesh(geometry, material);
+            
+            cylinder.position.x = (Math.random() - 0.5) * 10 * aspect;
+            cylinder.position.y = (Math.random() - 0.5) * 10;
+            cylinder.position.z = 0;
+            cylinder.rotation.z = Math.PI / 2;
+            cylinder.userData.baseScale = Math.random() * 0.5 + 0.1;
+
+            group.add(cylinder);
+        }
+        systemLoadCube = group; 
+        scene.add(systemLoadCube);
+
+        // Grid helper for context
+        const helper = new THREE.GridHelper(20, 40, 0x004488, 0x004488);
+        helper.rotation.x = Math.PI / 2;
+        scene.add(helper);
+
+        window.addEventListener('resize', onWindowResizeAdmin, false);
+    }
+
+    function onWindowResizeAdmin() {
+        const container = document.getElementById('visualization-container');
+        const aspect = container.clientWidth / container.clientHeight;
+        
+        if (camera instanceof THREE.OrthographicCamera) {
+            camera.left = -aspect * 5;
+            camera.right = aspect * 5;
+            camera.top = 5;
+            camera.bottom = -5;
+        } else {
+            camera.aspect = aspect;
+        }
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    // --- Animation Loop ---
+    function animateAdmin() {
+        requestAnimationFrame(animateAdmin);
+        const time = Date.now() * 0.001;
+
+        // Visualizing System Load - Pulse effect
+        systemLoadCube.children.forEach((cylinder, index) => {
+            const loadFactor = (Math.sin(time * 5 + index * 0.1) + 1) / 2;
+            const targetScale = cylinder.userData.baseScale + loadFactor * 0.9;
+            cylinder.scale.setY(targetScale); 
+
+            // Simulate color shift based on bridge integrity (metrics.bridges / metrics.vessels)
+            const integrityRatio = metrics.bridges / metrics.vessels;
+            const hue = integrityRatio * 0.3 + 0.55; // Blue to Cyan gradient
+            cylinder.material.color.setHSL(hue, 1.0, 0.6 + loadFactor * 0.2); 
+        });
+
+        // Simulating Metrics Update
+        const deltaHarmony = (Math.sin(time * 0.5) * 0.2) + 0.1;
+        metrics.harmony = Math.min(100, Math.max(80, metrics.harmony + deltaHarmony));
+        
+        document.getElementById('admin-harmony').textContent = `${metrics.harmony.toFixed(1)}%`;
+        
+        renderer.render(scene, camera);
+    }
+    
+    // Initialize systems on window load
+    window.onload = function () {
+        initThreeAdmin();
+        animateAdmin();
+        // Set the initial channel on load
+        switchChannel('kernel'); 
+    }
+</script>
+</body>
+</html>
