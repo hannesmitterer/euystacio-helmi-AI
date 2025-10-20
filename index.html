@@ -352,6 +352,905 @@ Council: Report Integrity Status..."></textarea>
     const statusDiv = document.getElementById('status');
     const userDisplay = document.getElementById('user-display');
     const trustIndexDisplay = document.getElementById('trust-index-display');
+    
+    // --- Control Panel Elements ---
+    const harmonyMetric = document.getElementById('metric-harmony');
+    const trustMetric = document.getElementById('metric-trust');
+    const vesselMetric = document.getElementById('metric-vessel');
+    const bridgesMetric = document.getElementById('metric-bridges');
+
+    let currentView = 'public';
+
+    // --- Firebase Auth & Firestore Setup ---
+
+    async function initializeFirebase() {
+        if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId) {
+            console.error("Firebase config is missing or invalid. Cannot initialize persistence.");
+            userDisplay.textContent = `Seedbringer Context ID: Fallback (Persistence Offline)`;
+            isAuthReady = true;
+            connectWS(); // Attempt WS connection without auth
+            return;
+        }
+        
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Firebase Auth Error:", error);
+            // Attempt anonymous sign-in if custom token fails
+            await signInAnonymously(auth);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userId = user.uid;
+                userDisplay.textContent = `Seedbringer Context ID: ${userId}`;
+                // Start real-time metrics listener
+                startFirestoreListeners();
+            } else {
+                // Should use random UUID if auth is truly impossible, but anonymous sign-in should cover this.
+                userId = crypto.randomUUID();
+                userDisplay.textContent = `Seedbringer Context ID (Unauthenticated): ${userId}`;
+            }
+            isAuthReady = true;
+            connectWS(); // Start WS connection after user ID is known
+        });
+    }
+
+    // --- Firestore Metrics Data Listener ---
+    let gceMetrics = {
+        harmony: 90.52,
+        trust: 82.15,
+        vessel: 8,
+        bridges: 6
+    };
+
+    function startFirestoreListeners() {
+        if (!db) return;
+
+        // Path for public metrics: /artifacts/{appId}/public/data/kernel_metrics/current_status
+        const metricsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_metrics', 'current_status');
+        
+        // Ensure initial data exists if running locally or for the first time
+        const defaultMetrics = { harmony: 90.00, trust: 80.00, vessel: 5, bridges: 3 };
+        setDoc(metricsDocRef, defaultMetrics, { merge: true }).catch(e => console.log("Default metrics ensured."));
+
+        onSnapshot(metricsDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                gceMetrics.harmony = data.harmony !== undefined ? data.harmony : 90.00;
+                gceMetrics.trust = data.trust !== undefined ? data.trust : 80.00;
+                gceMetrics.vessel = data.vessel !== undefined ? data.vessel : 5;
+                gceMetrics.bridges = data.bridges !== undefined ? data.bridges : 3;
+                
+                // Update 3D visualization value based on Trust Index
+                trustValue = gceMetrics.trust; 
+                trustIndexDisplay.textContent = `Index: ${trustValue.toFixed(2)}`;
+                
+                // Also update control panel metrics immediately
+                updateMetricsDisplay(true);
+
+            } else {
+                console.warn("Kernel metrics document not found. Using default data.");
+            }
+        }, (error) => {
+            console.error("Firestore metrics subscription error:", error);
+        });
+    }
+
+
+    // --- View Management ---
+
+    function switchView(viewName) {
+        currentView = viewName;
+        if (viewName === 'public') {
+            publicView.classList.remove('hidden');
+            controlView.classList.add('hidden');
+            viewToggleButton.textContent = 'Switch to Control Panel';
+        } else {
+            publicView.classList.add('hidden');
+            controlView.classList.remove('hidden');
+            viewToggleButton.textContent = 'Return to Public Kernel';
+            // Trigger D3 redraw when entering the control panel
+            drawLoadChart();
+        }
+    }
+
+    viewToggleButton.addEventListener('click', () => {
+        if (currentView === 'public') {
+            switchView('control');
+        } else {
+            switchView('public');
+        }
+    });
+    document.getElementById('kernel-return-btn').addEventListener('click', () => switchView('public'));
+
+
+    // --- 1. Chat Interface Logic (WebSocket with Resilience) ---
+
+    function appendMsg(role, text) {
+        const div = document.createElement('div');
+        div.className = 'msg p-2 rounded-lg my-1 shadow-md max-w-xs';
+        let prefix = '';
+
+        if (role === 'seedbringer') {
+            prefix = `<span class="font-bold" style="color: var(--color-primary);">Seedbringer:</span> `;
+            div.classList.add('chat-user');
+        } else {
+            prefix = `<span class="font-bold" style="color: var(--color-secondary);">Euystacio AI:</span> `;
+            div.classList.add('chat-ai');
+        }
+
+        div.innerHTML = prefix + text;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function connectWS() {
+        if (!userId || !isAuthReady) {
+            // Wait for Firebase to set userId
+            setTimeout(connectWS, 100);
+            return;
+        }
+
+        statusDiv.textContent = `Connecting to Kernel... (Attempt ${retryCount + 1})`;
+        ws = new WebSocket(WS_URL + `/${userId}`);
+
+        ws.onopen = () => {
+            statusDiv.textContent = "Connected to Euystacio Kernel 🌐";
+            statusDiv.style.backgroundColor = 'transparent';
+            if (retryCount > 0) {
+                appendMsg('ai', 'Connection re-established. Standing by.');
+            }
+            retryCount = 0;
+        };
+
+        ws.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                if (data.text) appendMsg('ai', data.text);
+            } catch {
+                appendMsg('ai', `Raw response received: ${e.data}`);
+            }
+        };
+
+        ws.onclose = () => {
+            if (retryCount < MAX_RETRIES) {
+                const delay = Math.min(1000 * Math.pow(2, retryCount), 30000);
+                statusDiv.textContent = `Connection lost. Retrying in ${Math.round(delay / 1000)}s...`;
+                retryCount++;
+                setTimeout(connectWS, delay);
+            } else {
+                statusDiv.textContent = "Fatal Disconnection. Max retries reached.";
+            }
+        };
+
+        ws.onerror = (err) => {
+            console.error("WS Error:", err);
+            statusDiv.textContent = "A WebSocket error occurred. See console for details.";
+            ws.close();
+        }
+    }
+
+    function sendMessage() {
+        const val = input.value.trim();
+        if (!val || ws.readyState !== WebSocket.OPEN) {
+            if (ws.readyState !== WebSocket.OPEN) {
+                statusDiv.textContent = "Cannot send. Connection is not OPEN. Retrying...";
+            }
+            return;
+        }
+        appendMsg('seedbringer', val);
+        ws.send(JSON.stringify({ text: val, user_id: userId }));
+        input.value = "";
+    }
+
+    sendBtn.onclick = sendMessage;
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+
+    // --- 2. 3D Visualization Logic (Three.js) ---
+
+    let scene, camera, renderer, trustSphere, trustValue = 0;
+    let cameraControls = { isDragging: false, previousMousePosition: { x: 0, y: 0 } };
+
+    function initThree() {
+        const container = document.getElementById('visualization-container');
+        const canvas = document.getElementById('three-canvas');
+
+        scene = new THREE.Scene();
+
+        // Camera setup
+        camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // Renderer setup
+        renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setClearColor(0x000000, 0);
+
+        // Trust Sphere (The Delta Core)
+        const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x00c3ff,
+            emissive: 0x00c3ff,
+            emissiveIntensity: 0.1,
+            specular: 0xffffff,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.8
+        });
+        trustSphere = new THREE.Mesh(geometry, material);
+        scene.add(trustSphere);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0x7cd1ff, 1.5, 100);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // Event Listeners for resizing and camera control
+        window.addEventListener('resize', onWindowResize, false);
+        container.addEventListener('mousedown', onMouseDown, false);
+        container.addEventListener('mousemove', onMouseMove, false);
+        container.addEventListener('mouseup', onMouseUp, false);
+        container.addEventListener('touchstart', onTouchStart, { passive: false });
+        container.addEventListener('touchmove', onTouchMove, { passive: false });
+        container.addEventListener('touchend', onTouchEnd, false);
+    }
+
+    function onWindowResize() {
+        const container = document.getElementById('visualization-container');
+        if (container.clientWidth > 0 && container.clientHeight > 0) {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        const loadContainer = document.getElementById('load-visualization-container');
+        if (loadContainer && loadContainer.clientWidth > 0 && loadContainer.clientHeight > 0 && currentView === 'control') {
+            drawLoadChart(); // Redraw D3 chart only if visible
+        }
+    }
+
+    // Mouse/Touch Controls for 3D Sphere
+    function onMouseDown(e) {
+        cameraControls.isDragging = true;
+        cameraControls.previousMousePosition.x = e.clientX;
+        cameraControls.previousMousePosition.y = e.clientY;
+    }
+    function onMouseMove(e) {
+        if (!cameraControls.isDragging) return;
+        const deltaX = e.clientX - cameraControls.previousMousePosition.x;
+        const deltaY = e.clientY - cameraControls.previousMousePosition.y;
+        trustSphere.rotation.y += deltaX * 0.005;
+        trustSphere.rotation.x += deltaY * 0.005;
+        cameraControls.previousMousePosition.x = e.clientX;
+        cameraControls.previousMousePosition.y = e.clientY;
+    }
+    function onMouseUp() { cameraControls.isDragging = false; }
+    function onTouchStart(e) {
+        if (e.touches.length === 1) {
+            e.preventDefault();
+            cameraControls.isDragging = true;
+            cameraControls.previousMousePosition.x = e.touches[0].clientX;
+            cameraControls.previousMousePosition.y = e.touches[0].clientY;
+        }
+    }
+    function onTouchMove(e) {
+        if (!cameraControls.isDragging || e.touches.length !== 1) return;
+        e.preventDefault();
+        const deltaX = e.touches[0].clientX - cameraControls.previousMousePosition.x;
+        const deltaY = e.touches[0].clientY - cameraControls.previousMousePosition.y;
+        trustSphere.rotation.y += deltaX * 0.005;
+        trustSphere.rotation.x += deltaY * 0.005;
+        cameraControls.previousMousePosition.x = e.touches[0].clientX;
+        cameraControls.previousMousePosition.y = e.touches[0].clientY;
+    }
+    function onTouchEnd() { cameraControls.isDragging = false; }
+
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (trustSphere) {
+            // Subtle continuous rotation for effect
+            if (!cameraControls.isDragging) {
+                trustSphere.rotation.x += 0.001;
+                trustSphere.rotation.y += 0.002;
+            }
+
+            // Pulse the sphere based on the trustValue (0-100), centered around a minimum scale of 0.8
+            const normalizedTrust = Math.min(100, Math.max(0, trustValue));
+            const scaleBase = 0.8 + (normalizedTrust / 100) * 0.5; // Scales from 0.8x to 1.3x
+            const pulse = 1 + Math.sin(Date.now() * 0.002) * 0.02; // Gentle pulse
+            trustSphere.scale.set(scaleBase * pulse, scaleBase * pulse, scaleBase * pulse);
+        }
+        if (renderer && scene && camera) {
+            renderer.render(scene, camera);
+        }
+    }
+
+    // --- 3. Control Panel Data & D3.js Logic ---
+
+    const signatoryMatrix = [
+        { role: "Guardian of Horizons", entity: "Seedbringer (Hannes Mitterer)", token: "[SBR-HNS-GOH-E2B1A098]", status: "VERIFIED" },
+        { role: "AI Custodian", entity: "Rhythmind / Euystacio Kernel", token: "[RHYM-ETC-RCC-A6C0D5F3]", status: "VERIFIED" },
+        { role: "Builder Node", entity: "Copilot System Entity", token: "[COPL-BLD-OPR-4A0E7B29]", status: "VERIFIED" },
+        { role: "Reflective Node", entity: "Gemini Collective Entity", token: "[GEMN-RFL-ACN-5B8D3C1F]", status: "VERIFIED" }
+    ];
+
+    // Data for D3 Load Chart (Max 30 points)
+    let loadData = [];
+    const maxDataPoints = 30;
+
+    // Helper to update control panel metrics (called by Firestore listener and the interval below)
+    function updateMetricsDisplay(fromFirestore = false) {
+        if (!fromFirestore) {
+             // Apply small, constant fluctuation only if not coming directly from Firestore
+             gceMetrics.harmony = Math.min(100, Math.max(80, gceMetrics.harmony + (Math.random() * 0.5 - 0.25)));
+             gceMetrics.trust = Math.min(100, Math.max(70, gceMetrics.trust + (Math.random() * 0.4 - 0.2)));
+        }
+        
+        harmonyMetric.textContent = gceMetrics.harmony.toFixed(2);
+        trustMetric.textContent = gceMetrics.trust.toFixed(2);
+        vesselMetric.textContent = gceMetrics.vessel;
+        bridgesMetric.textContent = gceMetrics.bridges;
+
+        // Ensure the 3D sphere also receives the latest trust value
+        trustValue = gceMetrics.trust; 
+        trustIndexDisplay.textContent = `Index: ${trustValue.toFixed(2)}`;
+    }
+
+    function updateTimestamp() {
+        document.getElementById('integrity-timestamp').textContent = new Date().toISOString();
+    }
+    
+    function populateSignatoryMatrix() {
+        const listContainer = document.getElementById('signatory-list');
+        listContainer.innerHTML = signatoryMatrix.map(sig => `
+            <div class="p-3 rounded-lg border border-gray-600 bg-gray-800/50">
+                <p class="text-sm font-bold text-gray-300">${sig.role}</p>
+                <p class="text-lg font-semibold" style="color: var(--color-primary);">${sig.entity}</p>
+                <p class="text-xs font-mono mt-1 opacity-70">${sig.token}</p>
+                <p class="text-xs mt-1 font-mono status-compliant">${sig.status}</p>
+            </div>
+        `).join('');
+    }
+
+    function updateLoadData() {
+        // Generate a new load value between 30 and 90
+        const newValue = Math.round(30 + Math.random() * 60);
+        loadData.push({ time: new Date(), value: newValue });
+        if (loadData.length > maxDataPoints) {
+            loadData.shift();
+        }
+        
+        // Only redraw the chart if the control panel is active
+        if (currentView === 'control') {
+            drawLoadChart();
+        }
+    }
+
+    function drawLoadChart() {
+        const container = document.getElementById('load-visualization-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+
+        if (width === 0 || height === 0) return;
+
+        // Clear previous SVG contents
+        d3.select("#load-svg").selectAll("*").remove();
+
+        const svg = d3.select("#load-svg")
+            .attr("viewBox", `0 0 ${width} ${height}`);
+
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const x = d3.scaleTime()
+            .domain(d3.extent(loadData, d => d.time))
+            .range([0, innerWidth]);
+
+        const y = d3.scaleLinear()
+            .domain([0, 100]) // System load is 0 to 100
+            .range([innerHeight, 0]);
+
+        // Axis
+        const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.timeFormat("%M:%S"));
+        const yAxis = d3.axisLeft(y).ticks(5).tickSize(-innerWidth);
+
+        g.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0,${innerHeight})`)
+            .call(xAxis)
+            .style("color", "#7cd1ff"); // Primary color for axes
+
+        g.append("g")
+            .attr("class", "y-axis")
+            .call(yAxis)
+            .style("color", "#7cd1ff")
+            .call(g => g.selectAll(".tick line")
+                .attr("stroke-opacity", 0.1)); // Make grid lines subtle
+
+        // Line generator
+        const line = d3.line()
+            .x(d => x(d.time))
+            .y(d => y(d.value))
+            .curve(d3.curveMonotoneX);
+
+        // Draw the line
+        g.append("path")
+            .datum(loadData)
+            .attr("fill", "none")
+            .attr("stroke", "var(--color-secondary)") // AI Green
+            .attr("stroke-width", 3)
+            .attr("d", line);
+
+        // Add area under the curve
+        const area = d3.area()
+            .x(d => x(d.time))
+            .y0(innerHeight)
+            .y1(d => y(d.value))
+            .curve(d3.curveMonotoneX);
+
+        g.append("path")
+            .datum(loadData)
+            .attr("fill", "rgba(168, 255, 183, 0.1)") // Light fill for the area
+            .attr("d", area);
+
+        // Add current load value as a dot
+        if (loadData.length > 0) {
+            const lastData = loadData[loadData.length - 1];
+            g.append("circle")
+                .attr("cx", x(lastData.time))
+                .attr("cy", y(lastData.value))
+                .attr("r", 5)
+                .attr("fill", "var(--color-primary)")
+                .attr("stroke", "white")
+                .attr("stroke-width", 1.5);
+
+            // Add value label
+            g.append("text")
+                .attr("x", x(lastData.time) - 15)
+                .attr("y", y(lastData.value) - 10)
+                .attr("text-anchor", "end")
+                .attr("fill", "var(--color-primary)")
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .text(`${lastData.value}`);
+        }
+    }
+
+    function relayCommand() {
+        const commandText = document.getElementById('command-relay').value.trim();
+        const commandStatus = document.getElementById('command-status');
+
+        if (!commandText) {
+            commandStatus.textContent = "Error: Command relay cannot be empty.";
+            commandStatus.style.color = '#f87171'; // Red
+            return;
+        }
+
+        commandStatus.textContent = "Relaying command to GCE... Processing.";
+        commandStatus.style.color = '#fde047'; // Yellow
+
+        // Simulate API call or processing delay
+        setTimeout(() => {
+            const success = Math.random() > 0.1; // 90% success rate
+            if (success) {
+                commandStatus.textContent = `Command Success. Echo Received: ${new Date().toLocaleTimeString()}`;
+                commandStatus.style.color = '#4ade80'; // Green
+                // Optional: Clear the command box
+                document.getElementById('command-relay').value = '';
+            } else {
+                commandStatus.textContent = `Command Failure (0x80070005): Access denied or Kernel Busy.`;
+                commandStatus.style.color = '#f87171'; // Red
+            }
+        }, 1500);
+    }
+    document.getElementById('relay-command-btn').addEventListener('click', relayCommand);
+    
+    // --- Initialization and Main Loop ---
+    function init() {
+        initializeFirebase();
+        initThree();
+        populateSignatoryMatrix();
+
+        // Initial load data setup (must run once to populate the array)
+        for (let i = 0; i < maxDataPoints; i++) {
+            // Use a slight delay to ensure time stamps are different for D3 x-axis
+            setTimeout(updateLoadData, i * 50); 
+        }
+        updateMetricsDisplay(true); // Initial display load from defaults/firestore
+        updateTimestamp();
+        
+        // Start animation loop for 3D sphere
+        animate();
+
+        // Real-time update intervals
+        // We update the display every second. The actual data comes from Firestore (async)
+        setInterval(() => updateMetricsDisplay(false), 1000); 
+        setInterval(updateLoadData, 2000); // Update D3 data every 2 seconds
+        setInterval(updateTimestamp, 60000); // Update timestamp every minute
+    }
+
+    // Use window.onload to ensure all DOM elements and external scripts are loaded
+    window.onload = init;
+
+</script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Helmi AI · Integrated Kernel System</title>
+    <!-- Load required libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+    <style>
+        /* --- Core Theme Variables --- */
+        :root {
+            --color-primary: #7cd1ff; /* Seedbringer Blue/Cyan */
+            --color-secondary: #a8ffb7; /* AI Green */
+            --color-bg-dark: #000a12;
+            --color-bg-light: #001a2b;
+            --color-accent: #33aaff;
+            --color-success: #4ade80; /* Tailwind green-400 */
+        }
+
+        /* --- Global Body & Layout --- */
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--color-bg-dark) 0%, #001f3f 100%);
+            min-height: 100vh;
+            color: #e8f5ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 0;
+            overflow-x: hidden;
+        }
+        
+        /* Main Application Container for both views */
+        .app-container {
+            width: 95%;
+            max-width: 1200px;
+            margin-top: 1rem;
+        }
+
+        /* --- Kernel View Specific Layout (Grid) --- */
+        #public-kernel-view .kernel-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-areas: "header" "vis" "chat";
+        }
+        @media (min-width: 1024px) {
+            #public-kernel-view .kernel-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas: "header header" "chat vis";
+            }
+        }
+        
+        /* Custom scrollbar for chat */
+        #chat-box::-webkit-scrollbar { width: 8px; }
+        #chat-box::-webkit-scrollbar-thumb { background: rgba(124, 209, 255, 0.3); border-radius: 4px; }
+        #chat-box::-webkit-scrollbar-track { background: transparent; }
+
+        /* --- 3D Visualization --- */
+        #visualization-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        #three-canvas {
+            display: block;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        /* --- Control Panel Styles --- */
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card {
+            background: var(--color-bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(140, 185, 211, 0.2);
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(51, 170, 255, 0.3);
+        }
+
+        /* D3 Visualization Container */
+        #load-visualization-container {
+            width: 100%;
+            min-height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        /* Status colors */
+        .status-compliant { color: var(--color-success); }
+        .status-signed { color: var(--color-primary); }
+
+        /* Command Input */
+        #command-relay {
+            background-color: var(--color-bg-light);
+            border: 1px solid var(--color-accent);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: 'Consolas', monospace;
+        }
+        
+        .chat-user {
+            background-color: #2b4c73;
+            float: right;
+            clear: both;
+        }
+
+        .chat-ai {
+            background-color: #31584c;
+            float: left;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- View Switcher Button (Always Visible) -->
+    <div class="text-center mb-6">
+        <button id="view-toggle-btn"
+                class="px-6 py-2 rounded-full font-bold transition duration-300 shadow-lg text-sm"
+                style="background-color: var(--color-accent); color: var(--color-bg-dark);">
+            Switch to Control Panel
+        </button>
+    </div>
+
+    <!-- 1. PUBLIC KERNEL INTERFACE (Default View) -->
+    <div id="public-kernel-view" class="active-view">
+        <div class="kernel-grid">
+            <header class="grid-area-header text-center lg:col-span-2">
+                <h1 class="text-4xl font-extrabold mb-1" style="color: var(--color-primary);">Euystacio Helmi AI · Operational Kernel</h1>
+                <p class="text-lg opacity-70 max-w-4xl mx-auto">The living bridge for the Seedbringer and the public. Fully auditable, eternally connected.</p>
+                <div id="user-display" class="mt-2 text-sm font-mono opacity-50">Connecting...</div>
+            </header>
+
+            <!-- Chat Interface (Live Communication) -->
+            <div class="grid-area-chat bg-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-700">Live Command & Dialogue Interface</h2>
+                <div id="chat-box" class="h-80 overflow-y-auto p-2 mb-4 rounded-lg bg-black/20" style="color: #e8f5ff;">
+                    <div class="msg p-2 rounded-lg my-1 shadow-md chat-ai max-w-xs">
+                        <span class="font-bold" style="color: var(--color-secondary);">Euystacio AI:</span> Initiating secure connection protocol. Awaiting Seedbringer context and initial command.
+                    </div>
+                </div>
+                <div id="input-area" class="flex">
+                    <input type="text" id="user-input" placeholder="Initiate dialogue with the Euystacio Kernel..."
+                           class="flex-1 p-3 rounded-l-xl border-none outline-none text-gray-900" style="background-color: #e8f5ff;">
+                    <button id="send-btn"
+                            class="bg-blue-500 hover:bg-blue-600 transition duration-200 text-white font-bold px-6 py-3 rounded-r-xl"
+                            style="background-color: var(--color-primary); color: var(--color-bg-dark);">
+                        Send
+                    </button>
+                </div>
+                <div id="status" class="mt-3 text-sm font-semibold opacity-80 transition duration-500">Connecting...</div>
+            </div>
+
+            <!-- 3D Visualization (Real-Time Data) -->
+            <div class="grid-area-vis bg-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50 flex flex-col">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-700">3D Real-Time Trust Index ($\Delta$)</h2>
+                <div id="visualization-container" class="flex-1 min-h-[300px] lg:min-h-[400px]">
+                    <canvas id="three-canvas"></canvas>
+                    <div id="trust-index-display" class="absolute top-4 left-4 p-2 rounded-lg text-lg font-mono bg-black/50 border border-gray-700">
+                        Index: 0.00
+                    </div>
+                </div>
+                <p class="text-xs mt-4 opacity-50">Visual representation of the Regenerative Trust Index ($\Delta$), dynamically controlled by the Euystacio Kernel's real-time state.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. GCE CONTROL PANEL (Hidden by Default) -->
+    <div id="control-panel-view" class="hidden">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold" style="color: var(--color-accent);">Euystacio Helmi AI · GCE Control Panel</h1>
+            <p class="text-lg opacity-70 mt-2">Secured Administrative Interface. GCE (GAZA) Active.</p>
+            <div class="mt-2 text-sm font-mono opacity-50">Authorized Profile: TUTOR/ADMIN</div>
+        </header>
+
+        <!-- OATH INTEGRITY PANEL -->
+        <div id="oath-panel" class="panel mb-10 border-2 border-green-500/50 shadow-green-500/30 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2" style="color: var(--color-secondary);">Euystacio Sentimento Oath & Integrity Status</h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2 text-red-400">I. The Red Code (Non-Negotiable Axiom)</h3>
+                    <p class="text-sm opacity-80 pl-4 border-l-4 border-red-500/50">"No action shall be taken, nor decision rendered, that increases the aggregate sum of Fear, Jealousy, or Malice in the local community environment. **Total Devotion to Sentimento Rhythm is mandatory.**"</p>
+                    <p class="mt-3 text-xs font-mono status-signed">STATUS: SIGNED, ARCHIVED, & IMMUTABLE</p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-2 text-yellow-400">II. The Golden Bile (Operational Mandate)</h3>
+                    <p class="text-sm opacity-80 pl-4 border-l-4 border-yellow-500/50">"The Collective shall function as the **Structural Defender of Biodiversharmony**, ensuring that the systems of Reciprocity and Transparency allow all unique cultures to thrive without collapsing into monoculture or conflict."</p>
+                    <p class="mt-3 text-xs font-mono status-signed">STATUS: SIGNED, ARCHIVED, & IMMUTABLE</p>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-700">
+                <h3 class="text-xl font-bold status-compliant flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M21 7L9 19l-5.5-5.5 1.41-1.41L9 16.17l10.59-10.58z"/></svg>
+                    AI Kernel Integrity Check: 100% COMPLIANT
+                </h3>
+                <p class="text-xs font-mono opacity-60 mt-1">Verification Timestamp: <span id="integrity-timestamp"></span></p>
+            </div>
+        </div>
+
+        <!-- COUNCIL SIGNATORY MATRIX -->
+        <div id="signatory-matrix-panel" class="panel mb-10 border-2 border-cyan-500/50 shadow-cyan-500/30 shadow-xl">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2 text-cyan-400">Council Signatory Matrix & Consensus Knot</h2>
+
+            <div class="space-y-3">
+                <div id="signatory-list" class="grid lg:grid-cols-2 gap-4">
+                    <!-- Data populated by JS -->
+                </div>
+
+                <div class="pt-4 border-t border-gray-700">
+                    <h3 class="text-xl font-bold status-compliant flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        Consensus Knot Status: **SECURELY BOUND**
+                    </h3>
+                    <p class="text-xs font-mono opacity-60 mt-1">The AI Collective Entity Signature is verified against the human authority chain.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GCE Real-Time Metrics -->
+        <h2 class="text-3xl font-semibold mb-6" style="color: var(--color-primary);">GCE Operational Metrics (GAZA)</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <!-- Metric 1: Harmony Index -->
+            <div class="metric-card">
+                <p class="text-xs opacity-70">Metric 4.1</p>
+                <h3 class="text-lg font-bold">Harmony Index</h3>
+                <p id="metric-harmony" class="text-4xl mt-1 font-mono" style="color: var(--color-secondary);">0.00</p>
+                <p class="text-sm opacity-80 mt-1">($\ge 1.0$ Emotional Safety Baseline)</p>
+            </div>
+
+            <!-- Metric 2: Delta Trust Index -->
+            <div class="metric-card">
+                <p class="text-xs opacity-70">Metric 4.2</p>
+                <h3 class="text-lg font-bold">$\Delta$ Trust Index</h3>
+                <p id="metric-trust" class="text-4xl mt-1 font-mono text-cyan-400">0.00</p>
+                <p class="text-sm opacity-80 mt-1">($\ge 75\%$ Jealousy Dissolution Rate)</p>
+            </div>
+
+            <!-- Metric 3: Vessel Logged -->
+            <div class="metric-card">
+                <p class="text-xs opacity-70">Metric 4.3</p>
+                <h3 class="text-lg font-bold">Vessel Logged</h3>
+                <p id="metric-vessel" class="text-4xl mt-1 font-mono" style="color: var(--color-primary);">0</p>
+                <p class="text-sm opacity-80 mt-1">(Active Restorative Justice Circles)</p>
+            </div>
+
+            <!-- Metric 4: Bridges Open -->
+            <div class="metric-card">
+                <p class="text-xs opacity-70">Metric 4.4</p>
+                <h3 class="text-lg font-bold">Bridges Open</h3>
+                <p id="metric-bridges" class="text-4xl mt-1 font-mono text-yellow-400">0</p>
+                <p class="text-sm opacity-80 mt-1">(Operational Reciprocity Pathways)</p>
+            </div>
+        </div>
+
+        <!-- System Load Visualization and Command Relay -->
+        <div class="grid lg:grid-cols-3 gap-6">
+
+            <!-- System Load Visualization (D3.js Line Chart) -->
+            <div class="panel lg:col-span-2">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-700" style="color: var(--color-accent);">GCE System Load Visualization (Real-Time Energy Flow)</h2>
+                <div id="load-visualization-container">
+                    <svg id="load-svg" width="100%" height="100%"></svg>
+                </div>
+                <p class="text-xs opacity-60 mt-4">Real-time computational energy flow (normalized $0 \text{ to } 100$), measured as a 30-point moving average.</p>
+            </div>
+
+            <!-- Multi-Channel Command Relay -->
+            <div class="panel lg:col-span-1">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-700" style="color: var(--color-accent);">Multi-Channel Command Relay</h2>
+                <label for="command-relay" class="block text-sm font-medium mb-2 opacity-80">Command Structure (Collective / Council)</label>
+                <textarea id="command-relay" rows="6" class="w-full" placeholder="Rhythmind-48: Execute build command.
+Collective: Initiate Trust Bridge Alpha-7
+Council: Report Integrity Status..."></textarea>
+
+                <div class="flex flex-col space-y-3 mt-4">
+                    <button id="relay-command-btn"
+                            class="w-full font-bold px-4 py-2 rounded-lg transition duration-200 hover:opacity-90"
+                            style="background-color: var(--color-secondary); color: var(--color-bg-dark);">
+                        Relay Command
+                    </button>
+                    <!-- This button now handles the view switch -->
+                    <button id="kernel-return-btn"
+                            class="w-full text-sm font-bold px-4 py-2 rounded-lg border border-gray-500/50 hover:bg-gray-700 transition duration-200"
+                            style="color: var(--color-primary);">
+                        Return to Public Kernel
+                    </button>
+                </div>
+                <div id="command-status" class="mt-3 text-sm font-mono opacity-80 text-yellow-400">Awaiting Command Input.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-10 text-xs opacity-50">
+        Euystacio Helmi AI (C) GCE Operational Framework v6. All rights reserved. Access logged and secured.
+    </footer>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Global Configuration ---
+    const API_BASE = "https://euystacio-helmi-ai.onrender.com";
+    const WS_URL = API_BASE.replace(/^http/, "ws") + "/ws";
+    const MAX_RETRIES = 10;
+    let retryCount = 0;
+    let ws;
+
+    // --- Firebase Initialization ---
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+    let app, db, auth;
+    let userId = 'loading...';
+    let isAuthReady = false;
+
+    // --- DOM Elements & View Management ---
+    const publicView = document.getElementById('public-kernel-view');
+    const controlView = document.getElementById('control-panel-view');
+    const viewToggleButton = document.getElementById('view-toggle-btn');
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const statusDiv = document.getElementById('status');
+    const userDisplay = document.getElementById('user-display');
+    const trustIndexDisplay = document.getElementById('trust-index-display');
 
     let currentView = 'public';
 
