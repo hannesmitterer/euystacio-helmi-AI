@@ -3,6 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythmin Advanced | Time Signature Trainer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Load Tone.js for precise timing and audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        /* Custom styles for the visual metronome */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Dark background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        #pulse-visual-container {
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .beat-indicator {
+            width: 30px;
+            height: 30px;
+            margin: 0 8px;
+            background-color: #3b82f6; /* Normal beat color */
+            border-radius: 50%;
+            opacity: 0.3;
+            transition: transform 0.1s ease-out, opacity 0.1s ease-out, background-color 0.1s;
+        }
+        .active-beat {
+            transform: scale(1.5);
+            opacity: 1 !important;
+            box-shadow: 0 0 10px 5px rgba(147, 197, 253, 0.8);
+        }
+        .active-downbeat {
+            background-color: #ef4444; /* Red color for downbeat (beat 1) */
+            transform: scale(1.6);
+            opacity: 1 !important;
+            box-shadow: 0 0 15px 7px rgba(252, 165, 165, 0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="w-full max-w-lg bg-[#161b22] p-6 sm:p-8 rounded-2xl shadow-2xl text-white">
+
+        <h1 class="text-4xl font-extrabold mb-4 text-center text-red-400">Rhythmin Advanced</h1>
+        <p class="text-center text-sm mb-6 text-gray-400">Time Signature, Tempo, and Downbeat Accent Control.</p>
+
+        <!-- Current BPM Display -->
+        <div class="text-center mb-8">
+            <span id="bpm-display" class="text-6xl font-black text-white leading-none">120</span>
+            <span class="text-2xl font-light text-gray-400 ml-2">BPM</span>
+        </div>
+        
+        <!-- Time Signature Display -->
+        <div class="text-center text-3xl font-bold text-cyan-300 mb-6">
+            <span id="ts-numerator-display">4</span>/<span id="ts-denominator-display">4</span>
+        </div>
+
+        <!-- Visual Metronome Pulse Indicators -->
+        <div id="pulse-visual-container" class="mb-10 flex justify-center items-center h-16">
+            <!-- Indicators will be dynamically added here -->
+        </div>
+
+        <!-- Start/Stop Button -->
+        <button id="start-stop-btn" class="w-full py-4 rounded-xl font-bold text-xl transition duration-200 shadow-lg mb-6
+               bg-green-600 hover:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-500/50">
+            Start
+        </button>
+
+        <!-- Control Group: BPM -->
+        <div class="mb-8 p-4 bg-gray-800/50 rounded-lg">
+            <label for="bpm-slider" class="block text-sm font-semibold text-gray-300 mb-2">Tempo (40 - 240 BPM)</label>
+            <input type="range" id="bpm-slider" min="40" max="240" value="120"
+                   class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+        </div>
+
+        <!-- Control Group: Time Signature -->
+        <div class="mb-6 p-4 bg-gray-800/50 rounded-lg">
+            <h3 class="text-sm font-semibold text-gray-300 mb-3">Time Signature (Beats / Note Value)</h3>
+            <div class="flex space-x-4">
+                <div class="flex-1">
+                    <label for="ts-numerator" class="block text-xs text-gray-400 mb-1">Beats Per Measure</label>
+                    <select id="ts-numerator" class="w-full p-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:ring-cyan-500 focus:border-cyan-500">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="12">12</option>
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label for="ts-denominator" class="block text-xs text-gray-400 mb-1">Beat Note Value</label>
+                    <select id="ts-denominator" class="w-full p-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:ring-cyan-500 focus:border-cyan-500">
+                        <option value="2">Half Note</option>
+                        <option value="4" selected>Quarter Note</option>
+                        <option value="8">Eighth Note</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Message Box for Audio Context -->
+        <div id="message-box" class="mt-4 p-3 bg-yellow-900/50 text-yellow-300 rounded-lg text-sm text-center hidden">
+            Tap anywhere to enable audio.
+        </div>
+    </div>
+
+    <script>
+        // --- Firebase Globals (Required for environment, though not used for this app) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // --------------------------------------------------------------------------------------
+
+        let isPlaying = false;
+        let bpm = 120;
+        let numerator = 4;
+        let denominator = 4;
+        let currentBeat = 0; // Tracks the current beat index (1 to numerator)
+        let metronomeLoop;
+
+        // --- DOM Element References ---
+        const bpmDisplay = document.getElementById('bpm-display');
+        const bpmSlider = document.getElementById('bpm-slider');
+        const tsNumeratorSelect = document.getElementById('ts-numerator');
+        const tsDenominatorSelect = document.getElementById('ts-denominator');
+        const tsNumeratorDisplay = document.getElementById('ts-numerator-display');
+        const tsDenominatorDisplay = document.getElementById('ts-denominator-display');
+        const startStopBtn = document.getElementById('start-stop-btn');
+        const pulseContainer = document.getElementById('pulse-visual-container');
+        const messageBox = document.getElementById('message-box');
+
+        // --- Tone.js Setup (Synth) ---
+
+        // Synth for the accented downbeat (Beat 1) - Higher Pitch/Louder
+        const accentSynth = new Tone.MembraneSynth({
+            pitchDecay: 0.008,
+            octaves: 2,
+            envelope: {
+                attack: 0.001,
+                decay: 0.3,
+                sustain: 0.01,
+                release: 0.01,
+            },
+        }).toDestination();
+
+        // Synth for the normal beats - Lower Pitch/Quieter
+        const normalSynth = new Tone.MembraneSynth({
+            pitchDecay: 0.008,
+            octaves: 1,
+            envelope: {
+                attack: 0.001,
+                decay: 0.2,
+                sustain: 0.01,
+                release: 0.01,
+            },
+        }).toDestination();
+        
+        accentSynth.volume.value = -3; // Slightly louder
+        normalSynth.volume.value = -8; // Quieter
+
+        // --- Rhythmin Logic Functions ---
+
+        function updateDisplayIndicators() {
+            // Remove old indicators
+            pulseContainer.innerHTML = '';
+            
+            // Add new indicators based on numerator
+            for (let i = 1; i <= numerator; i++) {
+                const indicator = document.createElement('div');
+                indicator.id = `beat-${i}`;
+                indicator.className = 'beat-indicator';
+                // Beat 1 gets a special identifier for CSS later
+                if (i === 1) {
+                    indicator.classList.add('downbeat-marker');
+                }
+                pulseContainer.appendChild(indicator);
+            }
+        }
+
+        // Calculates the Tone.js interval string based on the denominator (e.g., 4n, 8n)
+        function getToneInterval() {
+            if (denominator === 2) return "2n";
+            if (denominator === 4) return "4n";
+            if (denominator === 8) return "8n";
+            return "4n"; // Default
+        }
+
+        function setupMetronomeLoop() {
+            if (metronomeLoop) {
+                metronomeLoop.dispose();
+            }
+            
+            // The interval is based on the denominator (the note value that gets one beat)
+            const interval = getToneInterval();
+
+            metronomeLoop = new Tone.Loop(time => {
+                currentBeat++;
+                if (currentBeat > numerator) {
+                    currentBeat = 1;
+                }
+
+                const isDownbeat = currentBeat === 1;
+                
+                // Trigger sound
+                if (isDownbeat) {
+                    accentSynth.triggerAttackRelease("C4", "8n", time);
+                } else {
+                    normalSynth.triggerAttackRelease("A3", "8n", time);
+                }
+
+                // Visual Pulse Effect using Tone.Draw for accurate scheduling
+                Tone.Draw.schedule(() => {
+                    const indicators = pulseContainer.querySelectorAll('.beat-indicator');
+                    
+                    // Clear all previous active states
+                    indicators.forEach(i => {
+                        i.classList.remove('active-beat', 'active-downbeat');
+                    });
+                    
+                    // Apply new active state
+                    const activeIndicator = document.getElementById(`beat-${currentBeat}`);
+                    if (activeIndicator) {
+                        activeIndicator.classList.add(isDownbeat ? 'active-downbeat' : 'active-beat');
+                    }
+                    
+                }, time);
+
+            }, interval);
+        }
+
+        // Function to update BPM from slider
+        function updateBPM(newBPM) {
+            newBPM = parseInt(newBPM);
+            if (newBPM < 40) newBPM = 40;
+            if (newBPM > 240) newBPM = 240;
+
+            bpm = newBPM;
+            bpmDisplay.textContent = bpm;
+            bpmSlider.value = bpm;
+
+            // Update Tone.js Transport BPM
+            Tone.Transport.bpm.value = bpm;
+        }
+        
+        // Function to update Time Signature
+        function updateTimeSignature() {
+            numerator = parseInt(tsNumeratorSelect.value);
+            denominator = parseInt(tsDenominatorSelect.value);
+            
+            tsNumeratorDisplay.textContent = numerator;
+            tsDenominatorDisplay.textContent = denominator;
+            
+            // Re-setup the loop and indicators immediately
+            if (isPlaying) {
+                Tone.Transport.stop();
+                setupMetronomeLoop();
+                metronomeLoop.start(0);
+                Tone.Transport.start();
+            } else {
+                setupMetronomeLoop();
+            }
+            updateDisplayIndicators();
+            currentBeat = 0; // Reset beat counter
+        }
+
+        // --- Event Handlers ---
+
+        // Event listeners for BPM slider
+        bpmSlider.addEventListener('input', (e) => updateBPM(e.target.value));
+
+        // Event listeners for Time Signature
+        tsNumeratorSelect.addEventListener('change', updateTimeSignature);
+        tsDenominatorSelect.addEventListener('change', updateTimeSignature);
+
+
+        // Function to handle Start/Stop logic
+        async function togglePlayback() {
+            // Start audio context on first user interaction
+            if (Tone.context.state !== 'running') {
+                await Tone.start();
+                messageBox.classList.add('hidden');
+            }
+
+            if (isPlaying) {
+                // STOP
+                Tone.Transport.stop();
+                metronomeLoop.stop();
+                isPlaying = false;
+                startStopBtn.textContent = 'Start';
+                startStopBtn.classList.replace('bg-red-600', 'bg-green-600');
+                startStopBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                startStopBtn.classList.replace('focus:ring-red-500/50', 'focus:ring-green-500/50');
+                
+                // Clear visual pulse
+                pulseContainer.querySelectorAll('.beat-indicator').forEach(i => {
+                    i.classList.remove('active-beat', 'active-downbeat');
+                });
+            } else {
+                // START
+                currentBeat = 0; // Ensure we start at beat 1
+                Tone.Transport.start();
+                metronomeLoop.start(0); // Start immediately
+                isPlaying = true;
+                startStopBtn.textContent = 'Stop';
+                startStopBtn.classList.replace('bg-green-600', 'bg-red-600');
+                startStopBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+                startStopBtn.classList.replace('focus:ring-green-500/50', 'focus:ring-red-500/50');
+            }
+        }
+
+        startStopBtn.addEventListener('click', togglePlayback);
+
+        // --- Initialization ---
+        window.onload = function() {
+            // Initial setup for default 4/4
+            Tone.Transport.bpm.value = bpm;
+            updateDisplayIndicators();
+            setupMetronomeLoop();
+            
+            // Audio Context Unlock message
+            if (Tone.context.state !== 'running') {
+                messageBox.classList.remove('hidden');
+            }
+
+            // Global handler to resume audio context on first user interaction
+            document.body.addEventListener('click', async () => {
+                if (Tone.context.state !== 'running') {
+                    try {
+                        await Tone.start();
+                        console.log('Audio context started.');
+                        messageBox.classList.add('hidden');
+                    } catch (e) {
+                        console.error('Could not start audio context:', e);
+                    }
+                }
+            }, { once: true });
+        };
+    </script>
+
+</body>
+</html><p>
+    
+</p><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Euystacio Helmi AI | Genesis Consensus Deployment</title>
     <style>
         :root {
