@@ -1,0 +1,20 @@
+# config.toml
+# Central configuration file for the Gateway Log Agent (GLA) ecosystem.
+
+[system]
+deployment_id = "AI-Peace-Platform-Alpha"
+version = "1.0.0"
+
+[gla]
+db_path = "gla_ledger.db"
+agents_id = "GLA-Core-Processor-01"
+genesis_hash = "0000000000000000000000000000000000000000000000000000000000000000"
+
+[key_registry]
+endpoint = "https://secure-kms.peace-platform.io/v1/keys"
+default_trusted_key_id = "SEED-BRINGER-CA-001"
+
+[council_api]
+base_url = "http://127.0.0.1:8000"
+logs_endpoint = "/logs"
+proof_endpoint = "/log" 
