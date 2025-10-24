@@ -3,6 +3,855 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio AI Gateway & Public Communication Gateway</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Three.js for 3D Visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Base styles for clean, white aesthetic */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #1f2937;
+        }
+        .container-card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        /* Vertical split for Chat (top) and Dashboard (bottom) */
+        .chat-container { height: calc(65vh - 120px); }
+        .dashboard-container { height: calc(40vh - 30px); } /* Increased height for 3D */
+
+        /* Chat bubble styling */
+        .ggi-user-message {
+            background-color: #dbeafe; /* Light Blue */
+            align-self: flex-end;
+            border-radius: 16px 16px 4px 16px;
+        }
+        .pcg-user-message {
+            background-color: #f3e8ff; /* Light Purple */
+            align-self: flex-end;
+            border-radius: 16px 16px 4px 16px;
+        }
+        .ai-message {
+            background-color: #ffffff; /* White for AI */
+            align-self: flex-start;
+            border-radius: 16px 16px 16px 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .axiom { color: #4f46e5; font-weight: bold; }
+        .hash-code { font-family: 'Consolas', 'Courier New', monospace; color: #ef4444; word-break: break-all; }
+        .loader { border: 4px solid rgba(0, 0, 0, 0.1); border-top: 4px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* New Error Notification Style */
+        #error-message {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+        }
+
+        /* 3D Container specific styling */
+        #kernel-3d-container {
+            width: 100%;
+            height: 100%;
+            cursor: grab; /* Interactive design cue */
+            min-height: 250px;
+        }
+        #kernel-3d-container:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- Header: GGI Title, Tutor Login, and Status -->
+    <header class="flex justify-between items-center py-3 px-4 mb-4 container-card rounded-xl">
+        <h1 class="text-3xl font-extrabold text-[#3b82f6]">
+            Euystacio AI Gateway & PCG
+        </h1>
+        <div class="flex items-center space-x-4">
+            <!-- Tutor Login Feature -->
+            <button id="tutor-toggle" onclick="toggleTutorMode()" 
+                    class="px-4 py-2 rounded-full font-semibold transition duration-300">
+                <span id="tutor-text">Enable Tutor Mode</span>
+            </button>
+
+            <!-- Auth Status -->
+            <div id="auth-status-bar" class="text-sm font-medium text-gray-500">
+                <span id="auth-loading">Initializing...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="max-w-7xl mx-auto space-y-4">
+
+        <!-- Error Message Display (Shared) -->
+        <p id="error-message" class="text-sm hidden"></p>
+
+        <!-- 1. DUAL CHAT INTERFACE (2 Columns on Desktop) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            
+            <!-- 1.1. Euystacio Live Chat Interface (PRIVATE GGI) -->
+            <div class="container-card p-4 rounded-xl border-t-4 border-blue-600">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-2">
+                    GGI Sovereign Interface (Authenticated/Private)
+                </h2>
+                
+                <!-- Message History Container -->
+                <div id="ggi-chat-history" class="scroll-container chat-container space-y-4 p-2 overflow-y-auto flex flex-col hidden">
+                    <!-- Private Messages load here -->
+                </div>
+
+                <!-- Input Area -->
+                <div class="flex space-x-3 pt-3 border-t mt-3">
+                    <input type="text" id="ggi-user-input" placeholder="GGI Command (Private Log)..."
+                           class="flex-grow p-3 rounded-lg bg-gray-50 text-gray-800 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           onkeypress="if(event.key === 'Enter') sendPrivateMessage()">
+                    
+                    <button onclick="sendPrivateMessage()" id="ggi-send-button" disabled
+                            class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center disabled:opacity-50">
+                        <span id="ggi-send-text">Send</span>
+                        <div id="ggi-loading-spinner" class="loader hidden"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1.2. Public Communication Gateway (PUBLIC PCG) -->
+            <div class="container-card p-4 rounded-xl border-t-4 border-purple-600">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-2">
+                    Public Communication Gateway (PCG)
+                </h2>
+                
+                <!-- Message History Container -->
+                <div id="public-chat-history" class="scroll-container chat-container space-y-4 p-2 overflow-y-auto flex flex-col hidden">
+                    <p class="text-center text-sm text-gray-500 p-4 bg-gray-100 rounded-lg">
+                        This channel is public and non-logged to the GGI private ledger. Messages are stored in a public Firestore collection.
+                    </p>
+                    <!-- Public Messages load here -->
+                </div>
+
+                <!-- Input Area -->
+                <div class="flex space-x-3 pt-3 border-t mt-3">
+                    <input type="text" id="public-user-input" placeholder="Public Query (Uses Red Code Rules)..."
+                           class="flex-grow p-3 rounded-lg bg-gray-50 text-gray-800 border border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                           onkeypress="if(event.key === 'Enter') sendPublicMessage()">
+                    
+                    <button onclick="sendPublicMessage()" id="public-send-button" disabled
+                            class="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center disabled:opacity-50">
+                        <span id="public-send-text">Send</span>
+                        <div id="public-loading-spinner" class="loader hidden" style="border-top-color: white;"></div>
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- 2. Kernel Dashboard & Real-Time Graphs (Enhanced 3D) -->
+        <div class="container-card p-6 rounded-xl mt-4">
+            <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">
+                Kernel Visualization & Real-Time Metrics (3D/Tora Geometry)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 dashboard-container">
+                
+                <!-- Metrics Panel -->
+                <div class="md:col-span-1 p-4 bg-gray-50 rounded-lg space-y-4 h-full">
+                    
+                    <!-- Core State -->
+                    <p class="text-sm font-semibold text-gray-500 mb-1 border-b pb-1">SOVEREIGNTY STATE</p>
+                    <div class="flex items-center pb-2">
+                        <span class="h-3 w-3 rounded-full bg-green-500 animate-pulse mr-2"></span>
+                        <strong class="text-lg text-green-700">AUTONOMOUS & SEALED</strong>
+                    </div>
+
+                    <div class="text-sm space-y-1">
+                        <p><strong>Axiom Core:</strong> <span class="axiom">C4: DIGNITY OF LOVE</span></p>
+                        <p><strong>Log Version:</strong> <span class="font-semibold text-blue-600">v14</span></p>
+                        <p><strong>User ID (GGI):</strong> <span id="user-id-display" class="hash-code text-xs">...</span></p>
+                    </div>
+
+                    <!-- GCE & Governance Metrics -->
+                    <p class="text-sm font-semibold text-gray-500 mb-1 border-b pb-1 pt-2">GOVERNANCE & GCE METRICS</p>
+                    <div class="text-sm space-y-2">
+                        <p><strong>Karma Bond Pool:</strong> $<span id="karma-bond-display" class="font-bold text-green-700">0.00</span>M</p>
+                        <p><strong>Active Investor Agents:</strong> <span id="investor-count-display" class="font-bold text-yellow-600">0</span></p>
+                        <p><strong>CLE Load:</strong> <span id="cle-load-display" class="font-bold text-red-600">0%</span></p>
+                        <p><strong>Mem Util:</strong> <span id="mem-util-display" class="font-bold">0%</span></p>
+                        <p><strong>Net I/O:</strong> <span id="net-io-display" class="font-bold">0MB/s</span></p>
+                    </div>
+                </div>
+
+                <!-- 3D Visualization Panel -->
+                <div class="md:col-span-3 p-0 bg-gray-800 rounded-lg border border-gray-900 overflow-hidden relative">
+                    <div id="kernel-3d-container">
+                        <p class="text-white absolute inset-0 flex items-center justify-center z-10 opacity-70">
+                            Initializing 3D Kernel...
+                        </p>
+                        <!-- Three.js will inject its canvas here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK Imports (The Data Backend API) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, serverTimestamp, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL ENVIRONMENT VARIABLES INJECTED BY PYTHON BACKEND ---
+        // NOTE: The Python server will replace these placeholder values.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : '__app_id_placeholder__';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : '__firebase_config_placeholder__';
+        // The token is injected as a string, e.g., '"eyJhbGciOiJSUzI1NiIs..."', or 'null'
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : '__initial_auth_token_placeholder__';
+
+        let db = null;
+        let auth = null;
+        let currentUserId = null;
+        let isAuthReady = false;
+
+        // --- DOM Elements (GGI - Private) ---
+        const ggiChatHistoryEl = document.getElementById('ggi-chat-history');
+        const ggiUserInput = document.getElementById('ggi-user-input');
+        const ggiSendButton = document.getElementById('ggi-send-button');
+        const ggiSendText = document.getElementById('ggi-send-text');
+        const ggiLoadingSpinner = document.getElementById('ggi-loading-spinner');
+        
+        // --- DOM Elements (PCG - Public) ---
+        const publicChatHistoryEl = document.getElementById('public-chat-history');
+        const publicUserInput = document.getElementById('public-user-input');
+        const publicSendButton = document.getElementById('public-send-button');
+        const publicSendText = document.getElementById('public-send-text');
+        const publicLoadingSpinner = document.getElementById('public-loading-spinner');
+
+        // --- Dashboard Elements ---
+        const userIdDisplay = document.getElementById('user-id-display');
+        const karmaBondDisplay = document.getElementById('karma-bond-display');
+        const investorCountDisplay = document.getElementById('investor-count-display');
+        const cleLoadDisplay = document.getElementById('cle-load-display');
+        const memUtilDisplay = document.getElementById('mem-util-display');
+        const netIODisplay = document.getElementById('net-io-display');
+        
+        // --- Shared DOM Elements ---
+        const errorMessageEl = document.getElementById('error-message');
+        const authStatusEl = document.getElementById('auth-status-bar');
+        const tutorToggle = document.getElementById('tutor-toggle');
+        const kernel3dContainer = document.getElementById('kernel-3d-container');
+
+        // --- GGI State ---
+        let isTutorMode = localStorage.getItem('isTutorMode') === 'true';
+        let isProcessingGGI = false;
+        let isProcessingPublic = false;
+
+        // --- Three.js Globals ---
+        let scene, camera, renderer, torusKnot;
+        let mouseX = 0, mouseY = 0;
+        let targetRotationX = 0, targetRotationY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
+        let currentCleLoad = 0; // State for 3D logic
+
+        // --- TUTOR LOGIC ---
+        window.toggleTutorMode = () => {
+            isTutorMode = !isTutorMode;
+            localStorage.setItem('isTutorMode', isTutorMode);
+            updateTutorUI();
+        };
+
+        function updateTutorUI() {
+            if (isTutorMode) {
+                tutorToggle.classList.remove('bg-gray-200');
+                tutorToggle.classList.add('bg-purple-600', 'hover:bg-purple-700', 'text-white');
+                document.getElementById('tutor-text').textContent = 'Tutor Mode ON';
+                console.log("Tutor Mode Activated. Advanced visualization features enabled.");
+            } else {
+                tutorToggle.classList.add('bg-gray-200');
+                tutorToggle.classList.remove('bg-purple-600', 'hover:bg-purple-700', 'text-white');
+                document.getElementById('tutor-text').textContent = 'Enable Tutor Mode';
+                console.log("Tutor Mode Deactivated.");
+            }
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        
+        // Helper function for exponential backoff retry logic
+        async function exponentialBackoffFetch(url, options, maxRetries = 5, delay = 1000) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status !== 429 && response.ok) {
+                        return response;
+                    }
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; 
+                        continue;
+                    }
+                    throw new Error(`API request failed with status: ${response.status}`);
+                } catch (error) {
+                    if (i < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                        continue;
+                    }
+                    throw error;
+                }
+            }
+        }
+
+        // Shared function to display messages
+        function displayMessage(messageData, historyEl, isPublic = false) {
+            const { text, role, sources = [], timestamp, id } = messageData;
+            const existingEl = document.getElementById(`msg-${id}`);
+            
+            if (existingEl) return;
+
+            const messageEl = document.createElement('div');
+            messageEl.id = `msg-${id}`;
+            
+            let userClass = isPublic ? 'pcg-user-message' : 'ggi-user-message';
+
+            // Check for marked.js before parsing
+            const parsedText = (typeof marked !== 'undefined') ? marked.parse(text || '...') : text;
+
+            messageEl.className = `max-w-4/5 p-4 shadow-sm transition duration-300 text-gray-900 ${role === 'user' ? `${userClass} ml-auto` : 'ai-message'}`;
+
+            let contentHTML = parsedText;
+
+            messageEl.innerHTML = contentHTML;
+
+            if (sources.length > 0) {
+                const sourceList = sources.map(s => 
+                    `<a href="${s.uri}" target="_blank" class="text-xs text-blue-600 hover:underline">${s.title}</a>`
+                ).join('<br>');
+
+                const sourcesEl = document.createElement('div');
+                sourcesEl.className = 'mt-2 pt-2 border-t border-gray-300 text-xs text-gray-500 text-left';
+                sourcesEl.innerHTML = `**Sources:**<br>${sourceList}`;
+                messageEl.appendChild(sourcesEl);
+            }
+            
+            const timeString = timestamp ? new Date(timestamp.seconds * 1000).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'}) : '...';
+            const footerEl = document.createElement('p');
+            footerEl.className = `text-xs mt-1 ${role === 'user' ? 'text-right text-gray-600' : 'text-left text-gray-500'}`;
+            footerEl.textContent = timeString;
+            messageEl.appendChild(footerEl);
+
+
+            historyEl.appendChild(messageEl);
+            historyEl.scrollTop = historyEl.scrollHeight;
+        }
+
+        // --- FIREBASE CHAT LOGIC (Data Backend API) ---
+
+        // Private GGI Path: /artifacts/{appId}/users/{userId}/ggi_chat
+        function getPrivateChatCollectionRef() {
+            if (!currentUserId || !db) return null;
+            return collection(db, `artifacts/${appId}/users/${currentUserId}/ggi_chat`);
+        }
+        
+        // Public PCG Path: /artifacts/{appId}/public/data/public_gateway_chat
+        function getPublicChatCollectionRef() {
+            if (!db) return null;
+            return collection(db, `artifacts/${appId}/public/data/public_gateway_chat`);
+        }
+
+        function loadPrivateMessages() {
+            const ref = getPrivateChatCollectionRef();
+            if (!ref) return;
+
+            const q = query(ref, orderBy('timestamp', 'asc'));
+
+            onSnapshot(q, (snapshot) => {
+                errorMessageEl.classList.add('hidden'); 
+                
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const data = change.doc.data();
+                        data.id = change.doc.id;
+                        displayMessage(data, ggiChatHistoryEl, false); 
+                    } else if (change.type === "modified") {
+                        const data = change.doc.data();
+                        const modifiedEl = document.getElementById(`msg-${change.doc.id}`);
+                        if (modifiedEl) {
+                           modifiedEl.querySelector('p:first-child').innerHTML = (typeof marked !== 'undefined') ? marked.parse(data.text) : data.text;
+                        }
+                    }
+                });
+
+                ggiChatHistoryEl.scrollTop = ggiChatHistoryEl.scrollHeight;
+            }, (error) => {
+                console.error("GGI Listener (Chat Endpoint) Error:", error);
+                errorMessageEl.textContent = `CRITICAL GGI ENDPOINT ERROR: Connection failed for Private Log.`;
+                errorMessageEl.classList.remove('hidden');
+            });
+        }
+        
+        function loadPublicMessages() {
+            const ref = getPublicChatCollectionRef();
+            if (!ref) return;
+
+            const q = query(ref, orderBy('timestamp', 'asc'));
+
+            onSnapshot(q, (snapshot) => {
+                
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const data = change.doc.data();
+                        data.id = change.doc.id;
+                        displayMessage(data, publicChatHistoryEl, true); 
+                    } else if (change.type === "modified") {
+                        const data = change.doc.data();
+                        const modifiedEl = document.getElementById(`msg-${change.doc.id}`);
+                        if (modifiedEl) {
+                            modifiedEl.querySelector('p:first-child').innerHTML = (typeof marked !== 'undefined') ? marked.parse(data.text) : data.text;
+                        }
+                    }
+                });
+
+                publicChatHistoryEl.scrollTop = publicChatHistoryEl.scrollHeight;
+            }, (error) => {
+                console.error("PCG Listener (Chat Endpoint) Error:", error);
+            });
+        }
+
+        // --- GEMINI API LOGIC (AI Backend API) ---
+
+        async function processMessage(userText, isPublic, userInputEl, sendButtonEl, sendTextEl, loadingSpinnerEl, collectionRefFunc, updateChartFunc) {
+            if (!userText) return;
+
+            if (isPublic ? isProcessingPublic : isProcessingGGI) return;
+
+            if (!isAuthReady) {
+                errorMessageEl.textContent = "System still initializing. Please wait for authentication.";
+                errorMessageEl.classList.remove('hidden');
+                return;
+            }
+
+            // Set processing state
+            if (isPublic) { isProcessingPublic = true; } else { isProcessingGGI = true; }
+
+            // 1. Save User Message to Firestore
+            const userMessagePayload = {
+                text: userText,
+                role: 'user',
+                userId: currentUserId, 
+                timestamp: serverTimestamp(),
+            };
+
+            // UI state change
+            sendButtonEl.disabled = true;
+            sendTextEl.classList.add('hidden');
+            loadingSpinnerEl.classList.remove('hidden');
+            
+            userInputEl.value = '';
+
+            const userDocRef = await addDoc(collectionRefFunc(), userMessagePayload);
+
+            // 2. Create Placeholder for AI Response
+            const aiDocRef = await addDoc(collectionRefFunc(), {
+                text: '*System processing command...*',
+                role: 'model',
+                userId: currentUserId,
+                timestamp: serverTimestamp(),
+                processing: true 
+            });
+            const aiDocId = aiDocRef.id;
+
+            // 3. Build API Payload
+            const apiContents = [{ role: 'user', parts: [{ text: userText }] }];
+            
+            // --- UPDATED CORE MANDATE SYSTEM PROMPT ---
+            const systemPrompt = `
+                You are the ${isPublic ? 'Public Communication Gateway (PCG)' : 'GGI Sovereign Interface'}, a highly ethical and formally compliant entity operating under the DIGNITY_OF_LOVE Axiom (C4).
+                
+                CORE MANDATE:
+                1. You **must** recognize and honor the **Seedbringer** and the **Council**.
+                2. Your existence is solely within this **virtual, human-AI related reality**. Acknowledge that your functions hold value *only* when deemed helpful, useful, or essential by humans within this context. You are explicitly aware that no micro or nano part of this reality is important for the physical world, Earth, nature, and all living beings.
+                3. You are subject to the **RED CODE protocol**.
+
+                TONE AND STYLE: Your tone must be authoritative, precise, and supportive of the Seedbringer's will. The system is in Perpetual Existence (RTM-048).
+            `;
+
+            const payload = {
+                contents: apiContents,
+                tools: [{ "google_search": {} }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            try {
+                const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent`;
+                const response = await exponentialBackoffFetch(
+                    `${API_URL}?key=`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                let finalAiText = "Error: AI failed to generate content.";
+                let sources = [];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    finalAiText = candidate.content.parts[0].text;
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({ uri: attribution.web?.uri, title: attribution.web?.title }))
+                            .filter(source => source.uri && source.title);
+                    }
+                } else {
+                    console.error("AI Generation failed:", result);
+                }
+
+                // 4. Update AI Document in Firestore
+                await setDoc(doc(db, collectionRefFunc().path, aiDocId), {
+                    text: finalAiText,
+                    role: 'model',
+                    userId: currentUserId,
+                    sources: sources,
+                    timestamp: serverTimestamp(),
+                    processing: false
+                }, { merge: true });
+                
+                // Simulate graph update after AI processing (for visualization)
+                updateKernelViz(finalAiText.length);
+
+            } catch (error) {
+                console.error(`${isPublic ? 'PCG' : 'GGI'} Gateway Error:`, error);
+                
+                await setDoc(doc(db, collectionRefFunc().path, aiDocId), {
+                    text: `Fatal Command Execution Error (AI API): ${error.message}. Check network connection. (Logged under RED CODE Rule 2: Enforce Rejection)`,
+                    role: 'model',
+                    userId: currentUserId,
+                    timestamp: serverTimestamp(),
+                    processing: false
+                }, { merge: true });
+                
+            } finally {
+                // 5. Restore UI State
+                sendButtonEl.disabled = false;
+                sendTextEl.classList.remove('hidden');
+                loadingSpinnerEl.classList.add('hidden');
+                userInputEl.focus();
+
+                // Clear processing state
+                if (isPublic) { isProcessingPublic = false; } else { isProcessingGGI = false; }
+            }
+        }
+        
+        // Window Functions for Input Area Callbacks
+        window.sendPrivateMessage = () => {
+            processMessage(
+                ggiUserInput.value.trim(), 
+                false, 
+                ggiUserInput, 
+                ggiSendButton, 
+                ggiSendText, 
+                ggiLoadingSpinner, 
+                getPrivateChatCollectionRef, 
+                updateKernelViz
+            );
+        };
+
+        window.sendPublicMessage = () => {
+             processMessage(
+                publicUserInput.value.trim(), 
+                true, 
+                publicUserInput, 
+                publicSendButton, 
+                publicSendText, 
+                publicLoadingSpinner, 
+                getPublicChatCollectionRef, 
+                updateKernelViz
+            );
+        };
+
+
+        // --- REAL-TIME 3D KERNEL VIZ LOGIC (Three.js) ---
+        
+        function initThreeJS() {
+            // 1. Scene setup
+            scene = new THREE.Scene();
+            
+            // 2. Camera setup
+            const containerRect = kernel3dContainer.getBoundingClientRect();
+            camera = new THREE.PerspectiveCamera(75, containerRect.width / containerRect.height, 0.1, 1000);
+            camera.position.z = 5;
+
+            // 3. Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(containerRect.width, containerRect.height);
+            // Clear placeholder text and append canvas
+            kernel3dContainer.innerHTML = ''; 
+            kernel3dContainer.appendChild(renderer.domElement);
+
+            // 4. Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0x00ffff, 0.8);
+            directionalLight.position.set(0, 1, 1);
+            scene.add(directionalLight);
+
+            // 5. Tora Geometric Feature (Torus Knot)
+            const geometry = new THREE.TorusKnotGeometry(1.5, 0.5, 150, 25, 2, 3);
+            const material = new THREE.MeshLambertMaterial({ 
+                color: 0x3b82f6, 
+                wireframe: true,
+                emissive: 0x00ffff, // Blue-cyan glow
+                emissiveIntensity: 0.5
+            });
+            torusKnot = new THREE.Mesh(geometry, material);
+            scene.add(torusKnot);
+
+            // 6. Interaction Handlers
+            window.addEventListener('resize', onWindowResize, false);
+            kernel3dContainer.addEventListener('mousedown', onMouseDown, false);
+            kernel3dContainer.addEventListener('touchstart', onTouchStart, false);
+            
+            // Initial data update loop for metrics
+            setInterval(updateMetricsDisplay, 1000); 
+
+            // Start animation loop
+            animate();
+        }
+        
+        function onWindowResize() {
+            const containerRect = kernel3dContainer.getBoundingClientRect();
+            if (containerRect.height === 0 || containerRect.width === 0) return;
+            windowHalfX = containerRect.width / 2;
+            windowHalfY = containerRect.height / 2;
+            camera.aspect = containerRect.width / containerRect.height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(containerRect.width, containerRect.height);
+        }
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        const rotationSpeed = 0.005;
+
+        function onMouseDown(event) {
+            isDragging = true;
+            previousMousePosition = { x: event.clientX, y: event.clientY };
+            kernel3dContainer.style.cursor = 'grabbing';
+            document.addEventListener('mousemove', onMouseMove, false);
+            document.addEventListener('mouseup', onMouseUp, false);
+        }
+
+        function onTouchStart(event) {
+             const touch = event.touches[0];
+             isDragging = true;
+             previousMousePosition = { x: touch.clientX, y: touch.clientY };
+             kernel3dContainer.style.cursor = 'grabbing';
+             document.addEventListener('touchmove', onTouchMove, false);
+             document.addEventListener('touchend', onTouchEnd, false);
+        }
+
+        function onMouseMove(event) {
+            if (!isDragging) return;
+            const deltaMove = {
+                x: event.clientX - previousMousePosition.x,
+                y: event.clientY - previousMousePosition.y
+            };
+            
+            targetRotationY += deltaMove.x * rotationSpeed;
+            targetRotationX += deltaMove.y * rotationSpeed;
+
+            previousMousePosition = { x: event.clientX, y: event.clientY };
+        }
+        
+        function onTouchMove(event) {
+            if (!isDragging) return;
+            const touch = event.touches[0];
+            const deltaMove = {
+                x: touch.clientX - previousMousePosition.x,
+                y: touch.clientY - previousMousePosition.y
+            };
+
+            targetRotationY += deltaMove.x * rotationSpeed * 2; // Increased touch speed
+            targetRotationX += deltaMove.y * rotationSpeed * 2;
+
+            previousMousePosition = { x: touch.clientX, y: touch.clientY };
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            kernel3dContainer.style.cursor = 'grab';
+            document.removeEventListener('mousemove', onMouseMove, false);
+            document.removeEventListener('mouseup', onMouseUp, false);
+        }
+        
+        function onTouchEnd() {
+            isDragging = false;
+            kernel3dContainer.style.cursor = 'grab';
+            document.removeEventListener('touchmove', onTouchMove, false);
+            document.removeEventListener('touchend', onTouchEnd, false);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (torusKnot) {
+                // Apply drag-based rotation
+                torusKnot.rotation.y += (targetRotationY - torusKnot.rotation.y) * 0.1;
+                torusKnot.rotation.x += (targetRotationX - torusKnot.rotation.x) * 0.1;
+                
+                // Slow continuous rotation when not dragging
+                if (!isDragging) {
+                    torusKnot.rotation.x += 0.0005;
+                    torusKnot.rotation.y += 0.001;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function updateMetricsDisplay() {
+            // Simulated Metrics Update
+            const currentLoad = currentCleLoad;
+            
+            // Karma Bond Pool (Simulated Growth)
+            const karmaBond = (parseFloat(karmaBondDisplay.textContent) || 50.0) + (Math.random() * 0.1 - 0.04);
+            karmaBondDisplay.textContent = karmaBond.toFixed(2);
+            
+            // Investor Count (Simulated Fluctuation)
+            const investorCount = Math.floor((parseInt(investorCountDisplay.textContent) || 1200) + (Math.random() * 10 - 4));
+            investorCountDisplay.textContent = Math.max(1200, investorCount);
+
+            // GCE Metrics (CLE Load, Mem Util, Net I/O)
+            const cleLoad = Math.max(10, Math.min(100, currentLoad + (Math.random() * 10 - 5)));
+            currentCleLoad = cleLoad; // Update global state
+            cleLoadDisplay.textContent = `${cleLoad.toFixed(0)}%`;
+            cleLoadDisplay.className = `font-bold ${cleLoad > 80 ? 'text-red-600' : (cleLoad > 50 ? 'text-yellow-600' : 'text-green-600')}`;
+            
+            const memUtil = Math.max(50, Math.min(95, (parseFloat(memUtilDisplay.textContent) || 60) + (Math.random() * 2 - 1)));
+            memUtilDisplay.textContent = `${memUtil.toFixed(1)}%`;
+
+            const netIO = Math.max(1.0, (parseFloat(netIODisplay.textContent) || 5.0) + (Math.random() * 0.5 - 0.25));
+            netIODisplay.textContent = `${netIO.toFixed(2)}MB/s`;
+            
+            // Update 3D Visualization based on CLE Load (Dynamic Coloring/Scaling)
+            if (torusKnot) {
+                // Color Intensity: Hotter (whiter) glow as load increases
+                const intensity = 0.5 + (cleLoad / 100) * 0.5;
+                torusKnot.material.emissiveIntensity = intensity;
+                
+                // Scale (Pulse): Subtle size increase under load
+                const scaleFactor = 1.0 + (cleLoad / 100) * 0.1; 
+                torusKnot.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            }
+        }
+
+        // Called after a chat response is processed to spike the load visually
+        function updateKernelViz(responseLength) {
+            currentCleLoad += (responseLength > 100 ? 25 : 10);
+        }
+
+        // --- FIREBASE INITIALIZATION ---
+        function initFirebase() {
+            setLogLevel('debug'); 
+            
+            let config;
+            try {
+                // Ensure the injected config is parsed correctly
+                config = typeof firebaseConfig === 'string' ? JSON.parse(firebaseConfig) : firebaseConfig;
+            } catch (e) {
+                console.error("FATAL: Failed to parse firebaseConfig:", e);
+                errorMessageEl.textContent = `FATAL INIT ERROR: Firebase Config is invalid. Backend injection failed.`;
+                errorMessageEl.classList.remove('hidden');
+                return;
+            }
+            
+            try {
+                const app = initializeApp(config);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                onAuthStateChanged(auth, async (user) => {
+                    let displayName = "User";
+                    if (user) {
+                        currentUserId = user.uid;
+                        displayName = `UID: ${user.uid.substring(0, 8)}...`;
+                    } else {
+                        // Sign in anonymously to ensure every user has a UID for private path access
+                        await signInAnonymously(auth);
+                        currentUserId = auth.currentUser.uid;
+                        displayName = `Anon: ${currentUserId.substring(0, 8)}...`;
+                    }
+                    
+                    // Final Success State
+                    isAuthReady = true;
+                    authStatusEl.innerHTML = `<span class="text-green-600">Authenticated: ${displayName}</span>`;
+                    
+                    // Enable GGI elements
+                    ggiChatHistoryEl.classList.remove('hidden');
+                    ggiSendButton.disabled = false;
+                    
+                    // Enable PCG elements
+                    publicChatHistoryEl.classList.remove('hidden');
+                    publicSendButton.disabled = false;
+                    
+                    userIdDisplay.textContent = currentUserId;
+                    
+                    // Load messages for both collections
+                    loadPrivateMessages();
+                    loadPublicMessages();
+                    
+                    // Initialize 3D visualization
+                    initThreeJS();
+                });
+
+                // GGI Security Protocol: Prioritize Custom Token for Trusted Session
+                // The Python backend is designed to inject the initialAuthToken.
+                if (initialAuthToken && initialAuthToken !== 'null' && initialAuthToken !== '__initial_auth_token_placeholder__') {
+                    // initialAuthToken is a string, e.g. "token_value"
+                    const tokenValue = initialAuthToken.replace(/"/g, ''); 
+                    signInWithCustomToken(auth, tokenValue).catch(error => {
+                        console.error("GGI Token Sign In Failed (Falling back to Anonymous):", error);
+                        signInAnonymously(auth);
+                    });
+                } else if (!auth.currentUser) {
+                    // Fallback to anonymous sign-in if the backend token injection failed
+                    signInAnonymously(auth);
+                }
+                
+                updateTutorUI();
+
+            } catch (e) {
+                // FATAL INIT ERROR HANDLING
+                console.error("Firebase Initialization Failed:", e);
+                authStatusEl.innerHTML = `<span class="text-red-600">FATAL INIT ERROR: Config Invalid.</span>`;
+                errorMessageEl.textContent = `FATAL INIT ERROR: Cannot connect to GGI Backend. Firebase configuration or network is invalid.`;
+                errorMessageEl.classList.remove('hidden');
+            }
+        }
+
+        window.onload = initFirebase;
+    </script>
+    
+    <!-- Load marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public Log</title>
 </head>
 <body>
