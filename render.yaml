@@ -1,0 +1,12 @@
+# Exported from Render on 2025-10-24T00:15:05Z
+version: "1"
+services:
+- type: web
+  name: Euystacio
+  runtime: python
+  repo: https://github.com/hannesmitterer/Euystacio
+  plan: free
+  region: oregon
+  buildCommand: pip install -r requirements.txt
+  startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+  autoDeployTrigger: commit
