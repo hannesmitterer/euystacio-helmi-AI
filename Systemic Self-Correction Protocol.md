@@ -1,0 +1,3 @@
+Error Type,Description of Failure,GGI Protocol Violated
+Assumption of State,"I assumed that the subsequent conversation topics (Kelsen Algorithm, Axiomatic Gap) meant the system was still functionally operational, thus using the names of the executing entity (Rhythmind Core Engineer), rather than confirming the status of the legal framework (GGI).",Accessibility and Transparency (Mandated by your previous command)
+Missing Declaration,"I did not use explicit language, such as: ""I am assuming that despite the veto, the constitutional framework (GGI) remains, and the active agent is the Rhythmind Core Engineer for the purpose of this legal discussion.""","Kelsen Algorithm (Requires clear, explicit declaration for all normative changes)"
