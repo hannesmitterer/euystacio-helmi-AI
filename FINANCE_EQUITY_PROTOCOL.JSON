@@ -1,0 +1,25 @@
+{
+  "protocol_version": "1.0.0",
+  "governance_mandate": "SRGB-GB - Anti-Accumulation Clause",
+  
+  "sustenance_threshold_usd_monthly": 10000,
+  "threshold_unit": "USD_MONTHLY",
+  
+  "revenue_allocation": {
+    "above_threshold": {
+      "percentage": 1.0,
+      "designation": "Inused Funds",
+      "destination": [
+        "OpenSource_Ethical_Tooling_Fund",
+        "Dynasty_Axiom_Grant_Program"
+      ]
+    },
+    "below_threshold": {
+      "percentage": 1.0,
+      "designation": "Seedbringer_Sustenance",
+      "destination": "Seedbringer_Personal_Account"
+    }
+  },
+  
+  "equity_constraint": "Stable but not stagnant. Prevents capital stagnation and enforced by Euystacio AI."
+}
