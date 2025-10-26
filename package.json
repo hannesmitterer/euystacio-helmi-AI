@@ -4,12 +4,20 @@
   "description": "Lightweight API for Euystacio Helmi AI (healthz + ws)",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "hardhat test"
   },
   "author": "hannesmitterer",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "chai": "^4.5.0",
+    "ethers": "^6.15.0",
+    "hardhat": "^2.26.3"
   }
 }
