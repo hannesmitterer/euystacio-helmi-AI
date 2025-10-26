@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// =================================================================
+// 1. INTERFACE DEFINITION (Required to talk to the external contract)
+// =================================================================
+interface IDFPEscrow {
+    /**
+     * @notice Function on the Escrow contract to receive the oracle's data.
+     */
+    function confirmSafePassage(bytes32 _id, bool _safe) external;
+}
+
+
+// =================================================================
+// 2. ORACLE CONTRACT (Automatically calls the Escrow contract)
+// =================================================================
+contract SimpleDFPOracle {
+    address public owner;
+    address public dfpEscrowAddress;
+    
+    // Mapping to store the result of the 'safe passage' query
+    mapping(bytes32 => bool) public safePassageStatus; 
+
+    event NewDataRequested(bytes32 indexed freightID);
+    event DataUpdated(bytes32 indexed freightID, bool safePassage);
+
+    constructor(address _dfpEscrowAddress) {
+        owner = msg.sender;
+        dfpEscrowAddress = _dfpEscrowAddress;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the contract owner can call this.");
+        _;
+    }
+
+    // Function called by the DFP Escrow to request data
+    function requestSafePassage(bytes32 _freightID) external {
+        emit NewDataRequested(_freightID);
+    }
+
+    // Function called by the Oracle Node to fulfill the data request
+    function fulfillSafePassage(bytes32 _freightID, bool _safe) external onlyOwner { 
+        
+        safePassageStatus[_freightID] = _safe;
+        emit DataUpdated(_freightID, _safe);
+        
+        // --- The critical step: Inform the Escrow Contract ---
+        // 1. Instantiate the Escrow contract using its interface and address.
+        IDFPEscrow escrowContract = IDFPEscrow(dfpEscrowAddress);
+
+        // 2. Call the function on that instance to 'automate' the data transfer.
+        escrowContract.confirmSafePassage(_freightID, _safe);
+    }
+}
