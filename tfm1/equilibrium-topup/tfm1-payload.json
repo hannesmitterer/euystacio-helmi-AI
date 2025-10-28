@@ -1,0 +1,122 @@
+{
+  "tfm1": {
+    "version": "1.0.0",
+    "name": "Top-up Flow Monitor - Equilibrium Restoration",
+    "description": "TFM-1 payload configuration for equilibrium-topup monitoring and resource allocation",
+    "timestamp": "2025-10-28T00:00:00Z",
+    "status": "active"
+  },
+  "equilibrium": {
+    "enabled": true,
+    "target_threshold": 0.985,
+    "recovery_rate": 0.15,
+    "monitoring_interval_ms": 1000,
+    "auto_topup": true
+  },
+  "resources": {
+    "allocation_strategy": "dynamic",
+    "max_concurrent_flows": 100,
+    "priority_levels": ["critical", "high", "medium", "low"],
+    "resource_pools": {
+      "compute": {
+        "capacity": 1000,
+        "reserved": 200,
+        "available": 800
+      },
+      "memory": {
+        "capacity_gb": 512,
+        "reserved_gb": 128,
+        "available_gb": 384
+      },
+      "network": {
+        "bandwidth_gbps": 10,
+        "reserved_gbps": 2,
+        "available_gbps": 8
+      }
+    }
+  },
+  "topup_rules": {
+    "trigger_conditions": [
+      {
+        "metric": "equilibrium_score",
+        "operator": "less_than",
+        "threshold": 0.95,
+        "action": "immediate_topup"
+      },
+      {
+        "metric": "resource_utilization",
+        "operator": "greater_than",
+        "threshold": 0.85,
+        "action": "gradual_topup"
+      },
+      {
+        "metric": "error_rate",
+        "operator": "greater_than",
+        "threshold": 0.01,
+        "action": "emergency_topup"
+      }
+    ],
+    "cooldown_period_seconds": 60,
+    "max_topup_per_hour": 50
+  },
+  "monitoring": {
+    "metrics_collection": {
+      "enabled": true,
+      "interval_seconds": 10,
+      "retention_days": 30
+    },
+    "endpoints": [
+      "/metrics/equilibrium",
+      "/metrics/resources",
+      "/metrics/flows",
+      "/health"
+    ],
+    "alerting": {
+      "prometheus_integration": true,
+      "slack_webhook": "${SLACK_WEBHOOK_URL}",
+      "email_notifications": true
+    }
+  },
+  "flows": {
+    "active_flows": [],
+    "flow_template": {
+      "id": "uuid-v4",
+      "type": "equilibrium_topup",
+      "source": "resource_pool",
+      "destination": "target_node",
+      "amount": 0,
+      "priority": "medium",
+      "created_at": "timestamp",
+      "status": "pending"
+    },
+    "max_retry_attempts": 3,
+    "retry_backoff_ms": [1000, 5000, 15000]
+  },
+  "integration": {
+    "prometheus": {
+      "enabled": true,
+      "scrape_interval": "10s",
+      "alert_manager_url": "http://alertmanager:9093"
+    },
+    "grafana": {
+      "enabled": true,
+      "dashboard_id": "tfm1-equilibrium-topup"
+    },
+    "api": {
+      "version": "v1",
+      "base_path": "/api/tfm1",
+      "authentication": "bearer_token",
+      "rate_limit": {
+        "requests_per_minute": 1000,
+        "burst": 100
+      }
+    }
+  },
+  "metadata": {
+    "project": "euystacio-helmi-AI",
+    "component": "LIQUIIUM ARENA Index v2.0",
+    "owner": "TFM-1 Team",
+    "tags": ["equilibrium", "monitoring", "topup", "resource-allocation"],
+    "documentation": "https://github.com/hannesmitterer/euystacio-helmi-AI/blob/main/docs/leonardo-da-vinci.md"
+  }
+}
