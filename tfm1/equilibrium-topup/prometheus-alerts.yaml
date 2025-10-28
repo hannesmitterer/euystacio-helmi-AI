@@ -69,7 +69,7 @@ groups:
           runbook_url: "https://docs.example.com/runbooks/high-latency"
 
       - alert: ResourceUtilizationHigh
-        expr: tfm1_resource_utilization > 0.85
+        expr: tfm1_resource_utilization{pool=~".+"} > 0.85
         for: 10m
         labels:
           severity: warning
