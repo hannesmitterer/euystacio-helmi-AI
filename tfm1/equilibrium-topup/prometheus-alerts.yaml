@@ -1,0 +1,203 @@
+# Prometheus Alert Rules for TFM-1 Equilibrium Top-up Monitoring
+# Version: 1.0.0
+# Component: LIQUIIUM ARENA Index v2.0
+
+groups:
+  - name: tfm1_equilibrium_alerts
+    interval: 30s
+    rules:
+      # Critical Alerts
+      - alert: EquilibriumCriticallyLow
+        expr: equilibrium_score < 0.90
+        for: 2m
+        labels:
+          severity: critical
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Equilibrium score critically low"
+          description: "Equilibrium score has dropped to {{ $value | humanizePercentage }} (threshold: 90%)"
+          runbook_url: "https://docs.example.com/runbooks/equilibrium-low"
+
+      - alert: TopupFlowFailureRate
+        expr: rate(tfm1_topup_failures_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "High top-up flow failure rate detected"
+          description: "Top-up flow failure rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+          runbook_url: "https://docs.example.com/runbooks/topup-failures"
+
+      - alert: ResourcePoolExhausted
+        expr: (tfm1_resource_pool_available / tfm1_resource_pool_capacity) < 0.10
+        for: 3m
+        labels:
+          severity: critical
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Resource pool nearly exhausted"
+          description: "Resource pool {{ $labels.pool }} only has {{ $value | humanizePercentage }} capacity remaining"
+          runbook_url: "https://docs.example.com/runbooks/resource-exhaustion"
+
+      # High Priority Alerts
+      - alert: EquilibriumDegraded
+        expr: equilibrium_score < 0.95
+        for: 5m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Equilibrium score degraded"
+          description: "Equilibrium score at {{ $value | humanizePercentage }} (threshold: 95%)"
+          runbook_url: "https://docs.example.com/runbooks/equilibrium-degraded"
+
+      - alert: HighTopupLatency
+        expr: histogram_quantile(0.95, rate(tfm1_topup_duration_seconds_bucket[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "High top-up latency detected"
+          description: "95th percentile top-up latency is {{ $value }}s (threshold: 1s)"
+          runbook_url: "https://docs.example.com/runbooks/high-latency"
+
+      - alert: ResourceUtilizationHigh
+        expr: tfm1_resource_utilization{pool=~".+"} > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "High resource utilization"
+          description: "Resource utilization at {{ $value | humanizePercentage }} for pool {{ $labels.pool }}"
+          runbook_url: "https://docs.example.com/runbooks/resource-utilization"
+
+      # Monitoring Alerts
+      - alert: TFM1ServiceDown
+        expr: up{job="tfm1-equilibrium-topup"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "TFM-1 service is down"
+          description: "TFM-1 equilibrium top-up service is not responding"
+          runbook_url: "https://docs.example.com/runbooks/service-down"
+
+      - alert: MetricsCollectionFailing
+        expr: rate(tfm1_metrics_collection_errors_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Metrics collection errors detected"
+          description: "Metrics collection failure rate: {{ $value }} errors/sec"
+          runbook_url: "https://docs.example.com/runbooks/metrics-collection"
+
+      # Performance Alerts
+      - alert: FlowThroughputLow
+        expr: rate(tfm1_flows_completed_total[5m]) < 10
+        for: 10m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Low flow throughput detected"
+          description: "Flow completion rate is {{ $value }} flows/sec (expected: >10)"
+          runbook_url: "https://docs.example.com/runbooks/low-throughput"
+
+      - alert: QueueBacklogGrowing
+        expr: tfm1_flow_queue_size > 100 and deriv(tfm1_flow_queue_size[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Flow queue backlog is growing"
+          description: "Queue size is {{ $value }} and increasing"
+          runbook_url: "https://docs.example.com/runbooks/queue-backlog"
+
+  - name: tfm1_slo_alerts
+    interval: 1m
+    rules:
+      # Service Level Objective Alerts
+      - alert: SLOEquilibriumViolation
+        expr: |
+          (
+            sum(rate(tfm1_equilibrium_above_threshold_total[30m]))
+            /
+            sum(rate(tfm1_equilibrium_measurements_total[30m]))
+          ) < 0.995
+        for: 5m
+        labels:
+          severity: warning
+          component: tfm1
+          team: platform
+          slo: equilibrium
+        annotations:
+          summary: "Equilibrium SLO violation"
+          description: "Equilibrium SLO is {{ $value | humanizePercentage }} (target: 99.5%)"
+          runbook_url: "https://docs.example.com/runbooks/slo-violation"
+
+      - alert: SLOAvailabilityViolation
+        expr: |
+          (
+            sum(rate(tfm1_requests_total[1h]))
+            - sum(rate(tfm1_requests_errors_total[1h]))
+          )
+          / sum(rate(tfm1_requests_total[1h])) < 0.9999
+        for: 5m
+        labels:
+          severity: critical
+          component: tfm1
+          team: platform
+          slo: availability
+        annotations:
+          summary: "Availability SLO violation"
+          description: "Service availability is {{ $value | humanizePercentage }} (target: 99.99%)"
+          runbook_url: "https://docs.example.com/runbooks/availability-slo"
+
+  - name: tfm1_capacity_planning
+    interval: 5m
+    rules:
+      # Capacity Planning Alerts
+      - alert: CapacityPlanningNeeded
+        expr: predict_linear(tfm1_resource_pool_available[1h], 24*3600) < 100
+        for: 30m
+        labels:
+          severity: info
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Resource capacity planning needed"
+          description: "Resource pool {{ $labels.pool }} predicted to be low within 24 hours"
+          runbook_url: "https://docs.example.com/runbooks/capacity-planning"
+
+      - alert: FlowRateIncreasing
+        expr: |
+          (
+            rate(tfm1_flows_total[1h])
+            / rate(tfm1_flows_total[1h] offset 24h)
+          ) > 1.5
+        for: 1h
+        labels:
+          severity: info
+          component: tfm1
+          team: platform
+        annotations:
+          summary: "Flow rate increasing significantly"
+          description: "Flow rate is {{ $value }}x higher than 24 hours ago"
+          runbook_url: "https://docs.example.com/runbooks/flow-rate-increase"
