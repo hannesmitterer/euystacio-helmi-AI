@@ -40,3 +40,12 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Hardhat
+node_modules/
+cache/
+artifacts/
+typechain-types/
+coverage/
+coverage.json
+gasReporterOutput.json
