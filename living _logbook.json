@@ -1,0 +1,140 @@
+import os
+import json
+import datetime
+import hashlib
+import uuid
+import threading
+from typing import Generator, Optional
+
+# Default path (override by passing log_path)
+LOG_PATH = "living_logbook.jsonl"
+_SCHEMA_VERSION = "1.0"
+_lock = threading.Lock()
+
+
+def _utc_iso_z(now: Optional[datetime.datetime] = None) -> str:
+    """Return an ISO-8601 UTC timestamp ending with 'Z' (no fractional seconds)."""
+    if now is None:
+        now = datetime.datetime.utcnow()
+    return now.replace(microsecond=0).isoformat() + "Z"
+
+
+def _compute_digest(payload: str) -> str:
+    """Compute SHA-512 hex digest of a UTF-8 payload string."""
+    return hashlib.sha512(payload.encode("utf-8")).hexdigest()
+
+
+def log_event(event_type: str, content, log_path: str = LOG_PATH, rotate_if_over_bytes: Optional[int] = None) -> dict:
+    """
+    Append a provenance-ready JSONL event envelope to log_path.
+
+    Envelope structure:
+    {
+      "entry": {
+        "id": "<uuid4>",
+        "time": "2025-11-01T09:09:36Z",
+        "schema": "1.0",
+        "type": "<event_type>",
+        "content": <user-supplied content>
+      },
+      "digest": "<sha512 hex of the JSON-serialized entry>"
+    }
+
+    Returns the envelope dict written to disk.
+
+    Notes:
+    - The digest is calculated over the JSON-serialized 'entry' (before adding the digest field),
+      so the digest can be re-verified by readers.
+    - Thread-safety is provided via an in-process lock. For multi-process safety, consider OS file locks.
+    """
+    entry = {
+        "id": uuid.uuid4().hex,
+        "time": _utc_iso_z(),
+        "schema": _SCHEMA_VERSION,
+        "type": event_type,
+        "content": content,
+    }
+
+    # Deterministic serialization for digest: ensure consistent separators and sorting
+    entry_json = json.dumps(entry, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
+    digest = _compute_digest(entry_json)
+
+    envelope = {"entry": entry, "digest": digest}
+
+    envelope_json = json.dumps(envelope, ensure_ascii=False, separators=(",", ":"), sort_keys=False)
+
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
+
+    # Optional rotation: simple size-based rotation (atomicity caveats noted below)
+    if rotate_if_over_bytes:
+        try:
+            if os.path.exists(log_path) and os.path.getsize(log_path) > rotate_if_over_bytes:
+                _rotate_log(log_path)
+        except OSError:
+            # If rotation check fails, proceed to append (we do not want logging to block)
+            pass
+
+    # Write the envelope as a single JSONL line.
+    # We use a thread lock to avoid interleaving writes in the same process.
+    with _lock:
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(envelope_json + "\n")
+
+    return envelope
+
+
+def read_events(log_path: str = LOG_PATH) -> Generator[dict, None, None]:
+    """
+    Yield envelopes from the JSONL log file one by one.
+
+    Each yielded object matches the envelope schema:
+      {"entry": {...}, "digest": "<sha512>"}
+
+    Consumers should verify digest by re-serializing the 'entry' with the same deterministic
+    settings used in log_event and comparing the computed digest to envelope['digest'].
+    """
+    if not os.path.exists(log_path):
+        return
+
+    with open(log_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                envelope = json.loads(line)
+            except json.JSONDecodeError:
+                # Skip malformed lines; callers may want to audit these separately.
+                continue
+            yield envelope
+
+
+def verify_envelope(envelope: dict) -> bool:
+    """
+    Verify the SHA-512 digest of an envelope.
+    Returns True if valid, False otherwise.
+    """
+    entry = envelope.get("entry")
+    digest = envelope.get("digest")
+    if not entry or not digest:
+        return False
+    # Re-serialize entry deterministically to compute digest
+    entry_json = json.dumps(entry, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    return _compute_digest(entry_json) == digest
+
+
+def _rotate_log(log_path: str):
+    """
+    Simple, conservative rotation: rename current file to a timestamped backup.
+    This function intentionally avoids complex rotation policies; adapt as needed.
+    """
+    try:
+        timestamp = datetime.datetime.utcnow().replace(microsecond=0).isoformat().replace(":", "-") + "Z"
+        base = log_path
+        rotated = f"{base}.{timestamp}.backup"
+        os.replace(base, rotated)
+    except Exception:
+        # If rotation fails, let caller proceed; do not raise so logging continues.
+        pass
