@@ -1,0 +1,16 @@
+{
+  "canonical_id": "RHYTH-PRIMACY-2025-11-01",
+  "version": "1.0",
+  "created_at": "2025-11-01T09:44:11Z",
+  "owner": "hannesmitterer",
+  "files": [
+    {
+      "path": "RHYTHMINDS_ROLE_CLAUSE.md",
+      "type": "canonical-markdown",
+      "notes": "Rhythminds primacy clause (draft)",
+      "sha512": "<TO_BE_COMPUTED_SHA512>"
+    }
+  ],
+  "manifest_digest": "<TO_BE_COMPUTED_SHA512_OVER_SORTED_MANIFEST_JSON>",
+  "signatures": []
+}
