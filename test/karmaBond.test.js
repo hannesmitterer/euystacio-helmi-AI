@@ -7,19 +7,19 @@ describe("KarmaBond", function () {
   let investor1;
   let investor2;
   let foundationWallet;
-  const initialEthPrice = ethers.utils.parseUnits("2000", 2); // 2000 USD in cents
+  const initialEthPrice = 200000n; // 2000 USD in cents
 
   beforeEach(async function () {
     [owner, investor1, investor2, foundationWallet] = await ethers.getSigners();
     
     const KarmaBond = await ethers.getContractFactory("KarmaBond");
     karmaBond = await KarmaBond.deploy(foundationWallet.address, initialEthPrice);
-    await karmaBond.deployed();
+    await karmaBond.waitForDeployment();
   });
 
   it("should enforce minimum investment of 100 USD", async function () {
     // Try to invest less than 100 USD (0.01 ETH at 2000 USD/ETH = 20 USD)
-    const tooSmall = ethers.utils.parseEther("0.01");
+    const tooSmall = ethers.parseEther("0.01");
     
     await expect(
       karmaBond.connect(investor1).invest(0, { value: tooSmall })
@@ -28,7 +28,7 @@ describe("KarmaBond", function () {
 
   it("should allow investment above minimum", async function () {
     // Invest 0.1 ETH at 2000 USD/ETH = 200 USD
-    const validAmount = ethers.utils.parseEther("0.1");
+    const validAmount = ethers.parseEther("0.1");
     
     await expect(
       karmaBond.connect(investor1).invest(0, { value: validAmount })
@@ -40,7 +40,7 @@ describe("KarmaBond", function () {
   });
 
   it("should support flexible duration", async function () {
-    const amount = ethers.utils.parseEther("0.1");
+    const amount = ethers.parseEther("0.1");
     const duration = 86400; // 1 day
     
     await karmaBond.connect(investor1).invest(duration, { value: amount });
@@ -50,47 +50,47 @@ describe("KarmaBond", function () {
   });
 
   it("should apply 5% redemption fee when Red Code compliant", async function () {
-    const amount = ethers.utils.parseEther("1.0");
+    const amount = ethers.parseEther("1.0");
     await karmaBond.connect(investor1).invest(0, { value: amount });
     
     // Set Red Code compliant invariants
     await karmaBond.setInvariants(10, 45);
     
-    const initialBalance = await investor1.getBalance();
-    const initialFoundationBalance = await foundationWallet.getBalance();
+    const initialBalance = await ethers.provider.getBalance(investor1.address);
+    const initialFoundationBalance = await ethers.provider.getBalance(foundationWallet.address);
     
     await karmaBond.redeem(investor1.address);
     
-    const finalBalance = await investor1.getBalance();
-    const finalFoundationBalance = await foundationWallet.getBalance();
+    const finalBalance = await ethers.provider.getBalance(investor1.address);
+    const finalFoundationBalance = await ethers.provider.getBalance(foundationWallet.address);
     
     // Check that investor received 95% of investment
-    const expectedNet = amount.mul(95).div(100);
-    const expectedFee = amount.mul(5).div(100);
+    const expectedNet = (amount * 95n) / 100n;
+    const expectedFee = (amount * 5n) / 100n;
     
-    expect(finalBalance.sub(initialBalance)).to.equal(expectedNet);
-    expect(finalFoundationBalance.sub(initialFoundationBalance)).to.equal(expectedFee);
+    expect(finalBalance - initialBalance).to.equal(expectedNet);
+    expect(finalFoundationBalance - initialFoundationBalance).to.equal(expectedFee);
   });
 
   it("should redirect all funds to foundation when Red Code not compliant", async function () {
-    const amount = ethers.utils.parseEther("1.0");
+    const amount = ethers.parseEther("1.0");
     await karmaBond.connect(investor1).invest(0, { value: amount });
     
     // Set Red Code non-compliant invariants
     await karmaBond.setInvariants(50, 10);
     
-    const initialFoundationBalance = await foundationWallet.getBalance();
+    const initialFoundationBalance = await ethers.provider.getBalance(foundationWallet.address);
     
     await karmaBond.redeem(investor1.address);
     
-    const finalFoundationBalance = await foundationWallet.getBalance();
+    const finalFoundationBalance = await ethers.provider.getBalance(foundationWallet.address);
     
     // All funds should go to foundation
-    expect(finalFoundationBalance.sub(initialFoundationBalance)).to.equal(amount);
+    expect(finalFoundationBalance - initialFoundationBalance).to.equal(amount);
   });
 
   it("should respect lock duration", async function () {
-    const amount = ethers.utils.parseEther("0.1");
+    const amount = ethers.parseEther("0.1");
     const duration = 86400; // 1 day
     
     await karmaBond.connect(investor1).invest(duration, { value: amount });

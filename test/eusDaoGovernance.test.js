@@ -12,11 +12,11 @@ describe("EUSDaoGovernance", function () {
     
     const EUSDaoGovernance = await ethers.getContractFactory("EUSDaoGovernance");
     governance = await EUSDaoGovernance.deploy(seedbringer.address);
-    await governance.deployed();
+    await governance.waitForDeployment();
   });
 
   it("should verify Seedbringer seal is keccak256('hannesmitterer')", async function () {
-    const expectedSeal = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("hannesmitterer"));
+    const expectedSeal = ethers.keccak256(ethers.toUtf8Bytes("hannesmitterer"));
     expect(await governance.SEEDBRINGER_SEAL()).to.equal(expectedSeal);
   });
 
@@ -26,7 +26,7 @@ describe("EUSDaoGovernance", function () {
   });
 
   it("should only allow Seedbringer to mint tokens", async function () {
-    const mintAmount = ethers.utils.parseEther("100");
+    const mintAmount = ethers.parseEther("100");
     
     await expect(
       governance.connect(user1).mint(user1.address, mintAmount)
@@ -53,14 +53,14 @@ describe("EUSDaoGovernance", function () {
   });
 
   it("should calculate voting power correctly", async function () {
-    const mintAmount = ethers.utils.parseEther("100");
+    const mintAmount = ethers.parseEther("100");
     const contributionScore = 2;
     
     await governance.connect(seedbringer).mint(user1.address, mintAmount);
     await governance.connect(seedbringer).setContributionScore(user1.address, contributionScore);
     
     // Voting power = balance * (1 + contributionScore)
-    const expectedVotingPower = mintAmount.mul(1 + contributionScore);
+    const expectedVotingPower = mintAmount * BigInt(1 + contributionScore);
     expect(await governance.votingPower(user1.address)).to.equal(expectedVotingPower);
   });
 
@@ -100,7 +100,7 @@ describe("EUSDaoGovernance", function () {
   });
 
   it("should return governance info correctly", async function () {
-    const mintAmount = ethers.utils.parseEther("100");
+    const mintAmount = ethers.parseEther("100");
     const contributionScore = 3;
     
     await governance.connect(seedbringer).mint(user1.address, mintAmount);
@@ -109,6 +109,6 @@ describe("EUSDaoGovernance", function () {
     const info = await governance.getGovernanceInfo(user1.address);
     expect(info.balance).to.equal(mintAmount);
     expect(info.contribution).to.equal(contributionScore);
-    expect(info.voting).to.equal(mintAmount.mul(1 + contributionScore));
+    expect(info.voting).to.equal(mintAmount * BigInt(1 + contributionScore));
   });
 });

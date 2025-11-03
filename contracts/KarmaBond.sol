@@ -38,7 +38,7 @@ contract KarmaBond is Ownable {
     event PriceUpdated(uint256 ethPriceUSD);
     event MinInvestmentUpdated(uint256 minInvestmentUSD);
 
-    constructor(address _foundationWallet, uint256 _ethPriceUSD) {
+    constructor(address _foundationWallet, uint256 _ethPriceUSD) Ownable(msg.sender) {
         foundationWallet = _foundationWallet;
         minInvestmentUSD = 10000; // 100 USD in cents
         ethPriceUSD = _ethPriceUSD; // e.g., 200000 for 2000 USD/ETH

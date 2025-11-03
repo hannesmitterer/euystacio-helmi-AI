@@ -16,7 +16,7 @@ contract TrustlessFundingProtocol is Ownable {
     event TrancheReleased(uint256 indexed trancheId, bytes32 proofHash, uint256 timestamp);
     event RedCodeComplianceUpdated(uint256 indexed trancheId, bool compliant);
 
-    constructor(address _foundationWallet) {
+    constructor(address _foundationWallet) Ownable(msg.sender) {
         foundationWallet = _foundationWallet;
     }
 

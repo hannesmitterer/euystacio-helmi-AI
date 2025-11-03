@@ -20,6 +20,6 @@
     "@openzeppelin/contracts": "^5.0.0",
     "hardhat": "^2.19.0",
     "chai": "^4.3.10",
-    "ethers": "^5.7.2"
+    "ethers": "^6.14.0"
   }
 }

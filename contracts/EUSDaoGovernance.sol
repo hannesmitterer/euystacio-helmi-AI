@@ -24,13 +24,10 @@ contract EUSDaoGovernance is ERC20, Ownable {
         _;
     }
 
-    constructor(address _seedbringer) ERC20("Euystacio Stewardship", "EUS") {
+    constructor(address _seedbringer) ERC20("Euystacio Stewardship", "EUS") Ownable(_seedbringer) {
         // Set Seedbringer seal: keccak256("hannesmitterer")
         SEEDBRINGER_SEAL = keccak256(abi.encodePacked("hannesmitterer"));
         seedbringerAddress = _seedbringer;
-        
-        // Transfer ownership to Seedbringer
-        _transferOwnership(_seedbringer);
     }
 
     /**
@@ -81,7 +78,7 @@ contract EUSDaoGovernance is ERC20, Ownable {
         seedbringerAddress = newSeedbringer;
         
         // Also transfer ownership
-        _transferOwnership(newSeedbringer);
+        transferOwnership(newSeedbringer);
         
         emit SeedbringerUpdated(oldSeedbringer, newSeedbringer);
     }

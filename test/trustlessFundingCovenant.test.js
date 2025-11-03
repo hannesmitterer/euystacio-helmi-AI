@@ -18,24 +18,24 @@ describe("TrustlessFundingProtocol_Covenant", function () {
       foundationWallet.address,
       seedbringer.address
     );
-    await covenant.deployed();
+    await covenant.waitForDeployment();
   });
 
   it("should verify Seedbringer seal is keccak256('hannesmitterer')", async function () {
-    const expectedSeal = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("hannesmitterer"));
+    const expectedSeal = ethers.keccak256(ethers.toUtf8Bytes("hannesmitterer"));
     expect(await covenant.SEEDBRINGER_NAME_SEAL()).to.equal(expectedSeal);
   });
 
   it("should initialize project with tranches", async function () {
     const trancheAmounts = [
-      ethers.utils.parseEther("1.0"),
-      ethers.utils.parseEther("2.0"),
-      ethers.utils.parseEther("1.5")
+      ethers.parseEther("1.0"),
+      ethers.parseEther("2.0"),
+      ethers.parseEther("1.5")
     ];
     const milestoneHashes = [
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-1")),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-2")),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-3"))
+      ethers.keccak256(ethers.toUtf8Bytes("milestone-1")),
+      ethers.keccak256(ethers.toUtf8Bytes("milestone-2")),
+      ethers.keccak256(ethers.toUtf8Bytes("milestone-3"))
     ];
     
     await expect(
@@ -45,20 +45,20 @@ describe("TrustlessFundingProtocol_Covenant", function () {
     const projectDetails = await covenant.getProjectDetails(0);
     expect(projectDetails.recipient).to.equal(recipient.address);
     expect(projectDetails.totalBudget).to.equal(
-      ethers.utils.parseEther("4.5")
+      ethers.parseEther("4.5")
     );
   });
 
   it("should require Red Code compliance for tranche release", async function () {
-    const trancheAmounts = [ethers.utils.parseEther("1.0")];
-    const milestoneHashes = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-1"))];
+    const trancheAmounts = [ethers.parseEther("1.0")];
+    const milestoneHashes = [ethers.keccak256(ethers.toUtf8Bytes("milestone-1"))];
     
     await covenant.connect(oracle).initializeProject(recipient.address, trancheAmounts, milestoneHashes);
     
     // Fund the contract
     await owner.sendTransaction({
-      to: covenant.address,
-      value: ethers.utils.parseEther("1.0")
+      to: await covenant.getAddress(),
+      value: ethers.parseEther("1.0")
     });
     
     // Try to release without Red Code compliance
@@ -68,62 +68,62 @@ describe("TrustlessFundingProtocol_Covenant", function () {
   });
 
   it("should automatically release tranche upon verified milestone and Red Code compliance", async function () {
-    const trancheAmounts = [ethers.utils.parseEther("1.0")];
-    const milestoneHashes = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-1"))];
+    const trancheAmounts = [ethers.parseEther("1.0")];
+    const milestoneHashes = [ethers.keccak256(ethers.toUtf8Bytes("milestone-1"))];
     
     await covenant.connect(oracle).initializeProject(recipient.address, trancheAmounts, milestoneHashes);
     
     // Fund the contract
     await owner.sendTransaction({
-      to: covenant.address,
-      value: ethers.utils.parseEther("1.0")
+      to: await covenant.getAddress(),
+      value: ethers.parseEther("1.0")
     });
     
     // Set Red Code compliance
     await covenant.connect(oracle).updateRedCodeCompliance(0, true);
     
-    const recipientBalanceBefore = await recipient.getBalance();
+    const recipientBalanceBefore = await ethers.provider.getBalance(recipient.address);
     
     // Release tranche
     await expect(
       covenant.connect(oracle).releaseTranche(0, milestoneHashes[0])
     ).to.emit(covenant, "TrancheReleased")
-      .withArgs(0, 0, ethers.utils.parseEther("1.0"));
+      .withArgs(0, 0, ethers.parseEther("1.0"));
     
-    const recipientBalanceAfter = await recipient.getBalance();
-    expect(recipientBalanceAfter.sub(recipientBalanceBefore)).to.equal(
-      ethers.utils.parseEther("1.0")
+    const recipientBalanceAfter = await ethers.provider.getBalance(recipient.address);
+    expect(recipientBalanceAfter - recipientBalanceBefore).to.equal(
+      ethers.parseEther("1.0")
     );
   });
 
   it("should allow Seedbringer to override and release tranche", async function () {
-    const trancheAmounts = [ethers.utils.parseEther("1.0")];
-    const milestoneHashes = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-1"))];
+    const trancheAmounts = [ethers.parseEther("1.0")];
+    const milestoneHashes = [ethers.keccak256(ethers.toUtf8Bytes("milestone-1"))];
     
     await covenant.connect(oracle).initializeProject(recipient.address, trancheAmounts, milestoneHashes);
     
     // Fund the contract
     await owner.sendTransaction({
-      to: covenant.address,
-      value: ethers.utils.parseEther("1.0")
+      to: await covenant.getAddress(),
+      value: ethers.parseEther("1.0")
     });
     
-    const recipientBalanceBefore = await recipient.getBalance();
+    const recipientBalanceBefore = await ethers.provider.getBalance(recipient.address);
     
     // Seedbringer override
     await expect(
       covenant.connect(seedbringer).seedbringerOverrideTranche(0, 0, true)
     ).to.emit(covenant, "SeedbringerOverride");
     
-    const recipientBalanceAfter = await recipient.getBalance();
-    expect(recipientBalanceAfter.sub(recipientBalanceBefore)).to.equal(
-      ethers.utils.parseEther("1.0")
+    const recipientBalanceAfter = await ethers.provider.getBalance(recipient.address);
+    expect(recipientBalanceAfter - recipientBalanceBefore).to.equal(
+      ethers.parseEther("1.0")
     );
   });
 
   it("should only allow Seedbringer to use override functions", async function () {
-    const trancheAmounts = [ethers.utils.parseEther("1.0")];
-    const milestoneHashes = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-1"))];
+    const trancheAmounts = [ethers.parseEther("1.0")];
+    const milestoneHashes = [ethers.keccak256(ethers.toUtf8Bytes("milestone-1"))];
     
     await covenant.connect(oracle).initializeProject(recipient.address, trancheAmounts, milestoneHashes);
     
@@ -133,16 +133,16 @@ describe("TrustlessFundingProtocol_Covenant", function () {
   });
 
   it("should verify milestone proof matches expected hash", async function () {
-    const trancheAmounts = [ethers.utils.parseEther("1.0")];
-    const correctHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("milestone-1"));
-    const wrongHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("wrong-milestone"));
+    const trancheAmounts = [ethers.parseEther("1.0")];
+    const correctHash = ethers.keccak256(ethers.toUtf8Bytes("milestone-1"));
+    const wrongHash = ethers.keccak256(ethers.toUtf8Bytes("wrong-milestone"));
     
     await covenant.connect(oracle).initializeProject(recipient.address, trancheAmounts, [correctHash]);
     
     // Fund the contract
     await owner.sendTransaction({
-      to: covenant.address,
-      value: ethers.utils.parseEther("1.0")
+      to: await covenant.getAddress(),
+      value: ethers.parseEther("1.0")
     });
     
     // Set Red Code compliance
