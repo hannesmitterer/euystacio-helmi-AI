@@ -1,15 +1,25 @@
 {
-  "name": "euystacio-helmi-api",
+  "name": "euystacio-helmi-ai",
   "version": "1.0.0",
-  "description": "Lightweight API for Euystacio Helmi AI (healthz + ws)",
+  "description": "Euystacio Helmi AI with Smart Contracts",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js"
   },
   "author": "hannesmitterer",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "hardhat": "^2.19.0",
+    "chai": "^4.3.10",
+    "ethers": "^5.7.2"
   }
 }
