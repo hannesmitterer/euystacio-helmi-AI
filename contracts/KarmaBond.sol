@@ -61,9 +61,17 @@ contract KarmaBond is Ownable {
         uint256 usdValue = (msg.value * ethPriceUSD) / 1 ether;
         require(usdValue >= minInvestmentUSD, "Minimum investment is 100 USD");
         
+        // Only update start time and duration for new bonds or when increasing lock
+        if (bonds[msg.sender].amount == 0) {
+            bonds[msg.sender].startTime = block.timestamp;
+            bonds[msg.sender].duration = duration;
+        } else if (duration > bonds[msg.sender].duration) {
+            // Allow extending lock period
+            bonds[msg.sender].startTime = block.timestamp;
+            bonds[msg.sender].duration = duration;
+        }
+        
         bonds[msg.sender].amount += msg.value;
-        bonds[msg.sender].startTime = block.timestamp;
-        bonds[msg.sender].duration = duration;
         
         emit InvestmentMade(msg.sender, msg.value, duration);
     }
