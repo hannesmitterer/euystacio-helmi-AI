@@ -274,7 +274,7 @@ describe('OI: Open Interface - AR Environment Tests', function() {
     it('Should reject invalid session format', function() {
       const invalidSession = {
         timestamp: Date.now()
-        // Missing username
+        // Missing required username field to test validation
       };
       
       const isValid = invalidSession.username !== undefined;
