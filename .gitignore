@@ -40,3 +40,15 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Node
+node_modules/
+
+# Hardhat
+cache/
+artifacts/
+typechain-types/
+
+# Environment
+.env
+.env.local
