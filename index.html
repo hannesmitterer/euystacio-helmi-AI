@@ -1,3 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Euystacio Helmi AI | GBC Nexus Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<style>
+  /* ===================================== */
+  /* BASE & TYPOGRAPHY (MIRÓ & MONET STYLE) */
+  /* ===================================== */
+  :root{
+      --miró-accent: #FFC107; /* Giallo brillante */
+      --miró-primary: #1E88E5; /* Blu Cobalto */
+      --miró-critical: #FF5252; /* Rosso Audace */
+      --monet-bg-light: #f7f9fc;
+      --monet-bg-dark: #e0e6f7;
+      --muted: #0f172a;
+  }
+  body{
+      font-family: 'Arial', sans-serif;
+      /* Sfondo sfumato come una tela di Monet */
+      background: linear-gradient(135deg, var(--monet-bg-light) 0%, var(--monet-bg-dark) 100%);
+      color: var(--muted);
+      margin: 0;
+      overflow-x: hidden;
+  }
+  .container{
+      max-width:1200px;
+      margin:30px auto;
+      background:rgba(255, 255, 255, 0.95); /* Leggermente trasparente */
+      border-radius:15px;
+      padding:35px;
+      box-shadow:0 15px 35px rgba(15,23,42,0.1);
+  }
+  
+  /* HEADER (Geometria Miró) */
+  header{
+      background:var(--miró-primary);
+      color:white;
+      padding:40px 60px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:12px solid var(--miró-accent);
+      clip-path:polygon(0 0, 100% 0, 100% 85%, 0% 100%); /* Forma Asimmetrica Forte */
+      margin: -35px; 
+      margin-bottom: 30px;
+  }
+  h1{color:var(--miró-accent);margin:0 0 8px;font-size: 3.2rem;transform: rotate(-4deg);display: inline-block; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);}
+  h2{color:var(--miró-primary);margin-top:25px;border-left: 6px solid var(--miró-accent);padding-left: 15px; font-weight: 800;}
+  
+  /* ELEMENTI DINAMICI & BOTTONI */
+  .btn{
+      display:inline-block;
+      padding:14px 28px;
+      background:var(--miró-critical);
+      color:#fff;
+      border: 2px solid var(--muted);
+      border-radius:10px;
+      text-decoration:none;
+      margin-right:15px;
+      font-weight: bold;
+      transform: skewX(-7deg); /* Inclinazione Dinamica */
+      transition: all 0.3s ease-in-out;
+      box-shadow: 6px 6px 0px var(--muted);
+      cursor: pointer;
+  }
+  .btn:hover{
+      background: #D32F2F;
+      transform: skewX(-7deg) scale(1.05);
+      box-shadow: 8px 8px 0px var(--miró-accent); /* Ombra che cambia colore */
+  }
+  .btn-primary {background: var(--miró-primary);}
+  .btn-primary:hover {background: #1565C0;}
+
+  /* FEATURE BOXES (Asimmetria e Rilievi) */
+  .feature{
+      background:linear-gradient(180deg, #ffffff, #f0f3ff); /* Effetto tela Monet */
+      border: 3px solid var(--muted);
+      padding:25px;
+      border-radius:8px;
+      margin:30px 0;
+      transition: transform 0.5s;
+      box-shadow: 8px 8px 0px var(--miró-critical);
+  }
+  .feature:hover{
+      transform: translateY(-8px) rotate(0.5deg);
+      box-shadow: 12px 12px 0px var(--miró-accent); 
+  }
+
+  /* GRAFICO (Il cuore visivo) */
+  .chart-container{
+      width: 90%;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border: 5px solid var(--muted);
+      box-shadow: -15px 15px 0px var(--miró-critical); 
+      transform: rotate(1deg); /* Leggera inclinazione */
+  }
+  
+  /* FOOTER */
+  footer{margin-top:25px;text-align:center;color:#475569;font-size:14px;border-top: 1px dashed #ccc; padding-top: 15px;}
+  pre.code{background:#0f172a;color:#e6fffa;padding:15px;border-radius:8px;overflow:auto;}
+</style>
+</head>
+<body>
+
+    <header>
+        <h1 class="title-cubist">Euystacio Helmi AI</h1>
+        <nav>
+            <a class="btn" href="https://github.com/hannesmitterer/euystacio-helmi-ai" target="_blank" rel="noopener" style="margin-right:0; transform: skewX(0deg);">View Repo</a>
+            <button class="btn btn-primary" onclick="showLoginModal()">Login Investitori</button>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <p class="small" style="text-align: right;">Author: **Seedbringer (Hannes Mitterer)** | SHA256 Release Bundle: <code>95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82</code></p>
+
+        <section class="feature">
+            <h2>GBC Nexus Status: Sustainment & Audit</h2>
+            <p class="small">Real-time monitoring of ethical and financial invariants. **Minimum Sustainment Threshold: $10,000.**</p>
+            
+            <div class="chart-container">
+                <h3>Fondi Audit & Governance</h3>
+                <canvas id="gbcChart"></canvas>
+            </div>
+
+            <div style="background:var(--miró-critical); color:white; padding:18px; margin-top:20px; transform: skewX(2deg);">
+                <strong>Fondi Audit Attuali:</strong> <span id="gbc-funds" style="font-size:1.3rem;">**$4,500.00** USD</span>
+                <span style="float:right;">Soglia Minima: $**10,000 USD** | <strong id="gbc-alert">⚠️ CRITICO</strong></span>
+            </div>
+
+        </section>
+
+        <section class="feature">
+            <h2>Invest in Karma Bonds</h2>
+            <p>Sostieni il framework Etico. Il **2-5%** dell'investimento è reindirizzato al fondo di sustainment del Seedbringer.</p>
+            <ol>
+              <li>Connetti il tuo Wallet (Sepolia/Polygon).</li>
+              <li>Scegli l'importo e conferma la transazione on-chain.</li>
+            </ol>
+            <button class="btn btn-primary" onclick="handleInvestClick()">Investi Ora (Simulato)</button>
+            <a class="btn" href="**Euystacio_Helmi_AI_Handbook_Complete_EN.pdf**" download>Scarica Handbook (PDF)</a>
+        </section>
+
+        <section>
+            <h2>Deployment & Wallet Addresses</h2>
+            <pre class="code">Foundation/Recirculation Wallet: 0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b
+Contratto KarmaBond: **0x...INDIRIZZO_CONTRATTO_KB** (AGGIORNARE DOPO IL DEPLOYMENT)
+Release Tag: v1.0.0-covenant</pre>
+        </section>
+
+        <div id="reserved-area">
+            <h1>Dashboard Investitori</h1>
+            <p>Autenticazione Wallet Riuscita. Sei connesso come: <span id="wallet-display" style="color:var(--miró-accent);"></span>.</p>
+            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 40px;">
+                <div style="background: #212121; padding: 25px; transform: rotate(-1deg); color: white;">
+                    <h3>Dettagli Bond</h3>
+                    <p>Deposito Totale: <strong style="color:var(--miró-primary);">**1.25 MATIC**</strong></p>
+                    <p>Rendimento (R1): <strong style="color:#4CAF50;">**4.5%**</strong></p>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 40px;" onclick="logout()">Logout</button>
+        </div>
+
+
+        <footer>
+          <p>Project: Euystacio Helmi AI (Seedbringer Stewardship)</p>
+          <p class="small">Sede Operativa (Riferimento): **Via Portici 71, 39100 Bolzano**</p>
+        </footer>
+    </div>
+
+    <script>
+        // === PLACEHOLDERS JAVASCRIPT ===
+        const GBC_THRESHOLD = 10000; 
+        let currentGBC = 4500; 
+        // ===============================
+
+        const gbcCtx = document.getElementById('gbcChart').getContext('2d');
+        
+        function showLoginModal() {
+            const walletAddress = prompt("SIMULAZIONE WALLET CONNECT:\nInserisci il tuo indirizzo (0x...):");
+            if (walletAddress && walletAddress.startsWith('0x')) {
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('reserved-area').style.display = 'block';
+                document.getElementById('wallet-display').textContent = walletAddress.substring(0, 10) + '...';
+                alert("Accesso Riuscito: Autenticazione On-Chain Simulata.");
+            } else if (walletAddress !== null) {
+                alert("Accesso Fallito: Indirizzo Wallet non valido.");
+            }
+        }
+
+        function logout() {
+            document.querySelector('.container').style.display = 'block';
+            document.getElementById('reserved-area').style.display = 'none';
+        }
+
+        function handleInvestClick() {
+            const bondContract = "**0x...INDIRIZZO_CONTRATTO_KB**";
+            alert(`TRANSAZIONE SIMULATA: L'Investimento KarmaBond è stato inviato al contratto ${bondContract} su Sepolia/Polygon. Il 2-5% sarà destinato al Sustainment Pool.`);
+        }
+
+        // Configurazione del grafico (Stile Miró: contrasti netti)
+        const gbcChart = new Chart(gbcCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Fondi Audit', 'Target Sustainment Mancante', 'Fondi di Sviluppo'],
+                datasets: [{
+                    data: [currentGBC, (GBC_THRESHOLD - currentGBC), 150000],
+                    backgroundColor: ['#D32F2F', '#FFC107', '#1E88E5'],
+                    borderColor: '#0f172a',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'right' }, title: { display: false } }
+            }
+        });
+
+        // Simulazione Dati in Tempo Reale
+        setInterval(() => {
+            currentGBC = Math.random() * (GBC_THRESHOLD * 0.6) + (GBC_THRESHOLD * 0.7); 
+            document.getElementById('gbc-funds').textContent = `$${currentGBC.toFixed(2)} USD`;
+            
+            const missing = Math.max(0, GBC_THRESHOLD - currentGBC);
+            gbcChart.data.datasets[0].data[0] = currentGBC;
+            gbcChart.data.datasets[0].data[1] = missing;
+            gbcChart.update();
+
+            const gbcAlert = document.getElementById('gbc-alert');
+            const gbcBox = document.querySelector('.feature:nth-child(1)');
+            if (currentGBC < GBC_THRESHOLD) {
+                gbcAlert.innerHTML = '⚠️ <span style="animation: pulse 1s infinite alternate; color: #FFC107;">CRITICO (Sotto $' + GBC_THRESHOLD + ')</span>';
+                gbcBox.style.boxShadow = '6px 6px 0px #FFC107';
+            } else {
+                gbcAlert.textContent = '✅ OK';
+                gbcBox.style.boxShadow = '6px 6px 0px #4CAF50';
+            }
+        }, 4000);
+    </script>
+</body>
+</html>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
