@@ -7,6 +7,9 @@ on:
     paths:
       - '**/*.md'  # Specifically track changes to sacred files
 
+permissions:
+  contents: read
+
 jobs:
   integrity_check:
     runs-on: ubuntu-latest
