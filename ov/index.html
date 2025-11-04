@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OV: Open Visual - Login & Registration</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 40px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      background: linear-gradient(135deg, #0f766e 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #a0a0a0;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab.active {
+      border-bottom-color: #0f766e;
+      color: #0f766e;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #0f766e;
+      background: rgba(15, 118, 110, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(15, 118, 110, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .secondary-btn {
+      background: rgba(255, 255, 255, 0.1);
+      margin-top: 10px;
+    }
+
+    .secondary-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .camera-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .camera-controls button {
+      flex: 1;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .status.error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .status.success {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+
+    .status.info {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.5);
+    }
+
+    .file-upload {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .file-upload input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-label {
+      display: block;
+      padding: 12px;
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .file-label:hover {
+      border-color: #0f766e;
+      background: rgba(15, 118, 110, 0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OV: Open Visual</h1>
+    <p class="subtitle">Facial Recognition Authentication System</p>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Login</div>
+      <div class="tab" onclick="switchTab('register')">Register</div>
+    </div>
+
+    <!-- Login Tab -->
+    <div id="login" class="tab-content active">
+      <div id="loginStatus" class="status hidden"></div>
+      
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter your username">
+      </div>
+
+      <div class="video-container hidden" id="loginVideoContainer">
+        <video id="loginVideo" autoplay playsinline></video>
+      </div>
+
+      <div class="camera-controls hidden" id="loginCameraControls">
+        <button id="startLoginCamera">Start Camera</button>
+        <button id="stopLoginCamera" class="secondary-btn">Stop Camera</button>
+      </div>
+
+      <button id="facialLoginBtn">Login with Face Recognition</button>
+
+      <div class="form-group" style="margin-top: 20px;">
+        <label>Password (Fallback)</label>
+        <input type="password" id="loginPassword" placeholder="Enter password if facial login fails">
+      </div>
+
+      <button id="passwordLoginBtn" class="secondary-btn">Login with Password</button>
+    </div>
+
+    <!-- Register Tab -->
+    <div id="register" class="tab-content">
+      <div id="registerStatus" class="status hidden"></div>
+
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="registerUsername" placeholder="Choose a username">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="registerEmail" placeholder="your.email@example.com">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="registerPassword" placeholder="Choose a strong password">
+      </div>
+
+      <div class="form-group">
+        <label>Document Upload (Optional)</label>
+        <div class="file-upload">
+          <input type="file" id="documentUpload" accept="image/*,application/pdf">
+          <label class="file-label" for="documentUpload">
+            📄 Click to upload ID or verification document
+          </label>
+        </div>
+      </div>
+
+      <div class="video-container hidden" id="registerVideoContainer">
+        <video id="registerVideo" autoplay playsinline></video>
+      </div>
+
+      <div class="camera-controls" id="registerCameraControls">
+        <button id="startRegisterCamera">Enable Face Scan</button>
+        <button id="capturePhoto" class="secondary-btn" disabled>Capture Face</button>
+      </div>
+
+      <button id="registerBtn">Register Account</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import LoginInterface from './ov/login-interface.js';
+    import Registration from './ov/auth/registration.js';
+
+    const loginInterface = new LoginInterface();
+    const registration = new Registration();
+    let loginCameraActive = false;
+    let registerCameraActive = false;
+
+    // Tab switching
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    };
+
+    // Login functionality
+    document.getElementById('startLoginCamera').onclick = async function() {
+      const video = document.getElementById('loginVideo');
+      const success = await loginInterface.initializeCamera(video);
+      
+      if (success) {
+        document.getElementById('loginVideoContainer').classList.remove('hidden');
+        document.getElementById('loginCameraControls').classList.remove('hidden');
+        loginCameraActive = true;
+        showStatus('loginStatus', 'Camera initialized. Position your face.', 'info');
+      } else {
+        showStatus('loginStatus', 'Failed to initialize camera. Please check permissions.', 'error');
+      }
+    };
+
+    document.getElementById('stopLoginCamera').onclick = function() {
+      loginInterface.stopCamera();
+      document.getElementById('loginVideoContainer').classList.add('hidden');
+      loginCameraActive = false;
+    };
+
+    document.getElementById('facialLoginBtn').onclick = async function() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      if (!username) {
+        showStatus('loginStatus', 'Please enter your username', 'error');
+        return;
+      }
+
+      showStatus('loginStatus', 'Authenticating...', 'info');
+
+      const result = await loginInterface.login(username, password);
+
+      if (result.success) {
+        showStatus('loginStatus', `Login successful! Method: ${result.method}`, 'success');
+        loginInterface.createSession(result);
+        
+        setTimeout(() => {
+          loginInterface.redirectToOI('/oi/interface.html');
+        }, 1500);
+      } else {
+        showStatus('loginStatus', result.error || 'Login failed', 'error');
+      }
+    };
+
+    document.getElementById('passwordLoginBtn').onclick = function() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      if (!username || !password) {
+        showStatus('loginStatus', 'Please enter username and password', 'error');
+        return;
+      }
+
+      const result = loginInterface.fallbackLogin(username, password);
+
+      if (result.success) {
+        showStatus('loginStatus', 'Login successful!', 'success');
+        loginInterface.createSession(result);
+        
+        setTimeout(() => {
+          loginInterface.redirectToOI('/oi/interface.html');
+        }, 1500);
+      } else {
+        showStatus('loginStatus', result.error || 'Login failed', 'error');
+      }
+    };
+
+    // Registration functionality
+    document.getElementById('startRegisterCamera').onclick = async function() {
+      const video = document.getElementById('registerVideo');
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'user' } 
+      });
+      
+      video.srcObject = stream;
+      document.getElementById('registerVideoContainer').classList.remove('hidden');
+      document.getElementById('capturePhoto').disabled = false;
+      registerCameraActive = true;
+      showStatus('registerStatus', 'Camera active. Position your face and click Capture.', 'info');
+    };
+
+    document.getElementById('capturePhoto').onclick = function() {
+      showStatus('registerStatus', 'Face captured successfully!', 'success');
+    };
+
+    document.getElementById('registerBtn').onclick = async function() {
+      const username = document.getElementById('registerUsername').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const documentFile = document.getElementById('documentUpload').files[0];
+
+      if (!username || !email || !password) {
+        showStatus('registerStatus', 'Please fill in all required fields', 'error');
+        return;
+      }
+
+      const userDetails = { username, email, password };
+      const video = registerCameraActive ? document.getElementById('registerVideo') : null;
+
+      showStatus('registerStatus', 'Registering account...', 'info');
+
+      const result = await registration.registerUser(userDetails, video, documentFile);
+
+      if (result.success) {
+        showStatus('registerStatus', 
+          `Registration successful! ${result.hasFacialRecognition ? 'Facial recognition enabled.' : 'Facial scan not captured.'}`,
+          'success'
+        );
+        
+        setTimeout(() => {
+          switchTab('login');
+        }, 2000);
+      } else {
+        showStatus('registerStatus', result.errors.join(', '), 'error');
+      }
+    };
+
+    function showStatus(elementId, message, type) {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.className = `status ${type}`;
+      element.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
