@@ -46,7 +46,14 @@ def get_reflections():
         for fname in sorted(os.listdir("logs")):
             if "reflection" in fname:
                 with open(os.path.join("logs", fname)) as f:
-                    reflections.append(json.load(f))
+                    # Handle JSONL format (one JSON object per line)
+                    for line in f:
+                        line = line.strip()
+                        if line:
+                            try:
+                                reflections.append(json.loads(line))
+                            except json.JSONDecodeError:
+                                continue
     except FileNotFoundError:
         pass
     return reflections
