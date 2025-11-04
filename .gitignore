@@ -40,3 +40,21 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Hardhat
+cache/
+artifacts/
+coverage/
+coverage.json
+typechain/
+typechain-types/
+
+# Build artifacts
+*.tsbuildinfo
