@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract KarmaBond is Ownable {
-    // Seedbringer authority - keccak256("hannesmitterer")
-    bytes32 public constant SEEDBRINGER_HASH = 0x7b11220dc61c8a1f0f489ffae1410aba2b6aded2c713617a0361e1e60766cbed;
+contract KarmaBond is Ownable, ReentrancyGuard {
+    // Seedbringer authority - hannesmitterer
     address public seedbringer;
     address public foundationWallet;
     
@@ -56,10 +56,14 @@ contract KarmaBond is Ownable {
         require(duration > 0, "Duration must be positive");
         
         Investment storage inv = investments[msg.sender];
-        inv.amount += msg.value;
+        
+        // Only allow new investment if no active investment exists
+        require(inv.amount == 0, "Active investment exists. Redeem first.");
+        
+        inv.amount = msg.value;
         inv.startTime = block.timestamp;
         inv.duration = duration;
-        // Red Code compliance starts as false, must be certified
+        inv.redCodeCompliant = false; // Red Code compliance starts as false, must be certified
         
         emit InvestmentMade(msg.sender, msg.value, duration);
     }
@@ -78,7 +82,7 @@ contract KarmaBond is Ownable {
     }
 
     /// redeem: only owner (DAO multisig) triggers actual payouts after checks
-    function redeem(address investor) external onlyOwner {
+    function redeem(address investor) external onlyOwner nonReentrant {
         Investment storage inv = investments[investor];
         require(inv.amount > 0, "No investment");
         require(inv.redCodeCompliant, "Red Code certification required");
@@ -93,14 +97,18 @@ contract KarmaBond is Ownable {
             uint256 netAmount = amount - fee;
             
             // Send fee to foundation
-            payable(foundationWallet).transfer(fee);
+            (bool feeSuccess, ) = payable(foundationWallet).call{value: fee}("");
+            require(feeSuccess, "Fee transfer failed");
+            
             // Send net amount to investor
-            payable(investor).transfer(netAmount);
+            (bool netSuccess, ) = payable(investor).call{value: netAmount}("");
+            require(netSuccess, "Net amount transfer failed");
             
             emit Redeemed(investor, netAmount, fee);
         } else {
             // invariants violated -> redirect to recirculation wallet
-            payable(foundationWallet).transfer(amount);
+            (bool success, ) = payable(foundationWallet).call{value: amount}("");
+            require(success, "Recirculation transfer failed");
             emit Redeemed(investor, 0, amount);
         }
     }
@@ -112,7 +120,8 @@ contract KarmaBond is Ownable {
     }
 
     /// fallback admin functionality to withdraw accidentally-sent funds (onlyOwner)
-    function emergencyWithdraw(address to, uint256 amount) external onlyOwner {
-        payable(to).transfer(amount);
+    function emergencyWithdraw(address to, uint256 amount) external onlyOwner nonReentrant {
+        (bool success, ) = payable(to).call{value: amount}("");
+        require(success, "Emergency withdrawal failed");
     }
 }

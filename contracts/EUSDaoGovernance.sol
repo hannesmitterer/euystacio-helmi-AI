@@ -5,8 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract EUSDaoGovernance is ERC20, Ownable {
-    // Seedbringer authority - keccak256("hannesmitterer")
-    bytes32 public constant SEEDBRINGER_HASH = 0x7b11220dc61c8a1f0f489ffae1410aba2b6aded2c713617a0361e1e60766cbed;
+    // Seedbringer authority - hannesmitterer
     address public seedbringer;
     
     struct ContributionMetrics {

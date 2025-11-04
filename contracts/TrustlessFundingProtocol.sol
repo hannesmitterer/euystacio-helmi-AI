@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract TrustlessFundingProtocol is Ownable {
-    // Seedbringer authority - keccak256("hannesmitterer")
-    bytes32 public constant SEEDBRINGER_HASH = 0x7b11220dc61c8a1f0f489ffae1410aba2b6aded2c713617a0361e1e60766cbed;
+contract TrustlessFundingProtocol is Ownable, ReentrancyGuard {
+    // Seedbringer authority - hannesmitterer
     address public seedbringer;
     address public foundationWallet;
     
@@ -63,10 +63,13 @@ contract TrustlessFundingProtocol is Ownable {
         emit RedCodeCertified(trancheId, certified);
     }
 
-    /// Submit milestone proof for automated verification
+    /// Submit milestone proof for automated verification (restricted to owner or recipient)
     function submitMilestoneProof(uint256 trancheId, bytes32 proofHash) external {
         require(trancheId < trancheCount, "Invalid tranche");
         Tranche storage tranche = tranches[trancheId];
+        
+        // Only owner or recipient can submit proof
+        require(msg.sender == owner() || msg.sender == tranche.recipient, "Not authorized");
         require(!tranche.released, "Already released");
         require(!tranche.vetoedBySeedbringer, "Vetoed by Seedbringer");
         require(proofHash != bytes32(0), "Invalid proof");
@@ -81,7 +84,7 @@ contract TrustlessFundingProtocol is Ownable {
     }
 
     /// Internal function to release tranche
-    function _releaseTranche(uint256 trancheId) internal {
+    function _releaseTranche(uint256 trancheId) internal nonReentrant {
         Tranche storage tranche = tranches[trancheId];
         require(!tranche.released, "Already released");
         require(tranche.redCodeCertified, "Red Code certification required");
@@ -92,12 +95,14 @@ contract TrustlessFundingProtocol is Ownable {
         tranche.released = true;
         tranche.releaseTime = block.timestamp;
         
-        payable(tranche.recipient).transfer(tranche.amount);
+        (bool success, ) = payable(tranche.recipient).call{value: tranche.amount}("");
+        require(success, "Transfer failed");
+        
         emit TrancheReleased(trancheId, tranche.milestoneProofHash, block.timestamp);
     }
 
     /// Seedbringer can manually release a tranche (override)
-    function seedbringerRelease(uint256 trancheId) external onlySeedbringer {
+    function seedbringerRelease(uint256 trancheId) external onlySeedbringer nonReentrant {
         require(trancheId < trancheCount, "Invalid tranche");
         Tranche storage tranche = tranches[trancheId];
         require(!tranche.released, "Already released");
@@ -108,7 +113,8 @@ contract TrustlessFundingProtocol is Ownable {
         tranche.releaseTime = block.timestamp;
         
         if (address(this).balance >= tranche.amount) {
-            payable(tranche.recipient).transfer(tranche.amount);
+            (bool success, ) = payable(tranche.recipient).call{value: tranche.amount}("");
+            require(success, "Transfer failed");
         }
         emit TrancheReleased(trancheId, tranche.milestoneProofHash, block.timestamp);
     }
@@ -132,7 +138,8 @@ contract TrustlessFundingProtocol is Ownable {
     function fundContract() external payable onlyOwner {}
 
     /// Emergency withdrawal (only owner)
-    function emergencyWithdraw(address to, uint256 amount) external onlyOwner {
-        payable(to).transfer(amount);
+    function emergencyWithdraw(address to, uint256 amount) external onlyOwner nonReentrant {
+        (bool success, ) = payable(to).call{value: amount}("");
+        require(success, "Emergency withdrawal failed");
     }
 }
