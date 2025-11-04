@@ -1,0 +1,138 @@
+name: Treasury Sustainability Check
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight UTC
+  workflow_dispatch:  # Allow manual trigger
+  push:
+    branches:
+      - main
+    paths:
+      - 'contracts/Sustainment.sol'
+      - 'contracts/KarmaBond.sol'
+      - 'contracts/TrustlessFundingProtocol.sol'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sustainability_check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: npm ci
+    
+    - name: Compile Contracts
+      run: npm run compile
+    
+    - name: Run Sustainment Tests
+      run: npm run test:sustainment
+      continue-on-error: true
+    
+    - name: Check Contract Integrity
+      run: |
+        echo "=== Treasury Sustainability Check ==="
+        
+        # Check if sustainment contracts exist
+        if [ -f "contracts/Sustainment.sol" ]; then
+          echo "✅ Sustainment.sol found"
+        else
+          echo "❌ Sustainment.sol missing"
+          exit 1
+        fi
+        
+        if [ -f "contracts/KarmaBond.sol" ]; then
+          echo "✅ KarmaBond.sol found"
+        else
+          echo "❌ KarmaBond.sol missing"
+          exit 1
+        fi
+        
+        if [ -f "contracts/TrustlessFundingProtocol.sol" ]; then
+          echo "✅ TrustlessFundingProtocol.sol found"
+        else
+          echo "❌ TrustlessFundingProtocol.sol missing"
+          exit 1
+        fi
+        
+        echo "✅ All sustainability contracts present"
+    
+    - name: Validate Sustainment Configuration
+      run: |
+        echo "=== Validating Sustainment Configuration ==="
+        
+        # Check for .env.example
+        if [ -f ".env.example" ]; then
+          echo "✅ .env.example found"
+          
+          # Check required environment variables
+          required_vars=("SUSTAINMENT_MIN_USD" "SUSTAINMENT_PERCENT_BPS" "FOUNDATION_WALLET")
+          
+          for var in "${required_vars[@]}"; do
+            if grep -q "$var" .env.example; then
+              echo "✅ $var defined in .env.example"
+            else
+              echo "⚠️  $var not found in .env.example (may need to be added)"
+            fi
+          done
+        else
+          echo "⚠️  .env.example not found"
+        fi
+    
+    - name: Generate Sustainability Report
+      run: |
+        cat << EOF > sustainability-report.md
+        # Treasury Sustainability Report
+        
+        **Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        ## Contract Status
+        
+        - ✅ Sustainment.sol - Present
+        - ✅ KarmaBond.sol - Present  
+        - ✅ TrustlessFundingProtocol.sol - Present
+        
+        ## Framework Integration
+        
+        The treasury sustainability protocol ensures:
+        
+        1. **Minimum Reserve**: Maintains sustainable funding floor
+        2. **Allocation from Bonds**: Automatic allocation to treasury from bond issuance
+        3. **Governance Integration**: Tranche releases require sufficient sustainment
+        4. **Alert System**: Warns when approaching minimum threshold
+        
+        ## Configuration
+        
+        Review \`.env.example\` for required sustainability parameters:
+        - SUSTAINMENT_MIN_USD
+        - SUSTAINMENT_PERCENT_BPS
+        - FOUNDATION_WALLET
+        
+        ## Next Steps
+        
+        - Deploy contracts to test network
+        - Verify sustainment parameters
+        - Monitor reserve levels
+        - Set up governance approval process
+        
+        EOF
+        
+        cat sustainability-report.md
+    
+    - name: Upload Sustainability Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: sustainability-report
+        path: sustainability-report.md
+        retention-days: 30
