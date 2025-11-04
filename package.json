@@ -9,6 +9,9 @@
     "test:sustainment": "hardhat test test/karmabond/sustainment.test.js",
     "test:integration": "hardhat test test/karmabond/integration.test.js",
     "test:governance": "hardhat test test/karmabond/governance.test.js",
+    "test:ov": "mocha test/ov-authentication.test.js",
+    "test:oi": "mocha test/oi-environment.test.js",
+    "test:all": "npm test && npm run test:ov && npm run test:oi",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy_karmabond.js"
   },
