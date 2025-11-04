@@ -1,0 +1,44 @@
+name: Auto-Integrity & Sentimento Compliance
+
+on:
+  push:
+    branches:
+      - main  # Trigger on any push to the main branch
+    paths:
+      - '**/*.md'  # Specifically track changes to sacred files
+
+jobs:
+  integrity_check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set Up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pyyaml
+
+    - name: Run Integrity Check for Golden Bible
+      run: |
+        python scripts/auto_integrity.py  # Validate integrity of sacred texts
+
+    - name: Check for Violations
+      id: check_violations
+      run: |
+        python scripts/check_violations.py  # Check for compliance with Euystacio principles
+
+    - name: Commit Violations (if detected)
+      if: steps.check_violations.outputs.violated == 'true'
+      run: |
+        git config --global user.name 'Euystacio Integrity Bot'
+        git config --global user.email 'euystacio-integrity-bot@users.noreply.github.com'
+        git add .
+        git commit -m "Auto-commit: Integrity violation detected"
+        git push
