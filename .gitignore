@@ -52,3 +52,6 @@ typechain-types/
 # Environment
 .env
 .env.local
+
+# Runtime generated files
+tutors.json

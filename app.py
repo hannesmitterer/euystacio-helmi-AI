@@ -1,61 +1,104 @@
-# ASSUMPTION: The necessary imports are in place, including:
-# from quantum_consensus_aggregator import aggregate_quantum_results
-# from models import InputEnvelope, OutputEnvelope, AgentOutput, Request
+from flask import Flask, render_template, jsonify, request
+from sentimento_pulse_interface import SentimentoPulseInterface
+from red_code import RED_CODE, ensure_red_code  # changed: top-level module
+from reflector import reflect_and_suggest      # changed: top-level module
+from tutor_nomination import TutorNomination   # changed: top-level module
+import json
+import os
 
-@app.post("/euystacio/input", response_model=OutputEnvelope)
-async def receive_input(env: InputEnvelope, request: Request):
-    
-    # 1. INITIAL GATEWAY VALIDATION (Euystacio Helmi AI Role)
-    # This section handles initial consent, Red Code, and Sentimento checks 
-    # (represented here by placeholder logic).
-    if not env.is_valid_user_intent():
-        return OutputEnvelope(status="REJECTED", message="Initial intent failed validation.", data={})
+app = Flask(__name__)
 
-    # 2. COLLECTIVE EXECUTION (Simulated Placeholder)
-    # In a real-world scenario, this is where the Euystacio AI dispatches the intent
-    # to the Multi-Agent System (Collective) and collects all their results.
-    
-    # --- START OF REQUIRED INTEGRATION POINT ---
-    
-    # Placeholder for collecting agent outputs (Replace with actual Collective network logic)
-    # The agent outputs are the results gathered from the 'Collective' agents.
-    # Each output is a dictionary containing 'trust_index', 'status', and 'resolution'.
-    
-    # NOTE: These sample outputs are structured to test the aggregation logic.
-    agent_outputs = [
-        {"trust_index": 0.95, "status": "VALID", "resolution": "Path_A: Collaborate and Allocate Resources"},
-        {"trust_index": 0.88, "status": "VALID", "resolution": "Path_A: Collaborate and Allocate Resources"},
-        {"trust_index": 0.70, "status": "VALID", "resolution": "Path_B: Delayed Action Protocol"},
-        {"trust_index": 0.00, "status": "INVALID", "resolution": "Path_C: Error/Corruption Detected"} # Filtered out by CAP
-    ]
+# Ensure minimal state exists
+ensure_red_code()  # creates red_code.json from RED_CODE if missing
+os.makedirs("logs", exist_ok=True)
 
+spi = SentimentoPulseInterface()
+tutors = TutorNomination()
+
+def get_pulses():
+    # Collect all pulses from red_code.json and logs
+    pulses = []
     try:
-        # 3. CONSUS AGGREGATION PROTOCOL (CAP) 🤝
-        # The core call to resolve the Collective's disparate outputs into a single,
-        # axiomatically-vetted conclusion.
-        final_consensus_data = aggregate_quantum_results(agent_outputs)
-        
-        # 4. AXIOMATIC ALIGNMENT CHECK (Inherently performed within aggregate_quantum_results)
-        # The aggregation function ensures the result aligns with 'DIGNITY_OF_LOVE'.
-        
-        # 5. FINAL REPORT CONSTRUCTION
-        return OutputEnvelope(
-            status=final_consensus_data['final_status'],
-            message="Consus Achieved. Action Resolution Vetted.",
-            data={
-                "collective_resolution": final_consensus_data['consensus_resolution'],
-                "collective_trust_level": final_consensus_data['collective_trust_level'],
-                "axiomatic_alignment": final_consensus_data['axiomatic_alignment'],
-                "initial_request_id": env.request_id
-            }
-        )
+        with open('red_code.json', 'r') as f:
+            red_code = json.load(f)
+            pulses += red_code.get("recent_pulses", [])
+    except Exception:
+        # If red_code.json missing or malformed, return empty list (already ensured above)
+        pass
 
-    except (RuntimeError, ValueError) as e:
-        # Catches CAP Failure (No valid outputs) or Axiomatic Violation
-        return OutputEnvelope(
-            status="CRITICAL_HALT",
-            message=f"Consensus Failure: {str(e)}",
-            data={"request_id": env.request_id}
-        )
-    
-    # --- END OF REQUIRED INTEGRATION POINT ---
+    # From logs
+    try:
+        for fname in sorted(os.listdir("logs")):
+            if fname.startswith("log_") and fname.endswith(".json"):
+                with open(os.path.join("logs", fname)) as f:
+                    log = json.load(f)
+                    for k, v in log.items():
+                        if isinstance(v, dict) and ("emotion" in v or "feeling" in v):
+                            pulses.append(v)
+    except FileNotFoundError:
+        # logs directory may be empty
+        pass
+    return pulses
+
+def get_reflections():
+    reflections = []
+    try:
+        for fname in sorted(os.listdir("logs")):
+            if "reflection" in fname:
+                with open(os.path.join("logs", fname)) as f:
+                    # Handle JSONL format (one JSON object per line)
+                    for line in f:
+                        line = line.strip()
+                        if line:
+                            try:
+                                reflections.append(json.loads(line))
+                            except json.JSONDecodeError:
+                                continue
+    except FileNotFoundError:
+        pass
+    return reflections
+
+@app.route("/")
+def index():
+    # serve the static index in templates/ or the public/ index.html
+    return render_template("index.html")
+
+@app.route("/api/red_code")
+def api_red_code():
+    return jsonify(RED_CODE)
+
+@app.route("/api/pulses")
+def api_pulses():
+    return jsonify(get_pulses())
+
+@app.route("/api/reflect")
+def api_reflect():
+    # Run reflection, return latest
+    reflection = reflect_and_suggest()
+    return jsonify(reflection)
+
+@app.route("/api/reflections")
+def api_reflections():
+    return jsonify(get_reflections())
+
+@app.route("/api/tutors")
+def api_tutors():
+    return jsonify(tutors.list_tutors())
+
+@app.route("/api/pulse", methods=["POST"])
+def api_pulse():
+    data = request.get_json() or {}
+    emotion = data.get("emotion", data.get("feeling", "undefined"))
+    try:
+        intensity = float(data.get("intensity", 0.5))
+    except (TypeError, ValueError):
+        intensity = 0.5
+    clarity = data.get("clarity", "medium")
+    note = data.get("note", "")
+    event = spi.receive_pulse(emotion, intensity, clarity, note)
+    return jsonify(event)
+
+if __name__ == "__main__":
+    # local dev: ensure directories and run
+    os.makedirs("logs", exist_ok=True)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("FLASK_PORT", 5000)))
