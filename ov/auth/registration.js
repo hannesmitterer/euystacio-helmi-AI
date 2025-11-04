@@ -1,15 +1,19 @@
 /**
  * OV: Open Visual - Registration Module
  * Handles user registration with facial scan validation
+ * Integrates with backend server at https://oi-x3xa.onrender.com
  */
 
 import Authentication from './authentication.js';
 import FacialRecognition from '../facial-recognition.js';
+import BackendAPI from '../backend-api.js';
 
 class Registration {
   constructor() {
     this.auth = new Authentication();
     this.facialRecognition = new FacialRecognition();
+    this.api = new BackendAPI();
+    this.useBackend = true; // Use backend API by default
   }
 
   /**
@@ -106,14 +110,6 @@ class Registration {
       };
     }
 
-    // Check if user already exists
-    if (this.auth.userExists(userDetails.username)) {
-      return {
-        success: false,
-        errors: ['Username already exists']
-      };
-    }
-
     let facialFeatures = null;
 
     // Capture facial features if video element provided
@@ -129,26 +125,82 @@ class Registration {
     }
 
     // Handle document upload if provided
-    let documentValidation = null;
+    let documentUrl = null;
     if (documentFile) {
-      documentValidation = await this.validateDocument(documentFile);
+      if (this.useBackend) {
+        try {
+          const uploadResult = await this.api.uploadFile(documentFile, 'verification');
+          documentUrl = uploadResult.url;
+        } catch (error) {
+          console.warn('Document upload failed:', error);
+        }
+      } else {
+        const documentValidation = await this.validateDocument(documentFile);
+        if (!documentValidation.valid) {
+          console.warn('Document validation failed:', documentValidation.error);
+        }
+      }
     }
 
-    // Store credentials with AES-256 encryption
-    try {
-      this.auth.storeCredentials(
-        userDetails.username,
-        userDetails.password,
-        facialFeatures
-      );
+    if (this.useBackend) {
+      // Use backend API for registration
+      try {
+        const registrationData = {
+          username: userDetails.username,
+          email: userDetails.email,
+          password: userDetails.password,
+          facialFeatures,
+          documentUrl
+        };
 
-      return {
-        success: true,
-        username: userDetails.username,
-        hasFacialRecognition: !!facialFeatures,
-        documentValidated: !!documentValidation,
-        timestamp: Date.now()
-      };
+        const result = await this.api.register(registrationData);
+        
+        return {
+          success: true,
+          username: result.username || userDetails.username,
+          hasFacialRecognition: !!facialFeatures,
+          documentValidated: !!documentUrl,
+          timestamp: Date.now()
+        };
+      } catch (error) {
+        return {
+          success: false,
+          errors: [error.message || 'Registration failed']
+        };
+      }
+    } else {
+      // Fallback to local storage
+      // Check if user already exists
+      if (this.auth.userExists(userDetails.username)) {
+        return {
+          success: false,
+          errors: ['Username already exists']
+        };
+      }
+
+      try {
+        this.auth.storeCredentials(
+          userDetails.username,
+          userDetails.password,
+          facialFeatures
+        );
+
+        return {
+          success: true,
+          username: userDetails.username,
+          hasFacialRecognition: !!facialFeatures,
+          documentValidated: !!documentUrl,
+          timestamp: Date.now()
+        };
+      } catch (error) {
+        console.error('Registration error:', error);
+        return {
+          success: false,
+          errors: ['Failed to register user: ' + error.message]
+        };
+      }
+    }
+  }
     } catch (error) {
       console.error('Registration error:', error);
       return {

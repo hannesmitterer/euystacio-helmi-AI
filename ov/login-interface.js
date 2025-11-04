@@ -106,10 +106,10 @@ class LoginInterface {
    * Fallback to manual password login
    * @param {string} username - Username
    * @param {string} password - Password
-   * @returns {Object} Login result
+   * @returns {Promise<Object>} Login result
    */
-  fallbackLogin(username, password) {
-    return this.auth.authenticateWithPassword(username, password);
+  async fallbackLogin(username, password) {
+    return await this.auth.authenticateWithPassword(username, password);
   }
 
   /**
@@ -133,7 +133,7 @@ class LoginInterface {
 
     // Fallback to password if provided
     if (password) {
-      const passwordResult = this.fallbackLogin(username, password);
+      const passwordResult = await this.fallbackLogin(username, password);
       this.stopCamera();
       return passwordResult;
     }

@@ -1,16 +1,20 @@
 /**
  * OV: Open Visual - Authentication Module
  * Handles user authentication with facial recognition and manual login fallback
+ * Integrates with backend server at https://oi-x3xa.onrender.com
  */
 
 import CryptoJS from 'crypto-js';
 import FacialRecognition from '../facial-recognition.js';
+import BackendAPI from '../backend-api.js';
 
 class Authentication {
   constructor() {
     this.facialRecognition = new FacialRecognition();
+    this.api = new BackendAPI();
     this.storageKey = 'ov_credentials';
     this.encryptionKey = this.getOrCreateEncryptionKey();
+    this.useBackend = true; // Use backend API by default
   }
 
   /**
@@ -146,43 +150,75 @@ class Authentication {
    * @returns {Promise<Object>} Authentication result
    */
   async authenticateWithFace(username, videoElement) {
-    const credentials = this.getCredentials();
-    
-    if (!credentials || !credentials[username]) {
-      return {
-        success: false,
-        method: 'facial',
-        error: 'User not found'
-      };
-    }
-
-    const storedFeatures = credentials[username].facialFeatures;
-    if (!storedFeatures) {
-      return {
-        success: false,
-        method: 'facial',
-        error: 'No facial data registered for this user'
-      };
-    }
-
     try {
       await this.facialRecognition.initialize();
-      const isMatch = await this.facialRecognition.verifyFace(videoElement, storedFeatures);
+      const faces = await this.facialRecognition.detectFaces(videoElement);
+      const currentFeatures = this.facialRecognition.extractFeatures(faces);
       
-      if (isMatch) {
-        this.updateLastLogin(username);
-        return {
-          success: true,
-          method: 'facial',
-          username,
-          timestamp: Date.now()
-        };
-      } else {
+      if (!currentFeatures) {
         return {
           success: false,
           method: 'facial',
-          error: 'Face verification failed'
+          error: 'No face detected or feature extraction failed'
         };
+      }
+
+      if (this.useBackend) {
+        // Use backend API for authentication
+        try {
+          const result = await this.api.loginWithFace(username, currentFeatures);
+          return {
+            success: true,
+            method: 'facial',
+            username: result.username || username,
+            timestamp: Date.now(),
+            token: result.token
+          };
+        } catch (error) {
+          return {
+            success: false,
+            method: 'facial',
+            error: error.message || 'Facial authentication failed'
+          };
+        }
+      } else {
+        // Fallback to local storage
+        const credentials = this.getCredentials();
+        
+        if (!credentials || !credentials[username]) {
+          return {
+            success: false,
+            method: 'facial',
+            error: 'User not found'
+          };
+        }
+
+        const storedFeatures = credentials[username].facialFeatures;
+        if (!storedFeatures) {
+          return {
+            success: false,
+            method: 'facial',
+            error: 'No facial data registered for this user'
+          };
+        }
+
+        const isMatch = await this.facialRecognition.verifyFace(videoElement, storedFeatures);
+        
+        if (isMatch) {
+          this.updateLastLogin(username);
+          return {
+            success: true,
+            method: 'facial',
+            username,
+            timestamp: Date.now()
+          };
+        } else {
+          return {
+            success: false,
+            method: 'facial',
+            error: 'Face verification failed'
+          };
+        }
       }
     } catch (error) {
       console.error('Facial authentication error:', error);
@@ -198,41 +234,62 @@ class Authentication {
    * Authenticate user with manual credentials (fallback)
    * @param {string} username - Username
    * @param {string} password - Password
-   * @returns {Object} Authentication result
+   * @returns {Promise<Object>} Authentication result
    */
-  authenticateWithPassword(username, password) {
-    const credentials = this.getCredentials();
-    
-    if (!credentials || !credentials[username]) {
-      return {
-        success: false,
-        method: 'password',
-        error: 'User not found'
-      };
-    }
-
-    const userData = credentials[username];
-    const isValid = this.verifyPassword(
-      password, 
-      userData.passwordHash, 
-      userData.passwordSalt,
-      userData.iterations || 10000
-    );
-    
-    if (isValid) {
-      this.updateLastLogin(username);
-      return {
-        success: true,
-        method: 'password',
-        username,
-        timestamp: Date.now()
-      };
+  async authenticateWithPassword(username, password) {
+    if (this.useBackend) {
+      // Use backend API for authentication
+      try {
+        const result = await this.api.loginWithPassword(username, password);
+        return {
+          success: true,
+          method: 'password',
+          username: result.username || username,
+          timestamp: Date.now(),
+          token: result.token
+        };
+      } catch (error) {
+        return {
+          success: false,
+          method: 'password',
+          error: error.message || 'Authentication failed'
+        };
+      }
     } else {
-      return {
-        success: false,
-        method: 'password',
-        error: 'Incorrect password'
-      };
+      // Fallback to local storage
+      const credentials = this.getCredentials();
+      
+      if (!credentials || !credentials[username]) {
+        return {
+          success: false,
+          method: 'password',
+          error: 'User not found'
+        };
+      }
+
+      const userData = credentials[username];
+      const isValid = this.verifyPassword(
+        password, 
+        userData.passwordHash, 
+        userData.passwordSalt,
+        userData.iterations || 10000
+      );
+      
+      if (isValid) {
+        this.updateLastLogin(username);
+        return {
+          success: true,
+          method: 'password',
+          username,
+          timestamp: Date.now()
+        };
+      } else {
+        return {
+          success: false,
+          method: 'password',
+          error: 'Incorrect password'
+        };
+      }
     }
   }
 

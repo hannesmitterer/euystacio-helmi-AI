@@ -371,10 +371,10 @@
     }
 
     // Create workspace
-    document.getElementById('createWorkspaceBtn').onclick = function() {
+    document.getElementById('createWorkspaceBtn').onclick = async function() {
       const name = document.getElementById('newWorkspaceName').value;
       if (name) {
-        oi.createWorkspace(name);
+        await oi.createWorkspace(name);
         document.getElementById('newWorkspaceName').value = '';
         updateWorkspaceList();
         updateMetrics();
@@ -407,8 +407,8 @@
     };
 
     function handleFiles(files) {
-      Array.from(files).forEach(file => {
-        oi.addFile({
+      Array.from(files).forEach(async (file) => {
+        await oi.addFile({
           name: file.name,
           size: file.size,
           type: file.type,

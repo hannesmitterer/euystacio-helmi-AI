@@ -1,18 +1,22 @@
 /**
  * OI: Open Interface - Main Interface Controller
  * Manages the augmented reality environment and user interactions
+ * Integrates with backend server at https://oi-x3xa.onrender.com
  */
 
 import AREnvironment from './ar/ar-environment.js';
 import AnalyticsEngine from './analytics/analytics-engine.js';
+import BackendAPI from '../ov/backend-api.js';
 
 class OpenInterface {
   constructor(containerElement) {
     this.container = containerElement;
     this.arEnvironment = null;
     this.analytics = new AnalyticsEngine();
+    this.api = new BackendAPI();
     this.currentUser = null;
     this.isInitialized = false;
+    this.useBackend = true; // Use backend API by default
   }
 
   /**
@@ -72,9 +76,44 @@ class OpenInterface {
    * Create a new collaborative workspace
    * @param {string} name - Workspace name
    * @param {Object} config - Workspace configuration
-   * @returns {string} Workspace ID
+   * @returns {Promise<string>} Workspace ID
    */
-  createWorkspace(name, config = {}) {
+  async createWorkspace(name, config = {}) {
+    const workspaceData = {
+      name,
+      owner: this.currentUser.username,
+      ...config
+    };
+
+    if (this.useBackend) {
+      try {
+        const result = await this.api.createWorkspace(workspaceData);
+        const workspaceId = result.id || `workspace_${name}_${Date.now()}`;
+        
+        // Also create in local AR environment
+        this.arEnvironment.allocateWorkspace(workspaceId, {
+          owner: this.currentUser.username,
+          ...config
+        });
+
+        this.analytics.updateWorkspaceCount(
+          this.arEnvironment.workspaces.size
+        );
+
+        this.analytics.trackUserActivity(
+          this.currentUser.username,
+          'create_workspace',
+          { workspaceId, name }
+        );
+
+        return workspaceId;
+      } catch (error) {
+        console.error('Failed to create workspace on backend:', error);
+        // Fallback to local creation
+      }
+    }
+
+    // Local creation (fallback or when backend disabled)
     const workspaceId = `workspace_${name}_${Date.now()}`;
     
     this.arEnvironment.allocateWorkspace(workspaceId, {
@@ -117,12 +156,20 @@ class OpenInterface {
   /**
    * Add a file to the current workspace
    * @param {Object} fileInfo - File information
-   * @returns {Object} File object data
+   * @returns {Promise<Object>} File object data
    */
-  addFile(fileInfo) {
+  async addFile(fileInfo) {
     const workspaceId = this.arEnvironment.activeWorkspace;
     if (!workspaceId) {
       throw new Error('No active workspace');
+    }
+
+    if (this.useBackend) {
+      try {
+        await this.api.addFileToWorkspace(workspaceId, fileInfo);
+      } catch (error) {
+        console.error('Failed to add file to backend:', error);
+      }
     }
 
     const fileObject = this.arEnvironment.createFileObject(fileInfo);
@@ -139,6 +186,15 @@ class OpenInterface {
       fileObject,
       { type: 'file', ...fileInfo }
     );
+
+    this.analytics.trackUserActivity(
+      this.currentUser.username,
+      'add_file',
+      { workspaceId, fileId: objectData.id, fileName: fileInfo.name }
+    );
+
+    return objectData;
+  }
 
     this.analytics.trackUserActivity(
       this.currentUser.username,
