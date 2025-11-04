@@ -178,22 +178,26 @@ describe('OV: Open Visual - Authentication Tests', function() {
   describe('Authentication Flows', function() {
     it('Should support password authentication', function() {
       const username = 'testuser';
-      const password = 'securePassword123';
-      
-      // Simulate password hashing (simplified)
-      const passwordHash = 'hashed_' + password;
+      // Use a hash representation instead of actual password
+      const passwordHash = 'hashed_representation_pbkdf2';
+      const passwordSalt = 'random_salt_hex';
       
       const credentials = {
-        [username]: { passwordHash }
+        [username]: { 
+          passwordHash,
+          passwordSalt,
+          iterations: 10000
+        }
       };
       
       localStorage.setItem('ov_credentials', JSON.stringify(credentials));
       
-      // Verify credentials
+      // Verify credentials structure
       const stored = JSON.parse(localStorage.getItem('ov_credentials'));
       const userCreds = stored[username];
       
       expect(userCreds.passwordHash).to.equal(passwordHash);
+      expect(userCreds.passwordSalt).to.exist;
     });
 
     it('Should support facial recognition data storage', function() {

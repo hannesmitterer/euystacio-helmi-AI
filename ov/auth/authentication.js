@@ -55,19 +55,58 @@ class Authentication {
   }
 
   /**
+   * Hash password using PBKDF2 (more secure than SHA-256)
+   * @private
+   */
+  hashPassword(password) {
+    // Use PBKDF2 with a salt for password hashing
+    // In production, each user should have a unique salt
+    const salt = CryptoJS.lib.WordArray.random(128/8);
+    const iterations = 10000; // Number of iterations
+    const keySize = 256/32; // 256 bits
+    
+    const hash = CryptoJS.PBKDF2(password, salt, {
+      keySize: keySize,
+      iterations: iterations
+    });
+    
+    return {
+      hash: hash.toString(),
+      salt: salt.toString(),
+      iterations: iterations
+    };
+  }
+
+  /**
+   * Verify password against stored hash
+   * @private
+   */
+  verifyPassword(password, storedHash, storedSalt, iterations = 10000) {
+    const keySize = 256/32;
+    const hash = CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(storedSalt), {
+      keySize: keySize,
+      iterations: iterations
+    });
+    
+    return hash.toString() === storedHash;
+  }
+
+  /**
    * Store user credentials securely
    * @param {string} username - Username
-   * @param {string} password - Password (will be hashed)
+   * @param {string} password - Password (will be hashed using PBKDF2)
    * @param {Object} facialFeatures - Facial recognition features
    */
   storeCredentials(username, password, facialFeatures = null) {
     const credentials = this.getCredentials() || {};
     
-    // Hash password
-    const passwordHash = CryptoJS.SHA256(password).toString();
+    // Hash password using PBKDF2
+    const passwordData = this.hashPassword(password);
     
     credentials[username] = {
-      passwordHash,
+      passwordHash: passwordData.hash,
+      passwordSalt: passwordData.salt,
+      iterations: passwordData.iterations,
       facialFeatures,
       createdAt: Date.now(),
       lastLogin: null
@@ -172,9 +211,15 @@ class Authentication {
       };
     }
 
-    const passwordHash = CryptoJS.SHA256(password).toString();
+    const userData = credentials[username];
+    const isValid = this.verifyPassword(
+      password, 
+      userData.passwordHash, 
+      userData.passwordSalt,
+      userData.iterations || 10000
+    );
     
-    if (credentials[username].passwordHash === passwordHash) {
+    if (isValid) {
       this.updateLastLogin(username);
       return {
         success: true,
