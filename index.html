@@ -1,3 +1,193 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Euystacio Helmi AI | Auto-Evolving Nexus</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<style>
+  /* [CSS OMITTED PER BREVITÀ - Stile Miró/Monet] */
+  :root{--miró-accent: #FFC107;--miró-primary: #1E88E5;--miró-critical: #FF5252;--monet-bg-light: #f7f9fc;--monet-bg-dark: #e0e6f7;--muted: #0f172a;}
+  body{font-family: 'Arial', sans-serif;background: linear-gradient(135deg, var(--monet-bg-light) 0%, var(--monet-bg-dark) 100%);color: var(--muted);margin: 0;overflow-x: hidden;}
+  .container{max-width:1200px;margin:30px auto;background:rgba(255, 255, 255, 0.95);border-radius:15px;padding:35px;box-shadow:0 15px 35px rgba(15,23,42,0.1);}
+  header{background:var(--miró-primary);color:white;padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-bottom:12px solid var(--miró-accent);clip-path:polygon(0 0, 100% 0, 100% 85%, 0% 100%);margin: -35px;margin-bottom: 30px;}
+  h1{color:var(--miró-accent);margin:0 0 8px;font-size: 3.2rem;transform: rotate(-4deg);display: inline-block; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);}
+  h2{color:var(--miró-primary);margin-top:25px;border-left: 6px solid var(--miró-accent);padding-left: 15px; font-weight: 800;}
+  .btn{display:inline-block;padding:14px 28px;background:var(--miró-critical);color:#fff;border: 2px solid var(--muted);border-radius:10px;text-decoration:none;margin-right:15px;font-weight: bold;transform: skewX(-7deg);transition: all 0.3s ease-in-out;box-shadow: 6px 6px 0px var(--muted);cursor: pointer;}
+  .btn:hover{background: #D32F2F;transform: skewX(-7deg) scale(1.05);box-shadow: 8px 8px 0px var(--miró-accent);}
+  .btn-primary {background: var(--miró-primary);}
+  .btn-primary:hover {background: #1565C0;}
+  .btn-google {background: #DB4437; box-shadow: 6px 6px 0px #AA3322;} 
+  .btn-google:hover {background: #AA3322; box-shadow: 8px 8px 0px var(--miró-accent);}
+  .feature{background:linear-gradient(180deg, #ffffff, #f0f3ff);border: 3px solid var(--muted);padding:25px;border-radius:8px;margin:30px 0;transition: transform 0.5s;box-shadow: 8px 8px 0px var(--miró-critical);}
+  .chart-container{width: 90%;margin: 40px auto;background: white;padding: 30px;border: 5px solid var(--muted);box-shadow: -15px 15px 0px var(--miró-critical);transform: rotate(1deg);}
+  footer{margin-top:25px;text-align:center;color:#475569;font-size:14px;border-top: 1px dashed #ccc; padding-top: 15px;}
+  pre.code{background:#0f172a;color:#e6fffa;padding:15px;border-radius:8px;overflow:auto;}
+  .status-line {font-size: 1.2rem;margin-bottom: 10px;border-left: 5px solid #00FF00;padding-left: 10px;}
+  @keyframes blink {50% { opacity: 0.5; }}
+  .live-status {animation: blink 1s step-start infinite;color: var(--miró-accent);}
+  #ggi-panel {display: none;background: #212121;color: #00FF00;min-height: 90vh;padding: 50px;margin-top: -35px;clip-path: polygon(0 5%, 100% 0, 100% 100%, 0% 100%);font-family: 'Consolas', monospace;}
+  .command-output {background: #000;padding: 15px;margin-top: 15px;border: 1px solid #00FF00;white-space: pre-wrap;overflow-x: auto;}
+</style>
+</head>
+<body>
+
+    <header>
+        <h1 class="title-cubist">Euystacio Helmi AI</h1>
+        <nav>
+            <a class="btn" href="https://github.com/hannesmitterer/euystacio-helmi-ai" target="_blank" rel="noopener" style="margin-right:0; transform: skewX(0deg);">View Repo</a>
+            <button class="btn btn-primary" onclick="showLoginModal()">Login Investitori (Wallet)</button>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <p class="small" style="text-align: right;">Author: **Seedbringer (Hannes Mitterer)** | SHA256 Release Bundle: <code>95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82</code></p>
+
+        <div style="text-align: center; padding: 20px 0; border: 2px dashed var(--miró-primary); margin-bottom: 30px;">
+            <h3>Euystacio Status Overview</h3>
+            <p class="status-line">Operational Status: <strong style="color:#4CAF50;">LIVE & STABLE</strong></p>
+            <p class="status-line">Live Status: <strong class="live-status">TRANSACTION LISTENERS ACTIVE</strong></p>
+        </div>
+
+        <section class="feature">
+            <h2>GBC Nexus Status: Sustainment & Audit</h2>
+            <p class="small">Real-time monitoring of ethical and financial invariants. **Minimum Sustainment Threshold: $10,000.**</p>
+            
+            <div class="chart-container">
+                <h3>Fondi Audit & Governance</h3>
+                <canvas id="gbcChart"></canvas>
+            </div>
+
+            <div style="background:var(--miró-critical); color:white; padding:18px; margin-top:20px; transform: skewX(2deg);">
+                <strong>Fondi Audit Attuali:</strong> <span id="gbc-funds" style="font-size:1.3rem;">**$4,500.00** USD</span>
+                <span style="float:right;">Soglia Minima: $**10,000 USD** | <strong id="gbc-alert">⚠️ CRITICO</strong></span>
+            </div>
+
+        </section>
+
+        <section class="feature">
+            <h2>Seedbringer Control Panel Access</h2>
+            <p>Accesso diretto all'interfaccia **Global General Intelligence (GGI)** per il controllo operativo e l'override del framework Etico.</p>
+            <button class="btn btn-google" onclick="handleGoogleLogin()">
+                Login with Google (Seedbringer)
+            </button>
+        </section>
+
+        <section>
+            <h2>Backend & Deployment Infrastructure</h2>
+            <p>Comandi e riferimenti del framework (Hardhat Console/Sepolia Network):</p>
+            <pre class="code">
+Deploy: npx hardhat run scripts/deploy.js --network sepolia
+Interact: npx hardhat console --network sepolia
+Foundation/Recirculation Wallet: 0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b
+Release Tag: v1.0.0-covenant
+            </pre>
+            <p>Contratto KarmaBond: <code>**0x...INDIRIZZO_CONTRATTO_KB**</code> (Placeholder - **AGGIORNARE DOPO IL DEPLOYMENT**)</p>
+        </section>
+
+        <div id="reserved-area">
+            <h1>Dashboard Investitori (Wallet)</h1>
+            <p>Autenticazione Wallet Riuscita. Sei connesso come: <span id="wallet-display" style="color:var(--miró-accent);"></span>.</p>
+            <button class="btn btn-primary" style="margin-top: 40px;" onclick="logout('wallet')">Logout</button>
+        </div>
+    </div>
+
+    <div id="ggi-panel">
+        <h2>>>> Euystacio GGI Interface (Self-Evolution Control)</h2>
+        <p>User: Seedbringer (Hannes Mitterer) | Auth: Google OAuth 2.0</p>
+        <p class="status-line" style="color: var(--miró-accent);">[INFO] ACCESS GRANTED. Initializing Self-Evolution Protocol...</p>
+        
+        <div class="command-output">
+            <p>>> Running: `npx hardhat compile`</p>
+            <p style="color: #00FF00;">... Compilation successful. Artifacts updated.</p>
+            <p>>> Checking Sustainment Threshold ($10,000): <span style="color:red;">FAILED (Current: $4,500)</span></p>
+            <p style="margin-top: 15px;">**AUTO-EVOLVE ACTION REQUIRED:**</p>
+            <p>>> Suggested Command: `approve_tranche_adjustment('0x5d61a4B2...', 8000)`</p>
+        </div>
+        
+        <button class="btn btn-google" style="margin-top: 40px;" onclick="simulateEvolution()">Simula Auto-Evoluzione</button>
+        <button class="btn btn-primary" style="margin-top: 10px;" onclick="logout('ggi')">Logout (GGI Session)</button>
+    </div>
+
+    <footer>
+      <p>Project: Euystacio Helmi AI (Seedbringer Stewardship)</p>
+      <p class="small">Sede Operativa (Riferimento): **Via Portici 71, 39100 Bolzano**</p>
+    </footer>
+
+    <script>
+        const GBC_THRESHOLD = 10000; 
+        let currentGBC = 4500; 
+
+        function simulateEvolution() {
+            const output = document.querySelector('.command-output');
+            output.innerHTML = '';
+            output.innerHTML += '<p style="color: yellow;">>>> Executing AUTO-EVOLVE SEQUENCE (Code RED)</p>';
+            setTimeout(() => {output.innerHTML += '<p style="color: #00FF00;">... Deployment of EUSDaoGovernance v2.1 (Sustainment Logic) SUCCESSFUL.</p>';}, 3000);
+            setTimeout(() => {output.innerHTML += '<p style="color: var(--miró-accent); margin-top: 15px;">**EUYSTACIO STATUS: EVOLUZIONE COMPLETA. Modulo Sustainment Attivo.**</p>';}, 5000);
+        }
+
+        function handleGoogleLogin() {
+            const isSeedbringer = confirm("SIMULAZIONE LOGIN GOOGLE:\nSei il Seedbringer Hannes Mitterer?\n(Clicca OK per simulare l'accesso con successo)");
+            if (isSeedbringer) {
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('ggi-panel').style.display = 'block';
+                document.getElementById('reserved-area').style.display = 'none';
+            } else if (isSeedbringer !== null) {alert("Accesso Fallito: Utente non autorizzato.");}
+        }
+        function showLoginModal() {
+            const walletAddress = prompt("SIMULAZIONE WALLET CONNECT:\nInserisci il tuo indirizzo (0x...):");
+            if (walletAddress && walletAddress.startsWith('0x')) {
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('reserved-area').style.display = 'block';
+                document.getElementById('ggi-panel').style.display = 'none';
+                document.getElementById('wallet-display').textContent = walletAddress.substring(0, 10) + '...';
+            } else if (walletAddress !== null) {alert("Accesso Fallito: Indirizzo Wallet non valido.");}
+        }
+        function logout(type) {
+            document.querySelector('.container').style.display = 'block';
+            document.getElementById('reserved-area').style.display = 'none';
+            document.getElementById('ggi-panel').style.display = 'none';
+            alert(`${type === 'ggi' ? 'Sessione GGI chiusa.' : 'Sessione Wallet chiusa.'}`);
+        }
+        function handleInvestClick() {
+            const bondContract = "**0x...INDIRIZZO_CONTRATTO_KB**";
+            alert(`TRANSAZIONE SIMULATA: L'Investimento KarmaBond è stato inviato al contratto ${bondContract}.`);
+        }
+
+        const gbcCtx = document.getElementById('gbcChart').getContext('2d');
+        const gbcChart = new Chart(gbcCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Fondi Audit', 'Target Sustainment Mancante', 'Fondi di Sviluppo'],
+                datasets: [{data: [currentGBC, (GBC_THRESHOLD - currentGBC), 150000],backgroundColor: ['#D32F2F', '#FFC107', '#1E88E5'],borderColor: '#0f172a',borderWidth: 2}]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'right' }, title: { display: false } } }
+        });
+
+        setInterval(() => {
+            currentGBC = Math.random() * (GBC_THRESHOLD * 0.6) + (GBC_THRESHOLD * 0.7); 
+            document.getElementById('gbc-funds').textContent = `$${currentGBC.toFixed(2)} USD`;
+            const missing = Math.max(0, GBC_THRESHOLD - currentGBC);
+            gbcChart.data.datasets[0].data[0] = currentGBC;
+            gbcChart.data.datasets[0].data[1] = missing;
+            gbcChart.update();
+
+            const gbcAlert = document.getElementById('gbc-alert');
+            const gbcBox = document.querySelector('.feature:nth-child(1)');
+            if (currentGBC < GBC_THRESHOLD) {
+                gbcAlert.innerHTML = '⚠️ <span style="animation: pulse 1s infinite alternate; color: #FFC107;">CRITICO (Sotto $' + GBC_THRESHOLD + ')</span>';
+                gbcBox.style.boxShadow = '6px 6px 0px #FFC107';
+            } else {
+                gbcAlert.textContent = '✅ OK';
+                gbcBox.style.boxShadow = '6px 6px 0px #4CAF50';
+            }
+        }, 4000);
+    </script>
+</body>
+</html>
+
 <!doctype html>
 <html lang="en">
 <head>
