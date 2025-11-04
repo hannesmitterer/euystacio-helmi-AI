@@ -83,15 +83,22 @@ def scan_repository():
         if len(all_violations) > 10:
             print(f"\n  ... and {len(all_violations) - 10} more violations")
         
-        # Set output for GitHub Actions
-        print(f"\n::set-output name=violated::false")  # Changed to false to not block
-        print(f"::set-output name=violation_count::{len(all_violations)}")
+        # Set output for GitHub Actions (using modern format)
+        import os
+        if 'GITHUB_OUTPUT' in os.environ:
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                f.write(f"violated=false\n")
+                f.write(f"violation_count={len(all_violations)}\n")
         print("\n⚠️  Violations detected but not blocking (informational only)")
         return 0
     else:
         print("✅ No principle violations detected")
-        print("::set-output name=violated::false")
-        print("::set-output name=violation_count::0")
+        # Set output for GitHub Actions (using modern format)
+        import os
+        if 'GITHUB_OUTPUT' in os.environ:
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                f.write(f"violated=false\n")
+                f.write(f"violation_count=0\n")
         return 0
 
 if __name__ == '__main__':

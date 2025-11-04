@@ -33,12 +33,13 @@ jobs:
       id: check_violations
       run: |
         python scripts/check_violations.py  # Check for compliance with Euystacio principles
-
-    - name: Commit Violations (if detected)
-      if: steps.check_violations.outputs.violated == 'true'
+    
+    - name: Report Violation Count
+      if: always()
       run: |
-        git config --global user.name 'Euystacio Integrity Bot'
-        git config --global user.email 'euystacio-integrity-bot@users.noreply.github.com'
-        git add .
-        git commit -m "Auto-commit: Integrity violation detected"
-        git push
+        VIOLATION_COUNT="${{ steps.check_violations.outputs.violation_count }}"
+        if [ ! -z "$VIOLATION_COUNT" ] && [ "$VIOLATION_COUNT" != "0" ]; then
+          echo "⚠️  Found $VIOLATION_COUNT principle violation(s) - review recommended"
+        else
+          echo "✅ No violations detected"
+        fi
