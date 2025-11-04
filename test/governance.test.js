@@ -13,22 +13,22 @@ describe("EUSDaoGovernance", function () {
     
     const EUSDaoGovernance = await ethers.getContractFactory("EUSDaoGovernance");
     governance = await EUSDaoGovernance.deploy(seedbringer.address);
-    await governance.deployed();
+    await governance.waitForDeployment();
   });
 
   it("should allow Seedbringer to mint tokens", async function () {
-    const amount = ethers.utils.parseEther("1000");
+    const amount = ethers.parseEther("1000");
     
     await expect(
       governance.connect(seedbringer).mint(user1.address, amount)
     ).to.emit(governance, "Transfer")
-      .withArgs(ethers.constants.AddressZero, user1.address, amount);
+      .withArgs(ethers.ZeroAddress, user1.address, amount);
     
     expect(await governance.balanceOf(user1.address)).to.equal(amount);
   });
 
   it("should prevent non-Seedbringer from minting", async function () {
-    const amount = ethers.utils.parseEther("1000");
+    const amount = ethers.parseEther("1000");
     
     await expect(
       governance.connect(user1).mint(user1.address, amount)
@@ -49,7 +49,7 @@ describe("EUSDaoGovernance", function () {
   });
 
   it("should calculate voting power correctly with contribution scores", async function () {
-    const tokenAmount = ethers.utils.parseEther("1000");
+    const tokenAmount = ethers.parseEther("1000");
     const score = 10; // 10 contribution points
     
     // Mint tokens
@@ -60,7 +60,7 @@ describe("EUSDaoGovernance", function () {
     
     // Voting power = balance * (1 + (score * 0.01))
     // = 1000 * (1 + (10 * 0.01)) = 1000 * 1.1 = 1100
-    const expectedPower = tokenAmount.mul(10000 + (score * 100)).div(10000);
+    const expectedPower = tokenAmount * BigInt(10000 + (score * 100)) / 10000n;
     const actualPower = await governance.votingPower(user1.address);
     
     expect(actualPower).to.equal(expectedPower);
@@ -130,24 +130,24 @@ describe("EUSDaoGovernance", function () {
   });
 
   it("should allow owner to perform admin mint", async function () {
-    const amount = ethers.utils.parseEther("500");
+    const amount = ethers.parseEther("500");
     
     await governance.connect(owner).adminMint(user1.address, amount);
     expect(await governance.balanceOf(user1.address)).to.equal(amount);
   });
 
   it("should allow users to burn their own tokens", async function () {
-    const amount = ethers.utils.parseEther("1000");
-    const burnAmount = ethers.utils.parseEther("300");
+    const amount = ethers.parseEther("1000");
+    const burnAmount = ethers.parseEther("300");
     
     await governance.connect(seedbringer).mint(user1.address, amount);
     
     await governance.connect(user1).burn(burnAmount);
-    expect(await governance.balanceOf(user1.address)).to.equal(amount.sub(burnAmount));
+    expect(await governance.balanceOf(user1.address)).to.equal(amount - burnAmount);
   });
 
   it("should calculate voting power as balance only for inactive contributors", async function () {
-    const tokenAmount = ethers.utils.parseEther("1000");
+    const tokenAmount = ethers.parseEther("1000");
     
     await governance.connect(seedbringer).mint(user1.address, tokenAmount);
     

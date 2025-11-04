@@ -13,18 +13,18 @@ describe("KarmaBond", function () {
     
     const KarmaBond = await ethers.getContractFactory("KarmaBond");
     karmaBond = await KarmaBond.deploy(foundation.address, seedbringer.address);
-    await karmaBond.deployed();
+    await karmaBond.waitForDeployment();
   });
 
   it("should enforce minimum investment", async function () {
-    const minInvestment = ethers.utils.parseEther("0.03");
+    const minInvestment = ethers.parseEther("0.03");
     await expect(
-      karmaBond.connect(investor).invest(365 * 24 * 60 * 60, { value: ethers.utils.parseEther("0.01") })
+      karmaBond.connect(investor).invest(365 * 24 * 60 * 60, { value: ethers.parseEther("0.01") })
     ).to.be.revertedWith("Investment below minimum");
   });
 
   it("should allow investment above minimum", async function () {
-    const investment = ethers.utils.parseEther("0.05");
+    const investment = ethers.parseEther("0.05");
     const duration = 365 * 24 * 60 * 60; // 1 year
     
     await expect(
@@ -37,7 +37,7 @@ describe("KarmaBond", function () {
   });
 
   it("should allow Seedbringer to certify Red Code compliance", async function () {
-    const investment = ethers.utils.parseEther("0.05");
+    const investment = ethers.parseEther("0.05");
     await karmaBond.connect(investor).invest(365 * 24 * 60 * 60, { value: investment });
     
     await expect(
@@ -56,14 +56,18 @@ describe("KarmaBond", function () {
   });
 
   it("should apply 5% redemption fee when invariants are met", async function () {
-    const investment = ethers.utils.parseEther("1.0");
-    await karmaBond.connect(investor).invest(0, { value: investment }); // 0 duration for testing
+    const investment = ethers.parseEther("1.0");
+    await karmaBond.connect(investor).invest(1, { value: investment }); // 1 second duration for testing
     
     // Certify Red Code
     await karmaBond.connect(seedbringer).certifyRedCode(investor.address, true);
     
     // Set invariants to meet conditions
     await karmaBond.connect(owner).setInvariants(10, 45);
+    
+    // Advance time by 2 seconds
+    await ethers.provider.send("evm_increaseTime", [2]);
+    await ethers.provider.send("evm_mine");
     
     const investorBalanceBefore = await ethers.provider.getBalance(investor.address);
     
