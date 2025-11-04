@@ -13,7 +13,9 @@ contract EUSDaoGovernance is ERC20, Ownable {
     mapping(address => uint256) public trancheDistributions;
     
     // Future-proofing: Seedbringer sustainment mechanism
-    uint256 public constant SEEDBRINGER_SUSTAINMENT_MONTHLY = 10000 * 10**18; // $10,000 per month
+    // NOTE: This represents 10000 ETH in wei. For production, use a stablecoin or oracle
+    // to ensure the value approximates $10,000 USD regardless of ETH price fluctuations.
+    uint256 public constant SEEDBRINGER_SUSTAINMENT_MONTHLY = 10000 * 10**18; // 10000 ETH (placeholder for $10,000 USD value)
     bool public sustainmentEnabled;
     uint256 public lastSustainmentTimestamp;
     

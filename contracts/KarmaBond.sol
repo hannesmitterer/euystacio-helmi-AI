@@ -13,7 +13,7 @@ contract KarmaBond is Ownable {
     uint256 public R1;   // R1 scaled by 10 (e.g. 45 -> 4.5%)
     
     // New requirements
-    uint256 public constant MIN_CONTRIBUTION = 100 * 10**18; // $100 in wei (assuming 1 ETH = $1 for simplicity)
+    uint256 public constant MIN_CONTRIBUTION = 100 * 10**18; // 100 ETH equivalent (use oracle for USD conversion in production)
     uint256 public constant REDEMPTION_FEE_PERCENT = 5; // 5% flat fee
     
     // Bond duration tracking
