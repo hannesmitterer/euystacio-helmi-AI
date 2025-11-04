@@ -1,0 +1,48 @@
+name: Auto-Integrity & Sentimento Compliance
+
+on:
+  push:
+    branches:
+      - main  # Trigger on any push to the main branch
+    paths:
+      - '**/*.md'  # Specifically track changes to sacred files
+
+permissions:
+  contents: read
+
+jobs:
+  integrity_check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set Up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pyyaml
+
+    - name: Run Integrity Check for Golden Bible
+      run: |
+        python scripts/auto_integrity.py  # Validate integrity of sacred texts
+
+    - name: Check for Violations
+      id: check_violations
+      run: |
+        python scripts/check_violations.py  # Check for compliance with Euystacio principles
+    
+    - name: Report Violation Count
+      if: always()
+      run: |
+        VIOLATION_COUNT="${{ steps.check_violations.outputs.violation_count }}"
+        if [ ! -z "$VIOLATION_COUNT" ] && [ "$VIOLATION_COUNT" != "0" ]; then
+          echo "⚠️  Found $VIOLATION_COUNT principle violation(s) - review recommended"
+        else
+          echo "✅ No violations detected"
+        fi
