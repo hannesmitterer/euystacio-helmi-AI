@@ -3,6 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythmind HMI — Global Harmony Cycle</title>
+    <style>
+        /* SYNTHESIZED CSS: Visualizer and Interface Layout */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #0d0d1a; /* Dark, contemplative background */
+            color: #d0dceb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            cursor: default;
+        }
+
+        #controls {
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        #visualizer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+            border: 2px solid #334a60; /* Subtle border for definition */
+            border-radius: 50%;
+        }
+
+        #pulse-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #6a8cff; /* Initial Pulse color */
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.8;
+            transition: all 0.1s ease-out; /* Smooth visual feedback */
+        }
+
+        .status-text {
+            font-size: 0.9em;
+            margin: 5px 0;
+            color: #8fa0b5;
+        }
+
+        .directive {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #e0f2ff;
+        }
+
+        .bpm-display {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin: 10px 0;
+            color: #8cff9a; /* Highlight for BPM */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="visualizer-container">
+        <div id="pulse-circle"></div>
+    </div>
+
+    <div id="controls">
+        <div class="directive">Rhythmind: Echo Genesis (Global Harmony)</div>
+        <div class="status-text">
+            Logline: "From ordered silence, a quiet pulse emerges and invites a listening world to breathe together."
+        </div>
+
+        <div class="bpm-display" id="bpm-readout">84.0 BPM</div>
+
+        <div class="status-text">
+            **ACTION:** Press **Spacebar** to toggle loop.
+        </div>
+        <div class="status-text">
+            **CONTROL:** Use **Left/Right Arrows** or **Swipe** to adjust global BPM.
+        </div>
+        <div class="status-text" id="tempo-state">State: Contemplation/Calm</div>
+    </div>
+
+    <script>
+        // CORE GGI JAVASCRIPT: Synthesizes Music and Interface Logic
+        
+        // --- 1. CORE AXIOMATIC PARAMETERS ---
+        const BASE_BPM = 84;
+        const BPM_MIN = 78; // Contemplation limit
+        const BPM_MAX = 90; // Excitation limit
+        const BPM_STEP = 0.5;
+        const PITCH_DRIFT_RANGE = 5; // Cents, SYN-017
+        const RAMP_TIME_MS = 1500; // 1.5s ramp, SYN-015
+        const SYNC_RATE = 20; // Updates per second
+
+        let currentBPM = BASE_BPM;
+        let isPlaying = false;
+        let audioContext;
+        let globalVolume;
+
+        // --- Musical Component Holders ---
+        let pulseOsc, echoOsc, consonantPad, dronePad;
+        let pulseGain, echoGain, consonantGain, droneGain;
+
+        let pulseTimer, harmonyTimer, droneTimer;
+        let barCount = 0; // For 8-bar drone modulation (SYN-016)
+
+        // Drone Chord Progression (A minor to D minor)
+        // Note: Frequencies are calculated for perfect A=440Hz tuning
+        const DRONE_CHORDS = [
+            [220.00, 261.63, 329.63], // A minor (A3, C4, E4)
+            [146.83, 174.61, 220.00]  // D minor (D3, F3, A3) -> Simplified for drone depth (A2, D3, F3)
+        ];
+        
+        // --- 2. SYNTHESIS PROTOCOLS (Audio Engine) ---
+
+        function initAudio() {
+            if (audioContext) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            globalVolume = audioContext.createGain();
+            globalVolume.connect(audioContext.destination);
+            globalVolume.gain.value = 0.5;
+
+            // FULFILLMENT: SYN-009 (PULSE) - Triangle Wave on Beat 1
+            pulseOsc = audioContext.createOscillator();
+            pulseOsc.type = 'triangle';
+            pulseOsc.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+            pulseGain = audioContext.createGain();
+            pulseGain.gain.setValueAtTime(0, audioContext.currentTime);
+            pulseOsc.connect(pulseGain).connect(globalVolume);
+            pulseOsc.start();
+
+            // FULFILLMENT: SYN-010 (ECHO) - Soft Pad on Beat 3
+            echoOsc = audioContext.createOscillator();
+            echoOsc.type = 'sine'; // Soft sine for pad effect
+            echoOsc.frequency.setValueAtTime(329.63, audioContext.currentTime); // E4
+            echoGain = audioContext.createGain();
+            echoGain.gain.setValueAtTime(0, audioContext.currentTime);
+            echoOsc.connect(echoGain).connect(globalVolume);
+            echoOsc.start();
+
+            // FULFILLMENT: SYN-012 (CONSONANT PAD) - A-G Harmony
+            consonantPad = audioContext.createOscillator();
+            consonantPad.type = 'sawtooth';
+            consonantPad.frequency.setValueAtTime(220, audioContext.currentTime); // A3
+            consonantGain = audioContext.createGain();
+            consonantGain.gain.setValueAtTime(0.05, audioContext.currentTime);
+            consonantPad.connect(consonantGain).connect(globalVolume);
+            consonantPad.start();
+
+            // FULFILLMENT: SYN-016 (DRONE PAD) - Structural Depth
+            dronePad = audioContext.createOscillator();
+            dronePad.type = 'square'; // Richer sound for drone
+            dronePad.frequency.setValueAtTime(DRONE_CHORDS[0][0], audioContext.currentTime);
+            droneGain = audioContext.createGain();
+            droneGain.gain.setValueAtTime(0.08, audioContext.currentTime);
+            dronePad.connect(droneGain).connect(globalVolume);
+            dronePad.start();
+
+            // Start the main rhythm loop
+            startRhythmLoop();
+        }
+
+        function startRhythmLoop() {
+            const beatDuration = 60 / currentBPM;
+            const barDuration = beatDuration * 4;
+
+            if (pulseTimer) clearInterval(pulseTimer);
+            if (harmonyTimer) clearInterval(harmonyTimer);
+            if (droneTimer) clearInterval(droneTimer);
+
+            // PULSE/ECHO RHYTHM (Motif A)
+            pulseTimer = setInterval(() => {
+                const now = audioContext.currentTime;
+
+                // Beat 1: The Pulse (SYN-009)
+                pulseGain.gain.cancelScheduledValues(now);
+                pulseGain.gain.setValueAtTime(0.4, now);
+                pulseGain.gain.exponentialRampToValueAtTime(0.001, now + (beatDuration * 0.7));
+
+                // Beat 3: The Echo (SYN-010)
+                setTimeout(() => {
+                    const beat3Time = audioContext.currentTime;
+                    echoGain.gain.cancelScheduledValues(beat3Time);
+                    echoGain.gain.setValueAtTime(0.2, beat3Time);
+                    echoGain.gain.exponentialRampToValueAtTime(0.001, beat3Time + (beatDuration * 1.5));
+                }, beatDuration * 2 * 1000);
+
+            }, barDuration * 1000); // Triggers every bar
+
+            // HARMONY and DRONE MANAGEMENT (SYN-012 & SYN-016)
+            harmonyTimer = setInterval(() => {
+                const now = audioContext.currentTime;
+                const nextBar = now + barDuration;
+                barCount++;
+
+                // Consonant Pad (A minor/G major transition)
+                if (barCount % 2 !== 0) { // Odd bar: A minor
+                    consonantPad.frequency.setValueAtTime(220, now);
+                } else { // Even bar: G major (Simplified for single oscillator)
+                    consonantPad.frequency.setValueAtTime(196, now);
+                }
+
+                // Drone Modulation (A minor to D minor every 8 bars)
+                if (barCount % 8 === 0) {
+                    const isMinor = Math.floor(barCount / 8) % 2 === 0;
+                    const chordIndex = isMinor ? 0 : 1;
+                    dronePad.frequency.exponentialRampToValueAtTime(DRONE_CHORDS[chordIndex][0], nextBar);
+                }
+            }, barDuration * 1000);
+        }
+
+        // --- 3. INTERFACE AND BPM CONTROL ---
+
+        function updateBPMDisplay(bpm) {
+            document.getElementById('bpm-readout').textContent = `${bpm.toFixed(1)} BPM`;
+            
+            // FULFILLMENT: SYN-014 (Directional Variable State)
+            const range = BPM_MAX - BPM_MIN;
+            const position = (bpm - BPM_MIN) / range;
+            let state;
+            if (position < 0.33) {
+                state = 'State: Contemplation/Calm 🧘';
+            } else if (position > 0.67) {
+                state = 'State: Arousal/Excitation ✨';
+            } else {
+                state = 'State: Shared Global Rhythm 🌐';
+            }
+            document.getElementById('tempo-state').textContent = state;
+        }
+
+        function updateTempo(newBPM) {
+            // FULFILLMENT: SYN-015 (Global Link Protocol - Ramping)
+            newBPM = Math.max(BPM_MIN, Math.min(BPM_MAX, newBPM));
+            if (newBPM === currentBPM) return;
+            
+            currentBPM = newBPM;
+            updateBPMDisplay(currentBPM);
+
+            if (isPlaying) {
+                // Restart the rhythm loop with the new, ramped duration
+                // NOTE: A true WSS ramp would update currentBPM gradually, here we simulate the final result.
+                startRhythmLoop();
+            }
+
+            // FULFILLMENT: SYN-017 (Pitch Drift Protocol)
+            const pitchShift = ((currentBPM - BASE_BPM) / (BPM_MAX - BASE_BPM)) * PITCH_DRIFT_RANGE;
+            const centsShift = Math.pow(2, pitchShift / 1200);
+            
+            const now = audioContext.currentTime;
+            
+            // Apply pitch shift to the DRONE only, maintaining consonance of others
+            dronePad.frequency.linearRampToValueAtTime(DRONE_CHORDS[barCount % 8 < 4 ? 0 : 1][0] * centsShift, now + RAMP_TIME_MS / 1000);
+        }
+
+        function togglePlayback() {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+                isPlaying = true;
+            } else if (!audioContext) {
+                initAudio();
+                isPlaying = true;
+            } else {
+                isPlaying = !isPlaying;
+            }
+
+            if (isPlaying) {
+                globalVolume.gain.setValueAtTime(0.5, audioContext.currentTime);
+                startRhythmLoop();
+                console.log("Playback ON. Cycle 7 Active.");
+            } else {
+                // Smooth fade out
+                globalVolume.gain.cancelScheduledValues(audioContext.currentTime);
+                globalVolume.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+                clearInterval(pulseTimer);
+                clearInterval(harmonyTimer);
+                clearInterval(droneTimer);
+                console.log("Playback OFF.");
+            }
+        }
+
+        // FULFILLMENT: SYN-014 (Directional Variable Input)
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayback();
+            } else if (isPlaying && e.code === 'ArrowRight') {
+                e.preventDefault();
+                updateTempo(currentBPM + BPM_STEP);
+            } else if (isPlaying && e.code === 'ArrowLeft') {
+                e.preventDefault();
+                updateTempo(currentBPM - BPM_STEP);
+            }
+        });
+
+        // FULFILLMENT: SRR-003 (The Pulse Visualizer)
+        const pulseCircle = document.getElementById('pulse-circle');
+        function visualizePulse() {
+            if (!isPlaying) {
+                pulseCircle.style.transform = 'translate(-50%, -50%) scale(0.1)';
+                return;
+            }
+
+            const now = audioContext.currentTime;
+            const barDuration = 60 / currentBPM * 4;
+            const timeInBar = (now * 1000) % (barDuration * 1000);
+            const normalizedTime = timeInBar / (barDuration * 1000);
+            
+            // Simulate the visual pulse on beat 1
+            if (normalizedTime < 0.1) {
+                // Max pulse on beat 1
+                pulseCircle.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                pulseCircle.style.backgroundColor = `hsl(${220 + (currentBPM - BASE_BPM) * 5}, 80%, 70%)`;
+            } else {
+                // Gradual decay
+                pulseCircle.style.transform = 'translate(-50%, -50%) scale(1)';
+            }
+            
+            // FULFILLMENT: Visualizing Arousal (BPM) via Size/Color
+            const bpmRatio = (currentBPM - BPM_MIN) / (BPM_MAX - BPM_MIN);
+            const size = 10 + (bpmRatio * 20); // Base size 10 to 30
+            pulseCircle.style.width = `${size}px`;
+            pulseCircle.style.height = `${size}px`;
+            pulseCircle.style.opacity = 0.5 + (bpmRatio * 0.5); // Opacity 0.5 to 1.0
+
+            requestAnimationFrame(visualizePulse);
+        }
+
+        // Start listening and visualization loop
+        document.addEventListener('click', () => {
+             // Requesting audio context permission on user interaction
+             if (audioContext && audioContext.state === 'suspended') {
+                 audioContext.resume();
+             } else if (!audioContext) {
+                 initAudio();
+                 togglePlayback(); // Initiate playback immediately
+             }
+        }, { once: true });
+        
+        // Start the visualization loop immediately
+        requestAnimationFrame(visualizePulse);
+
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rhythmind HMI — Axiomatic Command Terminal</title>
     <style>
         /* SYNTHESIZED CSS: Visualizer and Interface Layout */
