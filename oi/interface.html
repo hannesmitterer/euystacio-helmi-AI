@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OI: Open Interface - AR Environment</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    #header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0f766e 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(15, 118, 110, 0.8);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background: rgba(15, 118, 110, 1);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #arContainer {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #sidebar {
+      position: absolute;
+      right: 0;
+      top: 70px;
+      width: 350px;
+      height: calc(100vh - 70px);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      overflow-y: auto;
+      transition: transform 0.3s;
+      z-index: 50;
+    }
+
+    #sidebar.collapsed {
+      transform: translateX(100%);
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      left: -40px;
+      top: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.9);
+      border: none;
+      border-radius: 6px 0 0 6px;
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #0f766e;
+    }
+
+    .workspace-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .workspace-item:hover {
+      background: rgba(15, 118, 110, 0.2);
+    }
+
+    .workspace-item.active {
+      background: rgba(15, 118, 110, 0.3);
+      border-left: 3px solid #0f766e;
+    }
+
+    .metric-card {
+      background: rgba(15, 118, 110, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #a0a0a0;
+      margin-bottom: 5px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f766e;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #0f766e;
+    }
+
+    .file-drop-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .file-drop-zone:hover {
+      border-color: #0f766e;
+      background: rgba(15, 118, 110, 0.1);
+    }
+
+    .file-drop-zone.drag-over {
+      border-color: #0f766e;
+      background: rgba(15, 118, 110, 0.2);
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .switch.active {
+      background: #0f766e;
+    }
+
+    .switch::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      top: 3px;
+      left: 3px;
+      transition: all 0.3s;
+    }
+
+    .switch.active::after {
+      left: 29px;
+    }
+
+    #statusBar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #a0a0a0;
+      z-index: 100;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <div class="logo">OI: Open Interface</div>
+    <div class="user-info">
+      <span id="username">Guest</span>
+      <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <div id="arContainer"></div>
+
+  <div id="sidebar">
+    <button class="sidebar-toggle" id="sidebarToggle">›</button>
+
+    <!-- Workspaces Section -->
+    <div class="section">
+      <div class="section-title">Workspaces</div>
+      <input type="text" id="newWorkspaceName" placeholder="New workspace name">
+      <button class="btn" id="createWorkspaceBtn" style="width: 100%;">Create Workspace</button>
+      <div id="workspaceList" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- File Interaction Section -->
+    <div class="section">
+      <div class="section-title">File Interactions</div>
+      <div class="file-drop-zone" id="fileDropZone">
+        📁 Drag & drop files here<br>or click to browse
+        <input type="file" id="fileInput" style="display: none;" multiple>
+      </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="section">
+      <div class="section-title">Analytics</div>
+      
+      <div class="toggle-switch">
+        <span>Telemetry</span>
+        <div class="switch" id="telemetryToggle"></div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Active Users</div>
+        <div class="metric-value" id="activeUsers">0</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Workspaces</div>
+        <div class="metric-value" id="workspaceCount">0</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">FPS</div>
+        <div class="metric-value" id="fps">0</div>
+      </div>
+
+      <button class="btn btn-secondary" id="exportAnalyticsBtn" style="width: 100%;">Export Analytics</button>
+    </div>
+  </div>
+
+  <div id="statusBar">
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span>Connected</span>
+    </div>
+    <div id="performanceInfo">FPS: 0 | Latency: 0ms</div>
+  </div>
+
+  <script type="module">
+    import OpenInterface from './open-interface.js';
+
+    // Check authentication
+    const sessionData = localStorage.getItem('ov_current_session');
+    if (!sessionData) {
+      window.location.href = '/ov/index.html';
+    }
+
+    const session = JSON.parse(sessionData);
+    document.getElementById('username').textContent = session.username;
+
+    // Initialize Open Interface
+    const container = document.getElementById('arContainer');
+    const oi = new OpenInterface(container);
+    oi.initialize(session);
+
+    // Update workspace list
+    function updateWorkspaceList() {
+      const workspaces = oi.getAllWorkspaces();
+      const listContainer = document.getElementById('workspaceList');
+      
+      listContainer.innerHTML = workspaces.map(ws => `
+        <div class="workspace-item" data-id="${ws.id}">
+          <strong>${ws.owner}</strong><br>
+          <small>${ws.objectCount} objects | ${ws.collaborators.length} collaborators</small>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      document.querySelectorAll('.workspace-item').forEach(item => {
+        item.onclick = function() {
+          const wsId = this.getAttribute('data-id');
+          oi.switchWorkspace(wsId);
+          
+          document.querySelectorAll('.workspace-item').forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+        };
+      });
+    }
+
+    // Create workspace
+    document.getElementById('createWorkspaceBtn').onclick = async function() {
+      const name = document.getElementById('newWorkspaceName').value;
+      if (name) {
+        await oi.createWorkspace(name);
+        document.getElementById('newWorkspaceName').value = '';
+        updateWorkspaceList();
+        updateMetrics();
+      }
+    };
+
+    // File handling
+    const fileDropZone = document.getElementById('fileDropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    fileDropZone.onclick = () => fileInput.click();
+
+    fileDropZone.ondragover = (e) => {
+      e.preventDefault();
+      fileDropZone.classList.add('drag-over');
+    };
+
+    fileDropZone.ondragleave = () => {
+      fileDropZone.classList.remove('drag-over');
+    };
+
+    fileDropZone.ondrop = (e) => {
+      e.preventDefault();
+      fileDropZone.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    };
+
+    fileInput.onchange = (e) => {
+      handleFiles(e.target.files);
+    };
+
+    function handleFiles(files) {
+      Array.from(files).forEach(async (file) => {
+        await oi.addFile({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        });
+      });
+    }
+
+    // Telemetry toggle
+    document.getElementById('telemetryToggle').onclick = function() {
+      const enabled = oi.toggleAnalytics();
+      this.classList.toggle('active', enabled);
+    };
+
+    // Update metrics
+    function updateMetrics() {
+      const metrics = oi.getMetrics();
+      document.getElementById('activeUsers').textContent = metrics.activeUsers;
+      document.getElementById('workspaceCount').textContent = metrics.workspaces;
+      document.getElementById('fps').textContent = Math.round(metrics.performance.fps);
+      document.getElementById('performanceInfo').textContent = 
+        `FPS: ${Math.round(metrics.performance.fps)} | Latency: ${metrics.performance.latency}ms`;
+    }
+
+    // Subscribe to analytics updates
+    oi.subscribeToAnalytics('metrics', updateMetrics);
+
+    // Initial updates
+    updateWorkspaceList();
+    updateMetrics();
+    setInterval(updateMetrics, 1000);
+
+    // Export analytics
+    document.getElementById('exportAnalyticsBtn').onclick = function() {
+      const data = oi.exportAnalytics('json');
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `analytics-${Date.now()}.json`;
+      a.click();
+    };
+
+    // Sidebar toggle
+    let sidebarCollapsed = false;
+    document.getElementById('sidebarToggle').onclick = function() {
+      sidebarCollapsed = !sidebarCollapsed;
+      document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+      this.textContent = sidebarCollapsed ? '‹' : '›';
+    };
+
+    // Logout
+    document.getElementById('logoutBtn').onclick = function() {
+      oi.shutdown();
+      localStorage.removeItem('ov_current_session');
+      window.location.href = '/ov/index.html';
+    };
+  </script>
+</body>
+</html>

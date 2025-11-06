@@ -9,6 +9,9 @@
     "test:sustainment": "hardhat test test/karmabond/sustainment.test.js",
     "test:integration": "hardhat test test/karmabond/integration.test.js",
     "test:governance": "hardhat test test/karmabond/governance.test.js",
+    "test:ov": "mocha test/ov-authentication.test.js",
+    "test:oi": "mocha test/oi-environment.test.js",
+    "test:all": "npm test && npm run test:ov && npm run test:oi",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy_karmabond.js"
   },
@@ -16,7 +19,11 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "ws": "^8.13.0"
+    "ws": "^8.13.0",
+    "@tensorflow/tfjs": "^4.11.0",
+    "@tensorflow-models/face-detection": "^1.0.2",
+    "three": "^0.158.0",
+    "crypto-js": "^4.2.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
