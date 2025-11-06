@@ -41,6 +41,7 @@ contract KarmaBond is Ownable, ReentrancyGuard {
     }
 
     constructor(address _foundationWallet, address _seedbringer) {
+        require(_foundationWallet != address(0) && _seedbringer != address(0), "Invalid address");
         foundationWallet = _foundationWallet;
         seedbringer = _seedbringer;
         MATL = 100; // default worst-case; owner should set realistic via oracle
@@ -115,6 +116,7 @@ contract KarmaBond is Ownable, ReentrancyGuard {
 
     /// Seedbringer can update the Seedbringer address
     function updateSeedbringer(address newSeedbringer) external onlySeedbringer {
+        require(newSeedbringer != address(0), "Invalid address");
         seedbringer = newSeedbringer;
         emit SeedbringerUpdated(newSeedbringer);
     }

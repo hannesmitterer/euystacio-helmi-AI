@@ -17,20 +17,20 @@ async function main() {
   // Deploy EUSDaoGovernance with Seedbringer authority
   const Governance = await hre.ethers.getContractFactory("EUSDaoGovernance");
   const governance = await Governance.deploy(seedbringer);
-  await governance.deployed();
-  console.log("EUSDaoGovernance deployed to:", governance.address);
+  await governance.waitForDeployment();
+  console.log("EUSDaoGovernance deployed to:", await governance.getAddress());
 
   // Deploy KarmaBond with Seedbringer authority
   const KarmaBond = await hre.ethers.getContractFactory("KarmaBond");
   const karmabond = await KarmaBond.deploy(foundation, seedbringer);
-  await karmabond.deployed();
-  console.log("KarmaBond deployed to:", karmabond.address);
+  await karmabond.waitForDeployment();
+  console.log("KarmaBond deployed to:", await karmabond.getAddress());
 
   // Deploy TrustlessFundingProtocol with Seedbringer authority
   const Trustless = await hre.ethers.getContractFactory("TrustlessFundingProtocol");
   const trustless = await Trustless.deploy(foundation, seedbringer);
-  await trustless.deployed();
-  console.log("TrustlessFundingProtocol deployed to:", trustless.address);
+  await trustless.waitForDeployment();
+  console.log("TrustlessFundingProtocol deployed to:", await trustless.getAddress());
 
   console.log("\n=== Deployment Summary ===");
   console.log("All contracts deployed with Seedbringer authority");
@@ -39,13 +39,14 @@ async function main() {
   console.log("  - TrustlessFundingProtocol: Tranche veto/release, Red Code certification");
   console.log("  - EUSDaoGovernance: Minting, contribution scoring, governance oversight");
   console.log("\nSave these addresses to your front-end config:");
-  console.log({
-    governance: governance.address,
-    karmaBond: karmabond.address,
-    trustlessFunding: trustless.address,
+  const addresses = {
+    governance: await governance.getAddress(),
+    karmaBond: await karmabond.getAddress(),
+    trustlessFunding: await trustless.getAddress(),
     seedbringer: seedbringer,
     foundation: foundation
-  });
+  };
+  console.log(addresses);
 }
 
 main().catch((error) => {

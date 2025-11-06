@@ -32,6 +32,7 @@ contract EUSDaoGovernance is ERC20, Ownable {
     }
 
     constructor(address _seedbringer) ERC20("Euystacio Stewardship", "EUS") {
+        require(_seedbringer != address(0), "Invalid Seedbringer address");
         seedbringer = _seedbringer;
     }
 
@@ -120,6 +121,7 @@ contract EUSDaoGovernance is ERC20, Ownable {
 
     /// Seedbringer can update the Seedbringer address
     function updateSeedbringer(address newSeedbringer) external onlySeedbringer {
+        require(newSeedbringer != address(0), "Invalid address");
         seedbringer = newSeedbringer;
         emit SeedbringerUpdated(newSeedbringer);
     }

@@ -17,7 +17,6 @@ describe("KarmaBond", function () {
   });
 
   it("should enforce minimum investment", async function () {
-    const minInvestment = ethers.parseEther("0.03");
     await expect(
       karmaBond.connect(investor).invest(365 * 24 * 60 * 60, { value: ethers.parseEther("0.01") })
     ).to.be.revertedWith("Investment below minimum");
@@ -68,8 +67,6 @@ describe("KarmaBond", function () {
     // Advance time by 2 seconds
     await ethers.provider.send("evm_increaseTime", [2]);
     await ethers.provider.send("evm_mine");
-    
-    const investorBalanceBefore = await ethers.provider.getBalance(investor.address);
     
     await karmaBond.connect(owner).redeem(investor.address);
     

@@ -56,7 +56,6 @@ describe("TrustlessFundingProtocol", function () {
     await protocol.connect(seedbringer).certifyRedCode(0, true);
     
     const proofHash = ethers.keccak256(ethers.toUtf8Bytes("milestone proof"));
-    const recipientBalanceBefore = await ethers.provider.getBalance(recipient.address);
     
     await expect(
       protocol.connect(owner).submitMilestoneProof(0, proofHash)

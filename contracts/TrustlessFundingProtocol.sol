@@ -35,6 +35,7 @@ contract TrustlessFundingProtocol is Ownable, ReentrancyGuard {
     }
 
     constructor(address _foundationWallet, address _seedbringer) {
+        require(_foundationWallet != address(0) && _seedbringer != address(0), "Invalid address");
         foundationWallet = _foundationWallet;
         seedbringer = _seedbringer;
     }
@@ -130,6 +131,7 @@ contract TrustlessFundingProtocol is Ownable, ReentrancyGuard {
 
     /// Seedbringer can update the Seedbringer address
     function updateSeedbringer(address newSeedbringer) external onlySeedbringer {
+        require(newSeedbringer != address(0), "Invalid address");
         seedbringer = newSeedbringer;
         emit SeedbringerUpdated(newSeedbringer);
     }
