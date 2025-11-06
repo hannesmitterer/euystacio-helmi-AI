@@ -212,7 +212,7 @@ web: gunicorn oi_server:app
 Required dependencies:
 ```
 Flask==2.3.3
-gunicorn==20.1.0
+gunicorn==22.0.0
 PyYAML==6.0.1
 flask-cors==4.0.0
 requests==2.31.0

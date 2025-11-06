@@ -12,7 +12,7 @@ Consensus: Sacralis Omnibus Est Eternum
 import os
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import yaml
@@ -68,11 +68,12 @@ def create_seedbringer_jwt(email):
     Returns:
         str: JWT token for session authentication
     """
+    now = datetime.now(timezone.utc)
     payload = {
         'email': email,
         'role': 'seedbringer',
-        'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
+        'iat': now,
+        'exp': now + timedelta(hours=JWT_EXPIRATION_HOURS),
         'consensus': 'sacralis_omnibus_est_eternum'
     }
     
@@ -142,7 +143,7 @@ def health_check():
         "status": "SUCCESS",
         "service": "OI Server",
         "version": "1.0.0",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }), 200
 
 
@@ -275,7 +276,7 @@ def ethical_override():
         "status": "SUCCESS",
         "message": "Ethical Override command acknowledged",
         "authorized_by": payload.get('email'),
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "data": data
     }), 200
 
@@ -301,7 +302,7 @@ def execute_tfm1():
         "status": "SUCCESS",
         "message": "TFM1 execution command acknowledged",
         "authorized_by": payload.get('email'),
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "data": data
     }), 200
 
