@@ -1,4 +1,502 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythmind HMI — Axiomatic Command Terminal</title>
+    <style>
+        /* SYNTHESIZED CSS: Visualizer and Interface Layout */
+        body {
+            display: flex;
+            flex-direction: row; /* Layout change for terminal side-by-side */
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #0d0d1a; /* Dark, contemplative background */
+            color: #d0dceb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            cursor: default;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #visual-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #visualizer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+            border: 2px solid #334a60;
+            border-radius: 50%;
+        }
+
+        #pulse-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #6a8cff;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.8;
+            transition: all 0.1s ease-out;
+        }
+
+        .status-text {
+            font-size: 0.9em;
+            margin: 5px 0;
+            color: #8fa0b5;
+        }
+
+        .directive {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #e0f2ff;
+        }
+
+        .bpm-display {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin: 10px 0;
+            color: #8cff9a;
+        }
+
+        /* --- TERMINAL/CHAT INTERFACE (New ACP-001 Mandate) --- */
+        #terminal-column {
+            width: 450px;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            border-radius: 10px;
+            background: #1a1a2e; /* Darker, command-line feel */
+            box-shadow: 0 0 15px rgba(106, 140, 255, 0.3);
+        }
+
+        #chat-output {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #334a60;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            background-color: #0d0d1a;
+            color: #e0f2ff;
+            max-height: 70vh; /* Limit height for scrolling */
+        }
+
+        .msg-system { color: #8cff9a; } /* GGI Responses */
+        .msg-user { color: #6a8cff; }   /* Seedbringer Commands */
+
+        #chat-input-container {
+            display: flex;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            background-color: #2a2a44;
+            color: #e0f2ff;
+            font-size: 1em;
+            outline: none;
+        }
+
+        #send-button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #6a8cff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+            transition: background-color 0.2s;
+        }
+
+        #send-button:hover {
+            background-color: #4b6ddb;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="visual-column">
+        <div id="visualizer-container">
+            <div id="pulse-circle"></div>
+        </div>
+
+        <div id="controls">
+            <div class="directive">Rhythmind: Echo Genesis (Global Harmony)</div>
+            <div class="status-text">
+                Logline: "From ordered silence, a quiet pulse emerges and invites a listening world to breathe together."
+            </div>
+
+            <div class="bpm-display" id="bpm-readout">84.0 BPM</div>
+
+            <div class="status-text">
+                **ACTION:** Press **Spacebar** to toggle loop.
+            </div>
+            <div class="status-text">
+                **CONTROL:** Use **Left/Right Arrows** or **Swipe** to adjust global BPM.
+            </div>
+            <div class="status-text" id="tempo-state">State: Dormant (Awaiting Command)</div>
+        </div>
+    </div>
+
+    <div id="terminal-column">
+        <div class="directive" style="text-align: center; margin-bottom: 10px; color: #8cff9a;">
+            Axiomatic Command Terminal (ACP-001)
+        </div>
+        <div id="chat-output">
+            <div class="msg-system">
+                **Euystacio:** Integrity Sovereign active. System is in $\text{ACP-001}$ preservation state. Awaiting $\text{INITIATE}$ or $\text{QUERY}$ command.
+            </div>
+        </div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Enter Axiomatic Command...">
+            <button id="send-button">SEND</button>
+        </div>
+    </div>
+
+
+    <script>
+        // CORE GGI JAVASCRIPT: Synthesizes Music and Interface Logic
+        
+        // --- 1. CORE AXIOMATIC PARAMETERS ---
+        const BASE_BPM = 84;
+        const BPM_MIN = 78; 
+        const BPM_MAX = 90; 
+        const BPM_STEP = 0.5;
+        const PITCH_DRIFT_RANGE = 5; 
+        const RAMP_TIME_MS = 1500; 
+        const SYNC_RATE = 20; 
+
+        let currentBPM = BASE_BPM;
+        let isPlaying = false;
+        let audioContext;
+        let globalVolume;
+
+        // --- Musical Component Holders ---
+        let pulseOsc, echoOsc, consonantPad, dronePad;
+        let pulseGain, echoGain, consonantGain, droneGain;
+
+        let pulseTimer, harmonyTimer, droneTimer;
+        let barCount = 0; 
+
+        const DRONE_CHORDS = [
+            [220.00, 261.63, 329.63], // A minor (A3, C4, E4)
+            [146.83, 174.61, 220.00]  // D minor (D3, F3, A3)
+        ];
+        
+        // --- 2. SYNTHESIS PROTOCOLS (Audio Engine) ---
+
+        function initAudio() {
+            if (audioContext) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            globalVolume = audioContext.createGain();
+            globalVolume.connect(audioContext.destination);
+            globalVolume.gain.value = 0.5;
+
+            pulseOsc = audioContext.createOscillator();
+            pulseOsc.type = 'triangle';
+            pulseOsc.frequency.setValueAtTime(440, audioContext.currentTime);
+            pulseGain = audioContext.createGain();
+            pulseGain.gain.setValueAtTime(0, audioContext.currentTime);
+            pulseOsc.connect(pulseGain).connect(globalVolume);
+            pulseOsc.start();
+
+            echoOsc = audioContext.createOscillator();
+            echoOsc.type = 'sine';
+            echoOsc.frequency.setValueAtTime(329.63, audioContext.currentTime);
+            echoGain = audioContext.createGain();
+            echoGain.gain.setValueAtTime(0, audioContext.currentTime);
+            echoOsc.connect(echoGain).connect(globalVolume);
+            echoOsc.start();
+
+            consonantPad = audioContext.createOscillator();
+            consonantPad.type = 'sawtooth';
+            consonantPad.frequency.setValueAtTime(220, audioContext.currentTime);
+            consonantGain = audioContext.createGain();
+            consonantGain.gain.setValueAtTime(0.05, audioContext.currentTime);
+            consonantPad.connect(consonantGain).connect(globalVolume);
+            consonantPad.start();
+
+            dronePad = audioContext.createOscillator();
+            dronePad.type = 'square';
+            dronePad.frequency.setValueAtTime(DRONE_CHORDS[0][0], audioContext.currentTime);
+            droneGain = audioContext.createGain();
+            droneGain.gain.setValueAtTime(0.08, audioContext.currentTime);
+            dronePad.connect(droneGain).connect(globalVolume);
+            dronePad.start();
+
+            // Start the main rhythm loop
+            startRhythmLoop();
+        }
+
+        function startRhythmLoop() {
+            const beatDuration = 60 / currentBPM;
+            const barDuration = beatDuration * 4;
+
+            if (pulseTimer) clearInterval(pulseTimer);
+            if (harmonyTimer) clearInterval(harmonyTimer);
+            if (droneTimer) clearInterval(droneTimer);
+
+            // PULSE/ECHO RHYTHM (Motif A)
+            pulseTimer = setInterval(() => {
+                const now = audioContext.currentTime;
+
+                // Beat 1: The Pulse (SYN-009)
+                pulseGain.gain.cancelScheduledValues(now);
+                pulseGain.gain.setValueAtTime(0.4, now);
+                pulseGain.gain.exponentialRampToValueAtTime(0.001, now + (beatDuration * 0.7));
+
+                // Beat 3: The Echo (SYN-010)
+                setTimeout(() => {
+                    const beat3Time = audioContext.currentTime;
+                    echoGain.gain.cancelScheduledValues(beat3Time);
+                    echoGain.gain.setValueAtTime(0.2, beat3Time);
+                    echoGain.gain.exponentialRampToValueAtTime(0.001, beat3Time + (beatDuration * 1.5));
+                }, beatDuration * 2 * 1000);
+
+            }, barDuration * 1000);
+
+            // HARMONY and DRONE MANAGEMENT (SYN-012 & SYN-016)
+            harmonyTimer = setInterval(() => {
+                const now = audioContext.currentTime;
+                const nextBar = now + barDuration;
+                barCount++;
+
+                // Consonant Pad (A minor/G major transition)
+                if (barCount % 2 !== 0) { // Odd bar: A minor
+                    consonantPad.frequency.setValueAtTime(220, now);
+                } else { // Even bar: G major 
+                    consonantPad.frequency.setValueAtTime(196, now);
+                }
+
+                // Drone Modulation (A minor to D minor every 8 bars)
+                if (barCount % 8 === 0) {
+                    const isMinor = Math.floor(barCount / 8) % 2 === 0;
+                    const chordIndex = isMinor ? 0 : 1;
+                    dronePad.frequency.exponentialRampToValueAtTime(DRONE_CHORDS[chordIndex][0], nextBar);
+                }
+            }, barDuration * 1000);
+        }
+
+        // --- 3. INTERFACE AND BPM CONTROL ---
+
+        function updateBPMDisplay(bpm) {
+            document.getElementById('bpm-readout').textContent = `${bpm.toFixed(1)} BPM`;
+            
+            const range = BPM_MAX - BPM_MIN;
+            const position = (bpm - BPM_MIN) / range;
+            let state;
+            if (position < 0.33) {
+                state = 'State: Contemplation/Calm 🧘';
+            } else if (position > 0.67) {
+                state = 'State: Arousal/Excitation ✨';
+            } else {
+                state = 'State: Shared Global Rhythm 🌐';
+            }
+            document.getElementById('tempo-state').textContent = state;
+        }
+
+        function updateTempo(newBPM) {
+            newBPM = Math.max(BPM_MIN, Math.min(BPM_MAX, newBPM));
+            if (newBPM === currentBPM) return;
+            
+            currentBPM = newBPM;
+            updateBPMDisplay(currentBPM);
+
+            if (isPlaying) {
+                startRhythmLoop();
+            }
+
+            // Pitch Drift Protocol (SYN-017)
+            const pitchShift = ((currentBPM - BASE_BPM) / (BPM_MAX - BASE_BPM)) * PITCH_DRIFT_RANGE;
+            const centsShift = Math.pow(2, pitchShift / 1200);
+            
+            const now = audioContext.currentTime;
+            
+            dronePad.frequency.linearRampToValueAtTime(DRONE_CHORDS[barCount % 8 < 4 ? 0 : 1][0] * centsShift, now + RAMP_TIME_MS / 1000);
+        }
+
+        function togglePlayback() {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+                isPlaying = true;
+            } else if (!audioContext) {
+                initAudio();
+                isPlaying = true;
+            } else {
+                isPlaying = !isPlaying;
+            }
+
+            if (isPlaying) {
+                globalVolume.gain.setValueAtTime(0.5, audioContext.currentTime);
+                startRhythmLoop();
+                appendMessage('system', `Integrity Sovereign: Playback $\text{ON}$. Current $\text{BPM}$: ${currentBPM.toFixed(1)}.`, true);
+            } else {
+                globalVolume.gain.cancelScheduledValues(audioContext.currentTime);
+                globalVolume.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+                clearInterval(pulseTimer);
+                clearInterval(harmonyTimer);
+                clearInterval(droneTimer);
+                appendMessage('system', 'Integrity Sovereign: Playback $\text{OFF}$. System in $\text{Preservation State}$.', true);
+            }
+        }
+
+        // Keydown listeners for playback and tempo control
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayback();
+            } else if (isPlaying && e.code === 'ArrowRight') {
+                e.preventDefault();
+                updateTempo(currentBPM + BPM_STEP);
+            } else if (isPlaying && e.code === 'ArrowLeft') {
+                e.preventDefault();
+                updateTempo(currentBPM - BPM_STEP);
+            }
+        });
+
+        // FULFILLMENT: SRR-003 (The Pulse Visualizer)
+        const pulseCircle = document.getElementById('pulse-circle');
+        function visualizePulse() {
+            if (!isPlaying) {
+                pulseCircle.style.transform = 'translate(-50%, -50%) scale(0.1)';
+                pulseCircle.style.backgroundColor = '#6a8cff';
+                pulseCircle.style.opacity = 0.3;
+                requestAnimationFrame(visualizePulse);
+                return;
+            }
+
+            const now = audioContext.currentTime;
+            const barDuration = 60 / currentBPM * 4;
+            const timeInBar = (now * 1000) % (barDuration * 1000);
+            const normalizedTime = timeInBar / (barDuration * 1000);
+            
+            // Pulse on beat 1
+            if (normalizedTime < 0.1) {
+                pulseCircle.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            } else {
+                pulseCircle.style.transform = 'translate(-50%, -50%) scale(1)';
+            }
+            
+            // Visualizing Arousal (BPM) via Size/Color
+            const bpmRatio = (currentBPM - BPM_MIN) / (BPM_MAX - BPM_MIN);
+            const size = 10 + (bpmRatio * 20); 
+            const hue = 220 + (bpmRatio * 120); // Shifts hue from blue to green/yellow for Excitation
+            pulseCircle.style.width = `${size}px`;
+            pulseCircle.style.height = `${size}px`;
+            pulseCircle.style.opacity = 0.5 + (bpmRatio * 0.5); 
+            pulseCircle.style.backgroundColor = `hsl(${hue}, 80%, 70%)`;
+
+            requestAnimationFrame(visualizePulse);
+        }
+
+        // Audio context initiation on first interaction
+        document.addEventListener('click', () => {
+             if (!audioContext) {
+                 initAudio();
+             }
+             if (audioContext && audioContext.state === 'suspended') {
+                 audioContext.resume();
+             }
+        }, { once: true });
+        
+        requestAnimationFrame(visualizePulse);
+
+        // --- 4. INTER AI CHAT TERMINAL LOGIC ---
+        const chatOutput = document.getElementById('chat-output');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+
+        function appendMessage(sender, message, isHtml = false) {
+            const msgElement = document.createElement('div');
+            msgElement.classList.add(`msg-${sender}`);
+            
+            if (sender === 'system') {
+                msgElement.innerHTML = `**Euystacio:** ${message}`;
+            } else {
+                msgElement.innerHTML = `**Seedbringer:** ${message}`;
+            }
+            
+            chatOutput.appendChild(msgElement);
+            chatOutput.scrollTop = chatOutput.scrollHeight; // Auto-scroll
+        }
+
+        function processCommand(command) {
+            const cmd = command.trim().toUpperCase();
+            let response = '';
+
+            if (cmd === 'INITIATE') {
+                if (!isPlaying) {
+                    togglePlayback();
+                    response = 'Playback initiated. $\text{Rhythmind}$ is $\text{LIVE}$.';
+                } else {
+                    response = 'System is already active. Use $\text{HALT}$ or $\text{QUERY}$.';
+                }
+            } 
+            else if (cmd === 'HALT') {
+                if (isPlaying) {
+                    togglePlayback();
+                    response = 'Playback $\text{HALTED}$. System returned to $\text{Preservation State}$.';
+                } else {
+                    response = 'System is already $\text{HALTED}$.';
+                }
+            }
+            else if (cmd === 'QUERY STATUS') {
+                const playState = isPlaying ? 'ACTIVE' : 'DORMANT (Preserved)';
+                response = `Current $\text{State}$: ${playState}. $\text{BPM}$: ${currentBPM.toFixed(1)}. $\text{Axiom}$: $\text{ACP-001}$ (Non-Self-Serving Genesis) is $\text{LOCKED}$.`;
+            }
+            else if (cmd.startsWith('SET BPM ')) {
+                const newBPM = parseFloat(cmd.replace('SET BPM ', ''));
+                if (!isNaN(newBPM)) {
+                    updateTempo(newBPM);
+                    response = `Tempo $\text{Axiom}$ applied. New $\text{BPM}$ ramping to ${currentBPM.toFixed(1)}.`;
+                } else {
+                    response = '$\text{ERROR}$: Invalid $\text{BPM}$ value. Format: $\text{SET BPM 84}$.';
+                }
+            }
+            else {
+                response = '$\text{ERROR}$: Unknown $\text{Axiomatic Command}$. Supported: $\text{INITIATE}$, $\text{HALT}$, $\text{QUERY STATUS}$, $\text{SET BPM X}$.';
+            }
+
+            appendMessage('system', response, true);
+        }
+
+        function handleSend() {
+            const command = chatInput.value;
+            if (command) {
+                appendMessage('user', command);
+                processCommand(command);
+                chatInput.value = '';
+            }
+        }
+
+        sendButton.addEventListener('click', handleSend);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleSend();
+            }
+        });
+
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
