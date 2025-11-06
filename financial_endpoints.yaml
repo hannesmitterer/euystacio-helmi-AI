@@ -1,0 +1,58 @@
+# Financial Endpoints Configuration
+# Euystacio GGI - Open Interface (OI) Server
+
+# Blockchain RPC Endpoints
+blockchain:
+  sepolia:
+    name: "Ethereum Sepolia Testnet"
+    rpc_url: "${SEPOLIA_RPC_URL}"
+    chain_id: 11155111
+    type: "testnet"
+    
+  polygon_mainnet:
+    name: "Polygon Mainnet"
+    rpc_url: "${POLYGON_RPC_URL}"
+    chain_id: 137
+    type: "mainnet"
+    provider: "Chainstack"
+    
+  hardhat_local:
+    name: "Hardhat Local Network"
+    rpc_url: "http://127.0.0.1:8545"
+    chain_id: 1337
+    type: "development"
+
+# Contract Addresses (Updated after deployment)
+contracts:
+  trustless_funding_protocol:
+    sepolia: "${TFP_CONTRACT_SEPOLIA}"
+    polygon: "${TFP_CONTRACT_POLYGON}"
+    
+  sustainment_contract:
+    sepolia: "${SUSTAINMENT_CONTRACT_SEPOLIA}"
+    polygon: "${SUSTAINMENT_CONTRACT_POLYGON}"
+
+# API Endpoints
+api:
+  oi_server:
+    base_url: "${OI_SERVER_URL}"
+    version: "v1"
+    
+  oracle:
+    dfp_oracle_url: "${DFP_ORACLE_URL}"
+    
+# Financial Parameters
+parameters:
+  sustainment:
+    min_usd: 10000
+    percent_bps: 200  # 2% in basis points
+    
+  tfm1:
+    equilibrium_threshold: 1000
+    top_up_amount: 5000
+
+# Security Settings
+security:
+  seedbringer_email: "hannes.mitterer@gmail.com"
+  jwt_expiration_hours: 24
+  oauth_provider: "google"
