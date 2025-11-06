@@ -1,4 +1,280 @@
 <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Euystacio Helmi AI: GGI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        body { font-family: monospace; background-color: #000; color: #00FF00; }
+        .ggi-panel { background: #111; padding: 30px; border: 2px solid #00FF00; margin: 20px; }
+        .ggi-output-text { white-space: pre-wrap; margin-top: 10px; border: 1px solid #00FF00; padding: 15px; }
+        .critical-alert { color: #FF0000; border-color: #FF0000; }
+        .stable-status { color: #00FF00; border-color: #00FF00; }
+        .status-line { padding: 10px; margin: 5px 0; border-left: 5px solid #00FF00; }
+        .btn-action { background-color: #FF0000; color: white; padding: 15px 30px; border: none; cursor: pointer; font-size: 1.1em; }
+    </style>
+</head>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    header {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        color: #333;
+        font-size: 2em;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+    }
+
+    .metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .metric:last-child {
+        border-bottom: none;
+    }
+
+    .metric-label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .metric-value {
+        color: #333;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    .status-ok {
+        background-color: #4caf50;
+    }
+
+    .status-error {
+        background-color: #f44336;
+    }
+
+    button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        transition: transform 0.2s;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .log-container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-entries {
+        max-height: 300px;
+        overflow-y: auto;
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+
+    .log-entry {
+        padding: 5px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .log-entry:last-child {
+        border-bottom: none;
+    }
+
+    .timestamp {
+        color: #999;
+        font-size: 0.85em;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+</style>
+    
+<body>
+
+    <section class="ggi-panel">
+        <h2>>>> Euystacio GGI Interface (Self-Evolution Control)</h2>
+        
+        <div id="ggi-status-report" class="ggi-output-text">
+            Attendere caricamento telemetria...
+        </div>
+        
+        <button id="execute-evolution-btn" class="btn-action" style="display: none;">
+            ⏏️ Esegui Auto-Evoluzione (TF M1 Payload)
+        </button>
+    </section>
+
+    <section class="ggi-panel" style="margin-top: 30px;">
+        <h2>🏆 GBC Sustainment Status Overview</h2>
+        
+        <div id="status-alert-line" class="status-line">
+            Stato Finanziario: <strong id="gbc-financial-status">Caricamento...</strong>
+        </div>
+
+        <div id="governance-status-line" class="status-line" style="border-left: 5px solid #FFC107;">
+            Stato Governance: <strong id="gov-escalation-status">Caricamento...</strong>
+        </div>
+
+        <div class="chart-container" style="padding: 10px 0;">
+            <h3>Fondi Governance (Target 6 Mesi)</h3>
+            <canvas id="gbc-progress-chart" width="400" height="80"></canvas>
+        </div>
+
+        <div class="financial-details">
+            <p><strong>Fondo Governance (Target 6M):</strong> <span id="gov-target-amount">N/A</span> USD</p>
+            <p><strong>Soglia Critica ($15k):</strong> <span id="critical-threshold-display">15,000.00</span> USD</p>
+            <p><strong>Compenso Seedbringer (Fisso):</strong> <span id="seedbringer-comp-display">5,000.00</span> USD</p>
+        </div>
+    </section>
+
+    <script src="main.js"></script> 
+</body>
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>System Status</h2>
+            <div class="metric">
+                <span class="metric-label">
+                    <span class="status-indicator status-ok" id="statusIndicator"></span>
+                    Status
+                </span>
+                <span class="metric-value" id="systemStatus">Loading...</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Version</span>
+                <span class="metric-value" id="systemVersion">-</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value" id="systemUptime">-</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Telemetry Data</h2>
+            <div class="metric">
+                <span class="metric-label">Current Value</span>
+                <span class="metric-value" id="telemetryValue">0.00</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Event Count</span>
+                <span class="metric-value" id="telemetryCount">0</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Last Update</span>
+                <span class="metric-value" id="telemetryTimestamp">-</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Command Control</h2>
+            <p style="color: #666; margin-bottom: 15px;">Execute TFM1 command to update telemetry</p>
+            <button id="executeTfm1Btn" onclick="executeTfm1Command()">Execute TFM1</button>
+            <div id="commandResult"></div>
+        </div>
+    </div>
+
+    <div class="log-container">
+        <h2 style="color: #333; margin-bottom: 15px;">Activity Log</h2>
+        <div class="log-entries" id="logEntries">
+            <div class="log-entry">
+                <span class="timestamp">System initialized</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="main.js"></script>
+    
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
