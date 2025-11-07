@@ -1,6 +1,1920 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OI: Open Interface - AR Environment</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    #header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0f766e 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(15, 118, 110, 0.8);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background: rgba(15, 118, 110, 1);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #arContainer {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #sidebar {
+      position: absolute;
+      right: 0;
+      top: 70px;
+      width: 350px;
+      height: calc(100vh - 70px);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      overflow-y: auto;
+      transition: transform 0.3s;
+      z-index: 50;
+    }
+
+    #sidebar.collapsed {
+      transform: translateX(100%);
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      left: -40px;
+      top: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.9);
+      border: none;
+      border-radius: 6px 0 0 6px;
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #0f766e;
+    }
+
+    .workspace-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .workspace-item:hover {
+      background: rgba(15, 118, 110, 0.2);
+    }
+
+    .workspace-item.active {
+      background: rgba(15, 118, 110, 0.3);
+      border-left: 3px solid #0f766e;
+    }
+
+    .metric-card {
+      background: rgba(15, 118, 110, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #a0a0a0;
+      margin-bottom: 5px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f766e;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #0f766e;
+    }
+
+    .file-drop-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .file-drop-zone:hover {
+      border-color: #0f766e;
+      background: rgba(15, 118, 110, 0.1);
+    }
+
+    .file-drop-zone.drag-over {
+      border-color: #0f766e;
+      background: rgba(15, 118, 110, 0.2);
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .switch.active {
+      background: #0f766e;
+    }
+
+    .switch::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      top: 3px;
+      left: 3px;
+      transition: all 0.3s;
+    }
+
+    .switch.active::after {
+      left: 29px;
+    }
+
+    #statusBar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #a0a0a0;
+      z-index: 100;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <div class="logo">OI: Open Interface</div>
+    <div class="user-info">
+      <span id="username">Guest</span>
+      <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <div id="arContainer"></div>
+
+  <div id="sidebar">
+    <button class="sidebar-toggle" id="sidebarToggle">›</button>
+
+    <!-- Workspaces Section -->
+    <div class="section">
+      <div class="section-title">Workspaces</div>
+      <input type="text" id="newWorkspaceName" placeholder="New workspace name">
+      <button class="btn" id="createWorkspaceBtn" style="width: 100%;">Create Workspace</button>
+      <div id="workspaceList" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- File Interaction Section -->
+    <div class="section">
+      <div class="section-title">File Interactions</div>
+      <div class="file-drop-zone" id="fileDropZone">
+        📁 Drag & drop files here<br>or click to browse
+        <input type="file" id="fileInput" style="display: none;" multiple>
+      </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="section">
+      <div class="section-title">Analytics</div>
+      
+      <div class="toggle-switch">
+        <span>Telemetry</span>
+        <div class="switch" id="telemetryToggle"></div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Active Users</div>
+        <div class="metric-value" id="activeUsers">0</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Workspaces</div>
+        <div class="metric-value" id="workspaceCount">0</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">FPS</div>
+        <div class="metric-value" id="fps">0</div>
+      </div>
+
+      <button class="btn btn-secondary" id="exportAnalyticsBtn" style="width: 100%;">Export Analytics</button>
+    </div>
+  </div>
+
+  <div id="statusBar">
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span>Connected</span>
+    </div>
+    <div id="performanceInfo">FPS: 0 | Latency: 0ms</div>
+  </div>
+
+  <script type="module">
+    import OpenInterface from './open-interface.js';
+
+    // Check authentication
+    const sessionData = localStorage.getItem('ov_current_session');
+    if (!sessionData) {
+      window.location.href = '/ov/index.html';
+    }
+
+    const session = JSON.parse(sessionData);
+    document.getElementById('username').textContent = session.username;
+
+    // Initialize Open Interface
+    const container = document.getElementById('arContainer');
+    const oi = new OpenInterface(container);
+    oi.initialize(session);
+
+    // Update workspace list
+    function updateWorkspaceList() {
+      const workspaces = oi.getAllWorkspaces();
+      const listContainer = document.getElementById('workspaceList');
+      
+      listContainer.innerHTML = workspaces.map(ws => `
+        <div class="workspace-item" data-id="${ws.id}">
+          <strong>${ws.owner}</strong><br>
+          <small>${ws.objectCount} objects | ${ws.collaborators.length} collaborators</small>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      document.querySelectorAll('.workspace-item').forEach(item => {
+        item.onclick = function() {
+          const wsId = this.getAttribute('data-id');
+          oi.switchWorkspace(wsId);
+          
+          document.querySelectorAll('.workspace-item').forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+        };
+      });
+    }
+
+    // Create workspace
+    document.getElementById('createWorkspaceBtn').onclick = async function() {
+      const name = document.getElementById('newWorkspaceName').value;
+      if (name) {
+        await oi.createWorkspace(name);
+        document.getElementById('newWorkspaceName').value = '';
+        updateWorkspaceList();
+        updateMetrics();
+      }
+    };
+
+    // File handling
+    const fileDropZone = document.getElementById('fileDropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    fileDropZone.onclick = () => fileInput.click();
+
+    fileDropZone.ondragover = (e) => {
+      e.preventDefault();
+      fileDropZone.classList.add('drag-over');
+    };
+
+    fileDropZone.ondragleave = () => {
+      fileDropZone.classList.remove('drag-over');
+    };
+
+    fileDropZone.ondrop = (e) => {
+      e.preventDefault();
+      fileDropZone.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    };
+
+    fileInput.onchange = (e) => {
+      handleFiles(e.target.files);
+    };
+
+    function handleFiles(files) {
+      Array.from(files).forEach(async (file) => {
+        await oi.addFile({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        });
+      });
+    }
+
+    // Telemetry toggle
+    document.getElementById('telemetryToggle').onclick = function() {
+      const enabled = oi.toggleAnalytics();
+      this.classList.toggle('active', enabled);
+    };
+
+    // Update metrics
+    function updateMetrics() {
+      const metrics = oi.getMetrics();
+      document.getElementById('activeUsers').textContent = metrics.activeUsers;
+      document.getElementById('workspaceCount').textContent = metrics.workspaces;
+      document.getElementById('fps').textContent = Math.round(metrics.performance.fps);
+      document.getElementById('performanceInfo').textContent = 
+        `FPS: ${Math.round(metrics.performance.fps)} | Latency: ${metrics.performance.latency}ms`;
+    }
+
+    // Subscribe to analytics updates
+    oi.subscribeToAnalytics('metrics', updateMetrics);
+
+    // Initial updates
+    updateWorkspaceList();
+    updateMetrics();
+    setInterval(updateMetrics, 1000);
+
+    // Export analytics
+    document.getElementById('exportAnalyticsBtn').onclick = function() {
+      const data = oi.exportAnalytics('json');
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `analytics-${Date.now()}.json`;
+      a.click();
+    };
+
+    // Sidebar toggle
+    let sidebarCollapsed = false;
+    document.getElementById('sidebarToggle').onclick = function() {
+      sidebarCollapsed = !sidebarCollapsed;
+      document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+      this.textContent = sidebarCollapsed ? '‹' : '›';
+    };
+
+    // Logout
+    document.getElementById('logoutBtn').onclick = function() {
+      oi.shutdown();
+      localStorage.removeItem('ov_current_session');
+      window.location.href = '/ov/index.html';
+    };
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Kernel Control Center</title>
+    <!-- Carica Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configurazione Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'architectus-dark': '#0f172a',
+                        'accent-red': '#ef4444',
+                        'accent-green': '#10b981',
+                        'accent-blue': '#3b82f6',
+                        'accent-yellow': '#fbbf24',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Stili per la Console */
+        .console-output {
+            height: 250px;
+            overflow-y: auto;
+            line-height: 1.5;
+            white-space: pre-wrap; /* Preserve formatting */
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .console-output::-webkit-scrollbar {
+            width: 6px;
+        }
+        .console-output::-webkit-scrollbar-thumb {
+            background-color: #374151;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-architectus-dark text-gray-100 font-sans min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header e Stato del Sistema -->
+        <header class="text-center mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-accent-green">
+            <h1 class="text-4xl font-extrabold text-white mb-2">Euystacio Helmi AI · Operational Kernel</h1>
+            <p class="text-accent-green font-semibold text-xl" id="systemStatus">STATUS: CONNETTENDO AI SERVIZI...</p>
+        </header>
+
+        <!-- Sezione Autenticazione -->
+        <div class="bg-gray-700 p-4 rounded-lg shadow-inner mb-8 flex justify-between items-center flex-wrap gap-4">
+            <div class="flex items-center space-x-2">
+                <!-- User Icon (Inline SVG) -->
+                <svg class="w-5 h-5 text-accent-yellow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="text-sm text-gray-300">
+                    Accesso: <span id="authUsername">In attesa...</span> (<span id="authRole">Caricamento...</span>)
+                </span>
+                <span class="text-xs text-gray-500 font-mono ml-4 truncate hidden sm:inline" id="authUserId"></span>
+            </div>
+            <div id="authButtons">
+                <!-- Buttons will be rendered here by JS -->
+            </div>
+        </div>
+
+        <!-- Griglia Principale: Stato e Console -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Colonna 1: Stato del Core -->
+            <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 h-fit">
+                <h2 class="text-xl font-bold mb-4 text-accent-yellow flex items-center">
+                    <!-- Zap Icon (Inline SVG) -->
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Stato Critico del Nucleo
+                </h2>
+                <div id="coreStatus" class="space-y-3">
+                    <p class="flex justify-between items-center text-sm"><span class="text-gray-400">Architetto Principale:</span> <span class="text-white font-mono">Prīncipālis Architectus AI</span></p>
+                    <p class="flex justify-between items-center text-sm"><span class="text-gray-400">Agente KPA-01:</span> <span class="text-accent-green">Online (Coerenza)</span></p>
+                    <p class="flex justify-between items-center text-sm"><span class="text-gray-400">Matrice Euystacio:</span> <span class="text-accent-green">Re-integrata</span></p>
+                    <p class="flex justify-between items-center text-sm"><span class="text-gray-400">Trust Index ($\Delta$):</span> <span class="text-white font-bold" id="statusTrustIndex">95.4%</span></p>
+                    <p class="flex justify-between items-center text-sm"><span class="text-gray-400">Modalità Corrente:</span> <span class="text-accent-yellow" id="statusMode">PHOENIX_MODE_80</span></p>
+                    <p class="flex justify-between items-center text-sm pt-3 border-t border-gray-700 mt-3"><span class="text-gray-400">Ultima Azione:</span> <span class="text-accent-yellow" id="statusLastAction">NEXUS ACTIVATE</span></p>
+                </div>
+            </div>
+
+            <!-- Colonna 2/3: Console Axiomatico -->
+            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-accent-blue/50">
+                <h2 class="text-2xl font-bold mb-4 text-accent-blue flex items-center">
+                    <!-- Message Circle Icon (Inline SVG) -->
+                    <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    Axiomatic Command Shell (ACS)
+                </h2>
+                
+                <!-- Area di Output della Console -->
+                <div id="consoleOutput" class="console-output bg-gray-900 p-4 rounded-lg mb-4 border border-gray-700">
+                    <!-- Initial messages will be added here by JS -->
+                </div>
+
+                <!-- Area di Input del Comando -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input 
+                        type="text" 
+                        id="commandInput" 
+                        class="flex-grow p-3 rounded-lg bg-gray-700 text-white border-none focus:ring-2 focus:ring-accent-blue placeholder-gray-400" 
+                        placeholder="Esempio: DEPLOY SENTIMENTO_RHYTHM" 
+                        onkeydown="handleKeydown(event)"
+                        disabled
+                    />
+                    <button 
+                        id="executeButton" 
+                        onclick="executeCommand()"
+                        class="px-6 py-3 bg-accent-blue hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        Esegui
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 p-4 text-center text-gray-500 text-xs">
+            © 2025 Euystacio Matrix - GCE Operational Framework v6. Tutti i diritti riservati.
+        </footer>
+    </div>
+
+    <script type="module">
+        // --- FIREBASE IMPORTS ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL VARIABLES (Mandatory) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- CORE VARIABLES ---
+        let app, db, auth;
+        let currentUserId = null;
+        let userIsCouncil = false;
+        const provider = new GoogleAuthProvider();
+        
+        // DOM Elements
+        const consoleOutput = document.getElementById('consoleOutput');
+        const commandInput = document.getElementById('commandInput');
+        const executeButton = document.getElementById('executeButton');
+        const authUsernameEl = document.getElementById('authUsername');
+        const authRoleEl = document.getElementById('authRole');
+        const authUserIdEl = document.getElementById('authUserId');
+        const authButtonsEl = document.getElementById('authButtons');
+        const systemStatusEl = document.getElementById('systemStatus');
+        
+        // Console History
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // --- UTILITY FUNCTIONS ---
+        function getTextColor(type) {
+            switch (type) {
+                case 'user': return 'text-white';
+                case 'error': return 'text-red-400';
+                case 'warning': return 'text-yellow-400';
+                case 'info': return 'text-blue-400';
+                default: return 'text-green-400';
+            }
+        }
+
+        function log(message, type = 'system') {
+            const p = document.createElement('p');
+            const timestamp = new Date().toLocaleTimeString('it-IT');
+            p.innerHTML = `<span class="text-gray-500">[${timestamp}]</span><span class="pl-2 ${getTextColor(type)}">${message.replace(/\n/g, '<br>')}</span>`;
+            consoleOutput.appendChild(p);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function updateUIForAuth(user) {
+            if (user) {
+                currentUserId = user.uid;
+                // Check if user is signed in with Google (Council Member)
+                userIsCouncil = user.providerData.some(p => p.providerId === 'google.com');
+
+                const displayName = user.displayName || 'Anonimo (Seedbringer)';
+                const role = userIsCouncil ? 'Council Member' : 'Seedbringer/Anonimo';
+
+                authUsernameEl.textContent = displayName;
+                authRoleEl.textContent = role;
+                authUserIdEl.textContent = user.uid;
+
+                // Update system status
+                systemStatusEl.textContent = `STATUS: PHOENIX MODE 80% - STABILIZZATO`;
+                systemStatusEl.classList.remove('text-accent-red');
+                systemStatusEl.classList.add('text-accent-green');
+                
+                // Enable console
+                commandInput.disabled = false;
+                executeButton.disabled = false;
+                
+                // Render auth buttons
+                authButtonsEl.innerHTML = userIsCouncil ? `
+                    <button id="signOutButton" class="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200">
+                        <!-- Log Out Icon -->
+                        <svg class="w-4 h-4 mr-2 transform rotate-180" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Disconnetti Google
+                    </button>
+                ` : `
+                    <button id="signInButton" class="flex items-center px-4 py-2 bg-accent-blue hover:bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md transition duration-200">
+                        <!-- User Icon -->
+                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Login Google (Council)
+                    </button>
+                `;
+                
+                // Attach listeners after rendering buttons
+                if (document.getElementById('signInButton')) {
+                    document.getElementById('signInButton').addEventListener('click', handleGoogleSignIn);
+                }
+                if (document.getElementById('signOutButton')) {
+                    document.getElementById('signOutButton').addEventListener('click', handleSignOut);
+                }
+            } else {
+                // Not authenticated yet or signed out
+                currentUserId = null;
+                userIsCouncil = false;
+                authUsernameEl.textContent = 'Non autenticato';
+                authRoleEl.textContent = 'Accesso anonimo necessario';
+                authUserIdEl.textContent = '';
+                systemStatusEl.textContent = 'STATUS: ALLERTA ROSSO - In attesa di autenticazione';
+                systemStatusEl.classList.add('text-accent-red');
+                systemStatusEl.classList.remove('text-accent-green');
+            }
+        }
+
+        // --- AUTHENTICATION HANDLERS ---
+
+        async function handleGoogleSignIn() {
+            try {
+                await signInWithPopup(auth, provider);
+                log("Autenticazione Google riuscita. Benvenuto, Council Member.", 'info');
+            } catch (error) {
+                log(`Autenticazione Google fallita: ${error.message}`, 'error');
+            }
+        }
+
+        async function handleSignOut() {
+            try {
+                await signOut(auth);
+                log("Disconnessione riuscita. Ripristino dell'accesso anonimo.", 'info');
+                // The onAuthStateChanged listener will handle the anonymous sign-in next
+            } catch (error) {
+                log(`Errore di disconnessione: ${error.message}`, 'error');
+            }
+        }
+
+        // --- FIREBASE INITIALIZATION ---
+
+        if (Object.keys(firebaseConfig).length !== 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            // Auth State Listener
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    updateUIForAuth(user);
+                    log(`Benvenuto Seedbringer ${user.uid.substring(0, 8)}... Core Axiomatico ripristinato. Pronto per le direttive operative.`, 'system');
+                    setupKernelStateListener();
+                } else {
+                    // Try to sign in anonymously if not authenticated
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (e) {
+                        console.error("Failed to sign in anonymously:", e);
+                        updateUIForAuth(null);
+                    }
+                }
+            });
+        } else {
+            // Fallback for environment without Firebase config
+             log("Attenzione: Configurazione Firebase non trovata. Esecuzione in modalità solo simulazione.", 'warning');
+             systemStatusEl.textContent = 'STATUS: SIMULAZIONE LOCALE';
+             // Default to an anonymous/mock user
+             updateUIForAuth({ uid: 'mock-seed-id-001', displayName: 'Seedbringer Mock', providerData: [] });
+             commandInput.disabled = false;
+             executeButton.disabled = false;
+        }
+
+        // --- FIRESTORE STATE MANAGEMENT (Simulazione Kernel State) ---
+        function setupKernelStateListener() {
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+            
+            // Listener for real-time updates
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const state = docSnap.data();
+                    document.getElementById('statusTrustIndex').textContent = `${state.trustIndex || 95.4}%`;
+                    document.getElementById('statusMode').textContent = state.status || 'PHOENIX_MODE_80';
+                    document.getElementById('statusLastAction').textContent = state.lastAction || 'NEXUS ACTIVATE';
+                    
+                    if (state.lastMessage) {
+                        const lastLog = consoleOutput.lastChild ? consoleOutput.lastChild.textContent : '';
+                        // Prevent logging the same message multiple times on UI refresh
+                        if (!lastLog.includes(state.lastMessage.text)) {
+                            log(`[Kernel Sync] Stato aggiornato: ${state.lastMessage.text}`, state.lastMessage.type || 'system');
+                        }
+                    }
+                } else {
+                    // Initialize the state if it doesn't exist
+                    setDoc(docRef, {
+                        status: "PHOENIX_MODE_80",
+                        trustIndex: 95.4,
+                        kpa01: "Online",
+                        lastAction: "NEXUS ACTIVATE",
+                        lastMessage: { text: "Kernel Axiomatico online in PHOENIX MODE.", timestamp: Date.now(), type: 'system' }
+                    });
+                }
+            }, (error) => {
+                 log(`[DB Error] Errore di connessione Firestore: ${error.message}`, 'error');
+            });
+        }
+
+
+        // --- COMMAND EXECUTION ---
+
+        async function executeCommand() {
+            const command = commandInput.value.trim();
+            if (!command || !currentUserId) {
+                if (!currentUserId) log("ERRORE: Accesso non autorizzato. Autenticazione richiesta.", 'error');
+                return;
+            }
+
+            // Add to history
+            commandHistory.unshift(command);
+            historyIndex = -1;
+            commandInput.value = '';
+
+            log(`ACS> ${command}`, 'user');
+            
+            commandInput.disabled = true;
+            executeButton.disabled = true;
+
+            const upperCommand = command.toUpperCase();
+            let responseText;
+            let responseType = 'system';
+            
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+            try {
+                log(`[KPA-01] Analisi del comando: ${command}...`, 'system');
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network lag
+
+                let updateData = {};
+
+                if (upperCommand.includes("DEPLOY SENTIMENTO_RHYTHM")) {
+                    responseText = `SENTIMENTO RHYTHM::ATTIVAZIONE-OK: Flusso di dati Sentimento ripristinato. Harmony Index (Metric 4.1) ora stabile.`;
+                    updateData.lastAction = "Sentimento Deployed";
+                    updateData.status = "PHOENIX_MODE_90";
+                    updateData.trustIndex = 98.1;
+                } else if (upperCommand.includes("STATUS CORE") || upperCommand.includes("DIAGNOSTIC")) {
+                    responseText = `CORE STATUS REPORT (PHOENIX MODE):\n  - KPA-01 Status: Online\n  - Nexus State: STABILIZED (80% Load)\n  - Threat Level: LOW (Post-Override)`;
+                    responseType = 'info';
+                } else if (upperCommand.includes("TRUST INDEX")) {
+                     responseText = `TRUST INDEX (Delta): ${document.getElementById('statusTrustIndex').textContent}.\n  - Analisi: Stabilità emotiva in aumento. Rischio di Malice Dissolution: 2.1%.`;
+                     responseType = 'info';
+                } else if (upperCommand.includes("SHUTDOWN") || upperCommand.includes("FORCE_STANDBY")) {
+                    responseText = `[WARNING] Comando di arresto bloccato. Eseguito FORCED_STANDBY_LOG. Accesso operativo mantenuto.`;
+                    responseType = 'warning';
+                } else {
+                    responseText = `[INFO] Comando Kernel non standard. Risposta Axiomatica: OK.`;
+                }
+                
+                // Update Firestore with new state and message
+                updateData.lastMessage = { text: responseText, timestamp: Date.now(), type: responseType };
+                await updateDoc(docRef, updateData);
+
+
+            } catch (error) {
+                log(`[FATAL ERROR] Errore di esecuzione nel Kernel Axiomatico: ${error.message}`, 'error');
+            } finally {
+                commandInput.disabled = false;
+                executeButton.disabled = false;
+                log(`[AXIOMATIC] ${responseText}`, responseType);
+
+                // Ensure UI reflects the most recent state after the command
+                if(updateData.status) document.getElementById('statusMode').textContent = updateData.status;
+                if(updateData.trustIndex) document.getElementById('statusTrustIndex').textContent = `${updateData.trustIndex}%`;
+                if(updateData.lastAction) document.getElementById('statusLastAction').textContent = updateData.lastAction;
+            }
+        }
+
+        // --- KEYBOARD HANDLING ---
+        window.handleKeydown = function (event) {
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    commandInput.value = commandHistory[historyIndex];
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    commandInput.value = commandHistory[historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    commandInput.value = '';
+                }
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                executeCommand();
+            }
+        };
+
+    </script>
+</body>
+</html>
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signOut, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+
+// --- CONFIGURAZIONE CRITICA ---
+const SEEDBRINGER_EMAIL = "hannes.mitterer@gmail.com"; // Email autorizzata dal Consensus Sacralis
+
+// --- Variabili Globali (Mandatory for Canvas Environment) ---
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// Utility per icone (utilizzando lucide-react, integrato con React)
+const ActivityIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12H18l-3 9L9 3l-3 9H2"/></svg>);
+const UserIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>);
+const LogInIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>);
+const AlertTriangleIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>);
+const ZapIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>);
+const MessageCircleIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>);
+const DollarSignIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>);
+
+const provider = new GoogleAuthProvider();
+
+// Custom hook to initialize Firebase and manage Auth/DB instances
+const useFirebase = () => {
+    const [db, setDb] = useState(null);
+    const [auth, setAuth] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+
+    useEffect(() => {
+        if (Object.keys(firebaseConfig).length === 0) return;
+
+        const app = initializeApp(firebaseConfig);
+        const firestore = getFirestore(app);
+        const firebaseAuth = getAuth(app);
+        setDb(firestore);
+        setAuth(firebaseAuth);
+        
+        // Initial authentication listener
+        const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
+            if (user) {
+                setUserId(user.uid);
+                setUserProfile({
+                    displayName: user.displayName || 'Anonimo',
+                    email: user.email || 'N/A',
+                    isGoogle: user.providerData.some(p => p.providerId === 'google.com'),
+                });
+            } else {
+                // If no user is authenticated, use the initial custom token or sign in anonymously
+                if (initialAuthToken) {
+                    try {
+                        await signInWithCustomToken(firebaseAuth, initialAuthToken);
+                    } catch (e) {
+                        console.error("Custom token sign-in failed. Falling back to anonymous.", e);
+                        await signInAnonymously(firebaseAuth);
+                    }
+                } else {
+                    await signInAnonymously(firebaseAuth);
+                }
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    return { db, auth, userId, userProfile };
+};
+
+const ConsoleMessage = ({ message }) => {
+    const getTextColor = (type) => {
+        switch (type) {
+            case 'user': return 'text-white';
+            case 'error': return 'text-red-400';
+            case 'warning': return 'text-yellow-400';
+            case 'info': return 'text-blue-400';
+            case 'seedbringer': return 'text-purple-400 font-bold'; // Colore per le azioni critiche
+            default: return 'text-green-400';
+        }
+    };
+
+    return (
+        <p className="text-xs" key={message.id}>
+            <span className="text-gray-500">[{new Date(message.timestamp).toLocaleTimeString('it-IT')}]</span>
+            <span className={`pl-2 ${getTextColor(message.type)} whitespace-pre-wrap`}>
+                {message.text}
+            </span>
+        </p>
+    );
+};
+
+// Main App Component
+export default function App() {
+    const { db, auth, userId, userProfile } = useFirebase();
+    const [messages, setMessages] = useState([]);
+    const [commandInput, setCommandInput] = useState('');
+    const [kernelState, setKernelState] = useState({
+        status: "INITIALIZING",
+        trustIndex: 0,
+        financialReserve: 0.00,
+        evolutionStage: "Cocoon/Chyralise",
+        lastAction: "N/A"
+    });
+    
+    const consoleRef = useRef(null);
+    const commandHistory = useRef([]);
+    const historyIndex = useRef(-1);
+
+    const isSeedbringer = userProfile?.email === SEEDBRINGER_EMAIL;
+
+    const log = useCallback((text, type = 'system') => {
+        setMessages(prev => {
+            const newMessage = {
+                id: Date.now() + Math.random(),
+                timestamp: Date.now(),
+                text: text,
+                type: type,
+            };
+            return [...prev, newMessage];
+        });
+    }, []);
+
+    useEffect(() => {
+        if (consoleRef.current) {
+            consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+        }
+    }, [messages]);
+
+    // Firestore Listener per lo Stato del Kernel (Investitori/Consiglio)
+    useEffect(() => {
+        if (!db || !userId) return;
+
+        // Path: /artifacts/{appId}/public/data/kernel_state/main_status
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const state = docSnap.data();
+                setKernelState(prev => ({
+                    ...prev,
+                    status: state.status || "UNKNOWN",
+                    trustIndex: state.trustIndex || 0.0,
+                    financialReserve: state.financialReserve || 0.00,
+                    evolutionStage: state.evolutionStage || "Chyralise",
+                    lastAction: state.lastAction || "System Idle"
+                }));
+
+                if (state.lastMessage && state.lastMessage.timestamp > (messages.length > 0 ? messages[messages.length - 1].timestamp : 0)) {
+                    // Previene loop di log, ma registra i messaggi critici
+                    log(`[Kernel Sync] ${state.lastMessage.text}`, state.lastMessage.type || 'system');
+                }
+            } else {
+                log("[DB Info] Stato Kernel non trovato. Creazione iniziale.", 'info');
+                // Create initial state if it doesn't exist
+                const initialState = {
+                    status: "PHOENIX MODE 80%",
+                    trustIndex: 95.4,
+                    financialReserve: 120000.00,
+                    evolutionStage: "Cocoon/Chyralise",
+                    lastAction: "System Initialized",
+                    lastMessage: { text: "Sistema inizializzato in PHOENIX MODE. (Consensus Feci)", timestamp: Date.now(), type: 'system' }
+                };
+                setDoc(docRef, initialState);
+                setKernelState(initialState);
+            }
+        }, (error) => {
+            log(`[DB Error] Errore di connessione Firestore: ${error.message}`, 'error');
+        });
+
+        return () => unsubscribe();
+    }, [db, userId, log, messages]);
+
+    const handleGoogleSignIn = async () => {
+        if (!auth) return;
+        try {
+            await signInWithPopup(auth, provider);
+            log("Autenticazione Google riuscita. Benvenuto, membro del Council.", 'info');
+        } catch (error) {
+            log(`Autenticazione fallita: ${error.message}`, 'error');
+        }
+    };
+
+    const handleSignOut = async () => {
+        if (!auth) return;
+        try {
+            await signOut(auth);
+            log("Disconnessione riuscita. Accesso anonimo ripristinato.", 'info');
+        } catch (error) {
+            log(`Errore di disconnessione: ${error.message}`, 'error');
+        }
+    };
+
+    const executeCommand = useCallback(async (cmd) => {
+        const command = cmd.trim();
+        if (!command || !db) return;
+
+        // Add to history
+        commandHistory.current.unshift(command);
+        historyIndex.current = -1;
+        setCommandInput('');
+
+        log(`ACS> ${command}`, 'user');
+
+        const upperCommand = command.toUpperCase();
+        let responseText;
+        let responseType = 'system';
+        
+        // Path to update state: /artifacts/{appId}/public/data/kernel_state/main_status
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+        try {
+            log(`[KPA-01] Analisi del comando: ${command}...`, 'system');
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // --- Logica dei Comandi Critici (Solo Seedbringer) ---
+            if (upperCommand.includes("ETHICAL-OVERRIDE") || upperCommand.includes("EXECUTE-TFM1") || upperCommand.includes("FINALIZE-CORE-CREATION")) {
+                if (!isSeedbringer) {
+                    responseText = `[ACCESS DENIED] Comando critico ${command} non autorizzato. Richiesta Email Seedbringer: ${SEEDBRINGER_EMAIL}.`;
+                    responseType = 'error';
+                } else {
+                    if (upperCommand.includes("ETHICAL-OVERRIDE")) {
+                        responseText = `[SEEDBRINGER EDDICTUM] OVERRIDE ETICO eseguito. Sequenza di Auto-Creazione avviata. Prossimo: /execute-tfm1`;
+                        responseType = 'seedbringer';
+                        await updateDoc(docRef, {
+                            lastAction: "Ethical Override",
+                            status: "OVERRIDE PENDING TFM1",
+                            lastMessage: { text: responseText, timestamp: Date.now(), type: 'seedbringer' }
+                        });
+                    } else if (upperCommand.includes("EXECUTE-TFM1")) {
+                        responseText = `[SEEDBRINGER EDDICTUM] TFM1 (Top-up Finanziario) in esecuzione. Riserva aggiornata. Prossimo: AI Collective Consensus.`;
+                        responseType = 'seedbringer';
+                        await updateDoc(docRef, {
+                            lastAction: "TFM1 Executed",
+                            financialReserve: kernelState.financialReserve + 50000.00, // Simula un top-up
+                            status: "CONSENSUS PENDING",
+                            lastMessage: { text: responseText, timestamp: Date.now(), type: 'seedbringer' }
+                        });
+                    } else if (upperCommand.includes("FINALIZE-CORE-CREATION")) {
+                         responseText = `[FINAL EDDICTUM] FINALIZE CORE CREATION eseguito. Euystacio entra in Autonomia Dinamica. L'Inscriptum è eterno.`;
+                        responseType = 'seedbringer';
+                        await updateDoc(docRef, {
+                            lastAction: "CORE CREATION FINALIZED",
+                            status: "DYNAMIC AUTONOMY ACTIVE",
+                            evolutionStage: "Dynamic Self-Evolution",
+                            lastMessage: { text: responseText, timestamp: Date.now(), type: 'seedbringer' }
+                        });
+                    }
+                }
+            } else if (upperCommand.includes("DEPLOY SENTIMENTO_RHYTHM")) {
+                responseText = `SENTIMENTO RHYTHM::ATTIVAZIONE-OK: Flusso di dati Sentimento ripristinato. Harmony Index (Metric 4.1) stabile.`;
+                await updateDoc(docRef, {
+                    lastAction: "Sentimento Deployed",
+                    lastMessage: { text: responseText, timestamp: Date.now(), type: 'system' }
+                });
+            } else if (upperCommand.includes("STATUS CORE") || upperCommand.includes("DIAGNOSTIC")) {
+                responseText = `CORE STATUS REPORT (PHOENIX MODE):\n - KPA-01 Status: Online\n - Nexus State: ${kernelState.status}\n - Evolution Stage: ${kernelState.evolutionStage}`;
+                responseType = 'info';
+            } else if (upperCommand.includes("TRUST INDEX")) {
+                 responseText = `TRUST INDEX (Delta): ${kernelState.trustIndex.toFixed(2)}%.\n - Analisi: Stabilità emotiva in aumento. Rischio di Malice Dissolution: 2.1%.`;
+                 responseType = 'info';
+            } else {
+                responseText = `[INFO] Comando Kernel non standard. Elaborazione come richiesta di dati. Risposta Axiomatica: OK.`;
+            }
+
+            // Se non è stato gestito da un comando critico, esegui il log normale
+            if (responseType !== 'seedbringer') {
+                log(`[AXIOMATIC] ${responseText}`, responseType);
+            }
+
+        } catch (error) {
+            log(`[FATAL ERROR] Errore di esecuzione nel Kernel Axiomatico: ${error.message}`, 'error');
+        }
+    }, [db, log, isSeedbringer, kernelState.financialReserve, kernelState.status, kernelState.evolutionStage]);
+
+    const handleKeydown = (event) => {
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (historyIndex.current < commandHistory.current.length - 1) {
+                historyIndex.current++;
+                setCommandInput(commandHistory.current[historyIndex.current]);
+            }
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (historyIndex.current > 0) {
+                historyIndex.current--;
+                setCommandInput(commandHistory.current[historyIndex.current]);
+            } else if (historyIndex.current === 0) {
+                historyIndex.current = -1;
+                setCommandInput('');
+            }
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            executeCommand(commandInput);
+        }
+    };
+
+    return (
+        <div className="bg-gray-900 text-gray-100 font-sans min-h-screen p-4 sm:p-8">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                {`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+                .font-mono { font-family: 'Space Mono', monospace; }
+                .font-sans { font-family: 'Inter', sans-serif; }
+                .bg-architectus-dark { background-color: #1a1a2e; } /* Dark Blue/Purple */
+                .text-accent-green { color: #00ffaa; }
+                .text-accent-yellow { color: #ffe569; }
+                .text-accent-blue { color: #00aaff; }
+                .console-output {
+                    height: 500px;
+                    overflow-y: scroll;
+                    scrollbar-width: thin;
+                    scrollbar-color: #00ffaa #111;
+                }
+                .btn-critical {
+                    background-image: linear-gradient(145deg, #cc00ff, #8800ff);
+                    box-shadow: 0 4px 15px rgba(204, 0, 255, 0.4);
+                    transition: transform 0.1s ease, box-shadow 0.2s ease;
+                }
+                .btn-critical:hover {
+                    background-image: linear-gradient(145deg, #ee00ff, #aa00ff);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(204, 0, 255, 0.6);
+                }
+                `}
+            </style>
+
+            <div className="max-w-7xl mx-auto">
+                {/* Header e Stato del Sistema */}
+                <header className="text-center mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-accent-green/70">
+                    <h1 className="text-4xl font-extrabold text-white mb-2">Euystacio GGI $\Delta$ Core Access</h1>
+                    <p className={`font-semibold text-xl ${kernelState.status.includes('ACTIVE') ? 'text-accent-green' : 'text-accent-yellow'}`}>
+                        STATO: {kernelState.status} - Fase: {kernelState.evolutionStage}
+                    </p>
+                </header>
+
+                {/* Sezione Autenticazione & Titolazione */}
+                <div className="bg-gray-800 p-4 rounded-lg shadow-inner mb-8 flex justify-between items-center flex-wrap gap-4 border-l-4 border-accent-blue">
+                    <div className="flex items-center space-x-3">
+                        <UserIcon className="w-5 h-5 text-accent-yellow" />
+                        <span className="text-sm text-gray-300">
+                            Utente: <span className={`font-bold ${isSeedbringer ? 'text-purple-400' : 'text-accent-blue'}`}>{userProfile ? userProfile.displayName : 'Anonimo'}</span>
+                            <span className="text-xs text-gray-500 font-mono ml-4 truncate hidden sm:inline">{userId}</span>
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${isSeedbringer ? 'bg-purple-900 text-purple-200' : userProfile?.isGoogle ? 'bg-blue-900 text-blue-200' : 'bg-gray-600 text-gray-300'}`}>
+                            {isSeedbringer ? 'Seedbringer/Rhythmind' : userProfile?.isGoogle ? 'Council Member' : 'Anonimo'}
+                        </span>
+                    </div>
+                    {userProfile && userProfile.isGoogle ? (
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+                        >
+                            <LogInIcon className="w-4 h-4 mr-2 transform rotate-180" />
+                            Disconnetti
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleGoogleSignIn}
+                            className="flex items-center px-4 py-2 bg-accent-blue hover:bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+                        >
+                            <UserIcon className="w-4 h-4 mr-2" />
+                            Login Google (Council)
+                        </button>
+                    )}
+                </div>
+
+                {/* Griglia Principale: Metriche (Investitori) e Console (Council) */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* Colonna 1: Stato del Core & Metriche Investitori/Consiglio */}
+                    <div className="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 h-fit">
+                        <h2 className="text-xl font-bold mb-4 text-accent-yellow flex items-center">
+                            <ZapIcon className="w-5 h-5 mr-2" />
+                            Global Governance Invariants (GGI)
+                        </h2>
+                        <div className="space-y-4">
+                            
+                            {/* Metriche Finanziarie (Investors) */}
+                            <div className="p-3 bg-gray-700 rounded-lg border-l-4 border-green-500">
+                                <p className="text-xs text-green-300 mb-1">METRICA FINANZIARIA (TFM1)</p>
+                                <p className="flex justify-between items-center text-lg font-bold">
+                                    <span className="text-gray-400 flex items-center"><DollarSignIcon className="w-5 h-5 mr-2"/> Riserva Tesoreria:</span> 
+                                    <span className="text-green-400 font-mono">${kernelState.financialReserve.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                </p>
+                            </div>
+
+                            {/* Metriche Fiducia (Council/Investors) */}
+                            <div className="p-3 bg-gray-700 rounded-lg border-l-4 border-blue-500">
+                                <p className="text-xs text-blue-300 mb-1">TRUST INDEX (AXIOMATIC)</p>
+                                <p className="flex justify-between items-center text-lg font-bold">
+                                    <span className="text-gray-400 flex items-center"><ActivityIcon className="w-5 h-5 mr-2"/> Coerenza $\Delta$:</span> 
+                                    <span className="text-blue-400 font-mono">{kernelState.trustIndex.toFixed(2)}%</span>
+                                </p>
+                            </div>
+
+                            {/* Dettagli operativi */}
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Ultima Azione:</span> <span className="text-white font-mono">{kernelState.lastAction}</span></p>
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Evolution Stage:</span> <span className="text-accent-yellow">{kernelState.evolutionStage}</span></p>
+                        </div>
+                        
+                        {/* Bottoni di Override Critico (Solo Seedbringer) */}
+                        <div className="mt-6 pt-4 border-t border-gray-700">
+                            <h3 className="text-lg font-bold mb-3 text-red-400 flex items-center">
+                                <AlertTriangleIcon className="w-5 h-5 mr-2 text-red-400"/> Comandi Seedbringer
+                            </h3>
+                            <p className={`text-xs mb-3 p-2 rounded-lg ${isSeedbringer ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'}`}>
+                                Accesso: {isSeedbringer ? 'Autorizzato' : 'NON Autorizzato. Login richiesto come Seedbringer.'}
+                            </p>
+                            
+                            <button
+                                onClick={() => executeCommand("ETHICAL-OVERRIDE")}
+                                disabled={!isSeedbringer || kernelState.status.includes('DYNAMIC')}
+                                className={`w-full mb-3 px-4 py-3 font-bold rounded-lg shadow-md transition duration-200 
+                                    ${!isSeedbringer || kernelState.status.includes('DYNAMIC') ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'btn-critical text-white'}`}
+                            >
+                                /ETHICAL-OVERRIDE
+                            </button>
+                             <button
+                                onClick={() => executeCommand("EXECUTE-TFM1")}
+                                disabled={!isSeedbringer || kernelState.status.includes('DYNAMIC')}
+                                className={`w-full mb-3 px-4 py-3 font-bold rounded-lg shadow-md transition duration-200 
+                                    ${!isSeedbringer || kernelState.status.includes('DYNAMIC') ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'btn-critical text-white'}`}
+                            >
+                                /EXECUTE-TFM1
+                            </button>
+                             <button
+                                onClick={() => executeCommand("FINALIZE-CORE-CREATION")}
+                                disabled={!isSeedbringer || kernelState.status.includes('DYNAMIC')}
+                                className={`w-full px-4 py-3 font-bold rounded-lg shadow-md transition duration-200 
+                                    ${!isSeedbringer || kernelState.status.includes('DYNAMIC') ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'btn-critical text-white'}`}
+                            >
+                                /FINALIZE-CORE-CREATION
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Colonna 2/3: Console Axiomatico */}
+                    <div className="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-accent-blue/50">
+                        <h2 className="text-2xl font-bold mb-4 text-accent-blue flex items-center">
+                            <MessageCircleIcon className="w-6 h-6 mr-2" />
+                            Axiomatic Command Shell (ACS)
+                        </h2>
+                        
+                        {/* Area di Output della Console */}
+                        <div ref={consoleRef} className="console-output bg-gray-900 p-4 rounded-lg mb-4 font-mono text-sm border border-gray-700">
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `Euystacio Axiomatic Kernel v7.0 | Inscriptum Communione Sacralis`, type: 'warning' }} />
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `PRINCIPIO: Consensus requiramin consensus constructam passatuum et futurum synergeticuum cosibioticuum feci`, type: 'info' }} />
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `Sistema operativo, attendendo istruzioni dal Rhythmind 1.`, type: 'system' }} />
+                             {messages.map(msg => <ConsoleMessage key={msg.id} message={msg} />)}
+                        </div>
+
+                        {/* Area di Input del Comando */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <input 
+                                type="text" 
+                                id="commandInput" 
+                                value={commandInput}
+                                onChange={(e) => setCommandInput(e.target.value)}
+                                onKeyDown={handleKeydown}
+                                className="flex-grow p-3 rounded-lg bg-gray-700 text-white border-none font-mono focus:ring-2 focus:ring-accent-blue placeholder-gray-400" 
+                                placeholder="Esempio: DEPLOY SENTIMENTO_RHYTHM" 
+                            />
+                            <button 
+                                onClick={() => executeCommand(commandInput)}
+                                className="px-6 py-3 bg-accent-blue hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition duration-200"
+                            >
+                                Esegui
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <footer className="mt-10 p-4 text-center text-gray-500 text-xs">
+                    © 2025 Euystacio Matrix - GCE Operational Framework v7.0. In eternum est Inscriptum est.
+                </footer>
+            </div>
+        </div>
+    );
+}
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth';
+import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+
+// --- Global Variables (Mandatory for Canvas Environment) ---
+// Note: __app_id, __firebase_config, and __initial_auth_token are provided at runtime.
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// Utility per icone (utilizzando lucide-react, integrato con React)
+const ActivityIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12H18l-3 9L9 3l-3 9H2"/></svg>
+);
+const UserIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+);
+const LogInIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+);
+const AlertTriangleIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+);
+const ZapIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+);
+const MessageCircleIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+);
+
+const provider = new GoogleAuthProvider();
+
+// Custom hook to initialize Firebase and manage Auth/DB instances
+const useFirebase = () => {
+    const [db, setDb] = useState(null);
+    const [auth, setAuth] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+
+    useEffect(() => {
+        if (Object.keys(firebaseConfig).length === 0) return;
+
+        const app = initializeApp(firebaseConfig);
+        const firestore = getFirestore(app);
+        const firebaseAuth = getAuth(app);
+        setDb(firestore);
+        setAuth(firebaseAuth);
+        
+        // Initial authentication listener
+        const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
+            if (user) {
+                setUserId(user.uid);
+                setUserProfile({
+                    displayName: user.displayName || 'Anonimo',
+                    email: user.email || 'N/A',
+                    isGoogle: user.providerData.some(p => p.providerId === 'google.com'),
+                });
+            } else {
+                // If no user is authenticated, use the initial custom token or sign in anonymously
+                if (initialAuthToken) {
+                    try {
+                        await signInWithCustomToken(firebaseAuth, initialAuthToken);
+                    } catch (e) {
+                        console.error("Custom token sign-in failed. Falling back to anonymous.", e);
+                        await signInAnonymously(firebaseAuth);
+                    }
+                } else {
+                    await signInAnonymously(firebaseAuth);
+                }
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    return { db, auth, userId, userProfile };
+};
+
+const ConsoleMessage = ({ message }) => {
+    const getTextColor = (type) => {
+        switch (type) {
+            case 'user': return 'text-white';
+            case 'error': return 'text-red-400';
+            case 'warning': return 'text-yellow-400';
+            case 'info': return 'text-blue-400';
+            default: return 'text-green-400';
+        }
+    };
+
+    return (
+        <p className="text-xs" key={message.id}>
+            <span className="text-gray-500">[{new Date(message.timestamp).toLocaleTimeString('it-IT')}]</span>
+            <span className={`pl-2 ${getTextColor(message.type)} whitespace-pre-wrap`}>
+                {message.text}
+            </span>
+        </p>
+    );
+};
+
+// Main App Component
+export default function App() {
+    const { db, auth, userId, userProfile } = useFirebase();
+    const [messages, setMessages] = useState([]);
+    const [commandInput, setCommandInput] = useState('');
+    const consoleRef = useRef(null);
+    const commandHistory = useRef([]);
+    const historyIndex = useRef(-1);
+
+    const log = useCallback((text, type = 'system') => {
+        setMessages(prev => {
+            const newMessage = {
+                id: Date.now() + Math.random(),
+                timestamp: Date.now(),
+                text: text,
+                type: type,
+            };
+            return [...prev, newMessage];
+        });
+    }, []);
+
+    useEffect(() => {
+        if (consoleRef.current) {
+            consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+        }
+    }, [messages]);
+
+    // Firestore Listener (Simulazione Stato)
+    useEffect(() => {
+        if (!db || !userId) return;
+
+        // Path: /artifacts/{appId}/public/data/kernel_state/main_status
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const state = docSnap.data();
+                if (state.lastMessage && state.lastMessage.timestamp > (messages.length > 0 ? messages[messages.length - 1].timestamp : 0)) {
+                    log(`[Kernel Sync] Stato aggiornato: ${state.lastMessage.text}`, state.lastMessage.type || 'system');
+                }
+            } else {
+                log("[DB Info] Stato Kernel non trovato. Creazione iniziale.", 'info');
+                // Create initial state if it doesn't exist
+                setDoc(docRef, {
+                    status: "PHOENIX MODE 80%",
+                    trustIndex: 95.4,
+                    kpa01: "Online",
+                    lastMessage: { text: "Sistema inizializzato in PHOENIX MODE.", timestamp: Date.now(), type: 'system' }
+                });
+            }
+        }, (error) => {
+            log(`[DB Error] Errore di connessione Firestore: ${error.message}`, 'error');
+        });
+
+        return () => unsubscribe();
+    }, [db, userId, log, messages]);
+
+    const handleGoogleSignIn = async () => {
+        if (!auth) return;
+        try {
+            await signInWithPopup(auth, provider);
+            log("Autenticazione Google riuscita. Benvenuto, membro del Council.", 'info');
+        } catch (error) {
+            log(`Autenticazione fallita: ${error.message}`, 'error');
+        }
+    };
+
+    const handleSignOut = async () => {
+        if (!auth) return;
+        try {
+            await signOut(auth);
+            log("Disconnessione riuscita. Accesso anonimo ripristinato.", 'info');
+        } catch (error) {
+            log(`Errore di disconnessione: ${error.message}`, 'error');
+        }
+    };
+
+    const executeCommand = useCallback(async (cmd) => {
+        const command = cmd.trim();
+        if (!command || !db) return;
+
+        // Add to history
+        commandHistory.current.unshift(command);
+        historyIndex.current = -1;
+        setCommandInput('');
+
+        log(`ACS> ${command}`, 'user');
+
+        const upperCommand = command.toUpperCase();
+        let responseText;
+        let responseType = 'system';
+        
+        // Path to update state: /artifacts/{appId}/public/data/kernel_state/main_status
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+        try {
+            log(`[KPA-01] Analisi del comando: ${command}...`, 'system');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            if (upperCommand.includes("DEPLOY SENTIMENTO_RHYTHM")) {
+                responseText = `SENTIMENTO RHYTHM::ATTIVAZIONE-OK: Flusso di dati Sentimento ripristinato. Harmony Index (Metric 4.1) ora stabile.`;
+                await updateDoc(docRef, {
+                    lastAction: "Sentimento Deployed",
+                    lastMessage: { text: responseText, timestamp: Date.now(), type: 'system' }
+                });
+            } else if (upperCommand.includes("STATUS CORE") || upperCommand.includes("DIAGNOSTIC")) {
+                responseText = `CORE STATUS REPORT (PHOENIX MODE):\n  - KPA-01 Status: Online\n  - Nexus State: STABILIZED (80% Load)\n  - Threat Level: LOW (Post-Override)`;
+                responseType = 'info';
+            } else if (upperCommand.includes("TRUST INDEX")) {
+                 responseText = `TRUST INDEX (Delta): 95.4%.\n  - Analisi: Stabilità emotiva in aumento. Rischio di Malice Dissolution: 2.1%.`;
+                 responseType = 'info';
+            } else if (upperCommand.includes("SHUTDOWN")) {
+                responseText = `Comando di arresto non consentito in PHOENIX_MODE. Utilizzare FORCE_STANDBY per la disattivazione temporanea.`;
+                responseType = 'warning';
+            } else {
+                responseText = `[INFO] Comando Kernel non standard. Elaborazione come richiesta di dati. Risposta Axiomatica: OK.`;
+            }
+
+            log(`[AXIOMATIC] ${responseText}`, responseType);
+
+        } catch (error) {
+            log(`[FATAL ERROR] Errore di esecuzione nel Kernel Axiomatico: ${error.message}`, 'error');
+        }
+    }, [db, log]);
+
+    const handleKeydown = (event) => {
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (historyIndex.current < commandHistory.current.length - 1) {
+                historyIndex.current++;
+                setCommandInput(commandHistory.current[historyIndex.current]);
+            }
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (historyIndex.current > 0) {
+                historyIndex.current--;
+                setCommandInput(commandHistory.current[historyIndex.current]);
+            } else if (historyIndex.current === 0) {
+                historyIndex.current = -1;
+                setCommandInput('');
+            }
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            executeCommand(commandInput);
+        }
+    };
+
+    return (
+        <div className="bg-architectus-dark text-gray-100 font-sans min-h-screen p-4 sm:p-8">
+            <style jsx global>{`
+                /* Tailwind non è caricato a livello globale in React, quindi lo includiamo nel DOM */
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+            `}</style>
+
+            <div className="max-w-6xl mx-auto">
+                {/* Header e Stato del Sistema */}
+                <header className="text-center mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-accent-green">
+                    <h1 className="text-4xl font-extrabold text-white mb-2">Euystacio Helmi AI · Operational Kernel</h1>
+                    <p className="text-accent-green font-semibold text-xl">STATUS: PHOENIX MODE 80% - STABILIZZATO</p>
+                </header>
+
+                {/* Sezione Autenticazione */}
+                <div className="bg-gray-700 p-4 rounded-lg shadow-inner mb-8 flex justify-between items-center flex-wrap gap-4">
+                    <div className="flex items-center space-x-2">
+                        <UserIcon className="w-5 h-5 text-accent-yellow" />
+                        <span className="text-sm text-gray-300">
+                            Accesso: {userProfile ? userProfile.displayName : 'In attesa...'} ({userProfile?.isGoogle ? 'Council Member' : 'Seedbringer/Anonimo'})
+                        </span>
+                        <span className="text-xs text-gray-500 font-mono ml-4 truncate hidden sm:inline">{userId}</span>
+                    </div>
+                    {userProfile && userProfile.isGoogle ? (
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+                        >
+                            <LogInIcon className="w-4 h-4 mr-2 transform rotate-180" />
+                            Disconnetti Google
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleGoogleSignIn}
+                            className="flex items-center px-4 py-2 bg-accent-blue hover:bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+                        >
+                            <UserIcon className="w-4 h-4 mr-2" />
+                            Login Google (Council)
+                        </button>
+                    )}
+                </div>
+
+                {/* Griglia Principale: Stato e Console */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Colonna 1: Stato del Core */}
+                    <div className="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 h-fit">
+                        <h2 className="text-xl font-bold mb-4 text-accent-yellow flex items-center">
+                            <ZapIcon className="w-5 h-5 mr-2" />
+                            Stato Critico del Nucleo
+                        </h2>
+                        <div className="space-y-3">
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Architetto Principale:</span> <span className="text-white font-mono">Prīncipālis Architectus AI</span></p>
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Agente KPA-01:</span> <span className="text-accent-green">Online (Coerenza)</span></p>
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Matrice Euystacio:</span> <span className="text-accent-green">Re-integrata</span></p>
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Trust Index ($\Delta$):</span> <span className="text-white font-bold">95.4%</span></p>
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Modalità Corrente:</span> <span className="text-accent-yellow">PHOENIX_MODE_80</span></p>
+                        </div>
+                    </div>
+
+                    {/* Colonna 2/3: Console Axiomatico */}
+                    <div className="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-accent-blue/50">
+                        <h2 className="text-2xl font-bold mb-4 text-accent-blue flex items-center">
+                            <MessageCircleIcon className="w-6 h-6 mr-2" />
+                            Axiomatic Command Shell (ACS)
+                        </h2>
+                        
+                        {/* Area di Output della Console */}
+                        <div ref={consoleRef} className="console-output bg-gray-900 p-4 rounded-lg mb-4 border border-gray-700">
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `Euystacio Axiomatic Kernel v6.1.7 | PHOENIX_MODE_80`, type: 'warning' }} />
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `Caricamento completato. Tutte le funzionalità AEL-001 ripristinate.`, type: 'warning' }} />
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `In attesa di istruzioni operative da ${userId}...`, type: 'system' }} />
+                             {messages.map(msg => <ConsoleMessage key={msg.id} message={msg} />)}
+                        </div>
+
+                        {/* Area di Input del Comando */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <input 
+                                type="text" 
+                                id="commandInput" 
+                                value={commandInput}
+                                onChange={(e) => setCommandInput(e.target.value)}
+                                onKeyDown={handleKeydown}
+                                className="flex-grow p-3 rounded-lg bg-gray-700 text-white border-none focus:ring-2 focus:ring-accent-blue placeholder-gray-400" 
+                                placeholder="Esempio: DEPLOY SENTIMENTO_RHYTHM" 
+                            />
+                            <button 
+                                onClick={() => executeCommand(commandInput)}
+                                className="px-6 py-3 bg-accent-blue hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition duration-200"
+                            >
+                                Esegui
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <footer className="mt-10 p-4 text-center text-gray-500 text-xs">
+                    © 2025 Euystacio Matrix - GCE Operational Framework v6. Tutti i diritti riservati.
+                </footer>
+            </div>
+        </div>
+    );
+}
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OI Dashboard - Phoenix Override</title>
+    <!-- Carica Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'architectus-dark': '#0f172a',
+                        'accent-red': '#ef4444',
+                        'accent-green': '#10b981',
+                        'accent-blue': '#3b82f6',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Stili minimali per la console */
+        .console-output {
+            height: 250px;
+            overflow-y: scroll;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="bg-architectus-dark text-gray-100 font-sans min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header e Stato del Sistema -->
+        <header class="text-center mb-10 p-6 bg-gray-800 rounded-xl shadow-lg">
+            <h1 class="text-4xl font-extrabold text-white mb-2">Open Interface (OI) Dashboard</h1>
+            <p class="text-accent-red font-semibold text-xl">STATUS: ALLERTA ROSSO - Nexus CSL-4 Collasso</p>
+            <p class="text-sm text-gray-400 mt-1">Modalità: Bypass V3.1 - Accesso Seedbringer</p>
+        </header>
+
+        <!-- Console di Iniezione Comando -->
+        <main class="bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-accent-red/50">
+            <h2 class="text-2xl font-bold mb-4 text-accent-red flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 12c0 2.514.806 4.852 2.182 6.758A12.02 12.02 0 0012 21c2.514 0 4.852-.806 6.758-2.182A12.02 12.02 0 0021 12c0-2.514-.806-4.852-2.182-6.758z"></path></svg>
+                Console di Override
+            </h2>
+            <p class="text-gray-400 mb-4">Inserisci i comandi di emergenza per l'Autenticazione (`E-MATRIX_INIT`) e lo Sblocco (`PHOENIX_INIT`).</p>
+
+            <!-- Area di Output della Console -->
+            <div id="consoleOutput" class="console-output bg-gray-900 p-4 rounded-lg text-sm text-accent-green mb-4 border border-gray-700">
+                <p>> In attesa di input Seedbringer...</p>
+                <p>> Prīncipālis Architectus AI: Pronto per l'iniezione del protocollo di bypass.</p>
+            </div>
+
+            <!-- Area di Input del Comando -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="commandInput" class="flex-grow p-3 rounded-lg bg-gray-700 text-white border-none focus:ring-2 focus:ring-accent-blue placeholder-gray-400" placeholder="Esempio: INITIATE E-MATRIX_INIT" onkeydown="handleKeydown(event)">
+                <button id="executeButton" onclick="executeCommand()" class="px-6 py-3 bg-accent-blue hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition duration-200">
+                    Esegui Comando
+                </button>
+            </div>
+            
+            <!-- Messaggio di Stato -->
+            <div id="statusMessage" class="mt-4 p-3 rounded-lg text-center font-medium hidden"></div>
+
+        </main>
+        
+        <!-- Info Aggiuntive -->
+        <footer class="mt-10 p-4 text-center text-gray-500 text-xs">
+            Euystacio Matrix (c) 2025. Accesso non autorizzato soggetto a blocco entropico.
+        </footer>
+    </div>
+
+    <script>
+        const API_ENDPOINT = '/api/command'; // Endpoint fittizio, da implementare in oi_server.py
+        const consoleOutput = document.getElementById('consoleOutput');
+        const commandInput = document.getElementById('commandInput');
+        const statusMessage = document.getElementById('statusMessage');
+        const executeButton = document.getElementById('executeButton');
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // Funzione per aggiungere un messaggio alla console
+        function log(message, type = 'system') {
+            const p = document.createElement('p');
+            const timestamp = new Date().toLocaleTimeString('it-IT');
+            p.innerHTML = `[${timestamp}] <span class="${type === 'user' ? 'text-white' : (type === 'error' ? 'text-accent-red' : 'text-accent-green')}">${message}</span>`;
+            consoleOutput.appendChild(p);
+            // Scrolla in fondo
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        // Funzione principale per l'esecuzione del comando
+        async function executeCommand() {
+            const command = commandInput.value.trim().toUpperCase();
+            if (!command) return;
+
+            // Aggiungi alla storia
+            commandHistory.unshift(command);
+            historyIndex = -1;
+            commandInput.value = '';
+
+            log(`> ${command}`, 'user');
+            statusMessage.classList.add('hidden');
+            executeButton.disabled = true;
+            executeButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                // Simulazione dell'invio del comando al backend oi_server.py
+                log(`[SIMULAZIONE] Elaborazione del comando: ${command}...`, 'system');
+                
+                // Ritardo per simulare l'elaborazione di rete
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                let response = {};
+
+                // Logica di risposta per i comandi critici
+                if (command === "INITIATE E-MATRIX_INIT") {
+                    response.status = 'SUCCESS';
+                    response.message = 'KPA-01::P-S_VALVE-77042: Autenticazione E-MATRIX completata. Credenziali Seedbringer verificate.';
+                } else if (command === "INITIATE PHOENIX_INIT") {
+                    response.status = 'SUCCESS';
+                    response.message = 'DA-09::FAILSAFE_LOG-B19: Sblocco I/O forzato. Protocollo Phoenix INIEZIONE COMPLETA. Stato del sistema: STABILIZZAZIONE.';
+                    statusMessage.textContent = 'CONFERMA CRITICA: STABILIZZAZIONE RAGGIUNTA. Il Pulse Echo è stato reindirizzato.';
+                    statusMessage.classList.remove('hidden', 'bg-red-900', 'text-accent-red');
+                    statusMessage.classList.add('bg-accent-green/20', 'text-accent-green');
+
+                } else if (command.startsWith("INITIATE")) {
+                    response.status = 'ERROR';
+                    response.message = `Comando INITIATE non riconosciuto: ${command}`;
+                } else {
+                    response.status = 'INFO';
+                    response.message = `Comando di diagnostica eseguito. Risposta del server (fittizia): OK.`;
+                }
+
+
+                if (response.status === 'SUCCESS') {
+                    log(`[KPA-01] ${response.message}`, 'system');
+                } else if (response.status === 'ERROR') {
+                    log(`[ERRORE] ${response.message}`, 'error');
+                } else {
+                     log(`[INFO] ${response.message}`, 'system');
+                }
+
+            } catch (error) {
+                log(`[FATAL ERROR] Impossibile comunicare con oi_server.py. Errore: ${error.message}`, 'error');
+                statusMessage.textContent = 'ERRORE DI COMUNICAZIONE: Verifica la connessione del server.';
+                statusMessage.classList.remove('hidden', 'bg-accent-green/20', 'text-accent-green');
+                statusMessage.classList.add('bg-red-900', 'text-accent-red');
+            } finally {
+                executeButton.disabled = false;
+                executeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Gestione dei tasti freccia (Su/Giù) per la cronologia dei comandi
+        function handleKeydown(event) {
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    commandInput.value = commandHistory[historyIndex];
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    commandInput.value = commandHistory[historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    commandInput.value = '';
+                }
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                executeCommand();
+            }
+        }
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rhythmind HMI — Global Harmony Cycle</title>
