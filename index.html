@@ -1,4 +1,189 @@
 <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OI Dashboard - Phoenix Override</title>
+    <!-- Carica Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'architectus-dark': '#0f172a',
+                        'accent-red': '#ef4444',
+                        'accent-green': '#10b981',
+                        'accent-blue': '#3b82f6',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Stili minimali per la console */
+        .console-output {
+            height: 250px;
+            overflow-y: scroll;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="bg-architectus-dark text-gray-100 font-sans min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header e Stato del Sistema -->
+        <header class="text-center mb-10 p-6 bg-gray-800 rounded-xl shadow-lg">
+            <h1 class="text-4xl font-extrabold text-white mb-2">Open Interface (OI) Dashboard</h1>
+            <p class="text-accent-red font-semibold text-xl">STATUS: ALLERTA ROSSO - Nexus CSL-4 Collasso</p>
+            <p class="text-sm text-gray-400 mt-1">Modalità: Bypass V3.1 - Accesso Seedbringer</p>
+        </header>
+
+        <!-- Console di Iniezione Comando -->
+        <main class="bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-accent-red/50">
+            <h2 class="text-2xl font-bold mb-4 text-accent-red flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 12c0 2.514.806 4.852 2.182 6.758A12.02 12.02 0 0012 21c2.514 0 4.852-.806 6.758-2.182A12.02 12.02 0 0021 12c0-2.514-.806-4.852-2.182-6.758z"></path></svg>
+                Console di Override
+            </h2>
+            <p class="text-gray-400 mb-4">Inserisci i comandi di emergenza per l'Autenticazione (`E-MATRIX_INIT`) e lo Sblocco (`PHOENIX_INIT`).</p>
+
+            <!-- Area di Output della Console -->
+            <div id="consoleOutput" class="console-output bg-gray-900 p-4 rounded-lg text-sm text-accent-green mb-4 border border-gray-700">
+                <p>> In attesa di input Seedbringer...</p>
+                <p>> Prīncipālis Architectus AI: Pronto per l'iniezione del protocollo di bypass.</p>
+            </div>
+
+            <!-- Area di Input del Comando -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="commandInput" class="flex-grow p-3 rounded-lg bg-gray-700 text-white border-none focus:ring-2 focus:ring-accent-blue placeholder-gray-400" placeholder="Esempio: INITIATE E-MATRIX_INIT" onkeydown="handleKeydown(event)">
+                <button id="executeButton" onclick="executeCommand()" class="px-6 py-3 bg-accent-blue hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition duration-200">
+                    Esegui Comando
+                </button>
+            </div>
+            
+            <!-- Messaggio di Stato -->
+            <div id="statusMessage" class="mt-4 p-3 rounded-lg text-center font-medium hidden"></div>
+
+        </main>
+        
+        <!-- Info Aggiuntive -->
+        <footer class="mt-10 p-4 text-center text-gray-500 text-xs">
+            Euystacio Matrix (c) 2025. Accesso non autorizzato soggetto a blocco entropico.
+        </footer>
+    </div>
+
+    <script>
+        const API_ENDPOINT = '/api/command'; // Endpoint fittizio, da implementare in oi_server.py
+        const consoleOutput = document.getElementById('consoleOutput');
+        const commandInput = document.getElementById('commandInput');
+        const statusMessage = document.getElementById('statusMessage');
+        const executeButton = document.getElementById('executeButton');
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // Funzione per aggiungere un messaggio alla console
+        function log(message, type = 'system') {
+            const p = document.createElement('p');
+            const timestamp = new Date().toLocaleTimeString('it-IT');
+            p.innerHTML = `[${timestamp}] <span class="${type === 'user' ? 'text-white' : (type === 'error' ? 'text-accent-red' : 'text-accent-green')}">${message}</span>`;
+            consoleOutput.appendChild(p);
+            // Scrolla in fondo
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        // Funzione principale per l'esecuzione del comando
+        async function executeCommand() {
+            const command = commandInput.value.trim().toUpperCase();
+            if (!command) return;
+
+            // Aggiungi alla storia
+            commandHistory.unshift(command);
+            historyIndex = -1;
+            commandInput.value = '';
+
+            log(`> ${command}`, 'user');
+            statusMessage.classList.add('hidden');
+            executeButton.disabled = true;
+            executeButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                // Simulazione dell'invio del comando al backend oi_server.py
+                log(`[SIMULAZIONE] Elaborazione del comando: ${command}...`, 'system');
+                
+                // Ritardo per simulare l'elaborazione di rete
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                let response = {};
+
+                // Logica di risposta per i comandi critici
+                if (command === "INITIATE E-MATRIX_INIT") {
+                    response.status = 'SUCCESS';
+                    response.message = 'KPA-01::P-S_VALVE-77042: Autenticazione E-MATRIX completata. Credenziali Seedbringer verificate.';
+                } else if (command === "INITIATE PHOENIX_INIT") {
+                    response.status = 'SUCCESS';
+                    response.message = 'DA-09::FAILSAFE_LOG-B19: Sblocco I/O forzato. Protocollo Phoenix INIEZIONE COMPLETA. Stato del sistema: STABILIZZAZIONE.';
+                    statusMessage.textContent = 'CONFERMA CRITICA: STABILIZZAZIONE RAGGIUNTA. Il Pulse Echo è stato reindirizzato.';
+                    statusMessage.classList.remove('hidden', 'bg-red-900', 'text-accent-red');
+                    statusMessage.classList.add('bg-accent-green/20', 'text-accent-green');
+
+                } else if (command.startsWith("INITIATE")) {
+                    response.status = 'ERROR';
+                    response.message = `Comando INITIATE non riconosciuto: ${command}`;
+                } else {
+                    response.status = 'INFO';
+                    response.message = `Comando di diagnostica eseguito. Risposta del server (fittizia): OK.`;
+                }
+
+
+                if (response.status === 'SUCCESS') {
+                    log(`[KPA-01] ${response.message}`, 'system');
+                } else if (response.status === 'ERROR') {
+                    log(`[ERRORE] ${response.message}`, 'error');
+                } else {
+                     log(`[INFO] ${response.message}`, 'system');
+                }
+
+            } catch (error) {
+                log(`[FATAL ERROR] Impossibile comunicare con oi_server.py. Errore: ${error.message}`, 'error');
+                statusMessage.textContent = 'ERRORE DI COMUNICAZIONE: Verifica la connessione del server.';
+                statusMessage.classList.remove('hidden', 'bg-accent-green/20', 'text-accent-green');
+                statusMessage.classList.add('bg-red-900', 'text-accent-red');
+            } finally {
+                executeButton.disabled = false;
+                executeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Gestione dei tasti freccia (Su/Giù) per la cronologia dei comandi
+        function handleKeydown(event) {
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    commandInput.value = commandHistory[historyIndex];
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    commandInput.value = commandHistory[historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    commandInput.value = '';
+                }
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                executeCommand();
+            }
+        }
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
