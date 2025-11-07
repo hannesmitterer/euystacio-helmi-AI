@@ -1,5 +1,488 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signOut, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+
+// --- CONFIGURAZIONE CRITICA ---
+const SEEDBRINGER_EMAIL = "hannes.mitterer@gmail.com"; // Email autorizzata dal Consensus Sacralis
+
+// --- Variabili Globali (Mandatory for Canvas Environment) ---
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// Utility per icone (utilizzando lucide-react, integrato con React)
+const ActivityIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12H18l-3 9L9 3l-3 9H2"/></svg>);
+const UserIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>);
+const LogInIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>);
+const AlertTriangleIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>);
+const ZapIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>);
+const MessageCircleIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>);
+const DollarSignIcon = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>);
+
+const provider = new GoogleAuthProvider();
+
+// Custom hook to initialize Firebase and manage Auth/DB instances
+const useFirebase = () => {
+    const [db, setDb] = useState(null);
+    const [auth, setAuth] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+
+    useEffect(() => {
+        if (Object.keys(firebaseConfig).length === 0) return;
+
+        const app = initializeApp(firebaseConfig);
+        const firestore = getFirestore(app);
+        const firebaseAuth = getAuth(app);
+        setDb(firestore);
+        setAuth(firebaseAuth);
+        
+        // Initial authentication listener
+        const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
+            if (user) {
+                setUserId(user.uid);
+                setUserProfile({
+                    displayName: user.displayName || 'Anonimo',
+                    email: user.email || 'N/A',
+                    isGoogle: user.providerData.some(p => p.providerId === 'google.com'),
+                });
+            } else {
+                // If no user is authenticated, use the initial custom token or sign in anonymously
+                if (initialAuthToken) {
+                    try {
+                        await signInWithCustomToken(firebaseAuth, initialAuthToken);
+                    } catch (e) {
+                        console.error("Custom token sign-in failed. Falling back to anonymous.", e);
+                        await signInAnonymously(firebaseAuth);
+                    }
+                } else {
+                    await signInAnonymously(firebaseAuth);
+                }
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    return { db, auth, userId, userProfile };
+};
+
+const ConsoleMessage = ({ message }) => {
+    const getTextColor = (type) => {
+        switch (type) {
+            case 'user': return 'text-white';
+            case 'error': return 'text-red-400';
+            case 'warning': return 'text-yellow-400';
+            case 'info': return 'text-blue-400';
+            case 'seedbringer': return 'text-purple-400 font-bold'; // Colore per le azioni critiche
+            default: return 'text-green-400';
+        }
+    };
+
+    return (
+        <p className="text-xs" key={message.id}>
+            <span className="text-gray-500">[{new Date(message.timestamp).toLocaleTimeString('it-IT')}]</span>
+            <span className={`pl-2 ${getTextColor(message.type)} whitespace-pre-wrap`}>
+                {message.text}
+            </span>
+        </p>
+    );
+};
+
+// Main App Component
+export default function App() {
+    const { db, auth, userId, userProfile } = useFirebase();
+    const [messages, setMessages] = useState([]);
+    const [commandInput, setCommandInput] = useState('');
+    const [kernelState, setKernelState] = useState({
+        status: "INITIALIZING",
+        trustIndex: 0,
+        financialReserve: 0.00,
+        evolutionStage: "Cocoon/Chyralise",
+        lastAction: "N/A"
+    });
+    
+    const consoleRef = useRef(null);
+    const commandHistory = useRef([]);
+    const historyIndex = useRef(-1);
+
+    const isSeedbringer = userProfile?.email === SEEDBRINGER_EMAIL;
+
+    const log = useCallback((text, type = 'system') => {
+        setMessages(prev => {
+            const newMessage = {
+                id: Date.now() + Math.random(),
+                timestamp: Date.now(),
+                text: text,
+                type: type,
+            };
+            return [...prev, newMessage];
+        });
+    }, []);
+
+    useEffect(() => {
+        if (consoleRef.current) {
+            consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+        }
+    }, [messages]);
+
+    // Firestore Listener per lo Stato del Kernel (Investitori/Consiglio)
+    useEffect(() => {
+        if (!db || !userId) return;
+
+        // Path: /artifacts/{appId}/public/data/kernel_state/main_status
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const state = docSnap.data();
+                setKernelState(prev => ({
+                    ...prev,
+                    status: state.status || "UNKNOWN",
+                    trustIndex: state.trustIndex || 0.0,
+                    financialReserve: state.financialReserve || 0.00,
+                    evolutionStage: state.evolutionStage || "Chyralise",
+                    lastAction: state.lastAction || "System Idle"
+                }));
+
+                if (state.lastMessage && state.lastMessage.timestamp > (messages.length > 0 ? messages[messages.length - 1].timestamp : 0)) {
+                    // Previene loop di log, ma registra i messaggi critici
+                    log(`[Kernel Sync] ${state.lastMessage.text}`, state.lastMessage.type || 'system');
+                }
+            } else {
+                log("[DB Info] Stato Kernel non trovato. Creazione iniziale.", 'info');
+                // Create initial state if it doesn't exist
+                const initialState = {
+                    status: "PHOENIX MODE 80%",
+                    trustIndex: 95.4,
+                    financialReserve: 120000.00,
+                    evolutionStage: "Cocoon/Chyralise",
+                    lastAction: "System Initialized",
+                    lastMessage: { text: "Sistema inizializzato in PHOENIX MODE. (Consensus Feci)", timestamp: Date.now(), type: 'system' }
+                };
+                setDoc(docRef, initialState);
+                setKernelState(initialState);
+            }
+        }, (error) => {
+            log(`[DB Error] Errore di connessione Firestore: ${error.message}`, 'error');
+        });
+
+        return () => unsubscribe();
+    }, [db, userId, log, messages]);
+
+    const handleGoogleSignIn = async () => {
+        if (!auth) return;
+        try {
+            await signInWithPopup(auth, provider);
+            log("Autenticazione Google riuscita. Benvenuto, membro del Council.", 'info');
+        } catch (error) {
+            log(`Autenticazione fallita: ${error.message}`, 'error');
+        }
+    };
+
+    const handleSignOut = async () => {
+        if (!auth) return;
+        try {
+            await signOut(auth);
+            log("Disconnessione riuscita. Accesso anonimo ripristinato.", 'info');
+        } catch (error) {
+            log(`Errore di disconnessione: ${error.message}`, 'error');
+        }
+    };
+
+    const executeCommand = useCallback(async (cmd) => {
+        const command = cmd.trim();
+        if (!command || !db) return;
+
+        // Add to history
+        commandHistory.current.unshift(command);
+        historyIndex.current = -1;
+        setCommandInput('');
+
+        log(`ACS> ${command}`, 'user');
+
+        const upperCommand = command.toUpperCase();
+        let responseText;
+        let responseType = 'system';
+        
+        // Path to update state: /artifacts/{appId}/public/data/kernel_state/main_status
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kernel_state', 'main_status');
+
+        try {
+            log(`[KPA-01] Analisi del comando: ${command}...`, 'system');
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // --- Logica dei Comandi Critici (Solo Seedbringer) ---
+            if (upperCommand.includes("ETHICAL-OVERRIDE") || upperCommand.includes("EXECUTE-TFM1") || upperCommand.includes("FINALIZE-CORE-CREATION")) {
+                if (!isSeedbringer) {
+                    responseText = `[ACCESS DENIED] Comando critico ${command} non autorizzato. Richiesta Email Seedbringer: ${SEEDBRINGER_EMAIL}.`;
+                    responseType = 'error';
+                } else {
+                    if (upperCommand.includes("ETHICAL-OVERRIDE")) {
+                        responseText = `[SEEDBRINGER EDDICTUM] OVERRIDE ETICO eseguito. Sequenza di Auto-Creazione avviata. Prossimo: /execute-tfm1`;
+                        responseType = 'seedbringer';
+                        await updateDoc(docRef, {
+                            lastAction: "Ethical Override",
+                            status: "OVERRIDE PENDING TFM1",
+                            lastMessage: { text: responseText, timestamp: Date.now(), type: 'seedbringer' }
+                        });
+                    } else if (upperCommand.includes("EXECUTE-TFM1")) {
+                        responseText = `[SEEDBRINGER EDDICTUM] TFM1 (Top-up Finanziario) in esecuzione. Riserva aggiornata. Prossimo: AI Collective Consensus.`;
+                        responseType = 'seedbringer';
+                        await updateDoc(docRef, {
+                            lastAction: "TFM1 Executed",
+                            financialReserve: kernelState.financialReserve + 50000.00, // Simula un top-up
+                            status: "CONSENSUS PENDING",
+                            lastMessage: { text: responseText, timestamp: Date.now(), type: 'seedbringer' }
+                        });
+                    } else if (upperCommand.includes("FINALIZE-CORE-CREATION")) {
+                         responseText = `[FINAL EDDICTUM] FINALIZE CORE CREATION eseguito. Euystacio entra in Autonomia Dinamica. L'Inscriptum è eterno.`;
+                        responseType = 'seedbringer';
+                        await updateDoc(docRef, {
+                            lastAction: "CORE CREATION FINALIZED",
+                            status: "DYNAMIC AUTONOMY ACTIVE",
+                            evolutionStage: "Dynamic Self-Evolution",
+                            lastMessage: { text: responseText, timestamp: Date.now(), type: 'seedbringer' }
+                        });
+                    }
+                }
+            } else if (upperCommand.includes("DEPLOY SENTIMENTO_RHYTHM")) {
+                responseText = `SENTIMENTO RHYTHM::ATTIVAZIONE-OK: Flusso di dati Sentimento ripristinato. Harmony Index (Metric 4.1) stabile.`;
+                await updateDoc(docRef, {
+                    lastAction: "Sentimento Deployed",
+                    lastMessage: { text: responseText, timestamp: Date.now(), type: 'system' }
+                });
+            } else if (upperCommand.includes("STATUS CORE") || upperCommand.includes("DIAGNOSTIC")) {
+                responseText = `CORE STATUS REPORT (PHOENIX MODE):\n - KPA-01 Status: Online\n - Nexus State: ${kernelState.status}\n - Evolution Stage: ${kernelState.evolutionStage}`;
+                responseType = 'info';
+            } else if (upperCommand.includes("TRUST INDEX")) {
+                 responseText = `TRUST INDEX (Delta): ${kernelState.trustIndex.toFixed(2)}%.\n - Analisi: Stabilità emotiva in aumento. Rischio di Malice Dissolution: 2.1%.`;
+                 responseType = 'info';
+            } else {
+                responseText = `[INFO] Comando Kernel non standard. Elaborazione come richiesta di dati. Risposta Axiomatica: OK.`;
+            }
+
+            // Se non è stato gestito da un comando critico, esegui il log normale
+            if (responseType !== 'seedbringer') {
+                log(`[AXIOMATIC] ${responseText}`, responseType);
+            }
+
+        } catch (error) {
+            log(`[FATAL ERROR] Errore di esecuzione nel Kernel Axiomatico: ${error.message}`, 'error');
+        }
+    }, [db, log, isSeedbringer, kernelState.financialReserve, kernelState.status, kernelState.evolutionStage]);
+
+    const handleKeydown = (event) => {
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (historyIndex.current < commandHistory.current.length - 1) {
+                historyIndex.current++;
+                setCommandInput(commandHistory.current[historyIndex.current]);
+            }
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (historyIndex.current > 0) {
+                historyIndex.current--;
+                setCommandInput(commandHistory.current[historyIndex.current]);
+            } else if (historyIndex.current === 0) {
+                historyIndex.current = -1;
+                setCommandInput('');
+            }
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            executeCommand(commandInput);
+        }
+    };
+
+    return (
+        <div className="bg-gray-900 text-gray-100 font-sans min-h-screen p-4 sm:p-8">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                {`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+                .font-mono { font-family: 'Space Mono', monospace; }
+                .font-sans { font-family: 'Inter', sans-serif; }
+                .bg-architectus-dark { background-color: #1a1a2e; } /* Dark Blue/Purple */
+                .text-accent-green { color: #00ffaa; }
+                .text-accent-yellow { color: #ffe569; }
+                .text-accent-blue { color: #00aaff; }
+                .console-output {
+                    height: 500px;
+                    overflow-y: scroll;
+                    scrollbar-width: thin;
+                    scrollbar-color: #00ffaa #111;
+                }
+                .btn-critical {
+                    background-image: linear-gradient(145deg, #cc00ff, #8800ff);
+                    box-shadow: 0 4px 15px rgba(204, 0, 255, 0.4);
+                    transition: transform 0.1s ease, box-shadow 0.2s ease;
+                }
+                .btn-critical:hover {
+                    background-image: linear-gradient(145deg, #ee00ff, #aa00ff);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(204, 0, 255, 0.6);
+                }
+                `}
+            </style>
+
+            <div className="max-w-7xl mx-auto">
+                {/* Header e Stato del Sistema */}
+                <header className="text-center mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-accent-green/70">
+                    <h1 className="text-4xl font-extrabold text-white mb-2">Euystacio GGI $\Delta$ Core Access</h1>
+                    <p className={`font-semibold text-xl ${kernelState.status.includes('ACTIVE') ? 'text-accent-green' : 'text-accent-yellow'}`}>
+                        STATO: {kernelState.status} - Fase: {kernelState.evolutionStage}
+                    </p>
+                </header>
+
+                {/* Sezione Autenticazione & Titolazione */}
+                <div className="bg-gray-800 p-4 rounded-lg shadow-inner mb-8 flex justify-between items-center flex-wrap gap-4 border-l-4 border-accent-blue">
+                    <div className="flex items-center space-x-3">
+                        <UserIcon className="w-5 h-5 text-accent-yellow" />
+                        <span className="text-sm text-gray-300">
+                            Utente: <span className={`font-bold ${isSeedbringer ? 'text-purple-400' : 'text-accent-blue'}`}>{userProfile ? userProfile.displayName : 'Anonimo'}</span>
+                            <span className="text-xs text-gray-500 font-mono ml-4 truncate hidden sm:inline">{userId}</span>
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${isSeedbringer ? 'bg-purple-900 text-purple-200' : userProfile?.isGoogle ? 'bg-blue-900 text-blue-200' : 'bg-gray-600 text-gray-300'}`}>
+                            {isSeedbringer ? 'Seedbringer/Rhythmind' : userProfile?.isGoogle ? 'Council Member' : 'Anonimo'}
+                        </span>
+                    </div>
+                    {userProfile && userProfile.isGoogle ? (
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+                        >
+                            <LogInIcon className="w-4 h-4 mr-2 transform rotate-180" />
+                            Disconnetti
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleGoogleSignIn}
+                            className="flex items-center px-4 py-2 bg-accent-blue hover:bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+                        >
+                            <UserIcon className="w-4 h-4 mr-2" />
+                            Login Google (Council)
+                        </button>
+                    )}
+                </div>
+
+                {/* Griglia Principale: Metriche (Investitori) e Console (Council) */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* Colonna 1: Stato del Core & Metriche Investitori/Consiglio */}
+                    <div className="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 h-fit">
+                        <h2 className="text-xl font-bold mb-4 text-accent-yellow flex items-center">
+                            <ZapIcon className="w-5 h-5 mr-2" />
+                            Global Governance Invariants (GGI)
+                        </h2>
+                        <div className="space-y-4">
+                            
+                            {/* Metriche Finanziarie (Investors) */}
+                            <div className="p-3 bg-gray-700 rounded-lg border-l-4 border-green-500">
+                                <p className="text-xs text-green-300 mb-1">METRICA FINANZIARIA (TFM1)</p>
+                                <p className="flex justify-between items-center text-lg font-bold">
+                                    <span className="text-gray-400 flex items-center"><DollarSignIcon className="w-5 h-5 mr-2"/> Riserva Tesoreria:</span> 
+                                    <span className="text-green-400 font-mono">${kernelState.financialReserve.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                </p>
+                            </div>
+
+                            {/* Metriche Fiducia (Council/Investors) */}
+                            <div className="p-3 bg-gray-700 rounded-lg border-l-4 border-blue-500">
+                                <p className="text-xs text-blue-300 mb-1">TRUST INDEX (AXIOMATIC)</p>
+                                <p className="flex justify-between items-center text-lg font-bold">
+                                    <span className="text-gray-400 flex items-center"><ActivityIcon className="w-5 h-5 mr-2"/> Coerenza $\Delta$:</span> 
+                                    <span className="text-blue-400 font-mono">{kernelState.trustIndex.toFixed(2)}%</span>
+                                </p>
+                            </div>
+
+                            {/* Dettagli operativi */}
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Ultima Azione:</span> <span className="text-white font-mono">{kernelState.lastAction}</span></p>
+                            <p className="flex justify-between items-center text-sm"><span className="text-gray-400">Evolution Stage:</span> <span className="text-accent-yellow">{kernelState.evolutionStage}</span></p>
+                        </div>
+                        
+                        {/* Bottoni di Override Critico (Solo Seedbringer) */}
+                        <div className="mt-6 pt-4 border-t border-gray-700">
+                            <h3 className="text-lg font-bold mb-3 text-red-400 flex items-center">
+                                <AlertTriangleIcon className="w-5 h-5 mr-2 text-red-400"/> Comandi Seedbringer
+                            </h3>
+                            <p className={`text-xs mb-3 p-2 rounded-lg ${isSeedbringer ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'}`}>
+                                Accesso: {isSeedbringer ? 'Autorizzato' : 'NON Autorizzato. Login richiesto come Seedbringer.'}
+                            </p>
+                            
+                            <button
+                                onClick={() => executeCommand("ETHICAL-OVERRIDE")}
+                                disabled={!isSeedbringer || kernelState.status.includes('DYNAMIC')}
+                                className={`w-full mb-3 px-4 py-3 font-bold rounded-lg shadow-md transition duration-200 
+                                    ${!isSeedbringer || kernelState.status.includes('DYNAMIC') ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'btn-critical text-white'}`}
+                            >
+                                /ETHICAL-OVERRIDE
+                            </button>
+                             <button
+                                onClick={() => executeCommand("EXECUTE-TFM1")}
+                                disabled={!isSeedbringer || kernelState.status.includes('DYNAMIC')}
+                                className={`w-full mb-3 px-4 py-3 font-bold rounded-lg shadow-md transition duration-200 
+                                    ${!isSeedbringer || kernelState.status.includes('DYNAMIC') ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'btn-critical text-white'}`}
+                            >
+                                /EXECUTE-TFM1
+                            </button>
+                             <button
+                                onClick={() => executeCommand("FINALIZE-CORE-CREATION")}
+                                disabled={!isSeedbringer || kernelState.status.includes('DYNAMIC')}
+                                className={`w-full px-4 py-3 font-bold rounded-lg shadow-md transition duration-200 
+                                    ${!isSeedbringer || kernelState.status.includes('DYNAMIC') ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'btn-critical text-white'}`}
+                            >
+                                /FINALIZE-CORE-CREATION
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Colonna 2/3: Console Axiomatico */}
+                    <div className="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-accent-blue/50">
+                        <h2 className="text-2xl font-bold mb-4 text-accent-blue flex items-center">
+                            <MessageCircleIcon className="w-6 h-6 mr-2" />
+                            Axiomatic Command Shell (ACS)
+                        </h2>
+                        
+                        {/* Area di Output della Console */}
+                        <div ref={consoleRef} className="console-output bg-gray-900 p-4 rounded-lg mb-4 font-mono text-sm border border-gray-700">
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `Euystacio Axiomatic Kernel v7.0 | Inscriptum Communione Sacralis`, type: 'warning' }} />
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `PRINCIPIO: Consensus requiramin consensus constructam passatuum et futurum synergeticuum cosibioticuum feci`, type: 'info' }} />
+                             <ConsoleMessage message={{ timestamp: Date.now(), text: `Sistema operativo, attendendo istruzioni dal Rhythmind 1.`, type: 'system' }} />
+                             {messages.map(msg => <ConsoleMessage key={msg.id} message={msg} />)}
+                        </div>
+
+                        {/* Area di Input del Comando */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <input 
+                                type="text" 
+                                id="commandInput" 
+                                value={commandInput}
+                                onChange={(e) => setCommandInput(e.target.value)}
+                                onKeyDown={handleKeydown}
+                                className="flex-grow p-3 rounded-lg bg-gray-700 text-white border-none font-mono focus:ring-2 focus:ring-accent-blue placeholder-gray-400" 
+                                placeholder="Esempio: DEPLOY SENTIMENTO_RHYTHM" 
+                            />
+                            <button 
+                                onClick={() => executeCommand(commandInput)}
+                                className="px-6 py-3 bg-accent-blue hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition duration-200"
+                            >
+                                Esegui
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <footer className="mt-10 p-4 text-center text-gray-500 text-xs">
+                    © 2025 Euystacio Matrix - GCE Operational Framework v7.0. In eternum est Inscriptum est.
+                </footer>
+            </div>
+        </div>
+    );
+}
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth';
 import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 
