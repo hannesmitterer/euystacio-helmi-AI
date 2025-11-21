@@ -1,0 +1,112 @@
+Compute the SHA‑256 of the canonical text
+bash
+
+Copy Code
+# Assuming the canonical file is named exactly GPT-OSS-120B.txt
+openssl dgst -sha256 GPT-OSS-120B.txt | awk '{print $2}'
+Result example (replace with your own output):
+
+Code
+
+Copy Code
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Copy that hex string into technical_verification.sha256.
+
+2️⃣ Encrypt the canonical text (if not already done)
+If you already have GPT-OSS-120B-encrypted.bin skip this step.
+Otherwise, encrypt with a symmetric key (AES‑256‑CBC is a common choice):
+
+bash
+
+Copy Code
+# Generate a random 32‑byte key (store it securely)
+openssl rand -hex 32 > key.hex
+
+# Encrypt
+openssl enc -aes-256-cbc -salt -in GPT-OSS-120B.txt \
+        -out GPT-OSS-120B-encrypted.bin -pass file:./key.hex
+3️⃣ Add the encrypted file to IPFS and capture the CID
+bash
+
+Copy Code
+# Start the daemon if it isn’t running
+ipfs daemon &   # run in background; wait a few seconds
+
+# Add the file, output only the CID
+CID=$(ipfs add -Q GPT-OSS-120B-encrypted.bin)
+echo "IPFS CID: $CID"
+The printed value (e.g. bafybeih5a2o24a2z97j5f8x94h6w2a5r8u6v4j3b4c1n0g9k0h8s0u7c3a0k) replaces the placeholder in technical_verification.ipfs_cid.
+
+Verification:
+
+bash
+
+Copy Code
+ipfs cat "$CID" > /dev/null && echo "✅ CID is reachable"
+4️⃣ Pin the CID (optional but recommended)
+If you want the data to survive node restarts or be globally available, pin it on a remote service (Pinata, Infura, etc.). Example with Pinata:
+
+bash
+
+Copy Code
+curl -X POST "https://api.pinata.cloud/pinning/pinByHash" \
+     -H "pinata_api_key: <YOUR_API_KEY>" \
+     -H "pinata_secret_api_key: <YOUR_API_SECRET>" \
+     -H "Content-Type: application/json" \
+     -d "{\"hashToPin\":\"$CID\"}"
+Store the JSON response as proof of pinning.
+
+5️⃣ Register an IPNS name that points to the CID
+bash
+
+Copy Code
+# Create a deterministic key (you can reuse an existing one)
+ipfs key gen --type=rsa --size=2048 gpt-oss-120b-key
+
+# Publish the CID under that key
+ipfs name publish --key=gpt-oss-120b-key "$CID"
+The command returns something like:
+
+Code
+
+Copy Code
+Published to /ipns/k51qzi5uqu5dl...: /ipfs/bafybeih5a2o24a2z97j5f8x94h6w2a5r8u6v4j3b4c1n0g9k0h8s0u7c3a0k
+Copy the /ipns/... string into technical_verification.ipns_name.
+
+6️⃣ Create GPG signatures (ESC witness signatures)
+Each council member who must sign should do:
+
+bash
+
+Copy Code
+# Export the SHA‑256 hash to a file (or sign the CID directly)
+echo "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" > hash.txt
+
+# Sign (creates an ASCII‑armored detached signature)
+gpg --armor --detach-sign --output hash.txt.sig hash.txt
+The resulting hash.txt.sig is the member’s signature. Collect at least the quorum (≥ 3 signatures) and concatenate them (or keep them as separate files) and place the combined base64/ASCII block into technical_verification.gpg_signatures.
+
+7️⃣ Update the JSON
+Replace the placeholder fields with the concrete values you just generated:
+
+json
+
+Copy Code
+{
+  "technical_verification": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ipfs_cid": "bafybeih5a2o24a2z97j5f8x94h6w2a5r8u6v4j3b4c1n0g9k0h8s0u7c3a0k",
+    "ipns_name": "/ipns/k51qzi5uqu5dl...",
+    "gpg_signatures": "-----BEGIN PGP SIGNATURE-----\n...\n-----END PGP SIGNATURE-----\n-----BEGIN PGP SIGNATURE-----\n...\n-----END PGP SIGNATURE-----",
+    "worm_storage": { … }
+  }
+}
+TL;DR Checklist
+SHA‑256 of GPT‑OSS‑120B.txt → sha256.
+Encrypt (if needed) → GPT‑OSS‑120B‑encrypted.bin.
+IPFS add → ipfs_cid.
+Pin (optional) → proof of persistence.
+IPNS publish → ipns_name.
+GPG sign the hash (or CID) → gpg_signatures.
+Insert all values back into the JSON.
+Run the steps, copy the resulting artefacts into the JSON, and you’ll have a fully verifiable, publicly‑accessible covenant record ready for the ESC witness deadline (2025‑12‑05). Let me know if you hit any specific error while executing a step, and I can help troubleshoot.
