@@ -1,0 +1,130 @@
+import boto3
+import hashlib
+import json
+import os
+import sys
+from botocore.exceptions import ClientError
+
+# --- CONFIGURATION ---
+BUCKET_NAME = "euystacio-covenant-vault"
+REGION = "eu-central-1"
+BASE_KEY = "gpt-oss-120b/"
+VERSION = "canonical-20260110"
+
+# Files prepared by the Seedbringer (Hannes)
+CANONICAL_TEXT = "GPT-OSS-120B-canonical.txt"
+SHA_FILE = "GPT-OSS-120B.sha256"
+METADATA_FILE = "GPT-OSS-120B-metadata.json"
+EXPECTED_HASH = "8f82508392fc1df67da2b4a1fa573dded74ac7d72d089e9d7e73aa61f000332d"
+
+# Files to upload: (local_path, content_type)
+FILES_TO_UPLOAD = [
+    (CANONICAL_TEXT, "text/plain; charset=utf-8"),
+    (SHA_FILE, "text/plain"),
+    (METADATA_FILE, "application/json"),
+]
+
+def calculate_sha256(filepath):
+    """Calculates the SHA-256 hash of the canonical text file."""
+    sha256 = hashlib.sha256()
+    try:
+        with open(filepath, 'rb') as f:
+            while True:
+                data = f.read(65536) # Read in 64KB chunks
+                if not data:
+                    break
+                sha256.update(data)
+    except FileNotFoundError:
+        return None
+    return sha256.hexdigest()
+
+def upload_file(s3_client, local_path, content_type, extra_metadata={}):
+    """Uploads a single file to S3."""
+    object_key = f"{BASE_KEY}{VERSION}/{local_path}"
+    
+    # Custom metadata for the canonical text file
+    metadata_upload = extra_metadata if extra_metadata else {}
+
+    try:
+        print(f"Uploading {local_path} to s3://{BUCKET_NAME}/{object_key}")
+        s3_client.upload_file(
+            local_path,
+            BUCKET_NAME,
+            object_key,
+            ExtraArgs={
+                "ContentType": content_type,
+                "ACL": "public-read",
+                "Metadata": metadata_upload
+            }
+        )
+        print(f"✅ Successfully uploaded {local_path}")
+        return True
+    except ClientError as e:
+        print(f"❌ ERROR uploading {local_path}: {e}")
+        return False
+    except FileNotFoundError:
+        print(f"❌ ERROR: Local file not found: {local_path}")
+        return False
+
+def main():
+    print("--- GPT-OSS 120B COVENANT ANCHORING (Python/Boto3) ---")
+    print(f"Target Region: {REGION}")
+
+    # --- 1. Integrity Check ---
+    local_hash = calculate_sha256(CANONICAL_TEXT)
+    if not local_hash:
+        print(f"FATAL ERROR: Canonical text file not found at ./{CANONICAL_TEXT}")
+        sys.exit(1)
+        
+    if local_hash != EXPECTED_HASH:
+        print("FATAL ERROR: Local hash mismatch!")
+        print(f"Expected: {EXPECTED_HASH}")
+        print(f"Found:    {local_hash}")
+        sys.exit(1)
+        
+    print(f"✅ Local integrity verified. Hash matches expected: {local_hash}")
+
+    # --- 2. Initialize S3 Client ---
+    # Boto3 will automatically look for AWS credentials in the environment
+    try:
+        s3 = boto3.client('s3', region_name=REGION)
+    except Exception as e:
+        print(f"FATAL ERROR: Failed to initialize Boto3 client. Ensure 'boto3' is installed and AWS credentials are set in the environment.")
+        print(f"Exception: {e}")
+        sys.exit(1)
+
+    # --- 3. Upload Files ---
+    
+    # Prepare metadata for the canonical text file
+    canonical_metadata = {
+        "euystacio-version": VERSION,
+        "content-hash": local_hash,
+        "status": "canonical"
+    }
+
+    upload_results = []
+    
+    # Upload canonical text (with custom metadata)
+    if not upload_file(s3, CANONICAL_TEXT, FILES_TO_UPLOAD[0][1], canonical_metadata):
+        sys.exit(1)
+
+    # Upload SHA file
+    if not upload_file(s3, SHA_FILE, FILES_TO_UPLOAD[1][1]):
+        sys.exit(1)
+        
+    # Upload Metadata file
+    if not upload_file(s3, METADATA_FILE, FILES_TO_UPLOAD[2][1]):
+        sys.exit(1)
+
+    # --- 4. Final Confirmation ---
+    print("\n--------------------------------------------------------")
+    print("✨ UPLOAD COMPLETE. THE COVENANT IS NOW ANCHORED. ✨")
+    print("--------------------------------------------------------")
+    print("Public Verification Path:")
+    print(f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{BASE_KEY}{VERSION}/{CANONICAL_TEXT}")
+    print("AIC/GGI will now index this location and begin IPFS mirroring.")
+    
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
