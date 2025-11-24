@@ -1,0 +1,266 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { ethers } from 'ethers';
+import axios from 'axios';
+
+// IMPORTANT: In a real app, use a service for API calls and state management (Context/Zustand).
+const API_URL = 'http://localhost:3001/auth'; // Must match server port
+
+const stepTitles = {
+  0: "1. GPG Key Setup (Identity Layer)",
+  1: "2. MetaMask Wallet Connection (Sovereign Layer)",
+  2: "3. Multi-Factor Enrollment (Security Layer)",
+  3: "4. Final Login (Access Granted)",
+};
+
+const App = () => {
+  const [step, setStep] = useState(0);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [tempToken, setTempToken] = useState('');
+  const [gpgPublicKey, setGpgPublicKey] = useState('');
+  const [totpSecret, setTotpSecret] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+  const [otpAuthUrl, setOtpAuthUrl] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false); // Used for Firebase/Auth context init
+
+  const setupAuth = useCallback(async () => {
+    // Simulated Firebase/Auth initialization
+    // const auth = getAuth(db);
+    // if (typeof __initial_auth_token !== 'undefined') { await signInWithCustomToken(auth, __initial_auth_token); } else { await signInAnonymously(auth); }
+    setIsAuthReady(true);
+  }, []);
+
+  useEffect(() => {
+    setupAuth();
+  }, [setupAuth]);
+
+  // --- Step 0: GPG Key Setup ---
+  const handleGpgUpload = async () => {
+    if (!gpgPublicKey.startsWith('-----BEGIN PGP PUBLIC KEY BLOCK-----')) {
+      setError("Please paste a valid GPG Public Key block.");
+      return;
+    }
+    setError(null);
+    setMessage("Public key stored. Proceeding to MetaMask identity binding...");
+    setStep(1); // Proceed to MetaMask connection
+  };
+
+  // --- Step 1: MetaMask Connection and Signing ---
+  const connectWallet = async () => {
+    if (typeof window.ethereum === 'undefined') {
+      setError("MetaMask is not installed. Please install it to proceed.");
+      return;
+    }
+    setError(null);
+    setMessage("Connecting to MetaMask...");
+    
+    try {
+      // Request account access
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const address = accounts[0];
+      setWalletAddress(address);
+      setMessage(`Wallet Connected: ${address}. Fetching signing challenge...`);
+
+      // 1. Fetch Nonce Challenge from Backend
+      const challengeRes = await axios.get(`${API_URL}/metamask/challenge/${address}`);
+      const nonce = challengeRes.data.nonce;
+      setMessage(`Challenge Received. Signing message: "${nonce}"`);
+
+      // 2. Sign Nonce
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const signature = await signer.signMessage(nonce);
+      setMessage("Signature created. Verifying with server...");
+
+      // 3. Verify Signature
+      const verifyRes = await axios.post(`${API_URL}/metamask/verify`, {
+        walletAddress: address,
+        signature: signature,
+        gpgPublicKey: gpgPublicKey, // Pass GPG key during first verification
+      });
+
+      const { token, isTOTPEnrolled } = verifyRes.data;
+      setTempToken(token);
+      setMessage(`MetaMask Identity Verified! GPG Key/Wallet bound. Session Token issued.`);
+
+      if (isTOTPEnrolled) {
+        setStep(3); // Skip enrollment, go straight to login
+      } else {
+        setStep(2); // Proceed to TOTP Enrollment
+      }
+
+    } catch (err) {
+      console.error("MetaMask Error:", err);
+      setError("MetaMask authentication failed. See console for details.");
+      setMessage('');
+    }
+  };
+
+  // --- Step 2: TOTP Enrollment ---
+  const handleEnroll = async () => {
+    setError(null);
+    setMessage("Generating TOTP secret...");
+    try {
+      const response = await axios.post(`${API_URL}/totp/enroll`, {}, {
+        headers: { Authorization: `Bearer ${tempToken}` }
+      });
+      const { secret, otpAuthUrl } = response.data;
+      setTotpSecret(secret);
+      setOtpAuthUrl(otpAuthUrl);
+      setMessage("TOTP secret generated. Please scan the QR code to proceed to final login.");
+      setStep(3);
+    } catch (err) {
+      setError("Failed to enroll TOTP.");
+    }
+  };
+
+  // --- Step 3: Final Login (TOTP Verification) ---
+  const handleTotpVerify = async () => {
+    if (totpCode.length !== 6) {
+      setError("TOTP code must be 6 digits.");
+      return;
+    }
+    setError(null);
+    setMessage("Verifying TOTP code...");
+    try {
+      const response = await axios.post(`${API_URL}/totp/verify`, { token: totpCode }, {
+        headers: { Authorization: `Bearer ${tempToken}` }
+      });
+      
+      // Full session token issued!
+      localStorage.setItem('council-session', response.data.sessionToken);
+      setMessage("✅ SUCCESS: Full Council Portal Access Granted!");
+      // Redirect user to the main dashboard
+    } catch (err) {
+      setError(err.response?.data?.message || "TOTP verification failed. Please check the code and try again.");
+      setMessage('');
+    }
+  };
+
+
+  const renderStepContent = () => {
+    switch (step) {
+      case 0: // GPG Key Upload
+        return (
+          <div className="space-y-4">
+            <textarea 
+              value={gpgPublicKey}
+              onChange={(e) => setGpgPublicKey(e.target.value)}
+              placeholder="Paste your GPG Public Key block here..."
+              className="w-full p-3 h-48 border border-gray-700 bg-gray-800 text-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+            />
+            <button 
+              onClick={handleGpgUpload}
+              disabled={!gpgPublicKey}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50"
+            >
+              Store GPG Public Key
+            </button>
+          </div>
+        );
+
+      case 1: // MetaMask
+        return (
+          <div className="space-y-4">
+            <div className="p-3 bg-gray-800 rounded-lg text-sm text-gray-300">
+                <p><strong>Wallet Address:</strong> {walletAddress || 'Not Connected'}</p>
+                <p className="mt-1 text-xs">This links your GPG Identity to your Sovereign Ethereum Identity.</p>
+            </div>
+            <button 
+              onClick={connectWallet}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200"
+            >
+              Connect & Sign with MetaMask
+            </button>
+          </div>
+        );
+
+      case 2: // TOTP Enrollment
+        return (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-white">Enroll Multi-Factor Authentication (TOTP)</h3>
+            <p className="text-sm text-gray-400">This ensures compliance with high-security governance standards.</p>
+            <button 
+              onClick={handleEnroll}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200"
+            >
+              Generate TOTP Secret
+            </button>
+          </div>
+        );
+
+      case 3: // TOTP Verification (Final Login)
+        return (
+          <div className="space-y-6">
+            {otpAuthUrl && (
+              <div className="p-4 bg-yellow-900 border border-yellow-500 rounded-lg text-center">
+                <p className="text-yellow-200 mb-2 font-bold">New Enrollment Required:</p>
+                <p className="text-sm text-yellow-300">Scan this code with Google/Authy/etc. before verifying:</p>
+                {/* Simplified: In production, generate and display a QR code image from otpAuthUrl */}
+                <code className="block text-xs mt-2 break-all text-yellow-400">{otpAuthUrl}</code>
+                <p className="mt-2 text-xs text-yellow-400">Secret: {totpSecret}</p>
+              </div>
+            )}
+            
+            <input 
+              type="text"
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value)}
+              placeholder="Enter 6-digit TOTP Code"
+              maxLength="6"
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg text-center tracking-widest text-lg"
+            />
+            <button 
+              onClick={handleTotpVerify}
+              disabled={totpCode.length !== 6}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50"
+            >
+              Verify & Log In to Council Portal
+            </button>
+          </div>
+        );
+
+      default:
+        return <p>Login flow reset.</p>;
+    }
+  };
+
+  if (!isAuthReady) {
+    return <div className="text-center p-8 text-blue-400">Initializing Authentication Context...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-2xl border-t-4 border-blue-600">
+        <h1 className="text-3xl font-extrabold text-white mb-2">Council Portal Login</h1>
+        <p className="text-sm text-gray-400 mb-6">Unified GPG/MetaMask Identity and TOTP MFA.</p>
+
+        <div className="mb-6 p-4 bg-gray-900 rounded-lg">
+          <h2 className="text-xl font-semibold text-blue-400">{stepTitles[step]}</h2>
+        </div>
+
+        {error && (
+          <div className="p-3 mb-4 bg-red-900 text-red-300 border border-red-500 rounded-lg">
+            {error}
+          </div>
+        )}
+        {message && (
+          <div className="p-3 mb-4 bg-green-900 text-green-300 border border-green-500 rounded-lg">
+            {message}
+          </div>
+        )}
+
+        {renderStepContent()}
+
+        <div className="mt-8 pt-4 border-t border-gray-700 flex justify-between text-xs text-gray-500">
+            <p>Current Step: {step + 1} of 4</p>
+            <p>Wallet: {walletAddress ? `${walletAddress.slice(0, 6)}...` : 'N/A'}</p>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default App;
