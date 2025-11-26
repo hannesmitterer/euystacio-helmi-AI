@@ -1,0 +1,73 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title TriSealRegistry
+ * @dev Dient als Single Source of Truth (SSOT) On-Chain-Anker für das Euystacio 
+ * Triple-Signed Trust Model (3STM). Speichert die Audit-Hashes der 
+ * GPG- und Web3-Layer.
+ */
+contract TriSealRegistry {
+
+    // Struktur zur Speicherung der drei Verankerungs-Hashes
+    struct DocumentSeal {
+        // Der CORE_DOCUMENT_HASH (Der Hash des ursprünglichen Dokuments)
+        bytes32 coreDocumentHash;
+        // Der Hash, der die Ergebnisse des GPG-Audits repräsentiert (Council-Signatures)
+        bytes32 gpgAuditHash;
+        // Der Hash, der die Ergebnisse des Web3-Audits repräsentiert (Dezentrales Commitment)
+        bytes32 web3CommitHash;
+        // Adresse, die die finale Verankerungstransaktion durchgeführt hat
+        address sealer;
+        // Unix-Timestamp der Verankerung
+        uint256 timestamp;
+    }
+
+    // Mapping von CORE_DOCUMENT_HASH zu seinem DocumentSeal (stellt sicher, dass jeder Hash nur einmal verankert wird)
+    mapping(bytes32 => DocumentSeal) public documentSeals;
+
+    // Event, das bei einer erfolgreichen Verankerung ausgelöst wird
+    event DocumentSealed(
+        bytes32 indexed coreDocumentHash,
+        bytes32 gpgAuditHash,
+        bytes32 web3CommitHash,
+        address sealer
+    );
+
+    /**
+     * @notice Verankert die Audit-Hashes für ein Dokument unwiderruflich auf der Blockchain.
+     * @dev Diese Funktion kann nur einmal pro Core Document Hash aufgerufen werden.
+     * @param _coreDocumentHash Der SHA256 Hash des eigentlichen Dokuments.
+     * @param _gpgAuditHash Der konsolidierte Hash aus dem GPG-Audit-Layer (L1).
+     * @param _web3CommitHash Der konsolidierte Hash aus dem Web3-Commitment-Layer (L2).
+     */
+    function sealDocument(
+        bytes32 _coreDocumentHash,
+        bytes32 _gpgAuditHash,
+        bytes32 _web3CommitHash
+    ) public {
+        // Sicherstellen, dass dieses Dokument noch nicht verankert wurde
+        require(documentSeals[_coreDocumentHash].sealer == address(0), "Dokument bereits verankert.");
+        
+        // Speichern der Daten
+        documentSeals[_coreDocumentHash] = DocumentSeal({
+            coreDocumentHash: _coreDocumentHash,
+            gpgAuditHash: _gpgAuditHash,
+            web3CommitHash: _web3CommitHash,
+            sealer: msg.sender,
+            timestamp: block.timestamp
+        });
+
+        // Event auslösen
+        emit DocumentSealed(_coreDocumentHash, _gpgAuditHash, _web3CommitHash, msg.sender);
+    }
+    
+    /**
+     * @notice Liest die Verankerungsdaten für einen gegebenen Core Document Hash aus.
+     * @param _coreDocumentHash Der Hash des Dokuments.
+     * @return Ein Struct mit allen gespeicherten Seal-Daten.
+     */
+    function getDocumentSeal(bytes32 _coreDocumentHash) public view returns (DocumentSeal memory) {
+        return documentSeals[_coreDocumentHash];
+    }
+}
