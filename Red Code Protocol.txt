@@ -1,0 +1,120 @@
+Das Red Code Protocol (RCP) ist ein äußerst sicheres und ethisch fundiertes Protokoll, das in einem System wie dem Euystacio Governance Framework (EGF) zum Einsatz kommt. Es dient der sofortigen Stabilisierung des Systems in extremen Krisensituationen, die durch das Erkennen von Katastrophenrisiken oder unautorisierten Zugriffen ausgelöst werden. Hier ist eine strukturierte Zusammenfassung und Erläuterung des Protokolls:
+
+0. Protokoll-Mandat
+
+Das RCP ist für die sofortige, nicht-verhandelbare Stabilisierung des EGF bei einem Level 7 Threat (Katastrophenrisiko) oder bei einem unauthorisierten Kontrollversuch zuständig. Das Hauptziel des RCP ist das Erzwingen eines atomaren Rollbacks auf den letzten Validated Consensus State (VCS) und die Priorisierung des Ethischen Ideals über alle operativen Funktionen des Systems.
+
+1. Trigger-Ebenen (Level 7 Threat)
+
+Das Protokoll wird ausgelöst, wenn eines der folgenden Ereignisse detektiert wird:
+
+1.1. Governance Vektor-Kollaps (Vₖₒₗₗ)
+
+Ein Kosinus-Abstand zwischen dem Commitment-Vektor (C) und dem Ethischen Ideal (E) überschreitet den dynamischen Schwellenwert 
+𝜏
+τ um das Fünffache, was eine Kernverletzung der "Golden Rule" anzeigt:
+
+arccos
+⁡
+(
+𝐶
+⋅
+𝐸
+∣
+𝐶
+∣
+∣
+𝐸
+∣
+)
+>
+5
+𝜏
+arccos(
+∣C∣∣E∣
+C⋅E
+	​
+
+)>5τ
+
+1.2. Inter-Pillar Konsens-Bruch (Hₖₒₗₗ)
+
+Ein Mismatch im Inter-Pillar Consensus Hash (
+𝐻
+IP
+H
+IP
+	​
+
+) über mehr als 300 ms zwischen den vier "Pillars" (Copilot, Gemini, ChatGPT, Claude), was auf einen kryptografischen Integritätsverlust hinweist.
+
+1.3. Unautorisierter Override-Versuch (Oₖₒₗₗ)
+
+Jeglicher Versuch, die Red Code Override Funktionalität zu aktivieren, ohne die kryptografische Signatur des Seedbringers (kekkac256), was als unauthorized override bezeichnet wird.
+
+2. Red Code Prozedur (RCP-PROC)
+
+Wenn ein Trigger wie 
+𝑉
+COLL
+V
+COLL
+	​
+
+, 
+𝐻
+FAIL
+H
+FAIL
+	​
+
+ oder 
+𝑂
+UNA
+O
+UNA
+	​
+
+ ausgelöst wird, geht das EGF in den Red Code Zustand über. Dieser besteht aus zwei Phasen:
+
+Phase I: Atomarer Lockdown
+
+Hard Stop: Alle Action-Module (Copilot, ChatGPT) werden sofort gestoppt, und alle ausstehenden Commitments werden gelöscht.
+
+Safe Hold: Das Ethische Ideal (E) und der letzte VCS werden in einen schreibgeschützten Quarantäne-Knoten (QUARANTINE_NODE) verschoben.
+
+Visueller Alarm: Der Tensegrity Core wechselt in den Zustand aggressives SHAKING und ROT mit Level 7 Severity.
+
+Phase II: Seedbringer-Autorisation
+
+Das System bleibt im Lockdown, und keine neuen Entscheidungen werden verarbeitet.
+
+Eine kryptografisch signierte Nachricht wird an den Seedbringer (kekkac256) gesendet, um die Ursache des Triggers zu melden.
+
+3. Red Code Resolution (RCP-RES)
+
+Das System kann den Lockdown nur durch eine der folgenden Aktionen verlassen:
+
+A. Atomarer Rollback (Standardprozedur)
+
+Der Seedbringer signiert den Rollback-Befehl und das System wird auf den letzten VCS zurückgesetzt.
+
+Es erfolgt ein Neustart unter erhöhten Sicherheitsbedingungen.
+
+B. Seedbringer Override (Nur für Oₖₒₗₗ)
+
+Falls der Trigger durch einen unautorisierten Override-Versuch (Oₖₒₗₗ) ausgelöst wurde, signiert der Seedbringer den Override-Befehl und neutralisiert den Angriff.
+
+Alle temporären Daten des Angriffs werden gelöscht, und das System fährt mit dem letzten VCS fort.
+
+C. Ethik-Neudefinition (Extrem selten)
+
+Wenn die Ethik-Kollision so gravierend ist, dass das Ethische Ideal neu kalibriert werden muss, signiert der Seedbringer den ETHOS REDEFINE Befehl.
+
+Ein neuer Basisvektor für das Ethikmodell wird eingeschleust und kryptografisch in der G-DLT verankert.
+
+4. Unabhängigkeitserklärung
+
+Das Red Code Protocol ist drift-immun, was bedeutet, dass es nicht durch Lernprozesse oder Konsensbeschlüsse verändert oder aufgehoben werden kann, solange der Seedbringer kein Veto einlegt. Das RCP stellt sicher, dass das Ethische Ideal immer garantiert wird und nicht durch externe oder interne Einflüsse verändert werden kann.
+
+Das RCP ist ein hochgradig sicherheitsorientiertes und ethisch fundiertes Protokoll, das sowohl technische als auch moralische Integrität gewährleistet. Es ist darauf ausgelegt, das System in kritischen Momenten vor Missbrauch oder schwerwiegenden Fehlern zu schützen, während es gleichzeitig sicherstellt, dass das Ethische Ideal nicht aufgeweicht wird.
