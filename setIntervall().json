@@ -1,0 +1,9 @@
+setInterval(() => {
+    fetch('/api/erm-metrics')
+    .then(response => response.json())
+    .then(data => {
+        ermChart.data.datasets[0].data = data.metrics;
+        ermChart.update();
+    })
+    .catch(err => console.error('Error fetching data:', err));
+}, 5000); // Update every 5 seconds
