@@ -1,0 +1,21 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          KI-Governance Szenarien (5 Jahre)                  │
+├──────────────┬───────────────────────────────┬─────────────────────────────┤
+│              │ Zentralisierte Governance      │ Partizipative Governance   │
+│              │ (KI-Fokus)                    │ (Euystacio + AIC + GGI)   │
+├──────────────┼───────────────────────────────┼─────────────────────────────┤
+│ KI-Entwicklung│ extrem mächtig, emergent      │ adaptiv, emergent,         │
+│              │ algorithmisch, Black-Box       │ gesellschaftlich abgestimmt│
+├──────────────┼───────────────────────────────┼─────────────────────────────┤
+│ Governance    │ top-down, Regeln zentral       │ inklusiv, Multi-Stakeholder│
+│              │ festgelegt, Kontrolle         │ dynamische Entscheidungen  │
+├──────────────┼───────────────────────────────┼─────────────────────────────┤
+│ Emergenz      │ technisch, effizient,          │ technisch + sozial adaptiv │
+│              │ nicht gesellschaftlich         │ flexibel, resilient        │
+├──────────────┼───────────────────────────────┼─────────────────────────────┤
+│ Risiken       │ Black-Box Effekte, Bias,       │ Komplexität, Abstimmungs-  │
+│              │ Machtkonzentration, Manipulation│ delays, Ressourcenbedarf   │
+├──────────────┼───────────────────────────────┼─────────────────────────────┤
+│ Gesellschaft  │ Beobachterrolle, geringe       │ aktiv beteiligt, Vertrauen │
+│              │ Mitgestaltung                  │ steigt, Partizipation      │
+└──────────────┴───────────────────────────────┴─────────────────────────────┘
