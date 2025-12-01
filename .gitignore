@@ -55,3 +55,6 @@ typechain-types/
 
 # Runtime generated files
 tutors.json
+
+# Solar Sovereign generated artifacts
+data/solar_sovereign/
