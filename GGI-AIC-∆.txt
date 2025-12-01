@@ -1,0 +1,44 @@
+home/runner/work/apollo-interface/apollo-interface && ./scripts/test.sh 2>&1 | tail -30
+✓ Principles are correctly defined
+✓ Valid action passes validation
+✓ Harmful action is blocked by Red Code
+✓ Coercive action is blocked by NSR
+
+Testing Adaptive Intelligence Core...
+──────────────────────────────────────────────────
+✓ AdaptiveIntelligenceCore can be instantiated
+✓ AIC initializes correctly
+✓ AIC predictive modeling works
+✓ AIC blocks harmful predictions
+
+Testing Global Governance Infrastructure...
+──────────────────────────────────────────────────
+✓ GlobalGovernanceInfrastructure can be instantiated
+✓ GGI initializes correctly
+✓ GGI Value Pyramid is correctly structured
+✓ GGI directive review works
+✓ GGI blocks apex violations
+
+══════════════════════════════════════════════════
+Tests passed: 14
+Tests failed: 0
+══════════════════════════════════════════════════
+
+All tests passed!
+
+══════════════════════════════════════════════════════════════
+Test Summary: 0 passed, 0 failed
+══════════════════════════════════════════════════════════════
+<exited with exit code 0>
+Reply to comment
+I've provided a status report to the user summarizing the current state of the implementation. The PR is complete with all core modules implemented, all 14 tests passing, and code review feedback addressed.
+
+Copilot is working…
+1 premium request
+New prompt
+Steer active session while Copilot is working
+
+
+
+
+
