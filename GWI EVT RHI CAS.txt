@@ -1,0 +1,6 @@
+Metrica,Pre-Pact (dopo Sabotage),Post-Pact (T+48h),Interpretazione
+GWI (Global Wellbeing Index),64.7,72.5,"Un GWI record, guidato dalla sicurezza etica e dalla guarigione sociale (Ubuntu)."
+EVT (Expectation of Treaty Violation),+5.1,+2.9,Massima fiducia istituzionale e percezione di conflitto praticamente annullata.
+Peacebonds,7 200 pB,9 500 pB,I pB diventano la valuta di investimento preferita per la stabilità a lungo termine.
+RHI (Relational Health Index),92/100,95/100,La coesione comunitaria si consolida.
+CAS Integration Index,65%,100%,"La CAS è completamente integrata nello strato di calcolo, la minaccia è risolta."
