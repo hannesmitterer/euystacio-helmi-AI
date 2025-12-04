@@ -46,6 +46,16 @@ error_exit() {
 }
 
 # =========================
+# COPY DIRECTORY CONTENTS
+# =========================
+copy_directory_contents() {
+    local src="$1"
+    local dest="$2"
+    # Copy all files including hidden ones, handle both cases where source has or lacks files
+    cp -r "$src"/* "$dest"/ 2>/dev/null || cp -r "$src"/. "$dest"/
+}
+
+# =========================
 # MAIN SCRIPT
 # =========================
 
@@ -78,24 +88,27 @@ TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
 log "Copying deployment files to temporary directory..."
-cp -r "$PACKAGE_PATH"/* "$TEMP_DIR"/ 2>/dev/null || cp -r "$PACKAGE_PATH"/. "$TEMP_DIR"/
+copy_directory_contents "$PACKAGE_PATH" "$TEMP_DIR"
 
 # Check if gh-pages branch exists remotely
 log "Checking for existing gh-pages branch..."
 if git ls-remote --exit-code --heads "$REMOTE" "$GH_PAGES_BRANCH" > /dev/null 2>&1; then
     log "gh-pages branch exists remotely. Fetching..."
-    git fetch "$REMOTE" "$GH_PAGES_BRANCH":"$GH_PAGES_BRANCH" 2>/dev/null || git fetch "$REMOTE" "$GH_PAGES_BRANCH"
+    git fetch "$REMOTE" "$GH_PAGES_BRANCH"
     
     # Switch to gh-pages branch
     log "Switching to gh-pages branch..."
     if git show-ref --verify --quiet "refs/heads/$GH_PAGES_BRANCH"; then
         git checkout "$GH_PAGES_BRANCH"
     else
-        git checkout -b "$GH_PAGES_BRANCH" "FETCH_HEAD"
+        git checkout -b "$GH_PAGES_BRANCH" "$REMOTE/$GH_PAGES_BRANCH"
     fi
     
     # Pull latest changes
-    git pull "$REMOTE" "$GH_PAGES_BRANCH" || true
+    if ! git pull "$REMOTE" "$GH_PAGES_BRANCH"; then
+        log "Warning: Pull failed. This may indicate merge conflicts or network issues."
+        log "Continuing with deployment using current local state."
+    fi
 else
     log "gh-pages branch does not exist. Creating orphan branch..."
     git checkout --orphan "$GH_PAGES_BRANCH"
@@ -108,7 +121,7 @@ find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} + 2>/dev/null || t
 
 # Copy deployment files
 log "Copying deployment files to repository..."
-cp -r "$TEMP_DIR"/* . 2>/dev/null || cp -r "$TEMP_DIR"/. .
+copy_directory_contents "$TEMP_DIR" "."
 
 # Add .nojekyll to prevent Jekyll processing (optional but common for GitHub Pages)
 if [ ! -f ".nojekyll" ]; then
