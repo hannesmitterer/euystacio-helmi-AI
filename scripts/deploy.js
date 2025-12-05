@@ -5,11 +5,18 @@ async function main() {
   console.log("Deploying with:", deployer.address);
 
   // Foundation wallet - replace with Gnosis Safe in real use
-  const foundation = "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b";
+  const foundation = process.env.FOUNDATION_WALLET || "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b";
   
-  // Seedbringer (hannesmitterer) - replace with actual Seedbringer address
+  // Seedbringer (hannesmitterer) - REQUIRED: Must be set via environment variable for production
   // This should be the address controlled by hannesmitterer
-  const seedbringer = deployer.address; // Placeholder - replace with actual Seedbringer address
+  const seedbringer = process.env.SEEDBRINGER_ADDRESS;
+  
+  if (!seedbringer) {
+    console.error("ERROR: SEEDBRINGER_ADDRESS environment variable must be set!");
+    console.error("Usage: SEEDBRINGER_ADDRESS=0x... npx hardhat run scripts/deploy.js --network <network>");
+    process.exitCode = 1;
+    return;
+  }
   
   console.log("Foundation wallet:", foundation);
   console.log("Seedbringer address:", seedbringer);

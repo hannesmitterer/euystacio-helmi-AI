@@ -52,7 +52,11 @@ copy_directory_contents() {
     local src="$1"
     local dest="$2"
     # Copy all files including hidden ones, handle both cases where source has or lacks files
-    cp -r "$src"/* "$dest"/ 2>/dev/null || cp -r "$src"/. "$dest"/
+    # First try globbed copy, fall back to dot copy if no matching files
+    if ! cp -r "$src"/* "$dest"/ 2>/dev/null; then
+        log "Note: No regular files found, copying hidden files..."
+        cp -r "$src"/. "$dest"/ || true
+    fi
 }
 
 # =========================
