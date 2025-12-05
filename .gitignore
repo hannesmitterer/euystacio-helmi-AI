@@ -41,13 +41,24 @@ Thumbs.db
 *.log
 logs/
 
-# Node
+# Node.js
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
 
 # Hardhat
 cache/
 artifacts/
+typechain/
 typechain-types/
+
+# Coverage
+coverage/
+coverage.json
+*.lcov
 
 # Environment
 .env
