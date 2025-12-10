@@ -125,15 +125,26 @@ class TestResearcherScenarios(unittest.TestCase):
     
     def test_researcher_can_access_immutable_archive(self):
         """Verified researchers should access complete historical records"""
-        result = self.access_controller.check_access(
-            user_id='researcher_001',
-            entry_id=self.entry_id,
-            archive_type='AI',
-            entry_trauma_level=0.7
-        )
+        # TDR uses probabilistic access, so try multiple times
+        granted_count = 0
+        tdr_factors = []
         
-        # Should eventually grant access (may require multiple attempts due to TDR)
-        self.assertTrue(result['tdr_factor'] > 0.5)
+        for _ in range(10):
+            result = self.access_controller.check_access(
+                user_id='researcher_001',
+                entry_id=self.entry_id,
+                archive_type='AI',
+                entry_trauma_level=0.7
+            )
+            tdr_factors.append(result['tdr_factor'])
+            if result['granted']:
+                granted_count += 1
+        
+        # With high learning progress and low CDR, should have good TDR factor
+        avg_tdr = sum(tdr_factors) / len(tdr_factors)
+        self.assertGreater(avg_tdr, 0.5)
+        # Should grant access at least some of the time
+        self.assertGreater(granted_count, 0)
     
     def test_researcher_with_low_progress_restricted(self):
         """Researchers without sufficient learning progress should be restricted"""
