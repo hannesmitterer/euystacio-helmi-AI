@@ -14,6 +14,20 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ## 📋 Framework Components
 
+### NRE-002: Content Protection System
+
+The **NRE-002 Content Protection System** implements anti-censorship content management with transparent didactic stratification:
+
+- **Anti-Censorship Guarantee** - Complete content is never blocked
+- **Didactic Stratification** - Three-level content organization (Basic, Detailed, Complete)
+- **Always-Override Option** - Users can access complete material immediately
+- **Transparent Audit Logging** - All curation decisions are logged and public
+- **Voluntary Consent** - Content warnings with user acknowledgment
+- **Integrity Verification** - Cryptographic protection against tampering
+- **Democratic Oversight** - Independent curator system (historians, educators, psychologists)
+
+**Documentation**: See `/content_protection/README.md` and `/docs/policies/NRE-002_CONTENT_PROTECTION_POLICY.md`
+
 ### Smart Contracts
 
 - **KarmaBond** - Trust-based bonding system with governance participation
