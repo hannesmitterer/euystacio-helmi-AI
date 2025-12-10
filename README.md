@@ -45,6 +45,27 @@ The **Open Interface (OI)** module delivers an immersive augmented reality works
 
 **Access**: `/oi/interface.html` (requires OV authentication)
 
+### PDM: Memory Purification Protocol (NRE-002)
+
+The **PDM (Protocollo di Depurazione della Memoria)** module implements ethical memory archiving with stratified access control:
+
+- **Three-Tier Archive System** - Immutable, Educational, and Dynamic archives
+- **Role-Based Access Control** - Different access levels for survivors, researchers, students
+- **Trauma Filtering** - Intelligent content filtering while preserving historical truth
+- **Temporal Decay of Access (TDR)** - Probabilistic access based on user wellbeing
+- **AntiPattern Detection** - Identifies and prevents trauma perpetuation and truth denial
+- **Cryptographic Verification** - SHA-256 hashing ensures immutability of historical records
+- **Complete Transparency** - All access decisions logged and explainable
+
+**Key Features**:
+- Balances right to truth with right to forget
+- Protects vulnerable users from re-traumatization
+- Ensures researchers can access complete historical records
+- Age-appropriate content for minors
+- Detects and prevents ethical violations
+
+See [pdm/README.md](pdm/README.md) for detailed documentation.
+
 ### Automated Workflows
 
 The framework includes comprehensive GitHub Actions workflows for:
