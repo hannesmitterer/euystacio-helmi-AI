@@ -322,7 +322,7 @@ class NRE003Protocol:
             Dict containing protocol status and metrics
         """
         current_aai = self.calculate_aai()
-        active_vetos = len([v for v in self.veto_records])
+        active_vetos = len(self.veto_records)
         active_rollbacks = len([r for r in self.rollback_plans if r.status == "active"])
         
         return {

@@ -17,6 +17,8 @@ Date: 2025-12-10
 import unittest
 import sys
 import os
+import tempfile
+import json
 from datetime import datetime, timedelta
 
 # Add parent directory to path for imports
@@ -409,9 +411,6 @@ class TestProtocolStatus(unittest.TestCase):
     
     def test_protocol_export(self):
         """Test that protocol can export complete log."""
-        import tempfile
-        import json
-        
         # Add some test data
         self.protocol.provide_information_gift(
             decision_id="EXPORT-TEST",
