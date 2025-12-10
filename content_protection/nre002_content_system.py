@@ -5,7 +5,7 @@ Implementation of anti-censorship content management with didactic stratificatio
 
 import hashlib
 import json
-import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any
 from enum import Enum
 
@@ -44,7 +44,7 @@ class ContentItem:
         self.content_by_level = content_by_level
         self.warnings = warnings
         self.metadata = metadata or {}
-        self.created_at = datetime.datetime.utcnow().isoformat()
+        self.created_at = datetime.now(timezone.utc).isoformat()
         
         # Generate integrity hash for complete content
         self.integrity_hash = self._generate_integrity_hash()
@@ -138,7 +138,7 @@ class CurationAuditLog:
     ):
         """Log a curation decision with full transparency"""
         entry = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "content_id": content_id,
             "level": level.name,
             "curator_id": curator_id,
@@ -157,7 +157,7 @@ class CurationAuditLog:
     ):
         """Log user access patterns (for transparency, not filtering)"""
         entry = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "content_id": content_id,
             "requested_level": requested_level.name,
             "user_id": user_id,
@@ -312,7 +312,7 @@ class NRE002ContentSystem:
             System status and any violations
         """
         integrity_status = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "total_content_items": len(self.content_items),
             "integrity_verified": [],
             "integrity_failed": [],
@@ -365,5 +365,5 @@ class ADiSynthesis:
             "synthesis_principle": "Inspirational synthesis from verified facts",
             "accuracy_maintained": True,
             "manipulation_free": True,
-            "created_at": datetime.datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
