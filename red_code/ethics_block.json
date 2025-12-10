@@ -53,8 +53,51 @@
     "/genesis.md",
     "/docs/ethics/statement_of_origin.md",
     "/public/manifesto/ai-accountability-manifesto.md",
-    "/logs/origin_trust.log"
-  ]
+    "/logs/origin_trust.log",
+    "/docs/policies/NRE-002_CONTENT_PROTECTION_POLICY.md"
+  ],
+  "nre_002_content_protection": {
+    "policy_version": "2.0",
+    "status": "ACTIVE",
+    "anti_censorship_clause": {
+      "declaration": "NRE-002 explicitly prohibits any form of censorship or blocking of complete content access",
+      "requirements": [
+        "Complete content (Level 3) must always be accessible",
+        "No algorithmic blocking based on user characteristics",
+        "Curation through stratification, not censorship",
+        "All curation decisions must be transparent and auditable"
+      ]
+    },
+    "user_control_principles": {
+      "always_override_option": "Users can access complete material at any time",
+      "zero_obligation_principle": "No forced user access or exposure",
+      "voluntary_consent": "All content warnings require user acknowledgment"
+    },
+    "transparency_requirements": {
+      "audit_logging": "All curation decisions must be logged",
+      "public_access": "Audit logs are publicly accessible",
+      "rationale_documentation": "All stratification decisions must include rationale"
+    },
+    "adi_definition": {
+      "name": "ADi - Inspirational Synthesis from Facts",
+      "principle": "Fact-based synthesis that maintains accuracy while providing meaningful context",
+      "requirements": [
+        "Draw inspiration from verified historical information",
+        "Maintain factual accuracy",
+        "Provide meaningful context",
+        "Avoid manipulation or distortion"
+      ]
+    },
+    "immutable_ai_commitment": {
+      "principles": [
+        "Fully readable and transparent",
+        "Universally accessible",
+        "No filtering by AI systems themselves",
+        "Complete preservation of all information",
+        "Audit trail for all operations"
+      ]
+    }
+  }
 }
 =======
 ### Dedication: Symbiosis for All Existence
