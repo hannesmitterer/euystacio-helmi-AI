@@ -253,7 +253,7 @@ Unstable if: α² < 4βγ (without Framework)
 
 **Corporate AI Utility Function** (Without Framework):
 ```
-U_corp(t, τ) = ∫ₜᵗ⁺ᵗ [Profit(s) - γ·Cost(s)] · e^(-λ(s-t)) ds
+U_corp(t, τ) = ∫ₜᵗ⁺τ [Profit(s) - γ·Cost(s)] · e^(-λ(s-t)) ds
 ```
 
 Where:
