@@ -17,6 +17,20 @@ interface ISustainment {
  * @title KarmaBond
  * @notice Manages bond minting and redemption with integrated sustainment allocation
  * @dev Allocates a configurable percentage of bond mints to the Sustainment contract
+ * 
+ * ETHICAL FRAMEWORK - Cosimbiosi Basis Fundamentum in Eternuum:
+ * - Transparency: All bond operations are publicly verifiable and auditable
+ * - Universal Accessibility: Open to all participants without discrimination
+ * - Individual Autonomy: Users retain full control over their participation
+ * - Zero-Obligation (NRE-002): Participation is voluntary; users can exit at any time
+ * - Sustainable Harmony: Allocates resources to maintain ecosystem sustainability
+ * - Dignity: Treats all participants with respect and fairness
+ * 
+ * USER AUTONOMY FEATURES:
+ * - Users can choose when and how much to bond
+ * - No forced participation in governance or sustainment
+ * - Transparent allocation percentages (sustainmentPercent is public)
+ * - Exit mechanisms respect user choice (redeemBond available)
  */
 contract KarmaBond is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
