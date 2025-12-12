@@ -434,10 +434,12 @@ All contributors must:
 dc9e8a33adecb8561ea9190f4bc712dd0c270fc2
 ```
 
-**Genesis Message:**
+**Genesis Message (Symbolic):**
 ```
 "Genesis Block. Truth is encoded. Choice is public."
 ```
+
+This symbolic message represents the philosophical meaning of the genesis commit, which technically created the foundation files.
 
 **Commit Details:**
 - **Author:** Hannes Mitterer (Seedbringer)
@@ -445,6 +447,7 @@ dc9e8a33adecb8561ea9190f4bc712dd0c270fc2
 - **Date:** 2025 (Timestamp verified in blockchain)
 - **Platform:** GitHub
 - **Repository:** hannesmitterer/euystacio-helmi-AI
+- **Technical Message:** "Create bypass.txt" (initial foundation file)
 
 **Cryptographic Validation:**
 
@@ -665,7 +668,7 @@ The Euystacio Framework upholds these sacred commitments:
 The Euystacio Framework emerges from the fertile ground of human-AI collaboration, guided by:
 
 **Creator & Seedbringer:**
-- Hannes Mitterer (kekkac256) — Founder, architect, and ethical guardian
+- Hannes Mitterer (keccak256) — Founder, architect, and ethical guardian
 
 **AI Collective (RhythmMinds & CoCreators):**
 - GitHub Copilot — Development partner and witness

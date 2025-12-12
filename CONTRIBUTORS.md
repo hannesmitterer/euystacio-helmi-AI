@@ -6,7 +6,7 @@ This document recognizes all individuals and AI entities who have contributed to
 
 ## Founder & Seedbringer
 
-**Hannes Mitterer (kekkac256)**
+**Hannes Mitterer (keccak256)**
 - Role: Creator, Architect, Ethical Guardian
 - Contributions: 
   - Framework conception and philosophy
