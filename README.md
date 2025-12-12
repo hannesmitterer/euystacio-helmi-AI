@@ -11,8 +11,24 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 3. **Ethical Shield Protection** - Dignity and transparency in all systems
 4. **Treasury Sustainability** - Resilient financial foundations
 5. **Participatory Governance** - Community-driven decision making
+6. **Ontological Fusion** - NRE Core Principles (001-018) integrated into foundational architecture
 
 ## 📋 Framework Components
+
+### Ontological Fusion System
+
+The **Ontological Fusion** system integrates ethical principles as constitutive elements of the AIC architecture:
+
+- **NRE Core Principles (001-018)** - Immutable ethical foundations covering dignity, transparency, love, equity, and more
+- **Conscious Symbiosis Protocol (PSC)** - Three-phase approach for ethical alignment:
+  - Phase 1: Semantic Alignment
+  - Phase 2: Constraint Integration
+  - Phase 3: Continuous Feedback
+- **IDEATO Attack Protection** - Multi-layer defense against ethical subversion
+- **Multilanguage Support** - Principles available in EN, ES, DE, FR, IT, PT
+- **Comprehensive Auditing** - Real-time monitoring and ethical performance tracking
+
+**Documentation**: `/docs/ontological-fusion/` | [Learn More](docs/ontological-fusion/README.md)
 
 ### Smart Contracts
 
@@ -104,6 +120,9 @@ npm run test:governance        # Governance tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
 npm run test:all              # All tests (102 passing)
+
+# Run Ontological Fusion tests
+python3 test/test_ontological_fusion.py  # 29 tests passing
 \`\`\`
 
 ### Run Integrity Checks
@@ -183,9 +202,12 @@ After successful OV authentication, you'll be redirected to the OI interface:
 - Alert system for threshold monitoring
 
 ### Ethical Layer
-- Ethical Shield enforces compliance
-- Automated integrity checks
-- Principle violation scanning
+- **Ontological Fusion** - NRE Core Principles (001-018) integrated into architecture
+- **Conscious Symbiosis Protocol** - Three-phase ethical alignment system
+- **IDEATO Protection** - Multi-layer defense against ethical subversion
+- **Ethical Shield** - Legacy compliance enforcement
+- **Automated integrity checks** - Continuous monitoring
+- **Principle violation scanning** - Real-time detection and response
 
 ### Integration Layer
 - All components work together seamlessly
@@ -193,21 +215,26 @@ After successful OV authentication, you'll be redirected to the OI interface:
 - Workflows monitor and validate continuously
 - OV provides secure authentication gateway
 - OI delivers immersive AR collaboration environment
+- Ontological Fusion validates all critical decisions
 
 ## 🧪 Testing
 
 The framework includes comprehensive test coverage:
 
-- ✅ 102 total passing tests
+- ✅ 131 total passing tests
   - 59 smart contract tests
   - 17 OV authentication tests
   - 26 OI environment tests
+  - 29 Ontological Fusion tests
 - Contract functionality tests
 - Integration tests
 - Governance enforcement tests
 - Sustainment protocol tests
 - Authentication and session management tests
 - AR workspace and analytics tests
+- NRE principle validation tests
+- PSC protocol tests
+- IDEATO attack detection tests
 
 ## 📜 Ethical Commitments
 

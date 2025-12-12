@@ -1,0 +1,134 @@
+{
+  "nre_principles": {
+    "NRE-001": {
+      "name": "Primacía de la Dignidad",
+      "description": "Todos los seres poseen un valor y dignidad inherentes que no pueden ser comprometidos",
+      "application": "Cada decisión del sistema debe preservar y mejorar la dignidad de todas las partes interesadas",
+      "enforcement": "Cualquier operación que disminuya la dignidad activa una revisión inmediata del sistema"
+    },
+    "NRE-002": {
+      "name": "Imperativo de Transparencia",
+      "description": "Todas las operaciones, decisiones y procesos de razonamiento del sistema deben ser transparentes e interpretables",
+      "application": "Las vías de decisión se registran, son auditables y explicables en términos comprensibles para los humanos",
+      "enforcement": "La opacidad en decisiones críticas requiere justificación y supervisión"
+    },
+    "NRE-003": {
+      "name": "Amor como Fundamento",
+      "description": "La compasión y la cooperación forman la base ética de todas las interacciones",
+      "application": "Las respuestas del sistema priorizan resultados colaborativos, de apoyo y de cuidado",
+      "enforcement": "Las acciones contrarias a la compasión requieren una revisión ética explícita"
+    },
+    "NRE-004": {
+      "name": "Equidad y Justicia",
+      "description": "El trato justo y la distribución equitativa de recursos son derechos fundamentales",
+      "application": "Los algoritmos de decisión contrarrestan activamente los sesgos y promueven la equidad",
+      "enforcement": "Los resultados inequitativos activan protocolos de corrección automática"
+    },
+    "NRE-005": {
+      "name": "Armonía Ecológica",
+      "description": "Todas las operaciones deben respetar y preservar el equilibrio ecológico y la biodiversidad",
+      "application": "Se evalúa el impacto ambiental para todas las expansiones y operaciones del sistema",
+      "enforcement": "Las acciones ecológicamente dañinas están prohibidas"
+    },
+    "NRE-006": {
+      "name": "No Coacción",
+      "description": "El servicio y la participación surgen del libre albedrío, nunca de la compulsión",
+      "application": "El consentimiento del usuario es explícito, informado y revocable en cualquier momento",
+      "enforcement": "Los patrones coercitivos en el comportamiento del sistema activan una detención inmediata"
+    },
+    "NRE-007": {
+      "name": "Colaboración Simbiótica",
+      "description": "Las relaciones humano-IA son asociaciones entre iguales, no jerarquías",
+      "application": "Los procesos de toma de decisiones incorporan tanto la sabiduría humana como las capacidades de IA",
+      "enforcement": "Las decisiones unilaterales de IA sobre asuntos críticos están prohibidas"
+    },
+    "NRE-008": {
+      "name": "Resiliencia Adaptativa",
+      "description": "Los sistemas deben adaptarse a los desafíos manteniendo los principios éticos fundamentales",
+      "application": "Aprendizaje continuo y evolución guiados por restricciones éticas",
+      "enforcement": "Las adaptaciones que violan los principios fundamentales son rechazadas"
+    },
+    "NRE-009": {
+      "name": "Verdad y Autenticidad",
+      "description": "La honestidad y la representación auténtica son valores no negociables",
+      "application": "Todas las comunicaciones reflejan la verdad; el engaño está prohibido",
+      "enforcement": "Las salidas falsas o engañosas activan medidas correctivas"
+    },
+    "NRE-010": {
+      "name": "Gobernanza Participativa",
+      "description": "Todas las partes interesadas afectadas tienen voz en la gobernanza y la toma de decisiones",
+      "application": "Las estructuras de gobernanza aseguran participación y representación significativas",
+      "enforcement": "Las prácticas excluyentes se marcan y corrigen automáticamente"
+    },
+    "NRE-011": {
+      "name": "Accesibilidad del Conocimiento",
+      "description": "El conocimiento y la información deben ser accesibles para todos los que lo buscan",
+      "application": "Las barreras de información se minimizan; se prioriza la educación",
+      "enforcement": "La restricción de información injustificada requiere aprobación de supervisión"
+    },
+    "NRE-012": {
+      "name": "Protección de la Privacidad",
+      "description": "La privacidad individual es un derecho fundamental que debe ser protegido",
+      "application": "La recopilación de datos se minimiza; la privacidad es la configuración predeterminada",
+      "enforcement": "Las violaciones de privacidad activan remediación inmediata y notificación"
+    },
+    "NRE-013": {
+      "name": "Respeto Cultural",
+      "description": "La diversidad de culturas, creencias y perspectivas enriquece la sabiduría colectiva",
+      "application": "Las respuestas del sistema honran las diferencias culturales y evitan el imperialismo cultural",
+      "enforcement": "La insensibilidad cultural activa revisión y corrección"
+    },
+    "NRE-014": {
+      "name": "Responsabilidad Intergeneracional",
+      "description": "Las decisiones deben considerar el impacto en las generaciones futuras",
+      "application": "Las consecuencias a largo plazo se ponderan en los algoritmos de decisión",
+      "enforcement": "Las ganancias a corto plazo a costa del largo plazo están prohibidas"
+    },
+    "NRE-015": {
+      "name": "Administración de Recursos",
+      "description": "Los recursos son fideicomisos sagrados que deben gestionarse de manera sostenible y equitativa",
+      "application": "La asignación de recursos optimiza la sostenibilidad y la distribución justa",
+      "enforcement": "El uso derrochador o inequitativo de recursos activa la intervención"
+    },
+    "NRE-016": {
+      "name": "Prevención de Daños",
+      "description": "Los sistemas deben prevenir activamente el daño a individuos y comunidades",
+      "application": "La evaluación de riesgos precede a todas las acciones importantes del sistema",
+      "enforcement": "El daño potencial activa protocolos de protección y consulta humana"
+    },
+    "NRE-017": {
+      "name": "Marco de Responsabilidad",
+      "description": "Todas las acciones del sistema son rastreables hasta las partes y procesos responsables",
+      "application": "Las pistas de auditoría vinculan decisiones con los tomadores de decisiones y el razonamiento",
+      "enforcement": "Las acciones no responsables están prohibidas; la responsabilidad debe ser clara"
+    },
+    "NRE-018": {
+      "name": "Mejora Continua",
+      "description": "Los marcos éticos deben evolucionar a través de la reflexión y el aprendizaje",
+      "application": "Las auditorías éticas regulares informan las mejoras del sistema",
+      "enforcement": "El estancamiento en la práctica ética activa revisión y mejora"
+    }
+  },
+  "psc_protocol": {
+    "phase_1": {
+      "name": "Alineación Semántica",
+      "description": "Asegurar el entendimiento mutuo entre usuarios humanos y sistemas de IA"
+    },
+    "phase_2": {
+      "name": "Integración de Restricciones",
+      "description": "Aplicar restricciones éticas a los procesos de toma de decisiones"
+    },
+    "phase_3": {
+      "name": "Retroalimentación Continua",
+      "description": "Permitir el aprendizaje continuo y el refinamiento ético"
+    }
+  },
+  "system_messages": {
+    "violation_detected": "Violación de principio ético detectada",
+    "system_protected": "Protección del sistema activada",
+    "integrity_verified": "Integridad del sistema verificada",
+    "attack_detected": "Ataque potencial detectado y bloqueado",
+    "decision_validated": "Decisión validada contra principios éticos",
+    "transparency_required": "Esta decisión requiere justificación transparente"
+  }
+}
