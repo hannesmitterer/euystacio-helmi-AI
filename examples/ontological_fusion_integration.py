@@ -3,6 +3,10 @@ Integration example: Ontological Fusion Framework with Euystacio Core
 Demonstrates how to integrate NRE principles into existing AI operations
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from euystacio_core import Euystacio
 from core.ontological_fusion import initialize_ontological_fusion
 
