@@ -1,0 +1,175 @@
+name: Deploy to Environments
+
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  # Determine deployment environment and configuration
+  prepare:
+    name: Prepare Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      deploy-url: ${{ steps.set-env.outputs.deploy-url }}
+      
+    steps:
+    - name: Determine environment
+      id: set-env
+      run: |
+        if [ "${{ github.event_name }}" == "release" ]; then
+          echo "environment=production" >> $GITHUB_OUTPUT
+          echo "deploy-url=https://euystacio-helmi-ai.onrender.com" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          if [ "${{ inputs.environment }}" == "production" ]; then
+            echo "deploy-url=https://euystacio-helmi-ai.onrender.com" >> $GITHUB_OUTPUT
+          else
+            echo "deploy-url=https://euystacio-helmi-ai-staging.onrender.com" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "environment=staging" >> $GITHUB_OUTPUT
+          echo "deploy-url=https://euystacio-helmi-ai-staging.onrender.com" >> $GITHUB_OUTPUT
+        fi
+
+  # Deploy to staging environment
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: prepare
+    if: needs.prepare.outputs.environment == 'staging'
+    environment:
+      name: staging
+      url: ${{ needs.prepare.outputs.deploy-url }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run pre-deployment checks
+      run: |
+        echo "Running pre-deployment validation..."
+        python -c "import flask; import fastapi; print('Dependencies OK')"
+        
+    - name: Trigger Render deployment (Staging)
+      run: |
+        echo "Staging deployment would be triggered here"
+        # Add your Render deployment hook or use Render API
+        # curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}"
+        
+    - name: Create deployment summary
+      run: |
+        echo "## Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment:** Staging" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL:** ${{ needs.prepare.outputs.deploy-url }}" >> $GITHUB_STEP_SUMMARY
+
+  # Deploy to production environment (requires approval for manual triggers)
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: prepare
+    if: needs.prepare.outputs.environment == 'production'
+    environment:
+      name: production
+      url: ${{ needs.prepare.outputs.deploy-url }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        npm ci
+        
+    - name: Build static assets
+      run: |
+        if [ -f "build_static.py" ]; then
+          python build_static.py
+        fi
+        
+    - name: Run pre-deployment validation
+      run: |
+        echo "Running production pre-deployment checks..."
+        python -c "import flask; import fastapi; print('Python dependencies OK')"
+        npm run compile
+        
+    - name: Trigger Render deployment (Production)
+      run: |
+        echo "Production deployment would be triggered here"
+        # Add your Render deployment hook or use Render API
+        # curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}"
+        
+    - name: Create deployment summary
+      run: |
+        echo "## Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment:** Production" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL:** ${{ needs.prepare.outputs.deploy-url }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployed at:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+
+  # Verify deployment health
+  verify-deployment:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [prepare, deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    
+    steps:
+    - name: Wait for deployment to be ready
+      run: |
+        echo "Waiting 30 seconds for deployment to stabilize..."
+        sleep 30
+        
+    - name: Health check
+      run: |
+        URL="${{ needs.prepare.outputs.deploy-url }}"
+        echo "Checking health of $URL"
+        # Uncomment when endpoints are available
+        # curl -f "$URL/healthz" || echo "Health check endpoint not available"
+        
+    - name: Smoke tests
+      run: |
+        echo "Running smoke tests..."
+        # Add basic smoke tests here
+        echo "Smoke tests would run here"

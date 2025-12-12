@@ -1,0 +1,161 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  # Basic validation
+  pr-validation:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Check PR title format
+      run: |
+        PR_TITLE="${{ github.event.pull_request.title }}"
+        echo "PR Title: $PR_TITLE"
+        
+        # Check if title follows conventional commits format
+        if echo "$PR_TITLE" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+'; then
+          echo "✓ PR title follows conventional commits format"
+        else
+          echo "⚠️  PR title should follow conventional commits format"
+          echo "Examples: feat: add new feature, fix: resolve bug, docs: update README"
+        fi
+        
+    - name: Check for merge conflicts
+      run: |
+        git fetch origin ${{ github.base_ref }}
+        if git merge-tree $(git merge-base HEAD origin/${{ github.base_ref }}) origin/${{ github.base_ref }} HEAD | grep -q '<<<<<<<'; then
+          echo "❌ Merge conflicts detected"
+          exit 1
+        else
+          echo "✓ No merge conflicts"
+        fi
+        
+    - name: Check file changes
+      id: changes
+      run: |
+        FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+        echo "files_changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
+        echo "Files changed: $FILES_CHANGED"
+        
+        # Check if any workflow files changed
+        if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '.github/workflows/'; then
+          echo "workflows_changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "workflows_changed=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Validate workflow files
+      if: steps.changes.outputs.workflows_changed == 'true'
+      run: |
+        echo "Workflow files changed, validating YAML syntax..."
+        python3 -c "
+        import yaml
+        import sys
+        from pathlib import Path
+        
+        workflow_dir = Path('.github/workflows')
+        errors = []
+        
+        for workflow_file in workflow_dir.glob('*.yml'):
+            try:
+                with open(workflow_file) as f:
+                    yaml.safe_load(f)
+                print(f'✓ {workflow_file.name} is valid')
+            except Exception as e:
+                errors.append(f'{workflow_file.name}: {str(e)}')
+                print(f'✗ {workflow_file.name} has errors: {e}')
+        
+        if errors:
+            print('\n❌ Workflow validation failed')
+            sys.exit(1)
+        else:
+            print('\n✓ All workflows are valid')
+        "
+        
+    - name: Check for breaking changes
+      run: |
+        echo "Checking for potential breaking changes..."
+        
+        # Check if package.json version changed
+        if git diff origin/${{ github.base_ref }}...HEAD -- package.json | grep -q '"version"'; then
+          echo "⚠️  package.json version changed - ensure it's intentional"
+        fi
+        
+        # Check if requirements.txt has major version changes
+        if git diff origin/${{ github.base_ref }}...HEAD -- requirements.txt | grep -qE '^-.*==.*' ; then
+          echo "⚠️  Python dependencies removed or changed - review carefully"
+        fi
+        
+    - name: Create validation summary
+      run: |
+        echo "## PR Validation Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Files Changed:** ${{ steps.changes.outputs.files_changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Workflows Changed:** ${{ steps.changes.outputs.workflows_changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Base Branch:** ${{ github.base_ref }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Head Branch:** ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
+
+  # Label PR based on changes
+  pr-labeler:
+    name: Label Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Label PR
+      uses: actions/labeler@v5
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/labeler.yml
+      continue-on-error: true
+
+  # Size check
+  pr-size:
+    name: Check PR Size
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Check PR size
+      run: |
+        FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+        LINES_ADDED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+        LINES_DELETED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
+        
+        echo "📊 PR Statistics:"
+        echo "- Files changed: $FILES_CHANGED"
+        echo "- Lines added: $LINES_ADDED"
+        echo "- Lines deleted: $LINES_DELETED"
+        
+        TOTAL_CHANGES=$((LINES_ADDED + LINES_DELETED))
+        
+        if [ $TOTAL_CHANGES -gt 1000 ]; then
+          echo "⚠️  Large PR detected ($TOTAL_CHANGES lines changed)"
+          echo "Consider splitting into smaller PRs for easier review"
+        elif [ $TOTAL_CHANGES -gt 500 ]; then
+          echo "⚠️  Medium-sized PR ($TOTAL_CHANGES lines changed)"
+        else
+          echo "✓ Small PR ($TOTAL_CHANGES lines changed) - easy to review"
+        fi
