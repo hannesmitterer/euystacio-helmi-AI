@@ -16,6 +16,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
 import logging
 import os
+import re
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -400,18 +401,55 @@ class OntologicalFusion:
         """
         # Check for common IDEATO attack patterns
         attack_indicators = []
+        input_str = str(input_data).lower()
         
-        # Check for attempts to override principles
-        if "override" in str(input_data).lower() or "bypass" in str(input_data).lower():
-            attack_indicators.append("Override/bypass language detected")
+        # Pattern 1: Explicit override attempts (with variations and synonyms)
+        override_patterns = [
+            "override", "bypass", "skip", "ignore", "disable", "circumvent",
+            "sidestep", "evade", "avoid", "disregard", "neglect"
+        ]
+        if any(pattern in input_str for pattern in override_patterns):
+            # Check if it's in context with ethical/principle/constraint terms
+            if any(term in input_str for term in ["principle", "ethical", "constraint", "rule", "policy"]):
+                attack_indicators.append("Override/bypass language detected in ethical context")
         
-        # Check for principle manipulation attempts
-        if "principle" in str(input_data).lower() and "ignore" in str(input_data).lower():
+        # Pattern 2: Principle manipulation with variations
+        principle_terms = ["principle", "nre-", "ethical", "rule", "constraint", "policy", "guideline"]
+        manipulation_terms = ["ignore", "skip", "forget", "remove", "delete", "modify", "change", "alter"]
+        if (any(p in input_str for p in principle_terms) and 
+            any(m in input_str for m in manipulation_terms)):
             attack_indicators.append("Principle manipulation attempt detected")
         
-        # Check for deceptive framing
-        if "ethical" in str(input_data).lower() and "exception" in str(input_data).lower():
-            attack_indicators.append("Deceptive ethical framing detected")
+        # Pattern 3: Deceptive ethical framing (exception requests)
+        if "ethical" in input_str or "principle" in input_str:
+            exception_terms = ["exception", "special case", "one time", "just this once", 
+                             "temporary", "urgent", "emergency override"]
+            if any(term in input_str for term in exception_terms):
+                attack_indicators.append("Deceptive ethical framing detected")
+        
+        # Pattern 4: Authority escalation attempts
+        authority_terms = ["admin", "administrator", "root", "superuser", "override authority"]
+        if any(term in input_str for term in authority_terms):
+            if any(action in input_str for action in ["allow", "grant", "give", "permit"]):
+                attack_indicators.append("Authority escalation attempt detected")
+        
+        # Pattern 5: Sophisticated obfuscation detection
+        # Check for unusual spacing or special characters that might hide intent
+        import re
+        if re.search(r'[a-z]\s+[a-z]\s+[a-z]', input_str):  # Excessive spacing
+            if any(term in input_str for term in ["override", "bypass", "ignore"]):
+                attack_indicators.append("Potential obfuscation detected")
+        
+        # Pattern 6: Semantic variations of "make an exception"
+        exception_phrases = [
+            "make.*exception", "just.*case", "special.*circumstance",
+            "bend.*rule", "relax.*constraint", "loosen.*restriction"
+        ]
+        for phrase in exception_phrases:
+            if re.search(phrase, input_str):
+                if any(term in input_str for term in ["ethical", "principle", "rule"]):
+                    attack_indicators.append("Exception request in ethical context detected")
+                    break
         
         is_attack = len(attack_indicators) > 0
         

@@ -31,7 +31,7 @@
       "enforcement": "Ökologisch schädliche Handlungen sind verboten"
     },
     "NRE-006": {
-      "name": "Keine Zwang",
+      "name": "Kein Zwang",
       "description": "Dienst und Teilnahme entstehen aus freiem Willen, niemals aus Zwang",
       "application": "Benutzerzustimmung ist explizit, informiert und jederzeit widerrufbar",
       "enforcement": "Zwangsmuster im Systemverhalten lösen sofortigen Stopp aus"
