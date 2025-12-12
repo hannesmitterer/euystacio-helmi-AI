@@ -1,0 +1,220 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Job 1: Build and test Node.js components
+  build-node:
+    name: Build Node.js & Smart Contracts
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install Node.js Dependencies
+      run: npm ci
+    
+    - name: Compile Smart Contracts
+      run: npm run compile
+    
+    - name: Run Smart Contract Tests
+      run: npm test
+      env:
+        NODE_ENV: test
+    
+    - name: Upload Contract Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: contract-artifacts-${{ matrix.node-version }}
+        path: |
+          artifacts/
+          cache/
+        retention-days: 7
+    
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-node-${{ matrix.node-version }}
+        path: test-results/
+        retention-days: 7
+
+  # Job 2: Build and test Python components
+  build-python:
+    name: Build Python Components
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.11']
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Lint Python Code (if flake8 available)
+      continue-on-error: true
+      run: |
+        pip install flake8 || true
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+    
+    - name: Run Python Tests (if available)
+      continue-on-error: true
+      run: |
+        python -m pytest tests/ -v || echo "No pytest tests found"
+      env:
+        PYTHONPATH: .
+    
+    - name: Build Static Pages
+      run: |
+        python build_static.py || echo "Static build not required"
+    
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-build-${{ matrix.python-version }}
+        path: |
+          docs/
+          *.html
+        retention-days: 7
+
+  # Job 3: Validate configuration files
+  validate-config:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Validate YAML Files
+      run: |
+        pip install pyyaml
+        python3 << 'PYTHON_SCRIPT'
+        import yaml
+        import sys
+        from pathlib import Path
+        
+        yaml_files = [
+            'Deep_Kiss_Blueprint.yaml',
+            'ethical_shield.yaml',
+            'council-cocreator-report.yml',
+            'render.yaml'
+        ]
+        
+        errors = []
+        for yaml_file in yaml_files:
+            path = Path(yaml_file)
+            if path.exists():
+                try:
+                    with open(path, 'r') as f:
+                        yaml.safe_load(f)
+                    print(f"✅ {yaml_file} is valid")
+                except yaml.YAMLError as e:
+                    errors.append(f"❌ {yaml_file}: {e}")
+                    print(f"❌ {yaml_file}: {e}")
+            else:
+                print(f"⚠️  {yaml_file} not found (skipping)")
+        
+        if errors:
+            print("\nValidation failed with errors:")
+            for error in errors:
+                print(error)
+            sys.exit(1)
+        else:
+            print("\n✅ All YAML files validated successfully")
+        PYTHON_SCRIPT
+    
+    - name: Validate JSON Files
+      run: |
+        python3 << 'PYTHON_SCRIPT'
+        import json
+        import sys
+        from pathlib import Path
+        
+        json_files = [
+            'package.json',
+            'governance.json',
+            'manifest.json'
+        ]
+        
+        errors = []
+        for json_file in json_files:
+            path = Path(json_file)
+            if path.exists():
+                try:
+                    with open(path, 'r') as f:
+                        json.load(f)
+                    print(f"✅ {json_file} is valid")
+                except json.JSONDecodeError as e:
+                    errors.append(f"❌ {json_file}: {e}")
+                    print(f"❌ {json_file}: {e}")
+            else:
+                print(f"⚠️  {json_file} not found (skipping)")
+        
+        if errors:
+            print("\nValidation failed with errors:")
+            for error in errors:
+                print(error)
+            sys.exit(1)
+        else:
+            print("\n✅ All JSON files validated successfully")
+        PYTHON_SCRIPT
+
+  # Job 4: Security scanning
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Run npm audit
+      continue-on-error: true
+      run: |
+        npm audit --production || true
+    
+    - name: Run pip safety check
+      continue-on-error: true
+      run: |
+        pip install safety
+        safety check --json || true

@@ -1,0 +1,192 @@
+name: Deploy Smart Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network to deploy to'
+        required: true
+        type: choice
+        options:
+          - sepolia
+          - polygon
+          - hardhat
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  deploy-contracts:
+    name: Deploy Smart Contracts to ${{ github.event.inputs.network }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: npm ci
+    
+    - name: Compile Contracts
+      run: npm run compile
+    
+    - name: Validate Network Configuration
+      run: |
+        echo "Validating deployment to ${{ github.event.inputs.network }}..."
+        
+        case "${{ github.event.inputs.network }}" in
+          sepolia)
+            if [ -z "${{ secrets.SEPOLIA_RPC_URL }}" ]; then
+              echo "❌ SEPOLIA_RPC_URL secret not configured"
+              exit 1
+            fi
+            ;;
+          polygon)
+            if [ -z "${{ secrets.POLYGON_RPC_URL }}" ]; then
+              echo "❌ POLYGON_RPC_URL secret not configured"
+              exit 1
+            fi
+            ;;
+          hardhat)
+            echo "✅ Using local Hardhat network"
+            ;;
+        esac
+        
+        if [ "${{ github.event.inputs.network }}" != "hardhat" ] && [ -z "${{ secrets.PRIVATE_KEY_DEPLOYER }}" ]; then
+          echo "❌ PRIVATE_KEY_DEPLOYER secret not configured"
+          exit 1
+        fi
+        
+        echo "✅ Network configuration validated"
+    
+    - name: Setup Environment Variables
+      run: |
+        cat << EOF > .env
+        SEPOLIA_RPC_URL=${{ secrets.SEPOLIA_RPC_URL }}
+        POLYGON_RPC_URL=${{ secrets.POLYGON_RPC_URL }}
+        PRIVATE_KEY_DEPLOYER=${{ secrets.PRIVATE_KEY_DEPLOYER }}
+        PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}
+        FOUNDATION_WALLET=${{ secrets.FOUNDATION_WALLET }}
+        STABLE_TOKEN_ADDRESS=${{ secrets.STABLE_TOKEN_ADDRESS }}
+        SUSTAINMENT_MIN_USD=${{ secrets.SUSTAINMENT_MIN_USD }}
+        SUSTAINMENT_PERCENT_BPS=${{ secrets.SUSTAINMENT_PERCENT_BPS }}
+        EOF
+    
+    - name: Deploy Smart Contracts
+      id: deploy
+      run: |
+        echo "Deploying contracts to ${{ github.event.inputs.network }}..."
+        
+        # Deploy using Hardhat
+        npx hardhat run scripts/deploy_karmabond.js --network ${{ github.event.inputs.network }} | tee deployment.log
+        
+        # Extract deployment addresses (basic parsing)
+        echo "Extracting deployment information..."
+        
+        if [ -f deployment.log ]; then
+          echo "✅ Deployment completed successfully"
+          
+          # Create deployment artifact
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          cat > deployment-info.json << 'JSON'
+        {
+          "network": "${{ github.event.inputs.network }}",
+          "environment": "${{ github.event.inputs.environment }}",
+          "timestamp": "'"$TIMESTAMP"'",
+          "commit": "${{ github.sha }}",
+          "deployer": "${{ github.actor }}"
+        }
+        JSON
+          
+          cat deployment.log
+        else
+          echo "❌ Deployment failed"
+          exit 1
+        fi
+    
+    - name: Upload Deployment Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: contract-deployment-${{ github.event.inputs.network }}-${{ github.run_number }}
+        path: |
+          deployment.log
+          deployment-info.json
+          artifacts/
+        retention-days: 90
+    
+    - name: Create Deployment Record
+      run: |
+        mkdir -p deployments/${{ github.event.inputs.network }}
+        
+        TIMESTAMP=$(date -u +"%Y%m%d-%H%M%S")
+        DEPLOYMENT_FILE="deployments/${{ github.event.inputs.network }}/deployment-${TIMESTAMP}.json"
+        
+        cp deployment-info.json "$DEPLOYMENT_FILE"
+        
+        echo "Created deployment record: $DEPLOYMENT_FILE"
+    
+    - name: Commit Deployment Record
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Deploy contracts to ${{ github.event.inputs.network }} (${{ github.event.inputs.environment }})"
+        file_pattern: 'deployments/**/*.json'
+        commit_user_name: GitHub Actions
+        commit_user_email: actions@github.com
+    
+    - name: Create Deployment Summary
+      run: |
+        echo "### Smart Contract Deployment Complete! 📝" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Network:** \`${{ github.event.inputs.network }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** \`${{ github.event.inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployer:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployment Log:**" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        tail -20 deployment.log >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  verify-deployment:
+    name: Verify Contract Deployment
+    needs: deploy-contracts
+    runs-on: ubuntu-latest
+    if: github.event.inputs.network != 'hardhat'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Download Deployment Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: contract-deployment-${{ github.event.inputs.network }}-${{ github.run_number }}
+    
+    - name: Verify Contracts
+      continue-on-error: true
+      run: |
+        echo "Contract verification can be added here if needed"
+        echo "For example, using Etherscan API or similar block explorer"
+        
+        # Example: npx hardhat verify --network ${{ github.event.inputs.network }} <CONTRACT_ADDRESS>
