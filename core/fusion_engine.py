@@ -339,12 +339,28 @@ class FusionEngine:
         return True, result
     
     def _execute_decision(self, decision: Dict) -> Dict:
-        """Execute decision logic (to be implemented by specific subsystems)"""
-        return {
+        """
+        Execute decision logic.
+        
+        Note: This is a base implementation. Specific subsystems should
+        override or extend this method with their actual decision logic.
+        
+        For integration, decisions should be dispatched to appropriate
+        handlers based on decision type.
+        """
+        decision_type = decision.get("type", "unknown")
+        
+        # Route to appropriate handler based on type
+        # In production, this would dispatch to specialized handlers
+        result = {
             "status": "executed",
+            "decision_type": decision_type,
             "decision": decision,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
+            "note": "Base implementation - extend for specific decision types"
         }
+        
+        return result
     
     def get_system_status(self) -> Dict:
         """Get comprehensive system status including NRE compliance"""

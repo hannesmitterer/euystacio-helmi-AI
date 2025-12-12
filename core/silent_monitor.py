@@ -95,6 +95,8 @@ class IntegrityValidator:
         
     def _compute_framework_hashes(self) -> Dict[str, str]:
         """Compute hashes of critical framework files"""
+        import os
+        
         critical_files = [
             "docs/nre_principles.md",
             "docs/protocol_conscious_symbiosis.md",
@@ -106,13 +108,21 @@ class IntegrityValidator:
         ]
         
         hashes = {}
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
         for filepath in critical_files:
+            full_path = os.path.join(base_path, filepath)
             try:
-                # In production, would read actual files
-                # For now, create placeholder hash
-                hashes[filepath] = hashlib.sha256(filepath.encode()).hexdigest()
-            except:
-                hashes[filepath] = "FILE_NOT_ACCESSIBLE"
+                # Read actual file content and compute hash
+                with open(full_path, 'rb') as f:
+                    content = f.read()
+                    hashes[filepath] = hashlib.sha256(content).hexdigest()
+            except FileNotFoundError:
+                # File doesn't exist - record as such for monitoring
+                hashes[filepath] = "FILE_NOT_FOUND"
+            except Exception as e:
+                # Other errors - record for investigation
+                hashes[filepath] = f"ERROR_{type(e).__name__}"
         
         return hashes
     

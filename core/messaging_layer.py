@@ -341,7 +341,16 @@ class MessagingLayer:
         return [m.to_dict() for m in recent]
     
     def subscribe(self, subscriber):
-        """Subscribe to message notifications"""
+        """
+        Subscribe to message notifications.
+        
+        Args:
+            subscriber: Object with a receive_message(message) method
+        """
+        # Validate subscriber has required method
+        if not hasattr(subscriber, 'receive_message') or not callable(getattr(subscriber, 'receive_message')):
+            raise TypeError("Subscriber must have a callable 'receive_message' method")
+        
         self.subscribers.append(subscriber)
     
     def get_audit_trail_summary(self) -> Dict:
