@@ -10,7 +10,7 @@ NRE Principles: 001-018 (All principles integrated)
 import json
 import hashlib
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Dict, List, Optional, Callable, Tuple
 from core.ethical_monitor import get_ethical_monitor, ResponseAction
 
 

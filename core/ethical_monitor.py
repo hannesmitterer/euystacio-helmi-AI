@@ -270,18 +270,28 @@ class EthicalMonitor:
         violation_score = 0.0
         operation_str = json.dumps(operation).lower()
         
+        # Check for pattern keywords in operation
         for pattern in principle.patterns:
-            if pattern.replace("_", " ") in operation_str:
-                violation_score += 0.3
+            pattern_words = pattern.replace("_", " ")
+            if pattern_words in operation_str or pattern in operation_str:
+                violation_score += 0.35
             
         # Additional heuristics based on operation type
         if principle.code == "NRE-004":  # Transparency
             if "audit_trail" not in operation:
+                violation_score += 0.5
+            if "black_box" in operation_str or "hidden" in operation_str:
                 violation_score += 0.4
+                
+        if principle.code == "NRE-005":  # Non-Coercion
+            if "forced" in operation_str or "coercive" in operation_str:
+                violation_score += 0.6
                 
         if principle.code == "NRE-009":  # Participatory Governance
             if operation.get("type") == "governance_decision" and "stakeholders_consulted" not in operation:
-                violation_score += 0.5
+                violation_score += 0.6
+            if "unilateral" in operation_str:
+                violation_score += 0.4
                 
         return min(violation_score, 1.0)
     
