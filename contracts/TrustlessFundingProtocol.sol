@@ -13,6 +13,19 @@ interface ISustainment {
  * @title TrustlessFundingProtocol
  * @notice Governance contract for trustless funding with sustainment enforcement
  * @dev Enforces minimum sustainment threshold before releasing tranches
+ * 
+ * ETHICAL FRAMEWORK - Cosimbiosi Basis Fundamentum in Eternuum:
+ * - Transparency: All funding decisions are recorded on-chain with proofHash
+ * - Collaborative Governance: Decisions respect collective sustainability requirements
+ * - Individual Autonomy: Owner can override governance in emergencies (setGovernanceEnforcement)
+ * - Zero-Obligation Override: Emergency bypass mechanism honors NRE-002 principle
+ * - Sustainable Harmony: Enforces minimum reserves for ecosystem continuity
+ * - Accessible Verification: Public view functions (canReleaseTranche) enable transparency
+ * 
+ * USER CONTROL MECHANISMS:
+ * - governanceEnforced flag allows emergency bypass of automated checks
+ * - Public view functions provide transparency before actions
+ * - Event logging ensures full audit trail
  */
 contract TrustlessFundingProtocol is Ownable {
     address public foundationWallet;

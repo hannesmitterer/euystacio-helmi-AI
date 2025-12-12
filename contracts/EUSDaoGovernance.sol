@@ -4,6 +4,18 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+ * @title EUSDaoGovernance
+ * @notice DAO Governance contract aligned with Cosimbiosi Basis Fundamentum in Eternuum
+ * @dev Implements transparent, participatory governance respecting individual autonomy
+ * 
+ * ETHICAL PRINCIPLES:
+ * - Transparency: All operations are visible and interpretable
+ * - Universal Accessibility: Open participation for all stakeholders
+ * - Individual Choice: No forced participation (Zero-Obligation - NRE-002)
+ * - Dignity & Autonomy: Respects the inherent worth and self-determination of all participants
+ * - Collaborative Harmony: Promotes sustainable cooperation between decentralized networks
+ */
 contract EUSDaoGovernance is ERC20, Ownable {
     mapping(address => uint256) public contributionScore;
 

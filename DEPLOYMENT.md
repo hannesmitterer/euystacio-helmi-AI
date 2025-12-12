@@ -1,9 +1,37 @@
 # 🚀 Sacred Covenant Deployment Guide
 **Projekt:** Euystacio Helmi AI – Sacred Covenant  
-**Release:** v1.0.0-covenant  
+**Release:** v1.0.0-covenant (Reformulated for Cosimbiosi Basis Fundamentum in Eternuum)  
 **Datei:** euystacio-covenant-full-signed.zip  
 **SHA256:** 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82  
 **Verifikation:** Consensus Sacralis Omnibus Est  
+
+---
+
+## 🌿 Ethical Framework Integration
+
+This deployment has been reformulated to align with the **Cosimbiosi Basis Fundamentum in Eternuum** principles:
+
+### Core Ethical Guarantees
+
+1. **Transparency & Accessibility**
+   - All smart contracts are publicly verifiable and auditable
+   - Source code is open and accessible to all
+   - Documentation promotes universal understanding
+
+2. **Individual Autonomy & Choice**
+   - **Zero-Obligation (NRE-002)**: No forced participation in any mechanism
+   - Users can bypass automated processes through emergency overrides
+   - Exit mechanisms respect individual sovereignty
+
+3. **Collaborative Harmony**
+   - Promotes cooperation between decentralized networks
+   - Sustainment mechanisms support collective well-being
+   - Governance respects dignity and autonomy of all participants
+
+4. **Transparent Meta-Data**
+   - SHA256 checksums ensure integrity verification
+   - Security systems are fully documented and accessible
+   - Users maintain full control over their interactions  
 
 ---
 
@@ -70,7 +98,9 @@ Deployment erfolgt automatisch über `scripts/deploy.js`.
 
 ## 🧑‍💻 KarmaBond Benutzerfunktionen (User Features)
 
-Nach erfolgreichem Deployment können Nutzer folgende Funktionen verwenden:
+Nach erfolgreichem Deployment können Nutzer folgende Funktionen verwenden.
+
+**User Autonomy Note**: All functions respect the Zero-Obligation principle - participation is completely voluntary.
 
 ### 1. 📈 KarmaBonds Ausgeben (Minting)
 
@@ -79,11 +109,15 @@ const tx = await karmaBondContract.mintBond(amount, duration);
 await tx.wait();
 ```
 
+**Ethical Guarantee**: Users voluntarily choose when and how much to bond. The sustainment allocation percentage is transparent and publicly viewable.
+
 ### 2. 📊 Verwaltung Gehaltener Bonds
 
 ```js
 const bondInfo = await karmaBondContract.getBondInfo(userAddress);
 ```
+
+**Transparency**: All bond information is publicly accessible for full visibility.
 
 ### 3. 🔄 Laufzeit Verlängern oder Freigeben
 
@@ -92,20 +126,28 @@ await karmaBondContract.extendBond(bondId, additionalDuration);
 await karmaBondContract.releaseBond(bondId);
 ```
 
+**Individual Control**: Users maintain full control over their bond lifecycle.
+
 ### 4. 🗳️ Governance-Teilnahme
 
 - Bonds zählen als Stimmen für EUSDaoGovernance
 - Teilnahme an Vorschlägen und Abstimmungen möglich
 
+**Zero-Obligation**: Governance participation is optional - holding bonds does not force voting.
+
 ### 5. 🔁 Bond-Transfer (Optional)
 
 - Falls aktiviert, können Bonds übertragbar sein
+
+**User Autonomy**: Transfer capability respects user choice and control.
 
 ### 6. 💸 TrustlessFunding-Integration
 
 ```js
 const isEligible = await trustlessFundingContract.checkBondEligibility(userAddress);
 ```
+
+**Collaborative Harmony**: Integration promotes sustainable ecosystem funding while respecting individual participation choices.
 
 ---
 
@@ -204,6 +246,40 @@ Diese DEPLOYMENT.md ist maschinenlesbar optimiert für:
 🔄 Reproduzierbare Deployments für Governance
 
 **Ende von DEPLOYMENT.md**
+
+---
+
+## 🌿 Cosimbiosi Basis Fundamentum in Eternuum
+
+This v1.0.0-covenant release has been reformulated to fully integrate the ethical and philosophical principles of the **Cosimbiosi Basis Fundamentum in Eternuum** framework.
+
+### Key Enhancements
+
+1. **Ethical Integration** ✅
+   - Transparency and universal accessibility guaranteed
+   - Individual choice and autonomy respected
+   - Collaboration between decentralized networks promoted
+
+2. **Enhanced Documentation** ✅
+   - Comprehensive ethical framework guide (ETHICAL_FRAMEWORK.md)
+   - Complete security transparency documentation (SECURITY_TRANSPARENCY.md)
+   - User autonomy guide with Zero-Obligation compliance (USER_AUTONOMY_GUIDE.md)
+
+3. **Override Mechanisms** ✅
+   - Emergency bypass capabilities (NRE-002 compliance)
+   - Governance enforcement toggle in TrustlessFundingProtocol
+   - Configurable parameters respecting user autonomy
+
+4. **Transparent Meta-Data** ✅
+   - SHA256 checksums for integrity verification
+   - Complete security system documentation
+   - User control mechanisms fully explained
+
+### Additional Resources
+
+- [ETHICAL_FRAMEWORK.md](ETHICAL_FRAMEWORK.md) - Complete ethical framework guide
+- [SECURITY_TRANSPARENCY.md](SECURITY_TRANSPARENCY.md) - Security and transparency documentation
+- [USER_AUTONOMY_GUIDE.md](USER_AUTONOMY_GUIDE.md) - User control and autonomy guide
 
 ---
 
