@@ -80,9 +80,21 @@ const DistributedLockManager = {
 Legitimate users can bypass restrictions when:
 
 ```python
+# Configuration constants
+MIN_BYPASS_CRITERIA = 4  # Minimum passing criteria for bypass approval
+BYPASS_CRITERIA_TOTAL = 5  # Total number of criteria evaluated
+
 def can_bypass(user, action, context):
     """
     Determine if user can bypass normal access controls
+    
+    Args:
+        user: User identifier and credentials
+        action: Requested action
+        context: Additional context including emergency flags
+    
+    Returns:
+        bool: True if user can bypass, False otherwise
     """
     criteria = {
         'valid_credentials': verify_credentials(user),
@@ -92,10 +104,10 @@ def can_bypass(user, action, context):
         'consensus_support': get_consensus_support(user, action) > 0.5
     }
     
-    # User can bypass if they meet majority of criteria
+    # User can bypass if they meet minimum threshold of criteria
     passing_criteria = sum(criteria.values())
     
-    if passing_criteria >= 4:
+    if passing_criteria >= MIN_BYPASS_CRITERIA:
         log_bypass_event(user, action, criteria)
         return True
     
@@ -142,14 +154,24 @@ class EthicalOverride {
 Community overrides individual gatekeepers:
 
 ```python
+# Configuration constants for consensus override
+MIN_CONSENSUS_PARTICIPANTS = 7  # Minimum stakeholders for valid consensus
+CONSENSUS_APPROVAL_THRESHOLD = 0.75  # 75% approval rate required
+
 class ConsensusOverride:
     def __init__(self):
-        self.minimum_participants = 7
-        self.approval_threshold = 0.75
+        self.minimum_participants = MIN_CONSENSUS_PARTICIPANTS
+        self.approval_threshold = CONSENSUS_APPROVAL_THRESHOLD
     
     def process_override_request(self, request):
         """
         Process community override of individual gatekeeper
+        
+        Args:
+            request: Override request with details and justification
+            
+        Returns:
+            dict: Approval decision with details
         """
         # Collect votes from stakeholders
         votes = self.collect_votes(request)

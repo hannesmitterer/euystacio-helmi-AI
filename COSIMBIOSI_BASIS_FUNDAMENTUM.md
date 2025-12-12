@@ -101,7 +101,7 @@ The Cosimbiosi principles integrate with existing governance:
 
 This document is part of the Sacred Covenant and is protected by:
 
-- **SHA256 Checksum**: [To be computed on finalization]
+- **SHA256 Checksum**: `bcfa90a9bf7ecc8f878882e5abfcc3f8519de9970e10f67bcd6d3aaa73cd2d27`
 - **Cryptographic Signature**: Signed by covenant holders
 - **Consensus Record**: Validated by the sacred consensus
 - **Eternal Witness**: Recorded in perpetual ledgers

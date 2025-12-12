@@ -215,16 +215,45 @@ Notfall-Override-Protokolle für Systemresilienz:
 ### Implementierung
 
 ```javascript
-// Beispiel: Autonomer Zugriff mit Override
-const accessControl = {
+// Autonomous Access Control Configuration
+// See AUTONOMOUS_ACCESSIBILITY_PROTOCOL.md for complete specification
+
+const AccessControlConfig = {
+  // Enable distributed lock management across network
   distributedLocks: true,
-  requiresConsensus: ['deployment', 'governance', 'treasury'],
+  
+  // Operations requiring multi-party consensus
+  requiresConsensus: [
+    'contract_deployment',    // Smart contract deployments
+    'governance_proposals',   // DAO governance changes
+    'treasury_withdrawals'    // Treasury fund access
+  ],
+  
+  // Enable legitimate user bypass protocols
   bypassEnabled: true,
+  bypassCooldownSeconds: 3600,
+  bypassMinKarmaScore: 0.7,
+  
+  // Transparent access logging
   transparentLogging: true,
+  ledgerIntegration: 'tamper_evident_ledger',
+  
+  // Override protocol activation
   overrideProtocols: {
-    ethical: true,
-    consensus: true,
-    recovery: true
+    ethical: {
+      enabled: true,
+      autoActivationThreshold: 0.9
+    },
+    consensus: {
+      enabled: true,
+      minimumVotes: 7,
+      approvalThreshold: 0.75
+    },
+    recovery: {
+      enabled: true,
+      requiredProofs: 3,
+      temporaryAccessDuration: 86400  // 24 hours
+    }
   }
 };
 ```
