@@ -190,9 +190,34 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+### Core Documentation
+- [README.md](README.md) - Framework overview and quick start
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
+
+### Ethical Framework (Cosimbiosi Basis Fundamentum in Eternuum)
+- [ETHICAL_FRAMEWORK.md](ETHICAL_FRAMEWORK.md) - Complete ethical framework integration guide
+  - Core principles: Transparency, Autonomy, Collaborative Harmony, Dignity
+  - Override mechanisms (NRE-002 compliance)
+  - User rights and guarantees
+  - Collaborative guidelines for decentralized networks
+  
+- [SECURITY_TRANSPARENCY.md](SECURITY_TRANSPARENCY.md) - Comprehensive security documentation
+  - SHA256 integrity verification
+  - Security features (reentrancy, access control, safe transfers)
+  - Transparency mechanisms (events, public state, view functions)
+  - User control mechanisms and monitoring
+  
+- [USER_AUTONOMY_GUIDE.md](USER_AUTONOMY_GUIDE.md) - User autonomy and control guide
+  - Your rights as a user
+  - Zero-Obligation (NRE-002) compliance
+  - How to maintain full control
+  - Override mechanisms and when to use them
+
+### Smart Contract Documentation
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Sacred Covenant deployment guide with ethical guarantees
+- [contracts/README.md](contracts/README.md) - Detailed contract architecture
 
 ## 🏗️ Architecture
 
