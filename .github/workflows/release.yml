@@ -1,0 +1,177 @@
+name: Release and Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # Create GitHub Release
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Get version
+      id: get_version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          VERSION="${{ inputs.version }}"
+        else
+          VERSION=${GITHUB_REF#refs/tags/v}
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+        
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Generate changelog from git history
+        echo "## Changes in v${{ steps.get_version.outputs.version }}" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        git log --pretty=format:"- %s (%h)" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> CHANGELOG.md || true
+        cat CHANGELOG.md
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.version }}
+        release_name: Release v${{ steps.get_version.outputs.version }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: false
+
+  # Build release artifacts
+  build-artifacts:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        npm ci
+        pip install -r requirements.txt
+        
+    - name: Build smart contracts
+      run: |
+        npm run compile
+        
+    - name: Build static assets
+      run: |
+        if [ -f "build_static.py" ]; then
+          python build_static.py
+        fi
+        
+    - name: Create distribution package
+      run: |
+        mkdir -p dist
+        
+        # Create source distribution
+        tar czf dist/euystacio-helmi-ai-v${{ needs.create-release.outputs.version }}-source.tar.gz \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='venv' \
+          --exclude='__pycache__' \
+          --exclude='.env' \
+          .
+        
+        # Create contracts artifact
+        if [ -d "artifacts" ]; then
+          tar czf dist/euystacio-helmi-ai-v${{ needs.create-release.outputs.version }}-contracts.tar.gz artifacts/
+        fi
+        
+    - name: Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./dist/euystacio-helmi-ai-v${{ needs.create-release.outputs.version }}-source.tar.gz
+        asset_name: euystacio-helmi-ai-v${{ needs.create-release.outputs.version }}-source.tar.gz
+        asset_content_type: application/gzip
+
+  # Publish to package registries (if applicable)
+  publish-packages:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    needs: [create-release, build-artifacts]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        registry-url: 'https://registry.npmjs.org'
+        
+    - name: Publish to npm (if configured)
+      run: |
+        # Check if package is configured for publishing
+        if grep -q "\"private\": false" package.json 2>/dev/null; then
+          echo "Package is public, would publish to npm"
+          # Uncomment to enable npm publishing:
+          # npm publish
+        else
+          echo "Package is private or not configured for npm publishing"
+        fi
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      continue-on-error: true
+
+  # Deploy to production after successful release
+  trigger-production-deploy:
+    name: Trigger Production Deployment
+    runs-on: ubuntu-latest
+    needs: [create-release, build-artifacts]
+    
+    steps:
+    - name: Trigger production deployment workflow
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'deploy-environments.yml',
+            ref: 'main',
+            inputs: {
+              environment: 'production'
+            }
+          })
