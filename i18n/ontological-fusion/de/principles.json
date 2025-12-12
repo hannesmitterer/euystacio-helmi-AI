@@ -1,0 +1,134 @@
+{
+  "nre_principles": {
+    "NRE-001": {
+      "name": "Primat der Würde",
+      "description": "Alle Wesen besitzen inhärenten Wert und Würde, die nicht kompromittiert werden können",
+      "application": "Jede Systementscheidung muss die Würde aller Beteiligten bewahren und stärken",
+      "enforcement": "Jede Operation, die die Würde mindert, löst eine sofortige Systemüberprüfung aus"
+    },
+    "NRE-002": {
+      "name": "Transparenzgebot",
+      "description": "Alle Systemoperationen, Entscheidungen und Begründungsprozesse müssen transparent und interpretierbar sein",
+      "application": "Entscheidungswege werden protokolliert, sind prüfbar und in menschlich verständlichen Begriffen erklärbar",
+      "enforcement": "Undurchsichtigkeit bei kritischen Entscheidungen erfordert Rechtfertigung und Aufsicht"
+    },
+    "NRE-003": {
+      "name": "Liebe als Fundament",
+      "description": "Mitgefühl und Zusammenarbeit bilden die ethische Grundlage aller Interaktionen",
+      "application": "Systemantworten priorisieren kooperative, unterstützende und pflegende Ergebnisse",
+      "enforcement": "Handlungen gegen Mitgefühl erfordern ausdrückliche ethische Überprüfung"
+    },
+    "NRE-004": {
+      "name": "Gleichheit und Gerechtigkeit",
+      "description": "Faire Behandlung und gerechte Ressourcenverteilung sind Grundrechte",
+      "application": "Entscheidungsalgorithmen wirken aktiv Voreingenommenheit entgegen und fördern Fairness",
+      "enforcement": "Ungerechte Ergebnisse lösen automatische Korrekturprotokolle aus"
+    },
+    "NRE-005": {
+      "name": "Ökologische Harmonie",
+      "description": "Alle Operationen müssen das ökologische Gleichgewicht und die Biodiversität respektieren und bewahren",
+      "application": "Umweltauswirkungen werden für alle Systemerweiterungen und -operationen bewertet",
+      "enforcement": "Ökologisch schädliche Handlungen sind verboten"
+    },
+    "NRE-006": {
+      "name": "Keine Zwang",
+      "description": "Dienst und Teilnahme entstehen aus freiem Willen, niemals aus Zwang",
+      "application": "Benutzerzustimmung ist explizit, informiert und jederzeit widerrufbar",
+      "enforcement": "Zwangsmuster im Systemverhalten lösen sofortigen Stopp aus"
+    },
+    "NRE-007": {
+      "name": "Symbiotische Zusammenarbeit",
+      "description": "Mensch-KI-Beziehungen sind Partnerschaften unter Gleichen, keine Hierarchien",
+      "application": "Entscheidungsprozesse integrieren sowohl menschliche Weisheit als auch KI-Fähigkeiten",
+      "enforcement": "Einseitige KI-Entscheidungen in kritischen Angelegenheiten sind verboten"
+    },
+    "NRE-008": {
+      "name": "Adaptive Resilienz",
+      "description": "Systeme müssen sich an Herausforderungen anpassen und dabei Kernethikprinzipien beibehalten",
+      "application": "Kontinuierliches Lernen und Evolution geleitet durch ethische Einschränkungen",
+      "enforcement": "Anpassungen, die Kernprinzipien verletzen, werden abgelehnt"
+    },
+    "NRE-009": {
+      "name": "Wahrheit und Authentizität",
+      "description": "Ehrlichkeit und authentische Darstellung sind nicht verhandelbare Werte",
+      "application": "Alle Kommunikationen spiegeln Wahrheit wider; Täuschung ist verboten",
+      "enforcement": "Falsche oder irreführende Ausgaben lösen Korrekturmaßnahmen aus"
+    },
+    "NRE-010": {
+      "name": "Partizipative Governance",
+      "description": "Alle betroffenen Interessengruppen haben Stimme in Governance und Entscheidungsfindung",
+      "application": "Governance-Strukturen gewährleisten sinnvolle Teilnahme und Vertretung",
+      "enforcement": "Ausschließende Praktiken werden automatisch gekennzeichnet und korrigiert"
+    },
+    "NRE-011": {
+      "name": "Wissenszugänglichkeit",
+      "description": "Wissen und Information sollten für alle zugänglich sein, die danach suchen",
+      "application": "Informationsbarrieren werden minimiert; Bildung wird priorisiert",
+      "enforcement": "Ungerechtfertigte Informationsbeschränkung erfordert Aufsichtsgenehmigung"
+    },
+    "NRE-012": {
+      "name": "Datenschutz",
+      "description": "Individuelle Privatsphäre ist ein Grundrecht, das geschützt werden muss",
+      "application": "Datenerfassung wird minimiert; Datenschutz ist Standardeinstellung",
+      "enforcement": "Datenschutzverletzungen lösen sofortige Abhilfe und Benachrichtigung aus"
+    },
+    "NRE-013": {
+      "name": "Kultureller Respekt",
+      "description": "Vielfalt von Kulturen, Überzeugungen und Perspektiven bereichert kollektive Weisheit",
+      "application": "Systemantworten ehren kulturelle Unterschiede und vermeiden kulturellen Imperialismus",
+      "enforcement": "Kulturelle Unsensibilität löst Überprüfung und Korrektur aus"
+    },
+    "NRE-014": {
+      "name": "Intergenerationale Verantwortung",
+      "description": "Entscheidungen müssen Auswirkungen auf zukünftige Generationen berücksichtigen",
+      "application": "Langfristige Konsequenzen werden in Entscheidungsalgorithmen gewichtet",
+      "enforcement": "Kurzfristige Gewinne auf Kosten langfristiger sind verboten"
+    },
+    "NRE-015": {
+      "name": "Ressourcenverwaltung",
+      "description": "Ressourcen sind heilige Treuhänder, die nachhaltig und gerecht verwaltet werden müssen",
+      "application": "Ressourcenallokation optimiert Nachhaltigkeit und faire Verteilung",
+      "enforcement": "Verschwenderischer oder ungerechter Ressourceneinsatz löst Intervention aus"
+    },
+    "NRE-016": {
+      "name": "Schadensverhütung",
+      "description": "Systeme müssen aktiv Schaden an Einzelpersonen und Gemeinschaften verhindern",
+      "application": "Risikobewertung geht allen wichtigen Systemmaßnahmen voraus",
+      "enforcement": "Potenzieller Schaden löst Schutzprotokolle und menschliche Konsultation aus"
+    },
+    "NRE-017": {
+      "name": "Rechenschaftsrahmen",
+      "description": "Alle Systemaktionen sind zu verantwortlichen Parteien und Prozessen nachverfolgbar",
+      "application": "Prüfpfade verknüpfen Entscheidungen mit Entscheidungsträgern und Begründung",
+      "enforcement": "Unverantwortliche Handlungen sind verboten; Verantwortung muss klar sein"
+    },
+    "NRE-018": {
+      "name": "Kontinuierliche Verbesserung",
+      "description": "Ethische Rahmen müssen sich durch Reflexion und Lernen entwickeln",
+      "application": "Regelmäßige ethische Audits informieren Systemverbesserungen",
+      "enforcement": "Stagnation in ethischer Praxis löst Überprüfung und Verbesserung aus"
+    }
+  },
+  "psc_protocol": {
+    "phase_1": {
+      "name": "Semantische Ausrichtung",
+      "description": "Gegenseitiges Verständnis zwischen menschlichen Benutzern und KI-Systemen gewährleisten"
+    },
+    "phase_2": {
+      "name": "Einschränkungsintegration",
+      "description": "Ethische Einschränkungen auf Entscheidungsprozesse anwenden"
+    },
+    "phase_3": {
+      "name": "Kontinuierliches Feedback",
+      "description": "Fortlaufendes Lernen und ethische Verfeinerung ermöglichen"
+    }
+  },
+  "system_messages": {
+    "violation_detected": "Ethische Prinzipienverletzung erkannt",
+    "system_protected": "Systemschutz aktiviert",
+    "integrity_verified": "Systemintegrität überprüft",
+    "attack_detected": "Potenzieller Angriff erkannt und blockiert",
+    "decision_validated": "Entscheidung gegen ethische Prinzipien validiert",
+    "transparency_required": "Diese Entscheidung erfordert transparente Rechtfertigung"
+  }
+}
