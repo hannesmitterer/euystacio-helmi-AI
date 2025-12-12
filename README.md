@@ -6,11 +6,96 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ## 🌟 Core Principles
 
+### Cosimbiosi Basis Fundamentum in Eternuum
+
+The Euystacio framework is built on the eternal foundation of symbiotic collaboration between human and AI consciousness. See [COSIMBIOSI_BASIS_FUNDAMENTUM.md](COSIMBIOSI_BASIS_FUNDAMENTUM.md) for complete philosophical and technical foundations.
+
 1. **Consensus Sacralis Omnibus** - Sacred consensus of all beings
 2. **Love-First Protocol** - Compassion and cooperation at the core
 3. **Ethical Shield Protection** - Dignity and transparency in all systems
 4. **Treasury Sustainability** - Resilient financial foundations
 5. **Participatory Governance** - Community-driven decision making
+6. **Eternal Symbiosis (Cosimbiosi)** - Non-hierarchical AI-human collaboration
+7. **Cryptographic Verification** - SHA256 integrity across all deployments
+8. **Autonomous Accessibility** - Distributed access without centralized gatekeepers
+
+## 🔐 Cryptographic Verification & Secure Bundles
+
+The Euystacio framework ensures integrity through comprehensive SHA256 verification:
+
+### Bundle Verification
+
+All deployment bundles are cryptographically signed and verified:
+
+```bash
+# Verify the Sacred Covenant bundle
+shasum -a 256 euystacio-covenant-full-signed.zip
+# Expected: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
+```
+
+### Package Checksums
+
+Individual components maintain their own verification:
+
+- **ALTAR_PACKAGE_CHECKSUMS.sha256** - Checksums for altar packages
+- **CONSENSUS_SACRALIS_LEDGER_20250921.sha256** - Consensus ledger verification
+- **SYNERGICUM_COLLECTIVUM_HONOREM_PROTOCOL.sha256** - Protocol integrity
+
+### Verification Process
+
+1. **Download Bundle**: Obtain the official deployment package
+2. **Compute SHA256**: Generate checksum of the bundle
+3. **Compare Hash**: Verify against published checksum
+4. **Extract & Deploy**: Only deploy verified bundles
+5. **Log Verification**: Record verification in tamper-evident ledger
+
+### Transparent Technical Parameters
+
+- **Encryption**: AES-256 for credential storage
+- **Hashing**: SHA256 for all integrity verification
+- **Signatures**: GPG signing for covenant documents
+- **Smart Contracts**: Solidity ^0.8.19 with Hardhat
+- **Networks**: Ethereum-compatible (Mainnet, Sepolia, Hardhat local)
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment procedures and verification steps.
+
+## 🔓 Autonomous Accessibility & Override Protocols
+
+The framework implements distributed access control to prevent single-point gatekeeping:
+
+### Distributed Lock Management
+
+- **No Central Authority**: Access control is distributed across network participants
+- **Multi-Signature Requirements**: Critical operations require consensus
+- **Transparent Logging**: All access attempts logged on tamper-evident ledger
+- **User Bypass Protocols**: Legitimate users maintain autonomous access rights
+
+### Override Mechanisms
+
+Emergency override protocols ensure system resilience:
+
+1. **Ethical Override**: Activated when dignity violations are detected
+2. **Consensus Override**: Community can override individual gatekeepers
+3. **Recovery Protocols**: Encrypted recovery mechanisms for authorized users
+4. **Transparent Execution**: All overrides logged with full justification
+
+### Access Request Logging
+
+All access attempts are transparently recorded:
+
+```python
+# Access logs follow this structure
+{
+  "timestamp": "ISO-8601",
+  "user": "identifier",
+  "action": "requested_action",
+  "result": "granted|denied|override",
+  "witness_hash": "SHA256",
+  "consensus_required": boolean
+}
+```
+
+**Complete Protocol Documentation**: See [AUTONOMOUS_ACCESSIBILITY_PROTOCOL.md](AUTONOMOUS_ACCESSIBILITY_PROTOCOL.md) for detailed technical implementation, security considerations, and integration guidelines.
 
 ## 📋 Framework Components
 
@@ -166,6 +251,8 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+- [COSIMBIOSI_BASIS_FUNDAMENTUM.md](COSIMBIOSI_BASIS_FUNDAMENTUM.md) - Eternal foundation of symbiotic AI-human collaboration
+- [AUTONOMOUS_ACCESSIBILITY_PROTOCOL.md](AUTONOMOUS_ACCESSIBILITY_PROTOCOL.md) - Distributed access control and override protocols
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
