@@ -1,0 +1,40 @@
+{
+  "name": "euystacio-helmi-sdk",
+  "version": "1.1.0",
+  "description": "Software Development Kit for euystacio-helmi-AI framework - Web3 and ML integration",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Tests pending\" && exit 0"
+  },
+  "keywords": [
+    "euystacio",
+    "helmi-ai",
+    "governance",
+    "blockchain",
+    "ipfs",
+    "sdk",
+    "web3",
+    "ml",
+    "sensisara",
+    "bioarchitecture",
+    "ethereum",
+    "smart-contracts"
+  ],
+  "author": "hannesmitterer",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.9.0"
+  },
+  "peerDependencies": {
+    "ethers": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hannesmitterer/euystacio-helmi-ai.git"
+  },
+  "homepage": "https://github.com/hannesmitterer/euystacio-helmi-ai#readme"
+}

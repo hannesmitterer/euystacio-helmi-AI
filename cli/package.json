@@ -1,0 +1,32 @@
+{
+  "name": "euystacio-cli",
+  "version": "1.1.0",
+  "description": "Command-line interface for euystacio-helmi-AI framework",
+  "main": "index.js",
+  "bin": {
+    "euystacio-cli": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Tests pending\" && exit 0"
+  },
+  "keywords": [
+    "euystacio",
+    "helmi-ai",
+    "governance",
+    "blockchain",
+    "ipfs",
+    "cli",
+    "sensisara",
+    "bioarchitecture"
+  ],
+  "author": "hannesmitterer",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hannesmitterer/euystacio-helmi-ai.git"
+  },
+  "homepage": "https://github.com/hannesmitterer/euystacio-helmi-ai#readme"
+}
