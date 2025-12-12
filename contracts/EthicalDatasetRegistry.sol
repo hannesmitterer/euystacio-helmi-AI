@@ -224,7 +224,7 @@ contract EthicalDatasetRegistry is Ownable, ReentrancyGuard {
     function calculateReward(uint256 impactFactor) public view returns (uint256) {
         // reward = baseReward * (1 + (impactFactor / 100) * maxImpactMultiplier)
         // Example: impactFactor=50, maxMultiplier=300 => 1.5x multiplier
-        uint256 multiplier = 10000 + ((impactFactor * maxImpactMultiplier * 100) / 100);
+        uint256 multiplier = 10000 + (impactFactor * maxImpactMultiplier);
         return (baseReward * multiplier) / 10000;
     }
     

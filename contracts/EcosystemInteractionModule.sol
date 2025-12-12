@@ -47,6 +47,7 @@ contract EcosystemInteractionModule is Ownable, ReentrancyGuard {
     // Storage
     mapping(address => TrustedProvider) public trustedProviders;
     mapping(bytes32 => VerifiedQuery) public verifiedQueries;
+    mapping(address => uint256) public providerNonces; // Nonce to prevent replay attacks
     address[] public providerList;
     
     // Reward parameters
@@ -160,8 +161,11 @@ contract EcosystemInteractionModule is Ownable, ReentrancyGuard {
     ) external nonReentrant {
         require(trustedProviders[provider].isActive, "Provider not active");
         
-        // Create query hash
-        bytes32 queryHash = keccak256(abi.encodePacked(queryData, provider, block.timestamp));
+        // Increment nonce to prevent replay attacks
+        uint256 nonce = providerNonces[provider]++;
+        
+        // Create query hash with nonce
+        bytes32 queryHash = keccak256(abi.encodePacked(queryData, provider, nonce));
         
         // Verify signature
         bytes32 messageHash = queryHash.toEthSignedMessageHash();

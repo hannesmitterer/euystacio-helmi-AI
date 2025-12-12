@@ -298,7 +298,7 @@ contract ModelRetrainingEscrow is Ownable, ReentrancyGuard {
      */
     function calculateReward(uint256 complexity) public view returns (uint256) {
         // reward = baseReward * (1 + (complexity / 100) * maxComplexityMultiplier)
-        uint256 multiplier = 10000 + ((complexity * maxComplexityMultiplier * 100) / 100);
+        uint256 multiplier = 10000 + (complexity * maxComplexityMultiplier);
         return (baseReward * multiplier) / 10000;
     }
     
