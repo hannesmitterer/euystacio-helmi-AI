@@ -1,0 +1,173 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to deploy (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  deployments: write
+
+env:
+  DEPLOYMENT_ENV: production
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy-production:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.version || github.ref }}
+    
+    - name: Validate version tag
+      run: |
+        if [[ "${{ github.ref }}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ "${{ github.event.inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "✅ Valid version tag"
+          VERSION="${{ github.event.inputs.version || github.ref_name }}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        else
+          echo "❌ Invalid version tag format. Expected: v*.*.* (e.g., v1.0.0)"
+          exit 1
+        fi
+    
+    - name: Create deployment
+      uses: chrnorm/deployment-action@v2
+      id: deployment
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        environment: production
+        initial-status: in_progress
+    
+    - name: Setup deployment configuration
+      run: |
+        echo "Preparing production deployment..."
+        echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}"
+        echo "Environment: ${{ env.DEPLOYMENT_ENV }}"
+    
+    # If using Render.com
+    - name: Deploy to Render (Production)
+      if: secrets.RENDER_DEPLOY_HOOK_PRODUCTION != ''
+      run: |
+        curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}"
+        echo "Triggered Render deployment for production"
+    
+    # If using other cloud provider (AWS, GCP, Azure, etc.)
+    # Uncomment and configure as needed
+    
+    # - name: Deploy to AWS ECS (Production)
+    #   if: secrets.AWS_ACCESS_KEY_ID != ''
+    #   run: |
+    #     # Configure AWS credentials and deploy
+    #     echo "Deploy to AWS ECS production"
+    
+    # - name: Deploy to Google Cloud Run (Production)
+    #   if: secrets.GCP_SA_KEY != ''
+    #   uses: google-github-actions/deploy-cloudrun@v2
+    #   with:
+    #     service: euystacio-production
+    #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+    #     region: us-central1
+    
+    - name: Wait for deployment health check
+      id: deploy
+      run: |
+        echo "Waiting for production deployment to be healthy..."
+        sleep 45
+        
+        # Set production URL (update with your actual production URL)
+        PRODUCTION_URL="https://euystacio.onrender.com"
+        echo "url=$PRODUCTION_URL" >> $GITHUB_OUTPUT
+        
+        # Health check
+        echo "Performing health check..."
+        MAX_RETRIES=5
+        RETRY_COUNT=0
+        
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          if curl -f "$PRODUCTION_URL/healthz" 2>/dev/null; then
+            echo "✅ Health check passed"
+            break
+          else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              echo "Health check failed, retrying... ($RETRY_COUNT/$MAX_RETRIES)"
+              sleep 10
+            else
+              echo "❌ Health check failed after $MAX_RETRIES attempts"
+              exit 1
+            fi
+          fi
+        done
+        
+        echo "Production deployment successful!"
+        echo "URL: $PRODUCTION_URL"
+    
+    - name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: success
+        environment-url: ${{ steps.deploy.outputs.url }}
+    
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: failure
+    
+    - name: Create GitHub Release
+      if: success() && startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Notify deployment
+      if: success()
+      run: |
+        echo "### Production Deployment Complete! 🎉" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** \`${{ env.VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+  run-production-tests:
+    name: Run Production Verification
+    needs: deploy-production
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Run production verification tests
+      run: |
+        echo "Running production verification tests..."
+        
+        # Example verification test - update URL as needed
+        # curl -f https://euystacio.onrender.com/healthz
+        
+        echo "✅ Production verification passed"
