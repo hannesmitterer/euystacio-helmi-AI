@@ -45,7 +45,6 @@ services:
       - "8080:80"
     volumes:
       - ./docs:/usr/share/nginx/html:ro
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - app
     restart: unless-stopped
@@ -57,7 +56,3 @@ services:
 networks:
   euystacio-network:
     driver: bridge
-
-volumes:
-  logs-data:
-  app-data:
