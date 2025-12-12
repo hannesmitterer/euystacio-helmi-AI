@@ -301,7 +301,7 @@ class OntologicalFusionOrchestrator:
             "=" * 70,
             f"\nFramework Status: {status['nre_framework_status']['status'].upper()}",
             f"Health: {status['silent_monitoring']['health_status']['status']}",
-            f"Current Alerts: {status['silent_monitoring']['health_status']['current_alerts']}",
+            f"Current Alerts: {status['silent_monitoring']['health_status'].get('current_alerts', 0)}",
             f"\nRecommendation: {status['nre_framework_status']['recommendation']}",
             "\n" + "=" * 70,
             "RECENT ACTIVITY",
