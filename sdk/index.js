@@ -9,7 +9,14 @@
  * - Sensisara principle implementations
  */
 
-const { ethers } = require('ethers');
+// Lazy load ethers only when needed for Web3 operations
+let ethers;
+try {
+  ethers = require('ethers');
+} catch (e) {
+  // ethers not available - Web3 features will be disabled
+  ethers = null;
+}
 
 class EuystacioHelmiSDK {
   constructor(config = {}) {
@@ -34,6 +41,10 @@ class EuystacioHelmiSDK {
    * Initialize SDK with provider and contracts
    */
   async initialize() {
+    if (!ethers) {
+      throw new Error('ethers.js is required for Web3 operations. Install with: npm install ethers');
+    }
+    
     this.provider = new ethers.JsonRpcProvider(this.config.rpcUrl);
     
     if (this.config.privateKey) {

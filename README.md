@@ -6,6 +6,12 @@ The euystacio-helmi-AI framework introduces **bioarchitecture** and **on-chain g
 
 🌱 **Kosymbiosis**: Building cosmic symbiosis between human and artificial intelligence.
 
+---
+
+**📚 [Quick Start Guide](QUICKSTART.md)** | **🗺️ [Roadmap v1.1.0](ROADMAP_v1.1.0.md)** | **💬 [Forum](https://forum.eustacio.org)** | **📊 [Dashboard](https://monitor.eustacio.org)**
+
+---
+
 ## 🎯 What Makes This Different?
 
 Unlike traditional "black-box AI" frameworks, euystacio-helmi-AI provides:
