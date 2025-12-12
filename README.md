@@ -21,6 +21,26 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 - **EUSDaoGovernance** - DAO-based governance with weighted voting
 - **Sustainment** - Treasury sustainability protocol
 
+#### Tokenomics V2.0 System
+
+The **Tokenomics V2.0** system provides comprehensive incentive mechanisms for the Sensisara Evolved cycle:
+
+- **TokenomicsV2** - Core ERC20 token with pool-based reward distribution (10M SENS)
+- **EthicalDatasetRegistry** - Dataset validation with DAO voting and impact-based rewards
+- **ModelRetrainingEscrow** - Model retraining proposals with token escrow
+- **EcosystemInteractionModule (EIM)** - Trusted provider query rewards with reputation system
+- **KSyncOracle** - Operator automation with staking and execution tracking
+
+**Token Allocation:**
+- Ethical Researchers: 35% (3.5M SENS)
+- DAO Validators: 20% (2M SENS)
+- Trusted Providers: 15% (1.5M SENS)
+- Operators: 20% (2M SENS)
+- Community Reserve: 10% (1M SENS)
+
+See [TOKENOMICS_V2.md](docs/TOKENOMICS_V2.md) for detailed documentation.
+
+
 ### OV: Open Visual - Authentication Module
 
 The **Open Visual (OV)** module provides advanced facial recognition authentication with secure credential storage:
