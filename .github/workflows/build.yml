@@ -124,7 +124,7 @@ jobs:
     
     - name: Validate YAML Files
       run: |
-        pip install pyyaml
+        pip install pyyaml==6.0.1
         python3 << 'PYTHON_SCRIPT'
         import yaml
         import sys

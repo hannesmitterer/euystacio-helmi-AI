@@ -41,11 +41,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install Node.js runtime (needed for server.js)
+# Install Node.js from NodeSource with verification
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y --no-install-recommends curl gnupg && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" > /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends nodejs && \
+    apt-get remove -y curl gnupg && \
+    apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -68,7 +72,7 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/healthz', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"
+    CMD ["node", "healthcheck.js"]
 
 # Default command (can be overridden)
 CMD ["node", "server.js"]

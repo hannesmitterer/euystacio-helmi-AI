@@ -55,14 +55,12 @@ jobs:
         fi
         
         # Save changelog to file
-        cat > CHANGELOG.md << 'EOF'
-        ## Changes
-        
-        $CHANGELOG
-        
-        ## Commits
-        See full commit history for details.
-        EOF
+        echo "## Changes" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "$CHANGELOG" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "## Commits" >> CHANGELOG.md
+        echo "See full commit history for details." >> CHANGELOG.md
         
         cat CHANGELOG.md
     

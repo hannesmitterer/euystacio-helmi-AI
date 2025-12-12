@@ -137,9 +137,24 @@ jobs:
         TIMESTAMP=$(date -u +"%Y%m%d-%H%M%S")
         DEPLOYMENT_FILE="deployments/${{ github.event.inputs.network }}/deployment-${TIMESTAMP}.json"
         
-        cp deployment-info.json "$DEPLOYMENT_FILE"
+        NETWORK="${{ github.event.inputs.network }}"
+        ENVIRONMENT="${{ github.event.inputs.environment }}"
+        TIMESTAMP_ISO=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        COMMIT="${{ github.sha }}"
+        DEPLOYER="${{ github.actor }}"
+        
+        cat > "$DEPLOYMENT_FILE" << EOF
+{
+  "network": "$NETWORK",
+  "environment": "$ENVIRONMENT",
+  "timestamp": "$TIMESTAMP_ISO",
+  "commit": "$COMMIT",
+  "deployer": "$DEPLOYER"
+}
+EOF
         
         echo "Created deployment record: $DEPLOYMENT_FILE"
+        cat "$DEPLOYMENT_FILE"
     
     - name: Commit Deployment Record
       uses: stefanzweifel/git-auto-commit-action@v5
