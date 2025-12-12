@@ -2,6 +2,16 @@
 
 Software Development Kit for Web3 and ML integrators.
 
+## Requirements
+
+- **Node.js v18+** (required for native `fetch` support in IPFS operations)
+- **ethers v6+** (for Web3 features, optional for ML-only usage)
+
+For Node.js < v18, install `node-fetch`:
+```bash
+npm install node-fetch
+```
+
 ## Installation
 
 ```bash

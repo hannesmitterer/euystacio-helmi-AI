@@ -1,6 +1,9 @@
 /**
  * Example: ML Integration with Sensisara Principle
  * Demonstrates ecosystem-inspired decision-making patterns
+ * 
+ * Note: Run from repository root: node examples/ml-sensisara.js
+ * Or install SDK globally and use: const { SensisaraML } = require('euystacio-helmi-sdk');
  */
 
 const { SensisaraML } = require('../sdk/index.js');

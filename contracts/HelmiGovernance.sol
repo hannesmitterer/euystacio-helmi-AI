@@ -106,6 +106,9 @@ contract HelmiGovernance is ERC20, Ownable {
         );
         
         // Check rate limiting (refractory period)
+        // Calculate the start of the current time window using integer division
+        // e.g., if current time is 150,000 and window is 86,400 (1 day),
+        // windowStart = (150,000 / 86,400) * 86,400 = 1 * 86,400 = 86,400
         uint256 windowStart = (block.timestamp / RATE_LIMIT_WINDOW) * RATE_LIMIT_WINDOW;
         require(
             proposalsInWindow[windowStart] < MAX_PROPOSALS_PER_WINDOW,

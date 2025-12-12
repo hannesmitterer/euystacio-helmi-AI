@@ -183,10 +183,16 @@ class EuystacioHelmiSDK {
   
   /**
    * Fetch document from IPFS
+   * Note: Requires Node.js v18+ for native fetch, or install node-fetch for older versions
    * @param {string} cid - IPFS CID
    * @returns {Promise<string>} Document content
    */
   async fetchFromIPFS(cid) {
+    // Check if fetch is available (Node.js v18+)
+    if (typeof fetch === 'undefined') {
+      throw new Error('fetch is not available. Please use Node.js v18+ or install node-fetch');
+    }
+    
     const url = `${this.config.ipfsGateway}${cid}`;
     const response = await fetch(url);
     

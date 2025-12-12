@@ -61,9 +61,13 @@ describe("HelmiGovernance - Sensisara Principle Implementation", function () {
       const ipfsCid = "QmT6S1Z7d3hJ9kL5mN2xV8pQzYvXwA8bC0dE1fG2H3I4J5";
       const title = "Test Proposal";
       
-      await expect(helmiGov.connect(proposer).createProposal(ipfsCid, title))
+      const tx = await helmiGov.connect(proposer).createProposal(ipfsCid, title);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
+      
+      await expect(tx)
         .to.emit(helmiGov, "ProposalCreated")
-        .withArgs(1, proposer.address, ipfsCid, title, await time.latest() + 1, await time.latest() + 1 + VOTING_PERIOD);
+        .withArgs(1, proposer.address, ipfsCid, title, block.timestamp, block.timestamp + VOTING_PERIOD);
       
       expect(await helmiGov.proposalCount()).to.equal(1);
     });
