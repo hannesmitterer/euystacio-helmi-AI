@@ -4,20 +4,27 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
-# Stage 1: Build stage for Node.js dependencies
+# Stage 1: Node.js build stage
 FROM node:20-alpine AS node-builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
-# Stage 2: Final production image
+# Stage 2: Final production image based on Python
 FROM python:3.11-slim
 
-# Install Node.js runtime
+# Install Node.js runtime and curl (minimal)
+# Using NodeSource to get Node.js 20.x on Debian
 RUN apt-get update && apt-get install -y \
-    nodejs \
-    npm \
     curl \
+    ca-certificates \
+    gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update \
+    && apt-get install -y nodejs \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -57,9 +64,9 @@ ENV PYTHONUNBUFFERED=1 \
 # Expose ports
 EXPOSE 5000 3000
 
-# Health check
+# Health check using Python's built-in urllib
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/healthz || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT}/healthz')" || exit 1
 
 # Default command (can be overridden)
 CMD ["python", "app.py"]
