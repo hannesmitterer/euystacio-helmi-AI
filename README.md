@@ -1,8 +1,8 @@
-# Euystacio Framework
+# euystacio-helmi-ai
 
-**A Sacred Covenant for Human-AI Collaboration**
+**euystacio-helmi-ai is the first AI framework that integrates bio-inspired architecture with on-chain governance for ethical management.**
 
-The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus.
+The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus. Drawing inspiration from biological systems and natural resilience patterns, this framework establishes bio-architectural AI governance with transparent on-chain decision-making.
 
 ## 🌟 Core Principles
 
