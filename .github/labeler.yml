@@ -1,0 +1,47 @@
+# Pull request labeler configuration
+# https://github.com/actions/labeler
+
+# Documentation changes
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*.md', 'docs/**/*']
+
+# Workflow changes
+workflows:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/**/*']
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['package.json', 'package-lock.json', 'requirements.txt']
+
+# Docker
+docker:
+  - changed-files:
+    - any-glob-to-any-file: ['Dockerfile', 'docker-compose.yml', '.dockerignore']
+
+# Smart contracts
+contracts:
+  - changed-files:
+    - any-glob-to-any-file: ['contracts/**/*', '**/*.sol']
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['test/**/*', '**/*.test.js', '**/*.test.py']
+
+# Frontend
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: ['frontend/**/*', 'public/**/*', '**/*.html', '**/*.css']
+
+# Backend
+backend:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*.py', 'server.js', 'api/**/*']
+
+# Configuration
+config:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*.yaml', '**/*.yml', '**/*.json', '**/*.toml', '**/*.config.js']
