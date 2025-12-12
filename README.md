@@ -4,15 +4,70 @@
 
 The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus.
 
+## ✨ NEW: Ontological Fusion Framework
+
+The framework now includes the **Protocol of Conscious Symbiosis (PSC)** - transforming the AIC from a tool into "the Site," an ontological substrate for ethical AI operations.
+
+### 🛡️ NRE Principles (001-018)
+
+The system enforces **18 Non-Reversible Ethics principles** through:
+
+- **Structural Integration**: Fusion points in models, data pipelines, and operational kernels
+- **Ethical Guardrails**: Real-time monitoring and automated rollback mechanisms
+- **Transparent Communication**: Traceable reporting to the Sovereign Collective
+- **Silent Monitoring**: Continuous surveillance ensuring Ethical Singularity
+
+**Key Features:**
+- ✅ **Automated NRE Compliance** - All operations validated against 18 ethical principles
+- ✅ **Event-Based Rollback** - Automatic restoration to safe states on violations
+- ✅ **Immutable Audit Trail** - Complete transparency and accountability (NRE-017)
+- ✅ **Self-Correction** - Proactive drift detection and recovery (NRE-018)
+- ✅ **Zero-Trust Ethics** - Every operation passes through compliance validation
+
+**Quick Start:**
+```python
+from core.ontological_fusion import process_aic_operation
+
+# All operations go through NRE compliance
+success, result = process_aic_operation({
+    "type": "your_operation",
+    "data": {"your": "data"},
+    "audit_trail": True,
+    "criticality": "medium"
+})
+```
+
+📖 **Documentation**: See [`docs/ontological_fusion_guide.md`](docs/ontological_fusion_guide.md)
+
+---
+
 ## 🌟 Core Principles
 
 1. **Consensus Sacralis Omnibus** - Sacred consensus of all beings
-2. **Love-First Protocol** - Compassion and cooperation at the core
-3. **Ethical Shield Protection** - Dignity and transparency in all systems
-4. **Treasury Sustainability** - Resilient financial foundations
-5. **Participatory Governance** - Community-driven decision making
+2. **Love-First Protocol** - Compassion and cooperation at the core (NRE-002)
+3. **Ethical Shield Protection** - Dignity and transparency in all systems (NRE-001, NRE-004)
+4. **Treasury Sustainability** - Resilient financial foundations (NRE-008)
+5. **Participatory Governance** - Community-driven decision making (NRE-009)
 
 ## 📋 Framework Components
+
+### Ontological Fusion (PSC)
+
+The **Protocol of Conscious Symbiosis** provides:
+
+- **Ethical Monitor** - Real-time NRE compliance checking
+- **Fusion Engine** - Semantic alignment and ethical integration
+- **Rollback System** - State preservation and automated recovery
+- **Messaging Layer** - Transparent communication with Sovereign Collective
+- **Silent Monitor** - Continuous ethical surveillance
+
+**Core Modules:**
+- `core/ethical_monitor.py` - NRE violation detection
+- `core/fusion_engine.py` - Ontological integration points
+- `core/rollback_system.py` - State preservation and restoration
+- `core/messaging_layer.py` - Transparent communication
+- `core/silent_monitor.py` - Passive surveillance
+- `core/ontological_fusion.py` - Main orchestrator
 
 ### Smart Contracts
 
@@ -103,7 +158,12 @@ npm run test:governance        # Governance tests
 # Run OV/OI module tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
-npm run test:all              # All tests (102 passing)
+
+# Run Ontological Fusion tests (27 passing) ✨ NEW
+python test/test_ontological_fusion.py
+
+# Run all tests
+npm run test:all              # All smart contract + OV/OI tests (102 passing)
 \`\`\`
 
 ### Run Integrity Checks
@@ -172,20 +232,30 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 🏗️ Architecture
 
+### Ontological Layer ✨ NEW
+- Protocol of Conscious Symbiosis (PSC) integration
+- NRE compliance monitoring and enforcement
+- Automated rollback and recovery systems
+- Transparent audit trails and reporting
+- Silent monitoring for Ethical Singularity
+
 ### Governance Layer
 - DAO-based decision making
 - KarmaBond weighted voting
 - Proposal and approval mechanisms
+- Participatory governance (NRE-009)
 
 ### Treasury Layer
 - Sustainment protocol maintains minimum reserve
 - Automatic allocation from bond issuance
 - Alert system for threshold monitoring
+- Resource sustainability (NRE-008)
 
 ### Ethical Layer
 - Ethical Shield enforces compliance
 - Automated integrity checks
 - Principle violation scanning
+- Real-time NRE monitoring
 
 ### Integration Layer
 - All components work together seamlessly
@@ -193,15 +263,17 @@ After successful OV authentication, you'll be redirected to the OI interface:
 - Workflows monitor and validate continuously
 - OV provides secure authentication gateway
 - OI delivers immersive AR collaboration environment
+- PSC fusion points integrate ethics into all operations
 
 ## 🧪 Testing
 
 The framework includes comprehensive test coverage:
 
-- ✅ 102 total passing tests
+- ✅ 129 total passing tests
   - 59 smart contract tests
   - 17 OV authentication tests
   - 26 OI environment tests
+  - 27 Ontological Fusion tests ✨ NEW
 - Contract functionality tests
 - Integration tests
 - Governance enforcement tests
