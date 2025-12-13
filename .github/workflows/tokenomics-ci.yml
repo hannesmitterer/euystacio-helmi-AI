@@ -27,11 +27,17 @@ env:
   MOCK_GOVERNANCE_QUORUM: '0.10'
   MOCK_TREASURY_THRESHOLD: '1000000'
 
+# Restrict permissions for security
+permissions:
+  contents: read
+
 jobs:
   # Stage 1: Lint and Format
   lint-and-format:
     name: Lint & Format Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,6 +68,8 @@ jobs:
     name: Security Analysis
     runs-on: ubuntu-latest
     needs: lint-and-format
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -111,6 +119,8 @@ jobs:
     name: Test with Mock Environment
     runs-on: ubuntu-latest
     needs: security-scan
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -163,6 +173,8 @@ jobs:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: test-mock-environment
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -206,6 +218,8 @@ jobs:
     name: Sensisara Cycle Checkpoint
     runs-on: ubuntu-latest
     needs: integration-tests
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -266,6 +280,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: sensisara-validation
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -347,6 +363,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: deployment-readiness
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -384,6 +402,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint-and-format, security-scan, test-mock-environment, integration-tests, sensisara-validation, deployment-readiness, monitoring-setup]
     if: always()
+    permissions:
+      contents: read
     steps:
       - name: Generate success summary
         run: |
