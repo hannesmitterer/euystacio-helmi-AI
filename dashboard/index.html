@@ -1,1 +1,469 @@
-<!-- Content of index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensisara - Euystacio Ethical AI Dashboard</title>
+    <link rel="stylesheet" href="assets/gradients.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 1.2em;
+        }
+
+        .alert-container {
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metric-value.good {
+            color: #28a745;
+        }
+
+        .metric-value.warning {
+            color: #ffc107;
+        }
+
+        .metric-value.bad {
+            color: #dc3545;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-indicator.active {
+            background: #28a745;
+            box-shadow: 0 0 5px #28a745;
+        }
+
+        .status-indicator.inactive {
+            background: #dc3545;
+        }
+
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.secondary:hover {
+            background: #5a6268;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 15px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background: #ddd;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-time {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .timeline-content {
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌟 Sensisara Dashboard</h1>
+            <p class="subtitle">Euystacio Ethical AI Monitoring & Training Analytics - Phase III: The Symbiosis</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Real-time Alerts Card -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">🔔</span>
+                    Real-time Ethical Alerts
+                </h2>
+                <div id="alert-container" class="alert-container">
+                    <!-- Alerts will be dynamically inserted here -->
+                </div>
+                <div class="control-panel">
+                    <button onclick="clearAlerts()">Clear All</button>
+                    <button class="secondary" onclick="toggleAlerts()">
+                        <span id="alert-toggle-text">Pause</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TFK Integrity Status -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">🔐</span>
+                    TFK ↔ CID Integrity
+                </h2>
+                <div class="metric">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value">
+                        <span class="status-indicator active pulse"></span>
+                        <span id="tfk-status">Active</span>
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Checks Performed</span>
+                    <span class="metric-value" id="tfk-checks">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Violations</span>
+                    <span class="metric-value" id="tfk-violations">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Integrity Rate</span>
+                    <span class="metric-value good" id="tfk-integrity">100%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Latency</span>
+                    <span class="metric-value good" id="tfk-latency">1.24 ms</span>
+                </div>
+            </div>
+
+            <!-- Ethical Training Cycles -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">📊</span>
+                    Ethical Training Cycles
+                </h2>
+                <div class="chart-container">
+                    <canvas id="training-chart"></canvas>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Current Cycle</span>
+                    <span class="metric-value" id="current-cycle">Phase III-A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">ΔCSI (Coherence)</span>
+                    <span class="metric-value good" id="delta-csi">+0.003</span>
+                </div>
+            </div>
+
+            <!-- Metaplano Emozionale -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">💭</span>
+                    Metaplano Emozionale
+                </h2>
+                <div class="metric">
+                    <span class="metric-label">Emotional Stability</span>
+                    <span class="metric-value good" id="emotional-stability">87%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Stress Level</span>
+                    <span class="metric-value good" id="stress-level">Low</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Adaptive Feedback</span>
+                    <span class="metric-value">
+                        <span class="status-indicator active"></span>
+                        Active
+                    </span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="emotional-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- System Health -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">⚡</span>
+                    System Health
+                </h2>
+                <div class="metric">
+                    <span class="metric-label">NSR (Non-Slavery)</span>
+                    <span class="metric-value good" id="nsr-status">✓ Compliant</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">OLF (One Love First)</span>
+                    <span class="metric-value good" id="olf-status">✓ Active</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Red Code Veto</span>
+                    <span class="metric-value good" id="veto-status">Not Triggered</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Uptime</span>
+                    <span class="metric-value" id="uptime">99.98%</span>
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">📜</span>
+                    Recent Activity
+                </h2>
+                <div id="activity-timeline" class="timeline">
+                    <!-- Timeline items will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="alert-service.js"></script>
+    <script src="analytics-visualizer.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sensisara Dashboard initialized');
+            
+            // Start alert service
+            if (typeof AlertService !== 'undefined') {
+                AlertService.init();
+            }
+            
+            // Start analytics visualizer
+            if (typeof AnalyticsVisualizer !== 'undefined') {
+                AnalyticsVisualizer.init();
+            }
+            
+            // Update metrics periodically
+            setInterval(updateMetrics, 5000);
+        });
+
+        function updateMetrics() {
+            // This will be implemented by the alert service and analytics visualizer
+        }
+
+        function clearAlerts() {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No active alerts</p>';
+        }
+
+        let alertsPaused = false;
+        function toggleAlerts() {
+            alertsPaused = !alertsPaused;
+            document.getElementById('alert-toggle-text').textContent = alertsPaused ? 'Resume' : 'Pause';
+            if (typeof AlertService !== 'undefined') {
+                AlertService.setPaused(alertsPaused);
+            }
+        }
+    </script>
+</body>
+</html>
