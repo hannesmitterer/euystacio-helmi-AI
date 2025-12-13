@@ -41,6 +41,10 @@ Slashing applied only for:
 - Initial Supply: 100,000,000 EUS
 - Annual Inflation Cap: 2% (sustainable growth)
 - Burn Mechanism: Integrated for deflationary pressure
+  - Burns triggered on: Slashing events, governance-voted burns, transaction fees (0.1%)
+  - Burn rate calculation: `burnAmount = min(transactionFee * 0.2, maxBurnPerTx)`
+  - Maximum burn per transaction: 1000 EUS
+  - Burns are irreversible and permanently reduce total supply
 
 ### Distribution Model (Fair Launch)
 
@@ -92,11 +96,13 @@ The **Sensisara Cycle** ensures continuous ethical validation:
 ## 📊 Economic Mechanisms
 
 ### 1. Staking & Rewards
-```solidity
-// Ethical staking rewards
-Annual Base Rate: 5-8% APY
-Bonus for KarmaBond participants: +2% APY
-Penalty for Red Code violations: -100% (slashing)
+```yaml
+# Ethical staking rewards configuration
+staking_rewards:
+  annual_base_rate_min: 0.05  # 5% APY
+  annual_base_rate_max: 0.08  # 8% APY
+  karmabond_bonus: 0.02       # +2% APY
+  red_code_violation_penalty: 1.0  # 100% slashing
 ```
 
 ### 2. Governance Participation

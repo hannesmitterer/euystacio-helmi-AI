@@ -226,7 +226,13 @@ Docs Updates → Build → GitHub Pages → Public Access
 
 **Smart Contract Deployment**:
 ```solidity
-// Before deployment
+// Sensisara Cycle integration interface (to be implemented in contracts/)
+interface ISensisaraCycle {
+    function validateEthics(bytes32 proposalHash) external view returns (bool);
+    function registerCheckpoint(string memory checkpointName) external;
+}
+
+// Example usage before deployment
 if (!SensisaraCycle.validateEthics(proposal)) {
     revert("Ethical validation failed");
 }

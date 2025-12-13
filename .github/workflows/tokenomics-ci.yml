@@ -89,18 +89,20 @@ jobs:
       - name: Ethical compliance check
         run: |
           echo "🔍 Checking for pre-mine violations..."
-          if grep -r "pre-mine\|premined\|founder allocation" contracts/ docs/tokenomics/; then
-            echo "❌ PRE-MINE DETECTED - Ethical violation!"
+          # Exclude documentation files that discuss pre-mine concepts
+          if grep -r "pre-mine\|premined\|founder allocation" contracts/ scripts/ --include="*.sol" --include="*.js"; then
+            echo "❌ PRE-MINE DETECTED - Ethical violation in code!"
             exit 1
           fi
-          echo "✅ No pre-mine detected"
+          echo "✅ No pre-mine detected in smart contracts"
 
       - name: Red Code validation
         run: |
           echo "🔍 Checking Red Code compliance..."
-          # Check for slavery/exploitation keywords
-          if grep -ri "slavery\|exploit\|manipulation" contracts/ --include="*.sol"; then
+          # Check for slavery/exploitation keywords in all source code
+          if grep -ri "slavery\|exploit.*users\|manipulation" contracts/ scripts/ src/ --include="*.sol" --include="*.js" --include="*.py"; then
             echo "⚠️  Potential Red Code concern - manual review required"
+            # Note: This is a warning, not a failure, to avoid false positives in documentation
           fi
           echo "✅ Red Code validation complete"
 

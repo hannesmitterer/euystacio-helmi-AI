@@ -220,9 +220,15 @@ checkpoint:
     - Sentimento Council (minimum 3/5)
     - Technical lead (@solidity-dev OR @core-ai-dev)
   criteria:
-    - ethical_validation_score: "≥ 80"
-    - red_code_compliance: true
-    - community_sentiment: "≥ 60%"
+    ethical_validation_score:
+      threshold: 80
+      operator: ">="
+    red_code_compliance:
+      required: true
+    community_sentiment:
+      threshold: 60
+      operator: ">="
+      unit: "percent"
   action_on_failure: "Return to Phase 1 with feedback"
 ```
 

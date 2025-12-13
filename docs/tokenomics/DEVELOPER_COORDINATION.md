@@ -67,21 +67,22 @@ Implement and deploy the EUS token smart contract with integrated ethical safegu
 - ✅ Council approval received
 
 **Environment Requirements**:
-```bash
+```yaml
 # Development environment
-Node.js: v18+
-Hardhat: ^2.19.0
-Solidity: ^0.8.19
-OpenZeppelin: ^5.0.0
+dependencies:
+  nodejs: ">=18.0.0"
+  hardhat: "^2.19.0"
+  solidity: "^0.8.19"
+  openzeppelin: "^5.0.0"
 
-# Testnet
-Network: Sepolia
-RPC: process.env.SEPOLIA_RPC_URL
-Chain ID: 11155111
+testnet:
+  network: "Sepolia"
+  rpc_url_env: "SEPOLIA_RPC_URL"
+  chain_id: 11155111
 
-# Security
-Private Key: process.env.PRIVATE_KEY_DEPLOYER (encrypted)
-Verification: Etherscan API
+security:
+  private_key_env: "PRIVATE_KEY_DEPLOYER"  # Must be encrypted
+  verification: "Etherscan API"
 ```
 
 **Timeline**:
