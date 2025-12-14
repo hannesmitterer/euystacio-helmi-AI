@@ -4,7 +4,10 @@
 
 > **🎉 FINAL DISTRIBUTION NOW ACTIVE**  
 > Framework Euystacio v1.0.0 has been released to the global community.  
-> See [FINAL_DISTRIBUTION_MANIFEST.md](FINAL_DISTRIBUTION_MANIFEST.md) for complete details.
+> 
+> 📜 **Distribution Details:** [FINAL_DISTRIBUTION_MANIFEST.md](FINAL_DISTRIBUTION_MANIFEST.md)  
+> 🚨 **Emergency Protocol:** [EMERGENCY_TREASURY_PROTOCOL.md](EMERGENCY_TREASURY_PROTOCOL.md)  
+> 🚀 **Activation Guide:** [DISTRIBUTION_ACTIVATION_GUIDE.md](DISTRIBUTION_ACTIVATION_GUIDE.md)
 
 The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus.
 
