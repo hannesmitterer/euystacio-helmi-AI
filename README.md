@@ -4,6 +4,28 @@
 
 The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus.
 
+## 📖 Executive Master Document
+
+The **[Euystacio Framework Executive Master Document](docs/governance/EXECUTIVE_MASTER_DOCUMENT.md)** provides comprehensive documentation of our vision, architecture, and roadmap for ethical human-AI collaboration.
+
+### 📡 IPFS Distribution
+- **CID**: [To be added after IPFS deployment]
+- **IPFS Gateway**: `https://ipfs.io/ipfs/[CID]`
+- **Pinned On**: Pinata, Web3.Storage, NFT.Storage
+- **Access Guide**: [IPFS Deployment Guide](docs/governance/IPFS_DEPLOYMENT_GUIDE.md)
+
+### ⛓️ Blockchain Anchoring
+- **Network**: Ethereum Sepolia Testnet
+- **Contract Address**: [To be added after deployment]
+- **Document Hash**: [To be added]
+- **Verification Guide**: [Blockchain Anchoring Guide](docs/governance/BLOCKCHAIN_ANCHORING_GUIDE.md)
+
+### 📚 Additional Documentation
+- [Governance Framework](docs/governance/GOVERNANCE_FRAMEWORK.md) - Multi-tier participatory governance
+- [Technical Architecture](docs/architecture/TECHNICAL_ARCHITECTURE.md) - Complete system design
+- [Strategic Roadmap](docs/roadmap/STRATEGIC_ROADMAP.md) - Vision through 2030
+- [Community Announcements](docs/governance/COMMUNITY_ANNOUNCEMENTS.md) - Engagement templates
+
 ## 🌟 Core Principles
 
 1. **Consensus Sacralis Omnibus** - Sacred consensus of all beings
@@ -226,6 +248,37 @@ The Euystacio framework is built on these commitments:
 - ✅ Workflows: All Running
 - ✅ Contracts: Compiled and Tested (59/59 passing)
 - ✅ Documentation: Complete
+- ✅ Executive Master Document: Released
+- 🔄 IPFS Distribution: In Progress
+- 🔄 Blockchain Anchoring: In Progress
+
+## ✅ Document Verification
+
+### Verify IPFS Content
+```bash
+# Download from IPFS
+ipfs cat [CID] > downloaded_document.md
+
+# Verify hash
+sha256sum downloaded_document.md
+```
+
+### Verify Blockchain Anchor
+```bash
+# Using provided verification script
+node scripts/verify-document.js [CONTRACT_ADDRESS] [ANCHOR_ID]
+
+# Or visit Etherscan
+# https://sepolia.etherscan.io/address/[CONTRACT_ADDRESS]
+```
+
+### Manual Hash Verification
+```bash
+# Generate hash of master document
+sha256sum docs/governance/EXECUTIVE_MASTER_DOCUMENT.md
+
+# Compare with on-chain hash or IPFS content
+```
 
 ## 🌍 Vision
 
