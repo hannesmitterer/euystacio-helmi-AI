@@ -76,10 +76,14 @@ class MockTreasuryClient:
     """
     Mock treasury client for demonstration purposes.
     In production, this would connect to actual smart contracts.
+    
+    NOTE: The reserve is intentionally set below threshold (85% of minimum)
+    to demonstrate the emergency alert and protocol activation behavior.
     """
     
     def __init__(self):
-        self.reserve = 8500.00  # Example: Below threshold
+        # DEMO: Reserve intentionally below threshold to show emergency protocol
+        self.reserve = 8500.00  # 85% of $10,000 minimum
         self.minimum = CONFIG["min_sustainment_usd"]
     
     def get_status(self) -> TreasuryStatus:
@@ -106,12 +110,18 @@ class MockTreasuryClient:
         # Simulate withdrawal
         self.reserve -= amount
         
+        # MOCK: Generate a realistic-looking transaction hash
+        # In production, this would be the actual on-chain transaction hash
+        import hashlib
+        mock_data = f"{amount}{recipient}{datetime.now().isoformat()}"
+        tx_hash = "0x" + hashlib.sha256(mock_data.encode()).hexdigest()
+        
         return {
             "success": True,
             "amount": amount,
             "recipient": recipient,
             "new_reserve": self.reserve,
-            "transaction_hash": f"0x{'0' * 60}{int(datetime.now().timestamp())}",
+            "transaction_hash": tx_hash,  # MOCK - not a real on-chain transaction
             "timestamp": datetime.now().isoformat()
         }
     
@@ -223,8 +233,12 @@ def command_withdraw(amount: float):
         # Check new status
         new_status = client.get_status()
         if new_status.percent_of_minimum < 100:
+            deficit = new_status.minimum - new_status.reserve
             print("⚠️  WARNING: Reserve now below threshold after withdrawal!")
-            print(f"   Current: ${new_status.reserve:,.2f} (${new_status.minimum - new_status.reserve:,.2f} below threshold)\n")
+            print(f"   Current: ${new_status.reserve:,.2f} (${deficit:,.2f} below threshold)\n")
+        elif new_status.percent_of_minimum < CONFIG["alert_threshold_percent"]:
+            print("⚠️  NOTICE: Reserve approaching threshold after withdrawal.")
+            print(f"   Current: ${new_status.reserve:,.2f} ({new_status.percent_of_minimum:.1f}% of minimum)\n")
     
     except ValueError as e:
         print(f"\n❌ ERROR: {e}\n")
