@@ -56,12 +56,18 @@ The **Open Interface (OI)** module delivers an immersive augmented reality works
 
 The framework includes comprehensive GitHub Actions workflows for:
 
+- ✅ **Build & Test** - Automated builds for Node.js, Python, and smart contracts
+- ✅ **Docker Build & Push** - Multi-platform container images with automated publishing
+- ✅ **Staging Deployment** - Automated deployment to staging environment
+- ✅ **Production Deployment** - Version-controlled production deployments
+- ✅ **Smart Contract Deployment** - Secure blockchain deployment workflows
+- ✅ **Release & Publish** - Automated releases with artifacts and changelogs
 - ✅ **Integrity Validation** - Preserves sacred texts and framework files
 - ✅ **Treasury Monitoring** - Ensures financial sustainability
 - ✅ **Governance Validation** - Validates DAO configuration and integration
 - ✅ **Framework Configuration** - Comprehensive system validation
 
-See [WORKFLOWS.md](WORKFLOWS.md) for detailed documentation.
+See [CICD.md](CICD.md) for complete CI/CD documentation.
 
 ### Configuration Files
 
@@ -77,6 +83,7 @@ See [WORKFLOWS.md](WORKFLOWS.md) for detailed documentation.
 - Node.js v18+
 - Python 3.11+
 - npm or yarn
+- Docker (optional, for containerized deployment)
 
 ### Installation
 
@@ -122,6 +129,31 @@ python3 scripts/auto_integrity.py
 # Check for principle violations
 python3 scripts/check_violations.py
 \`\`\`
+
+### Deployment
+
+#### Using Docker
+
+\`\`\`bash
+# Build Docker image
+docker build -t euystacio-helmi-ai .
+
+# Run container
+docker run -p 3000:3000 euystacio-helmi-ai
+
+# Or use Docker Compose
+docker-compose up -d
+\`\`\`
+
+#### Using Automated CI/CD
+
+The repository includes comprehensive CI/CD workflows:
+
+- **Staging**: Push to \`develop\` branch for automatic staging deployment
+- **Production**: Create and push version tags (e.g., \`v1.0.0\`) for production deployment
+- **Smart Contracts**: Use GitHub Actions workflow to deploy contracts to blockchain networks
+
+See [CICD.md](CICD.md) for complete deployment documentation.
 
 ## 🎭 OV/OI Modules Usage
 
@@ -173,6 +205,7 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+- [CICD.md](CICD.md) - **CI/CD Workflows and Deployment Guide** (comprehensive automation documentation)
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions

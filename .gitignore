@@ -58,3 +58,17 @@ tutors.json
 
 # Solar Sovereign generated artifacts
 data/solar_sovereign/
+
+# CI/CD artifacts (keep deployment records)
+deployment.log
+*.tar.gz
+*.zip
+release/
+
+# Docker
+docker-compose.override.yml
+
+# Test results
+test-results/
+coverage/
+.nyc_output/

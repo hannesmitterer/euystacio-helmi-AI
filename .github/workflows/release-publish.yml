@@ -1,0 +1,231 @@
+name: Release and Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Get version from tag
+      id: get_version
+      run: |
+        if [[ "${{ github.ref }}" =~ ^refs/tags/v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+          VERSION="${BASH_REMATCH[1]}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+        else
+          echo "Not a version tag, using latest"
+          VERSION="latest"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Generate Changelog
+      id: changelog
+      run: |
+        echo "Generating changelog..."
+        
+        # Get the previous tag
+        PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo "")
+        
+        if [ -z "$PREVIOUS_TAG" ]; then
+          echo "No previous tag found, using all commits"
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          echo "Previous tag: $PREVIOUS_TAG"
+          CHANGELOG=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+        fi
+        
+        # Save changelog to file
+        echo "## Changes" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "$CHANGELOG" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "## Commits" >> CHANGELOG.md
+        echo "See full commit history for details." >> CHANGELOG.md
+        
+        cat CHANGELOG.md
+    
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ steps.get_version.outputs.version }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-artifacts:
+    name: Build Release Artifacts
+    needs: create-release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install Dependencies
+      run: |
+        npm ci
+        pip install -r requirements.txt
+    
+    - name: Compile Smart Contracts
+      run: npm run compile
+    
+    - name: Build Static Pages
+      run: |
+        python build_static.py || echo "Static build not required"
+    
+    - name: Create Release Package
+      run: |
+        VERSION="${{ needs.create-release.outputs.version }}"
+        
+        # Create release directory
+        mkdir -p release/euystacio-$VERSION
+        
+        # Copy essential files
+        cp -r artifacts release/euystacio-$VERSION/ || true
+        cp -r docs release/euystacio-$VERSION/ || true
+        cp package.json requirements.txt README.md LICENSE release/euystacio-$VERSION/ || true
+        cp Dockerfile docker-compose.yml release/euystacio-$VERSION/ || true
+        
+        # Create tarball
+        cd release
+        tar -czf euystacio-$VERSION.tar.gz euystacio-$VERSION/
+        zip -r euystacio-$VERSION.zip euystacio-$VERSION/
+        cd ..
+        
+        echo "Created release packages:"
+        ls -lh release/*.tar.gz release/*.zip
+    
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        files: |
+          release/*.tar.gz
+          release/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-artifacts-${{ needs.create-release.outputs.version }}
+        path: release/
+        retention-days: 90
+
+  # Optional: Publish to npm (if this is an npm package)
+  publish-npm:
+    name: Publish to npm
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: false  # Set to true to enable npm publishing
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+    
+    - name: Install Dependencies
+      run: npm ci
+    
+    - name: Build Package
+      run: |
+        npm run compile
+        # Add any additional build steps
+    
+    - name: Publish to npm
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Optional: Publish to PyPI (if this is a Python package)
+  publish-pypi:
+    name: Publish to PyPI
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: false  # Set to true to enable PyPI publishing
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install build tools
+      run: |
+        pip install build twine
+    
+    - name: Build package
+      run: |
+        python -m build
+    
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        python -m twine upload dist/*
+
+  notify-release:
+    name: Notify Release
+    needs: [create-release, build-artifacts]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Create Summary
+      run: |
+        echo "### Release Published! 🎉" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** ${{ needs.create-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Tag:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Release URL:** https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Source code (zip)" >> $GITHUB_STEP_SUMMARY
+        echo "- Source code (tar.gz)" >> $GITHUB_STEP_SUMMARY
+        echo "- Release package (zip)" >> $GITHUB_STEP_SUMMARY
+        echo "- Release package (tar.gz)" >> $GITHUB_STEP_SUMMARY
