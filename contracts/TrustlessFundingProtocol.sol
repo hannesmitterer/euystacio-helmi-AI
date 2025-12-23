@@ -2,97 +2,146 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-interface ISustainment {
-    function isAboveMinimum() external view returns (bool);
-    function getSustainmentReserve() external view returns (uint256);
-    function minSustainment() external view returns (uint256);
-}
-
-/**
- * @title TrustlessFundingProtocol
- * @notice Governance contract for trustless funding with sustainment enforcement
- * @dev Enforces minimum sustainment threshold before releasing tranches
- */
-contract TrustlessFundingProtocol is Ownable {
+contract TrustlessFundingProtocol is Ownable, ReentrancyGuard {
+    // Seedbringer authority - hannesmitterer
+    address public seedbringer;
     address public foundationWallet;
-    ISustainment public sustainmentContract;
     
-    mapping(uint256 => bool) public trancheReleased;
+    struct Tranche {
+        uint256 amount;
+        bool released;
+        bool redCodeCertified;
+        bytes32 milestoneProofHash;
+        address recipient;
+        uint256 releaseTime;
+        bool vetoedBySeedbringer;
+    }
     
-    /// @notice Whether governance checks are enforced (can be disabled by owner in emergency)
-    bool public governanceEnforced;
+    mapping(uint256 => Tranche) public tranches;
+    uint256 public trancheCount;
     
+    event TrancheCreated(uint256 indexed trancheId, address indexed recipient, uint256 amount);
     event TrancheReleased(uint256 indexed trancheId, bytes32 proofHash, uint256 timestamp);
-    event SustainmentContractUpdated(address indexed previous, address indexed current);
-    event GovernanceEnforcementToggled(bool enforced);
-    event TrancheRejectedInsufficientSustainment(uint256 indexed trancheId, uint256 currentReserve, uint256 minRequired);
+    event TrancheVetoed(uint256 indexed trancheId, address indexed seedbringer);
+    event RedCodeCertified(uint256 indexed trancheId, bool certified);
+    event SeedbringerUpdated(address indexed newSeedbringer);
+    event MilestoneProofSubmitted(uint256 indexed trancheId, bytes32 proofHash);
 
-    constructor(address _foundationWallet) {
+    modifier onlySeedbringer() {
+        require(msg.sender == seedbringer, "Only Seedbringer");
+        _;
+    }
+
+    constructor(address _foundationWallet, address _seedbringer) {
+        require(_foundationWallet != address(0) && _seedbringer != address(0), "Invalid address");
         foundationWallet = _foundationWallet;
-        governanceEnforced = true; // Default to enforced
+        seedbringer = _seedbringer;
     }
 
-    /**
-     * @notice Set the sustainment contract address
-     * @param _sustainmentContract Address of Sustainment contract
-     */
-    function setSustainmentContract(address _sustainmentContract) external onlyOwner {
-        address previous = address(sustainmentContract);
-        sustainmentContract = ISustainment(_sustainmentContract);
-        emit SustainmentContractUpdated(previous, _sustainmentContract);
+    receive() external payable {}
+
+    /// Create a new tranche
+    function createTranche(address recipient, uint256 amount) external onlyOwner {
+        uint256 trancheId = trancheCount++;
+        tranches[trancheId] = Tranche({
+            amount: amount,
+            released: false,
+            redCodeCertified: false,
+            milestoneProofHash: bytes32(0),
+            recipient: recipient,
+            releaseTime: 0,
+            vetoedBySeedbringer: false
+        });
+        emit TrancheCreated(trancheId, recipient, amount);
     }
 
-    /**
-     * @notice Toggle governance enforcement (emergency override)
-     * @param enforced True to enforce, false to disable
-     */
-    function setGovernanceEnforcement(bool enforced) external onlyOwner {
-        governanceEnforced = enforced;
-        emit GovernanceEnforcementToggled(enforced);
+    /// Seedbringer certifies Red Code compliance for a tranche
+    function certifyRedCode(uint256 trancheId, bool certified) external onlySeedbringer {
+        require(trancheId < trancheCount, "Invalid tranche");
+        tranches[trancheId].redCodeCertified = certified;
+        emit RedCodeCertified(trancheId, certified);
     }
 
-    /**
-     * @notice Release tranche when proofHash submitted and sustainment requirements met
-     * @param trancheId ID of the tranche to release
-     * @param proofHash Hash of proof (stored off-chain)
-     */
-    function releaseTranche(uint256 trancheId, bytes32 proofHash) external onlyOwner {
-        require(!trancheReleased[trancheId], "Already released");
+    /// Submit milestone proof for automated verification (restricted to owner or recipient)
+    function submitMilestoneProof(uint256 trancheId, bytes32 proofHash) external {
+        require(trancheId < trancheCount, "Invalid tranche");
+        Tranche storage tranche = tranches[trancheId];
+        
+        // Only owner or recipient can submit proof
+        require(msg.sender == owner() || msg.sender == tranche.recipient, "Not authorized");
+        require(!tranche.released, "Already released");
+        require(!tranche.vetoedBySeedbringer, "Vetoed by Seedbringer");
         require(proofHash != bytes32(0), "Invalid proof");
         
-        // Check sustainment requirements if enforcement is enabled
-        if (governanceEnforced && address(sustainmentContract) != address(0)) {
-            bool aboveMin = sustainmentContract.isAboveMinimum();
-            if (!aboveMin) {
-                uint256 currentReserve = sustainmentContract.getSustainmentReserve();
-                uint256 minRequired = sustainmentContract.minSustainment();
-                emit TrancheRejectedInsufficientSustainment(trancheId, currentReserve, minRequired);
-                revert("Sustainment below minimum");
-            }
-        }
+        tranche.milestoneProofHash = proofHash;
+        emit MilestoneProofSubmitted(trancheId, proofHash);
         
-        trancheReleased[trancheId] = true;
-        emit TrancheReleased(trancheId, proofHash, block.timestamp);
+        // Automated release if Red Code certified and proof submitted
+        if (tranche.redCodeCertified) {
+            _releaseTranche(trancheId);
+        }
     }
 
-    /**
-     * @notice Check if a tranche can be released (view function for frontend)
-     * @param trancheId ID of the tranche
-     * @return canRelease True if tranche can be released
-     * @return reason Reason if cannot release
-     */
-    function canReleaseTranche(uint256 trancheId) external view returns (bool canRelease, string memory reason) {
-        if (trancheReleased[trancheId]) {
-            return (false, "Already released");
-        }
+    /// Internal function to release tranche
+    function _releaseTranche(uint256 trancheId) internal nonReentrant {
+        Tranche storage tranche = tranches[trancheId];
+        require(!tranche.released, "Already released");
+        require(tranche.redCodeCertified, "Red Code certification required");
+        require(tranche.milestoneProofHash != bytes32(0), "Milestone proof required");
+        require(!tranche.vetoedBySeedbringer, "Vetoed by Seedbringer");
+        require(address(this).balance >= tranche.amount, "Insufficient balance");
         
-        if (governanceEnforced && address(sustainmentContract) != address(0)) {
-            if (!sustainmentContract.isAboveMinimum()) {
-                return (false, "Sustainment below minimum");
-            }
-        }
+        tranche.released = true;
+        tranche.releaseTime = block.timestamp;
         
-        return (true, "");
+        (bool success, ) = payable(tranche.recipient).call{value: tranche.amount}("");
+        require(success, "Transfer failed");
+        
+        emit TrancheReleased(trancheId, tranche.milestoneProofHash, block.timestamp);
+    }
+
+    /// Seedbringer can manually release a tranche (override)
+    function seedbringerRelease(uint256 trancheId) external onlySeedbringer nonReentrant {
+        require(trancheId < trancheCount, "Invalid tranche");
+        Tranche storage tranche = tranches[trancheId];
+        require(!tranche.released, "Already released");
+        require(!tranche.vetoedBySeedbringer, "Cannot release vetoed tranche");
+        
+        // Seedbringer can release even without Red Code or proof
+        tranche.released = true;
+        tranche.releaseTime = block.timestamp;
+        
+        if (address(this).balance >= tranche.amount) {
+            (bool success, ) = payable(tranche.recipient).call{value: tranche.amount}("");
+            require(success, "Transfer failed");
+        }
+        emit TrancheReleased(trancheId, tranche.milestoneProofHash, block.timestamp);
+    }
+
+    /// Seedbringer veto power
+    function vetoTranche(uint256 trancheId) external onlySeedbringer {
+        require(trancheId < trancheCount, "Invalid tranche");
+        require(!tranches[trancheId].released, "Already released");
+        
+        tranches[trancheId].vetoedBySeedbringer = true;
+        emit TrancheVetoed(trancheId, msg.sender);
+    }
+
+    /// Seedbringer can update the Seedbringer address
+    function updateSeedbringer(address newSeedbringer) external onlySeedbringer {
+        require(newSeedbringer != address(0), "Invalid address");
+        seedbringer = newSeedbringer;
+        emit SeedbringerUpdated(newSeedbringer);
+    }
+
+    /// Owner can fund the contract
+    function fundContract() external payable onlyOwner {}
+
+    /// Emergency withdrawal (only owner)
+    function emergencyWithdraw(address to, uint256 amount) external onlyOwner nonReentrant {
+        (bool success, ) = payable(to).call{value: amount}("");
+        require(success, "Emergency withdrawal failed");
     }
 }
