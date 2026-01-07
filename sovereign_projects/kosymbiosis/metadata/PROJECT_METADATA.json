@@ -56,9 +56,9 @@
     "compression": "deflate",
     "checksum_algorithm": "SHA-256",
     "checksum_file": "checksum.sha256",
-    "size_bytes": 25136,
-    "created": "2026-01-07T01:03:19Z",
-    "checksum": "0c75638f8ee00f0d1eb25900f7456e9ec5e53976c35212563e7e18e40556b1ce"
+    "size_bytes": 25219,
+    "created": "2026-01-07T01:09:42Z",
+    "checksum": "7627f72f6114ccfefe15e6d0913872a96f87986770504f349482996294b15107"
   },
   "signatures": {
     "algorithm": "GPG",

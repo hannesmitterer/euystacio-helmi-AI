@@ -133,8 +133,14 @@ verify_archive() {
 update_metadata() {
     log_info "Updating metadata with archive information..."
     
-    # Get archive size in bytes
-    ARCHIVE_SIZE_BYTES=$(stat -f%z "$PROJECT_DIR/$ARCHIVE_NAME" 2>/dev/null || stat -c%s "$PROJECT_DIR/$ARCHIVE_NAME")
+    # Get archive size in bytes (cross-platform compatible)
+    if [ "$(uname)" = "Darwin" ]; then
+        # macOS
+        ARCHIVE_SIZE_BYTES=$(stat -f%z "$PROJECT_DIR/$ARCHIVE_NAME")
+    else
+        # Linux
+        ARCHIVE_SIZE_BYTES=$(stat -c%s "$PROJECT_DIR/$ARCHIVE_NAME")
+    fi
     
     # Read checksum
     CHECKSUM=$(sha256sum "$PROJECT_DIR/$ARCHIVE_NAME" | cut -d' ' -f1)

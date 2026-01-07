@@ -58,21 +58,12 @@ check_ipfs_daemon() {
     log_info "Checking IPFS daemon status..."
     
     if ! ipfs id &> /dev/null; then
-        log_warn "IPFS daemon is not running."
-        log_info "Starting IPFS daemon in background..."
-        
-        ipfs daemon &
-        DAEMON_PID=$!
-        
-        # Wait for daemon to start
-        sleep 5
-        
-        if ipfs id &> /dev/null; then
-            log_success "IPFS daemon started successfully."
-        else
-            log_error "Failed to start IPFS daemon."
-            exit 1
-        fi
+        log_error "IPFS daemon is not running."
+        log_info "Please start the IPFS daemon manually:"
+        log_info "  ipfs daemon &"
+        log_info ""
+        log_info "Then run this script again."
+        exit 1
     else
         log_info "IPFS daemon is running."
     fi
@@ -166,10 +157,10 @@ update_readme() {
     README_FILE="$PROJECT_DIR/README.md"
     
     if [ -f "$README_FILE" ]; then
-        # Replace placeholder with actual CID
+        # Replace placeholder with actual CID (using @ as delimiter to avoid issues with / in CID)
         if grep -q "\[To be added after IPFS upload\]" "$README_FILE"; then
-            sed -i.bak "s/\[To be added after IPFS upload\]/$CID/g" "$README_FILE"
-            sed -i.bak "s/\[CID\]/$CID/g" "$README_FILE"
+            sed -i.bak "s@\[To be added after IPFS upload\]@$CID@g" "$README_FILE"
+            sed -i.bak "s@\[CID\]@$CID@g" "$README_FILE"
             rm -f "$README_FILE.bak"
             log_success "README.md updated with IPFS CID."
         else

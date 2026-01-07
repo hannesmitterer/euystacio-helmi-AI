@@ -197,8 +197,8 @@ create_release() {
     local notes_file=$(mktemp)
     generate_release_notes > "$notes_file"
     
-    # Create release with assets
-    local assets=("$ARCHIVE_NAME" "checksum.sha256")
+    # Build array of assets
+    local -a assets=("$ARCHIVE_NAME" "checksum.sha256")
     
     # Add signature files if they exist
     for sig in kosymbiosis.sig kosymbiosis-co1.sig kosymbiosis-co2.sig; do
@@ -207,19 +207,12 @@ create_release() {
         fi
     done
     
-    # Build gh release create command
-    local cmd="gh release create $TAG"
-    cmd="$cmd --repo $REPO"
-    cmd="$cmd --title \"$RELEASE_NAME\""
-    cmd="$cmd --notes-file \"$notes_file\""
-    
-    # Add all asset files
-    for asset in "${assets[@]}"; do
-        cmd="$cmd \"$asset\""
-    done
-    
-    # Execute the command
-    if eval $cmd; then
+    # Create release directly using gh with proper argument passing
+    if gh release create "$TAG" \
+        --repo "$REPO" \
+        --title "$RELEASE_NAME" \
+        --notes-file "$notes_file" \
+        "${assets[@]}"; then
         log_success "GitHub release created successfully!"
         rm -f "$notes_file"
     else
