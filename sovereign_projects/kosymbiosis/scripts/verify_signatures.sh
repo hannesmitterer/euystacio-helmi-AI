@@ -98,7 +98,7 @@ verify_signature() {
     fi
     
     # Attempt to verify the signature using exit code
-    if gpg --verify "$sig_file" "$ARCHIVE_NAME" 2>&1 > /dev/null; then
+    if gpg --verify "$sig_file" "$ARCHIVE_NAME" > /dev/null 2>&1; then
         log_success "Signature valid: $sig_name ✓"
         return 0
     else
