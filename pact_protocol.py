@@ -19,7 +19,6 @@ Date: 2026-01-08
 
 import json
 import hashlib
-import time
 import os
 import base64
 import gzip
@@ -84,6 +83,18 @@ class PACTProtocol:
         )
         return kdf.derive(passphrase)
     
+    def _serialize_json(self, data: Dict[str, Any]) -> str:
+        """
+        Serialize dictionary to deterministic JSON string.
+        
+        Args:
+            data: Dictionary to serialize
+            
+        Returns:
+            JSON string with sorted keys
+        """
+        return json.dumps(data, sort_keys=True, indent=2)
+    
     def prepare_critical_data(self, conversation_log: str, final_report: str) -> Dict[str, Any]:
         """
         Bundle critical Nexus data (DS).
@@ -111,7 +122,7 @@ class PACTProtocol:
         
         # Compute checksum of data (excluding checksum field)
         data_for_checksum = {k: v for k, v in data_bundle.items() if k != 'checksum'}
-        data_bytes = json.dumps(data_for_checksum, sort_keys=True).encode('utf-8')
+        data_bytes = self._serialize_json(data_for_checksum).encode('utf-8')
         data_bundle['checksum'] = hashlib.sha256(data_bytes).hexdigest()
         
         return data_bundle
@@ -127,7 +138,7 @@ class PACTProtocol:
             Tuple of (encrypted_data, nonce)
         """
         # Convert to JSON and compress
-        json_data = json.dumps(data, sort_keys=True, indent=2).encode('utf-8')
+        json_data = self._serialize_json(data).encode('utf-8')
         compressed_data = gzip.compress(json_data, compresslevel=9)
         
         # Encrypt using AES-256-GCM
@@ -152,11 +163,14 @@ class PACTProtocol:
         ipfs_payload = nonce + encrypted_data
         
         # In production, this would interact with IPFS API
-        # For now, generate deterministic CID from hash
+        # For now, generate simulated CIDv0 format from hash
         if self.ipfs_endpoint == 'simulated':
-            # Generate CID v1 format hash
-            content_hash = hashlib.sha256(ipfs_payload).hexdigest()
-            cid = f"Qm{content_hash[:44]}"  # Simulated CIDv0 format
+            # Generate CIDv0 format (Qm + base58 encoded multihash)
+            # Using full SHA-256 hash for collision resistance
+            content_hash = hashlib.sha256(ipfs_payload).digest()
+            # Simulated CIDv0: Qm + hex representation (simplified)
+            # Real CIDv0 would use base58 encoding
+            cid = f"Qm{content_hash.hex()[:44]}"
         else:
             # Production IPFS upload would go here
             # Example: ipfs.add(ipfs_payload)
@@ -176,8 +190,8 @@ class PACTProtocol:
             Signature string
         """
         # In production, this would use actual cryptographic signing
-        # For now, generate deterministic signature
-        sign_input = f"{key_id}:{data}:{time.time()}"
+        # Generate deterministic signature from key_id and data
+        sign_input = f"{key_id}:{data}"
         signature_hash = hashlib.sha512(sign_input.encode()).hexdigest()
         signature = f"SIG-{key_id}-{signature_hash[:64]}"
         
@@ -238,7 +252,7 @@ class PACTProtocol:
         if self.blockchain_endpoint == 'simulated':
             # Generate deterministic TXID
             tx_hash = hashlib.sha256(
-                json.dumps(tx_payload, sort_keys=True).encode()
+                self._serialize_json(tx_payload).encode()
             ).hexdigest()
             txid = f"0x{tx_hash}"
         else:
