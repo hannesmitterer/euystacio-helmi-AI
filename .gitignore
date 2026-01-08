@@ -57,4 +57,4 @@ typechain-types/
 tutors.json
 
 # Solar Sovereign generated artifacts
-data/solar_sovereign/
+data/solar_sovereign/pact_execution_result.json

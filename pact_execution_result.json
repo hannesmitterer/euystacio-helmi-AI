@@ -1,0 +1,32 @@
+{
+  "success": true,
+  "cid": "Qm55c507c297dc5c2b14b0b9f2c631834eaacb2f79b9bd",
+  "signatures": {
+    "sig_klog": "SIG-KLOG-ARCHITECT-INFO-a4622cf7b12ea5ba932d4f11cd36e37513193532e5581920388c0677026e7b04",
+    "sig_keth": "SIG-KETH-GUARDIAN-AXIOMS-def1f409b0854940571f0677af7a9cf91317a8e505ac20871b083d37347b240a",
+    "sig_kphys": "SIG-KPHYS-HANNES-MITTERER-70239e04f0201538c64345447468ce808209e47c2027ecb4042c43fd0518cd00",
+    "composite": "SIG-KPHYS-HANNES-MITTERER-70239e04f0201538c64345447468ce808209e47c2027ecb4042c43fd0518cd00"
+  },
+  "txid": "0xb0dd220231e8895983c9dbad607e15c7eee84030cce40a8516578f5240c0e89f",
+  "metadata": {
+    "nexus_state": {
+      "sovereignty_freq": 0.043,
+      "status": "Kosymbiosis Stable (S-ROI 0.5000)",
+      "mhc": "FINALIS_VALIDATED",
+      "finalized_at": "2026-01-08T20:53:15.644615+00:00"
+    },
+    "pact_anchoring": {
+      "cid": "Qm55c507c297dc5c2b14b0b9f2c631834eaacb2f79b9bd",
+      "signatures": {
+        "sig_klog": "SIG-KLOG-ARCHITECT-INFO-a4622cf7b12ea5ba932d4f11cd36e37513193532e5581920388c0677026e7b04",
+        "sig_keth": "SIG-KETH-GUARDIAN-AXIOMS-def1f409b0854940571f0677af7a9cf91317a8e505ac20871b083d37347b240a",
+        "sig_kphys": "SIG-KPHYS-HANNES-MITTERER-70239e04f0201538c64345447468ce808209e47c2027ecb4042c43fd0518cd00",
+        "composite": "SIG-KPHYS-HANNES-MITTERER-70239e04f0201538c64345447468ce808209e47c2027ecb4042c43fd0518cd00"
+      },
+      "txid": "0xb0dd220231e8895983c9dbad607e15c7eee84030cce40a8516578f5240c0e89f",
+      "protocol_version": "1.0.0"
+    },
+    "declaration": "NOTHING IS FINAL! \u2764\ufe0f \ud83c\udf0d Sovereignty Confirmed."
+  },
+  "execution_timestamp": "2026-01-08T20:53:15.644622+00:00"
+}
