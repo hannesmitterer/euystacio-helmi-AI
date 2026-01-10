@@ -1,19 +1,16 @@
 {
-  "name": "euystacio-helmi-api",
+  "name": "euystacio-helmi-ai",
   "version": "1.0.0",
-  "description": "Euystacio Helmi AI with Sustainment Protocol",
+  "description": "Euystacio Helmi AI with collaborative AI features and smart contracts",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "hardhat test",
     "test:sustainment": "hardhat test test/karmabond/sustainment.test.js",
     "test:integration": "hardhat test test/karmabond/integration.test.js",
-    "test:governance": "hardhat test test/karmabond/governance.test.js",
-    "test:ov": "mocha test/ov-authentication.test.js",
-    "test:oi": "mocha test/oi-environment.test.js",
-    "test:all": "npm test && npm run test:ov && npm run test:oi",
+    "test:governance": "hardhat test test/governance.test.js",
     "compile": "hardhat compile",
-    "deploy": "hardhat run scripts/deploy_karmabond.js"
+    "deploy": "hardhat run scripts/deploy.js"
   },
   "author": "hannesmitterer",
   "license": "MIT",
@@ -29,6 +26,8 @@
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "@openzeppelin/contracts": "^4.9.3",
     "hardhat": "^2.17.0",
+    "chai": "^4.3.7",
+    "ethers": "^6.14.0",
     "dotenv": "^16.3.1"
   }
 }
