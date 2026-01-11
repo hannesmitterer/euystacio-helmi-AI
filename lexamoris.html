@@ -379,6 +379,7 @@
         let isResonating = false;
         let growthInterval = null;
         let resonanceInterval = null;
+        let authorizedUpdate = false; // Flag for authorized DOM updates
 
         // DOM Elements
         const resonanceLevelEl = document.getElementById('resonanceLevel');
@@ -420,6 +421,7 @@
 
         // Update Growth Rate Display
         function updateGrowthRate(multiplier) {
+            authorizedUpdate = true; // Mark as authorized
             growthMultiplier = Math.max(1.0, Math.min(5.0, multiplier));
             growthRateEl.textContent = growthMultiplier.toFixed(2) + 'x';
             
@@ -427,11 +429,13 @@
             growthRateEl.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 growthRateEl.style.transform = 'scale(1)';
+                authorizedUpdate = false; // Reset flag
             }, 200);
         }
 
         // Update Resonance Level
         function updateResonanceLevel(value) {
+            authorizedUpdate = true; // Mark as authorized
             resonanceLevel = Math.max(0, Math.min(999, Math.floor(value)));
             resonanceLevelEl.textContent = resonanceLevel;
             
@@ -440,6 +444,7 @@
             const actualGrowth = growthMultiplier;
             coherenceIndex = Math.floor(Math.min(100, (1 / (Math.abs(expectedGrowth - actualGrowth) + 1)) * 100));
             coherenceIndexEl.textContent = coherenceIndex + '%';
+            setTimeout(() => { authorizedUpdate = false; }, 10); // Reset flag
         }
 
         // Resonance Animation Loop
@@ -483,6 +488,7 @@
 
         // Reset All Metrics
         function resetMetrics() {
+            authorizedUpdate = true; // Mark as authorized
             stopResonanceLoop();
             resonanceLevel = 0;
             growthMultiplier = 1.0;
@@ -491,6 +497,7 @@
             updateResonanceLevel(0);
             updateGrowthRate(1.0);
             coherenceIndexEl.textContent = '100%';
+            setTimeout(() => { authorizedUpdate = false; }, 10); // Reset flag
         }
 
         // Red Shield Protection - Browser Event Monitoring
@@ -507,11 +514,8 @@
                 const observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                            // Check if change was from our own code
-                            const currentStack = new Error().stack;
-                            if (!currentStack.includes('updateResonanceLevel') && 
-                                !currentStack.includes('updateGrowthRate') &&
-                                !currentStack.includes('resetMetrics')) {
+                            // Check if this is an authorized update
+                            if (!authorizedUpdate) {
                                 triggerRedShieldAlert();
                             }
                         }
