@@ -155,8 +155,8 @@ async function syncData() {
 self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push notification received');
   
-  const options = {
-    body: event.data ? event.data.text() : 'New update from Lex Amoris',
+  const defaultOptions = {
+    body: 'New update from Lex Amoris',
     icon: '/icons/icon-192.png',
     badge: '/icons/badge-72.png',
     vibrate: [200, 100, 200],
@@ -173,6 +173,10 @@ self.addEventListener('push', (event) => {
       }
     ]
   };
+  
+  const options = event.data && typeof event.data.text === 'function'
+    ? { ...defaultOptions, body: event.data.text() }
+    : defaultOptions;
   
   event.waitUntil(
     self.registration.showNotification('Lex Amoris - Sempre in Costante', options)

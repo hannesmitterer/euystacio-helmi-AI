@@ -529,18 +529,20 @@
                 });
             });
             
-            // Monitor console access attempts
-            const originalConsoleLog = console.log;
-            console.log = function(...args) {
-                // Check for suspicious patterns
-                const argsString = args.join(' ').toLowerCase();
-                if (argsString.includes('hack') || 
-                    argsString.includes('exploit') || 
-                    argsString.includes('bypass')) {
-                    triggerRedShieldAlert();
-                }
-                originalConsoleLog.apply(console, args);
-            };
+            // Monitor console access attempts (optional - can be disabled in development)
+            if (window.location.hostname !== 'localhost' && !window.location.hostname.includes('127.0.0.1')) {
+                const originalConsoleLog = console.log;
+                console.log = function(...args) {
+                    // Check for suspicious patterns
+                    const argsString = args.join(' ').toLowerCase();
+                    if (argsString.includes('hack') || 
+                        argsString.includes('exploit') || 
+                        argsString.includes('bypass')) {
+                        triggerRedShieldAlert();
+                    }
+                    originalConsoleLog.apply(console, args);
+                };
+            }
         }
 
         // Trigger Red Shield Alert
@@ -643,7 +645,7 @@
             });
         }
 
-        // Prevent manipulation via developer tools
+        // Prevent manipulation via developer tools (lighter weight detection)
         (function() {
             const devtools = {
                 isOpen: false,
@@ -662,6 +664,7 @@
                 }
             };
             
+            // Reduced frequency for better battery life on mobile (every 2 seconds instead of 500ms)
             setInterval(() => {
                 const widthThreshold = window.outerWidth - window.innerWidth > threshold;
                 const heightThreshold = window.outerHeight - window.innerHeight > threshold;
@@ -674,7 +677,7 @@
                 } else {
                     emitEvent(false, null);
                 }
-            }, 500);
+            }, 2000); // Reduced from 500ms to 2000ms for better performance
         })();
     </script>
 </body>
