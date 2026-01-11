@@ -330,13 +330,13 @@ console.log('\nSecurity Tests:');
 
 test('Should not have inline event handlers', () => {
     const html = document.documentElement.innerHTML;
-    const hasInlineHandlers = /on\w+\s*=/.test(html);
-    // Allow onclick in the simulate button as it's intentional
-    const allowedOccurrences = (html.match(/onclick="simulateGrowth\(\)"/g) || []).length;
-    const totalOccurrences = (html.match(/on\w+\s*=/g) || []).length;
-    
-    if (totalOccurrences > allowedOccurrences) {
-        throw new Error('Should minimize inline event handlers');
+    // Check for actual inline event handlers like onclick, onload, etc.
+    // Use word boundary to avoid matching 'content' or 'container'
+    const inlineHandlerRegex = /\bon(click|load|blur|focus|change|submit|keydown|keyup|mousedown|mouseup|mouseover|mouseout)\s*=/gi;
+    const hasInlineHandlers = inlineHandlerRegex.test(html);
+    if (hasInlineHandlers) {
+        const matches = html.match(inlineHandlerRegex);
+        throw new Error(`Should not have inline event handlers. Found: ${matches.join(', ')}`);
     }
 });
 
