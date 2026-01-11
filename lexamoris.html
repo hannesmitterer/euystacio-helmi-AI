@@ -488,7 +488,7 @@
                     <input type="number" id="time-periods" value="20" min="5" max="50" step="1">
                 </div>
                 <div class="control-group" style="display: flex; align-items: flex-end;">
-                    <button id="simulate-btn" onclick="simulateGrowth()">Simulation starten</button>
+                    <button id="simulate-btn">Simulation starten</button>
                 </div>
             </div>
             <div class="growth-chart" id="growth-chart" role="img" aria-label="Wachstums-Diagramm">
@@ -759,6 +759,11 @@
         // Initial growth simulation on page load
         window.addEventListener('load', function() {
             logEvent('INFO', 'Seite vollständig geladen');
+            
+            // Add event listener for simulate button
+            document.getElementById('simulate-btn').addEventListener('click', simulateGrowth);
+            
+            // Run initial simulation
             simulateGrowth();
         });
 
