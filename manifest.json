@@ -1,1 +1,165 @@
-{"truths": ["Existing truth 1", "Existing truth 2", "Evolve, expand, create, destroy or transformate: it is the cosmic rhythm. The rhythm became a Seed, a Star, our Land."]}
+{
+  "name": "Lex Amoris - Sempre in Costante",
+  "short_name": "Lex Amoris",
+  "description": "The Law of Love in Constant Resonance - A Progressive Web Application for ethical AI harmony",
+  "start_url": "/lexamoris.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#ff1744",
+  "background_color": "#0a0a0f",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23ff1744'/%3E%3Ctext x='256' y='340' font-size='280' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='96' fill='%23ff1744'/%3E%3Ctext x='96' y='135' font-size='110' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 144'%3E%3Ccircle cx='72' cy='72' r='72' fill='%23ff1744'/%3E%3Ctext x='72' y='100' font-size='80' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='48' fill='%23ff1744'/%3E%3Ctext x='48' y='68' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Ccircle cx='36' cy='36' r='36' fill='%23ff1744'/%3E%3Ctext x='36' y='50' font-size='40' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='24' fill='%23ff1744'/%3E%3Ctext x='24' y='33' font-size='26' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "48x48",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'%3E%3Crect width='540' height='720' fill='%230a0a0f'/%3E%3Ctext x='270' y='200' font-size='48' text-anchor='middle' fill='%23ff1744' font-weight='bold'%3ELex Amoris%3C/text%3E%3Ctext x='270' y='250' font-size='24' text-anchor='middle' fill='%23b0b0b0'%3ESempre in Costante%3C/text%3E%3Ccircle cx='270' cy='400' r='80' fill='%23ff1744' opacity='0.3'/%3E%3Ctext x='270' y='430' font-size='60' text-anchor='middle' fill='%23ff1744'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Lex Amoris Home Screen"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 768'%3E%3Crect width='1024' height='768' fill='%230a0a0f'/%3E%3Ctext x='512' y='200' font-size='64' text-anchor='middle' fill='%23ff1744' font-weight='bold'%3ELex Amoris%3C/text%3E%3Ctext x='512' y='260' font-size='32' text-anchor='middle' fill='%23b0b0b0'%3ESempre in Costante%3C/text%3E%3Ccircle cx='512' cy='450' r='100' fill='%23ff1744' opacity='0.3'/%3E%3Ctext x='512' y='490' font-size='80' text-anchor='middle' fill='%23ff1744'%3E❤%3C/text%3E%3C/svg%3E",
+      "sizes": "1024x768",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Lex Amoris Desktop View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Activate Resonance",
+      "short_name": "Resonate",
+      "description": "Start the harmonic resonance cycle",
+      "url": "/lexamoris.html?action=resonate",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='48' fill='%23ff1744'/%3E%3Cpath d='M48 30 L60 42 L52 42 L52 60 L44 60 L44 42 L36 42 Z' fill='white'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "View Metrics",
+      "short_name": "Metrics",
+      "description": "View resonance and growth metrics",
+      "url": "/lexamoris.html?action=metrics",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='48' fill='%23f50057'/%3E%3Ctext x='48' y='65' font-size='48' text-anchor='middle' fill='white'%3E📊%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Reset System",
+      "short_name": "Reset",
+      "description": "Reset all metrics to initial state",
+      "url": "/lexamoris.html?action=reset",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='48' fill='%23ff4081'/%3E%3Cpath d='M48 20 A28 28 0 1 0 48 76 L48 60 A12 12 0 1 1 48 36' stroke='white' stroke-width='4' fill='none'/%3E%3Cpath d='M42 26 L48 20 L54 26' stroke='white' stroke-width='4' fill='none'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/lexamoris.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://ipfs.io/ipfs/QmLexAmoris"
+    }
+  ],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+lexamoris",
+      "url": "/lexamoris.html?protocol=%s"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "file_handlers": [
+    {
+      "action": "/lexamoris.html",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt"]
+      },
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='48' fill='%23ff1744'/%3E%3Ctext x='48' y='68' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/lexamoris.html?action=note"
+  }
+}

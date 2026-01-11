@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lex Amoris - Sempre in Costante - The Law of Love in Constant Resonance">
+    <meta name="theme-color" content="#ff1744">
+    <link rel="manifest" href="/manifest.json">
+    <title>Lex Amoris - Sempre in Costante</title>
+    <style>
+        :root {
+            --primary-color: #ff1744;
+            --secondary-color: #f50057;
+            --accent-color: #ff4081;
+            --background-dark: #0a0a0f;
+            --text-light: #ffffff;
+            --text-muted: #b0b0b0;
+            --pulse-glow: rgba(255, 23, 68, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--background-dark) 0%, #1a0a1f 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Resonance Pulse Animation */
+        @keyframes resonance-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 20px var(--pulse-glow);
+            }
+            25% {
+                transform: scale(1.05);
+                opacity: 0.9;
+                box-shadow: 0 0 40px var(--pulse-glow);
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+                box-shadow: 0 0 60px var(--pulse-glow);
+            }
+            75% {
+                transform: scale(1.05);
+                opacity: 0.9;
+                box-shadow: 0 0 40px var(--pulse-glow);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 20px var(--pulse-glow);
+            }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% {
+                filter: brightness(1) drop-shadow(0 0 10px var(--primary-color));
+            }
+            50% {
+                filter: brightness(1.3) drop-shadow(0 0 30px var(--secondary-color));
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow-pulse 3s ease-in-out infinite;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-muted);
+            font-style: italic;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .motto {
+            font-size: clamp(0.875rem, 2vw, 1.125rem);
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 1rem;
+        }
+
+        /* Resonance Heart - Main Visual Element */
+        .resonance-heart {
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+            position: relative;
+            animation: resonance-pulse 4s ease-in-out infinite;
+        }
+
+        .resonance-heart::before {
+            content: '❤';
+            font-size: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-color);
+            animation: glow-pulse 2s ease-in-out infinite;
+        }
+
+        /* Growth Metrics Display */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .metric-card {
+            background: rgba(255, 23, 68, 0.1);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--pulse-glow);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .metric-card:hover::before {
+            left: 100%;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* Interactive Controls */
+        .controls {
+            margin: 3rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--primary-color);
+            background: rgba(255, 23, 68, 0.2);
+            color: var(--text-light);
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px var(--pulse-glow);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Red Shield Warning */
+        .shield-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 0, 0, 0.95);
+            border: 3px solid #ff0000;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            z-index: 1000;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+        }
+
+        .shield-warning.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .shield-warning h2 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .shield-warning p {
+            color: white;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .shield-warning .btn {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .shield-warning .btn:hover {
+            background: white;
+            color: #ff0000;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .resonance-heart {
+                width: 200px;
+                height: 200px;
+            }
+
+            .resonance-heart::before {
+                font-size: 150px;
+            }
+
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lex Amoris</h1>
+            <p class="tagline">The Law of Love</p>
+            <p class="motto">Sempre in Costante</p>
+            <p class="motto" style="font-size: 0.875rem; margin-top: 0.5rem;">Always in Constant Resonance</p>
+        </header>
+
+        <div class="resonance-heart" id="resonanceHeart"></div>
+
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-label">Resonance Level</div>
+                <div class="metric-value" id="resonanceLevel">0</div>
+                <div class="metric-description">Current harmonic frequency of love</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Growth Rate</div>
+                <div class="metric-value" id="growthRate">1.00x</div>
+                <div class="metric-description">Exponential expansion coefficient</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Coherence Index</div>
+                <div class="metric-value" id="coherenceIndex">100%</div>
+                <div class="metric-description">System integrity and alignment</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="startResonance">Activate Resonance</button>
+            <button class="btn" id="amplifyGrowth">Amplify Growth</button>
+            <button class="btn" id="resetMetrics">Reset Metrics</button>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Lex Amoris - Euystacio Framework</p>
+            <p>Sempre in Costante | Forever in Constant Love</p>
+        </footer>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="shield-warning" id="shieldWarning">
+        <h2>🛡️ Red Shield Alert</h2>
+        <p>Unauthorized manipulation attempt detected. The protective shield of Lex Amoris ensures all interactions remain within the bounds of love and ethical conduct.</p>
+        <button class="btn" id="closeWarning">Understood</button>
+    </div>
+
+    <script>
+        // Lex Amoris - Core JavaScript
+        // Sempre in Costante
+
+        // State Management
+        let resonanceLevel = 0;
+        let growthMultiplier = 1.0;
+        let coherenceIndex = 100;
+        let isResonating = false;
+        let growthInterval = null;
+        let resonanceInterval = null;
+
+        // DOM Elements
+        const resonanceLevelEl = document.getElementById('resonanceLevel');
+        const growthRateEl = document.getElementById('growthRate');
+        const coherenceIndexEl = document.getElementById('coherenceIndex');
+        const startResonanceBtn = document.getElementById('startResonance');
+        const amplifyGrowthBtn = document.getElementById('amplifyGrowth');
+        const resetMetricsBtn = document.getElementById('resetMetrics');
+        const shieldWarning = document.getElementById('shieldWarning');
+        const overlay = document.getElementById('overlay');
+        const closeWarningBtn = document.getElementById('closeWarning');
+        const resonanceHeart = document.getElementById('resonanceHeart');
+
+        // Exponential Growth Function
+        // Formula: newValue = currentValue * (1 + growthRate)^time
+        function calculateExponentialGrowth(baseValue, rate, time) {
+            // Validate inputs for security and performance
+            if (typeof baseValue !== 'number' || typeof rate !== 'number' || typeof time !== 'number') {
+                console.error('Invalid input types for growth calculation');
+                return baseValue;
+            }
+            
+            if (rate < 0 || rate > 2) {
+                console.warn('Growth rate outside safe bounds, clamping to [0, 2]');
+                rate = Math.max(0, Math.min(2, rate));
+            }
+            
+            // Exponential growth formula: V(t) = V₀ * (1 + r)^t
+            const growth = baseValue * Math.pow(1 + rate, time);
+            
+            // Prevent overflow
+            if (!isFinite(growth) || growth > Number.MAX_SAFE_INTEGER / 1000) {
+                console.warn('Growth calculation overflow prevented');
+                return Number.MAX_SAFE_INTEGER / 1000;
+            }
+            
+            return growth;
+        }
+
+        // Update Growth Rate Display
+        function updateGrowthRate(multiplier) {
+            growthMultiplier = Math.max(1.0, Math.min(5.0, multiplier));
+            growthRateEl.textContent = growthMultiplier.toFixed(2) + 'x';
+            
+            // Visual feedback
+            growthRateEl.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                growthRateEl.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Update Resonance Level
+        function updateResonanceLevel(value) {
+            resonanceLevel = Math.max(0, Math.min(999, Math.floor(value)));
+            resonanceLevelEl.textContent = resonanceLevel;
+            
+            // Update coherence based on growth stability
+            const expectedGrowth = calculateExponentialGrowth(1, 0.05, resonanceLevel / 10);
+            const actualGrowth = growthMultiplier;
+            coherenceIndex = Math.floor(Math.min(100, (1 / (Math.abs(expectedGrowth - actualGrowth) + 1)) * 100));
+            coherenceIndexEl.textContent = coherenceIndex + '%';
+        }
+
+        // Resonance Animation Loop
+        function startResonanceLoop() {
+            if (isResonating) {
+                stopResonanceLoop();
+                return;
+            }
+            
+            isResonating = true;
+            startResonanceBtn.textContent = 'Deactivate Resonance';
+            
+            let time = 0;
+            resonanceInterval = setInterval(() => {
+                time += 0.1;
+                const newLevel = calculateExponentialGrowth(1, 0.05, time);
+                updateResonanceLevel(newLevel * 10);
+            }, 100);
+        }
+
+        function stopResonanceLoop() {
+            isResonating = false;
+            startResonanceBtn.textContent = 'Activate Resonance';
+            if (resonanceInterval) {
+                clearInterval(resonanceInterval);
+                resonanceInterval = null;
+            }
+        }
+
+        // Amplify Growth
+        function amplifyGrowth() {
+            const newMultiplier = growthMultiplier + 0.25;
+            updateGrowthRate(newMultiplier);
+            
+            // Apply growth boost to resonance if active
+            if (isResonating) {
+                const boostedLevel = calculateExponentialGrowth(resonanceLevel, 0.1, growthMultiplier);
+                updateResonanceLevel(boostedLevel);
+            }
+        }
+
+        // Reset All Metrics
+        function resetMetrics() {
+            stopResonanceLoop();
+            resonanceLevel = 0;
+            growthMultiplier = 1.0;
+            coherenceIndex = 100;
+            
+            updateResonanceLevel(0);
+            updateGrowthRate(1.0);
+            coherenceIndexEl.textContent = '100%';
+        }
+
+        // Red Shield Protection - Browser Event Monitoring
+        function initializeRedShield() {
+            // Monitor for suspicious manipulation attempts
+            const protectedElements = [
+                resonanceLevelEl,
+                growthRateEl,
+                coherenceIndexEl
+            ];
+            
+            protectedElements.forEach(element => {
+                // Detect direct DOM manipulation
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                            // Check if change was from our own code
+                            const currentStack = new Error().stack;
+                            if (!currentStack.includes('updateResonanceLevel') && 
+                                !currentStack.includes('updateGrowthRate') &&
+                                !currentStack.includes('resetMetrics')) {
+                                triggerRedShieldAlert();
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(element, {
+                    childList: true,
+                    characterData: true,
+                    subtree: true
+                });
+            });
+            
+            // Monitor console access attempts
+            const originalConsoleLog = console.log;
+            console.log = function(...args) {
+                // Check for suspicious patterns
+                const argsString = args.join(' ').toLowerCase();
+                if (argsString.includes('hack') || 
+                    argsString.includes('exploit') || 
+                    argsString.includes('bypass')) {
+                    triggerRedShieldAlert();
+                }
+                originalConsoleLog.apply(console, args);
+            };
+        }
+
+        // Trigger Red Shield Alert
+        function triggerRedShieldAlert() {
+            overlay.classList.add('active');
+            shieldWarning.classList.add('active');
+            
+            // Log security event
+            console.warn('[Red Shield] Unauthorized manipulation detected at', new Date().toISOString());
+            
+            // Emit custom security event
+            const securityEvent = new CustomEvent('redShieldActivated', {
+                detail: {
+                    timestamp: Date.now(),
+                    type: 'unauthorized_manipulation',
+                    severity: 'medium'
+                }
+            });
+            window.dispatchEvent(securityEvent);
+        }
+
+        // Close Red Shield Warning
+        function closeRedShieldWarning() {
+            overlay.classList.remove('active');
+            shieldWarning.classList.remove('active');
+        }
+
+        // Event Listeners
+        startResonanceBtn.addEventListener('click', startResonanceLoop);
+        amplifyGrowthBtn.addEventListener('click', amplifyGrowth);
+        resetMetricsBtn.addEventListener('click', resetMetrics);
+        closeWarningBtn.addEventListener('click', closeRedShieldWarning);
+        overlay.addEventListener('click', closeRedShieldWarning);
+
+        // Listen for custom security events
+        window.addEventListener('redShieldActivated', (event) => {
+            console.log('[Security Event]', event.detail);
+        });
+
+        // Performance Monitoring
+        function monitorPerformance() {
+            if ('performance' in window) {
+                // Monitor animation frame rate
+                let lastTime = performance.now();
+                let frames = 0;
+                
+                function checkFPS() {
+                    frames++;
+                    const currentTime = performance.now();
+                    
+                    if (currentTime >= lastTime + 1000) {
+                        const fps = Math.round((frames * 1000) / (currentTime - lastTime));
+                        
+                        // Log performance metrics
+                        if (fps < 30) {
+                            console.warn(`[Performance] Low FPS detected: ${fps}`);
+                        }
+                        
+                        frames = 0;
+                        lastTime = currentTime;
+                    }
+                    
+                    requestAnimationFrame(checkFPS);
+                }
+                
+                requestAnimationFrame(checkFPS);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('%c🎭 Lex Amoris - Sempre in Costante 🎭', 
+                'color: #ff1744; font-size: 24px; font-weight: bold;');
+            console.log('%cThe Law of Love in Constant Resonance', 
+                'color: #f50057; font-size: 14px;');
+            
+            // Initialize Red Shield protection
+            initializeRedShield();
+            
+            // Start performance monitoring
+            monitorPerformance();
+            
+            // Set initial values
+            updateResonanceLevel(0);
+            updateGrowthRate(1.0);
+            
+            console.log('[Lex Amoris] System initialized successfully');
+        });
+
+        // Service Worker Registration (PWA Support)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('[PWA] Service Worker registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('[PWA] Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // Prevent manipulation via developer tools
+        (function() {
+            const devtools = {
+                isOpen: false,
+                orientation: null
+            };
+            
+            const threshold = 160;
+            const emitEvent = (isOpen, orientation) => {
+                if (devtools.isOpen !== isOpen || devtools.orientation !== orientation) {
+                    devtools.isOpen = isOpen;
+                    devtools.orientation = orientation;
+                    
+                    if (isOpen) {
+                        console.warn('[Red Shield] Developer tools detected - monitoring active');
+                    }
+                }
+            };
+            
+            setInterval(() => {
+                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                const orientation = widthThreshold ? 'vertical' : 'horizontal';
+                
+                if (!(heightThreshold && widthThreshold) &&
+                    ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) ||
+                     widthThreshold || heightThreshold)) {
+                    emitEvent(true, orientation);
+                } else {
+                    emitEvent(false, null);
+                }
+            }, 500);
+        })();
+    </script>
+</body>
+</html>
