@@ -175,7 +175,7 @@ contract EuystacioSTAnchor is Ownable {
         bytes32 keyHash,
         string calldata ipfsCID
     ) external onlyOwner whenNotSealed {
-        require(deploymentKeys[keyId].lockedAt == 0, "Key already exists");
+        require(bytes(deploymentKeys[keyId].name).length == 0, "Key already exists");
         require(bytes(name).length > 0, "Invalid name");
         require(keyHash != bytes32(0), "Invalid key hash");
         
@@ -283,7 +283,7 @@ contract EuystacioSTAnchor is Ownable {
      * @param docId The document identifier to validate
      */
     function validateGovernanceDocument(bytes32 docId) external onlyOwner {
-        require(governanceDocuments[docId].timestamp != 0, "Document does not exist");
+        require(bytes(governanceDocuments[docId].name).length > 0, "Document does not exist");
         require(!governanceDocuments[docId].validated, "Document already validated");
         
         governanceDocuments[docId].validated = true;
