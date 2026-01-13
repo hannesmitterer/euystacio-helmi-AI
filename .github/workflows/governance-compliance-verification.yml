@@ -1,0 +1,258 @@
+name: Governance Compliance Verification
+
+on:
+  push:
+    branches:
+      - main
+      - 'copilot/**'
+    paths:
+      - 'contracts/EUSDaoGovernance.sol'
+      - 'governance.json'
+      - 'GOVERNANCE.md'
+      - 'red_code.py'
+      - 'red_code.json'
+      - 'Red Code Protocol.txt'
+      - 'verify_governance_compliance.py'
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run weekly on Mondays at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  verify_compliance:
+    name: Verify Governance Compliance
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    
+    - name: Run Governance Compliance Verification
+      id: verify
+      run: |
+        echo "Running comprehensive governance compliance verification..."
+        python3 verify_governance_compliance.py
+        EXIT_CODE=$?
+        echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+        
+        # Store verification status
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "status=✅ COMPLIANT" >> $GITHUB_OUTPUT
+        else
+          echo "status=❌ NON-COMPLIANT" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Parse Verification Results
+      id: results
+      if: always()
+      run: |
+        if [ -f governance_verification_report.json ]; then
+          # Extract key results
+          STATUS=$(jq -r '.overall_status' governance_verification_report.json)
+          TIMESTAMP=$(jq -r '.verification_timestamp' governance_verification_report.json)
+          
+          echo "overall_status=$STATUS" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          
+          # Count errors and warnings
+          ERRORS=$(jq -r '.errors | length' governance_verification_report.json)
+          WARNINGS=$(jq -r '.warnings | length' governance_verification_report.json)
+          
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+          
+          # Component statuses
+          RED_CODE=$(jq -r '.red_code_verification.implementation_valid' governance_verification_report.json)
+          H_VAR=$(jq -r '.h_var_verification.deployment_verified' governance_verification_report.json)
+          QUORUM=$(jq -r '.quorum_verification.quorum_implemented' governance_verification_report.json)
+          GCSI=$(jq -r '.g_csi_verification.hash_verification' governance_verification_report.json)
+          DEPLOYMENT=$(jq -r '.deployment_verification.deployment_complete' governance_verification_report.json)
+          IMMUTABILITY=$(jq -r '.immutability_verification.immutability_verified' governance_verification_report.json)
+          
+          echo "red_code=$RED_CODE" >> $GITHUB_OUTPUT
+          echo "h_var=$H_VAR" >> $GITHUB_OUTPUT
+          echo "quorum=$QUORUM" >> $GITHUB_OUTPUT
+          echo "gcsi=$GCSI" >> $GITHUB_OUTPUT
+          echo "deployment=$DEPLOYMENT" >> $GITHUB_OUTPUT
+          echo "immutability=$IMMUTABILITY" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Verification Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: governance-verification-report
+        path: governance_verification_report.json
+        retention-days: 90
+    
+    - name: Comment on PR
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request' && always()
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const fs = require('fs');
+          const reportPath = 'governance_verification_report.json';
+          
+          let comment = '## 🔍 Governance Compliance Verification\n\n';
+          
+          if (fs.existsSync(reportPath)) {
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            
+            const statusEmoji = report.overall_status === 'COMPLIANT' ? '✅' : 
+                               report.overall_status === 'MOSTLY_COMPLIANT' ? '⚠️' : '❌';
+            
+            comment += `**Overall Status**: ${statusEmoji} **${report.overall_status}**\n\n`;
+            comment += `**Verification Time**: ${report.verification_timestamp}\n\n`;
+            comment += `### Component Status\n\n`;
+            comment += `| Component | Status |\n`;
+            comment += `|-----------|--------|\n`;
+            comment += `| Red Code Implementation | ${report.red_code_verification.implementation_valid ? '✅ PASS' : '❌ FAIL'} |\n`;
+            comment += `| H-Var (0.043 Hz) | ${report.h_var_verification.deployment_verified ? '✅ PASS' : '❌ FAIL'} |\n`;
+            comment += `| Quorum Rules | ${report.quorum_verification.quorum_implemented ? '✅ PASS' : '❌ FAIL'} |\n`;
+            comment += `| G-CSI Cryptographic | ${report.g_csi_verification.hash_verification ? '✅ PASS' : '❌ FAIL'} |\n`;
+            comment += `| Deployment Complete | ${report.deployment_verification.deployment_complete ? '✅ PASS' : '❌ FAIL'} |\n`;
+            comment += `| Immutability Verified | ${report.immutability_verification.immutability_verified ? '✅ PASS' : '❌ FAIL'} |\n\n`;
+            
+            if (report.errors && report.errors.length > 0) {
+              comment += `### ❌ Errors (${report.errors.length})\n\n`;
+              report.errors.forEach(error => {
+                comment += `- ${error}\n`;
+              });
+              comment += '\n';
+            }
+            
+            if (report.warnings && report.warnings.length > 0) {
+              comment += `### ⚠️ Warnings (${report.warnings.length})\n\n`;
+              report.warnings.forEach(warning => {
+                comment += `- ${warning}\n`;
+              });
+              comment += '\n';
+            }
+            
+            comment += `\n---\n`;
+            comment += `📊 [View Full Report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+          } else {
+            comment += '⚠️ Verification report not found. Check workflow logs for details.';
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+    
+    - name: Create Issue on Failure
+      uses: actions/github-script@v7
+      if: failure() && github.event_name != 'pull_request'
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const fs = require('fs');
+          const reportPath = 'governance_verification_report.json';
+          
+          let issueBody = '## ⚠️ Governance Compliance Verification Failed\n\n';
+          issueBody += `**Workflow Run**: [#${context.runId}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n`;
+          issueBody += `**Branch**: ${context.ref}\n`;
+          issueBody += `**Commit**: ${context.sha}\n\n`;
+          
+          if (fs.existsSync(reportPath)) {
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            
+            issueBody += `### Status: ${report.overall_status}\n\n`;
+            
+            if (report.errors && report.errors.length > 0) {
+              issueBody += `### Errors\n\n`;
+              report.errors.forEach(error => {
+                issueBody += `- [ ] ${error}\n`;
+              });
+              issueBody += '\n';
+            }
+            
+            if (report.warnings && report.warnings.length > 0) {
+              issueBody += `### Warnings\n\n`;
+              report.warnings.forEach(warning => {
+                issueBody += `- [ ] ${warning}\n`;
+              });
+            }
+          }
+          
+          issueBody += '\n### Required Actions\n\n';
+          issueBody += '1. Review the errors and warnings above\n';
+          issueBody += '2. Run `python3 verify_governance_compliance.py` locally\n';
+          issueBody += '3. Fix identified issues\n';
+          issueBody += '4. Re-run verification\n';
+          issueBody += '5. Close this issue when all checks pass\n';
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Governance Compliance Failed: ${new Date().toISOString().split('T')[0]}`,
+            body: issueBody,
+            labels: ['governance', 'compliance', 'automated']
+          });
+    
+    - name: Summary
+      if: always()
+      run: |
+        echo "## Governance Compliance Verification Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f governance_verification_report.json ]; then
+          STATUS=$(jq -r '.overall_status' governance_verification_report.json)
+          TIMESTAMP=$(jq -r '.verification_timestamp' governance_verification_report.json)
+          
+          if [ "$STATUS" = "COMPLIANT" ]; then
+            echo "✅ **Status**: COMPLIANT" >> $GITHUB_STEP_SUMMARY
+          elif [ "$STATUS" = "MOSTLY_COMPLIANT" ]; then
+            echo "⚠️ **Status**: MOSTLY_COMPLIANT" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Status**: NON_COMPLIANT" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Verification Time**: $TIMESTAMP" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Component Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Add component statuses to summary
+          jq -r '"| Component | Status |", "|-----------|--------|", 
+                 "| Red Code | \(if .red_code_verification.implementation_valid then "✅ PASS" else "❌ FAIL" end) |",
+                 "| H-Var | \(if .h_var_verification.deployment_verified then "✅ PASS" else "❌ FAIL" end) |",
+                 "| Quorum | \(if .quorum_verification.quorum_implemented then "✅ PASS" else "❌ FAIL" end) |",
+                 "| G-CSI | \(if .g_csi_verification.hash_verification then "✅ PASS" else "❌ FAIL" end) |",
+                 "| Deployment | \(if .deployment_verification.deployment_complete then "✅ PASS" else "❌ FAIL" end) |",
+                 "| Immutability | \(if .immutability_verification.immutability_verified then "✅ PASS" else "❌ FAIL" end) |"' \
+            governance_verification_report.json >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ Verification report not generated" >> $GITHUB_STEP_SUMMARY
+        fi
+    
+    - name: Fail on Non-Compliance
+      if: steps.verify.outputs.exit_code != '0'
+      run: |
+        echo "::error::Governance compliance verification failed. Review the report for details."
+        exit 1
