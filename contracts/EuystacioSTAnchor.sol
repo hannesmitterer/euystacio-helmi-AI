@@ -195,7 +195,7 @@ contract EuystacioSTAnchor is Ownable {
      * @param keyId The key identifier to lock
      */
     function lockDeploymentKey(bytes32 keyId) external onlyOwner {
-        require(deploymentKeys[keyId].lockedAt != 0 || bytes(deploymentKeys[keyId].name).length > 0, "Key does not exist");
+        require(bytes(deploymentKeys[keyId].name).length > 0, "Key does not exist");
         require(!deploymentKeys[keyId].locked, "Key already locked");
         
         deploymentKeys[keyId].locked = true;
@@ -239,7 +239,7 @@ contract EuystacioSTAnchor is Ownable {
      * @param paramId The parameter identifier to lock
      */
     function lockRuntimeParameter(bytes32 paramId) external onlyOwner {
-        require(runtimeParameters[paramId].lockedAt != 0 || bytes(runtimeParameters[paramId].name).length > 0, "Parameter does not exist");
+        require(bytes(runtimeParameters[paramId].name).length > 0, "Parameter does not exist");
         require(!runtimeParameters[paramId].locked, "Parameter already locked");
         
         runtimeParameters[paramId].locked = true;
