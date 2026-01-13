@@ -115,6 +115,8 @@ contract TrustlessFundingProtocol is Ownable {
      * @param trancheId ID of the tranche to release
      * @param proofHash Hash of proof (stored off-chain)
      * @param sealId G-CSI seal ID for this tranche (optional, bytes32(0) if not required)
+     * @dev BREAKING CHANGE: This function signature now requires a sealId parameter.
+     *      Pass bytes32(0) (ethers.ZeroHash) if G-CSI validation is not required.
      */
     function releaseTranche(uint256 trancheId, bytes32 proofHash, bytes32 sealId) external onlyOwner {
         require(!trancheReleased[trancheId], "Already released");
@@ -227,7 +229,7 @@ contract TrustlessFundingProtocol is Ownable {
         bytes memory bstr = new bytes(len);
         uint256 k = len;
         while (_i != 0) {
-            k = k-1;
+            k = k - 1;
             uint8 temp = (48 + uint8(_i - _i / 10 * 10));
             bytes1 b1 = bytes1(temp);
             bstr[k] = b1;

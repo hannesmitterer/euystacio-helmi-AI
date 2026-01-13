@@ -221,10 +221,10 @@ describe("LivingCovenantAnchor", function () {
       expect(await lca.isMilestoneSealed(milestoneId)).to.be.true;
     });
 
-    it("Should prevent non-owner from sealing milestone", async function () {
+    it("Should prevent non-authorized from sealing milestone", async function () {
       await expect(
         lca.connect(user1).sealMilestone(milestoneId, anchorHash)
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+      ).to.be.revertedWith("LCA: Not authorized");
     });
 
     it("Should prevent sealing non-existent milestone", async function () {

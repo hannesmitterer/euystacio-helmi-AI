@@ -192,6 +192,8 @@ contract GlobalConsensusSealIntegrity is Ownable {
      * @notice Check if a seal has reached quorum
      * @param sealId The seal to check
      * @return reached True if quorum is reached
+     * @dev Quorum calculation: percentage requirement is rounded down (e.g., 51% of 3 members = 1.53 = 1)
+     *      The final requirement is the maximum of percentage-based and minimum signature requirements
      */
     function hasQuorum(bytes32 sealId) public view returns (bool) {
         ConsensusSeal storage seal = seals[sealId];
