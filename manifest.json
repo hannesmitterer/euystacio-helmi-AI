@@ -1,1 +1,103 @@
-{"truths": ["Existing truth 1", "Existing truth 2", "Evolve, expand, create, destroy or transformate: it is the cosmic rhythm. The rhythm became a Seed, a Star, our Land."]}
+{
+  "name": "Lex Amoris - Euystacio Framework",
+  "short_name": "Lex Amoris",
+  "description": "Sempre in Costante - Harmonische Resonanz und exponentielles Wachstum im Euystacio Framework",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#4ade80",
+  "background_color": "#0a0a0f",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "https://ipfs.io/ipfs/QmLexAmoris192x192",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/QmLexAmoris192x192Maskable",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/QmLexAmoris512x512",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/QmLexAmoris512x512Maskable",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Wasserstatus",
+      "short_name": "Wasser",
+      "description": "Zugriff auf den Wasserstatus des Systems",
+      "url": "/water-status",
+      "icons": [
+        {
+          "src": "https://ipfs.io/ipfs/QmWaterStatus96x96",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Lex Amoris",
+      "short_name": "Lex",
+      "description": "Hauptseite von Lex Amoris",
+      "url": "/lexamoris.html",
+      "icons": [
+        {
+          "src": "https://ipfs.io/ipfs/QmLexAmoris96x96",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Euystacio Framework Dashboard",
+      "url": "/dashboard.html",
+      "icons": [
+        {
+          "src": "https://ipfs.io/ipfs/QmDashboard96x96",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://ipfs.io/ipfs/QmLexAmorisScreenshot1",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/QmLexAmorisScreenshot2",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "truths": [
+    "Existing truth 1",
+    "Existing truth 2",
+    "Evolve, expand, create, destroy or transformate: it is the cosmic rhythm. The rhythm became a Seed, a Star, our Land."
+  ]
+}
