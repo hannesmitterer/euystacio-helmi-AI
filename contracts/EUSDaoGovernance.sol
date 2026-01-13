@@ -13,7 +13,8 @@ contract EUSDaoGovernance is ERC20, Ownable {
     // Contribution scores for weighted voting
     mapping(address => uint256) public contributionScore;
     
-    // Governance parameters (immutable after initialization)
+    // Governance parameters (updatable via owner for DAO evolution)
+    // Note: While mutable, changes are governed by owner multi-sig and Red Code veto
     uint256 public quorumPercentage = 51; // 51% quorum required (H-Var aligned)
     uint256 public proposalThreshold = 1000 * 10**18; // Minimum tokens to create proposal
     uint256 public votingPeriod = 7 days; // Standard voting period

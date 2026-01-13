@@ -21,7 +21,7 @@ import re
 import hashlib
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Configuration
 REPO_ROOT = Path(__file__).parent
@@ -427,7 +427,7 @@ class GovernanceVerifier:
                 print(f"  - {warning}")
         
         # Add timestamp
-        self.results["verification_timestamp"] = datetime.now(datetime.UTC).isoformat() if hasattr(datetime, 'UTC') else datetime.utcnow().isoformat()
+        self.results["verification_timestamp"] = datetime.now(timezone.utc).isoformat()
         self.results["errors"] = self.errors
         self.results["warnings"] = self.warnings
         
