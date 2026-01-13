@@ -23,9 +23,14 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ### Smart Contracts
 
+- **EuystacioSTAnchor** - Deployment sealing with Red Code Veto H-Var capabilities ([Details](contracts/README_STANCHOR.md))
+  - Red Code Veto mechanism with Human Variable (H-Var) ultimate ethical override
+  - Deployment key locking with IPFS backing
+  - Runtime parameter sealing for immutable governance states
+  - G-CSI IPFS anchoring for cryptographic validation
 - **KarmaBond** - Trust-based bonding system with governance participation
 - **TrustlessFundingProtocol** - Ethical funding with multi-level approvals
-- **EUSDaoGovernance** - DAO-based governance with weighted voting
+- **EUSDaoGovernance** - DAO-based governance with weighted voting and Red Code Veto integration
 - **Sustainment** - Treasury sustainability protocol
 
 ### OV: Open Visual - Authentication Module
@@ -99,18 +104,19 @@ npm run compile
 ### Run Tests
 
 \`\`\`bash
-# Run all smart contract tests (59 passing)
+# Run all smart contract tests (150 passing)
 npm test
 
 # Run specific test suites
 npm run test:sustainment      # Treasury sustainment tests
 npm run test:integration       # Integration tests
 npm run test:governance        # Governance tests
+npm run test:stanchor         # EuystacioSTAnchor deployment sealing tests (35 passing)
 
 # Run OV/OI module tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
-npm run test:all              # All tests (102 passing)
+npm run test:all              # All tests (150+ passing)
 \`\`\`
 
 ### Run Integrity Checks
