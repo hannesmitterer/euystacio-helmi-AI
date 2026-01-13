@@ -40,7 +40,7 @@ contract EuystacioSTAnchor {
         admin = msg.sender;
         rootCommit = _rootCommit;
         councilQuorum = _quorum;
-        for (uint i=0;i<_council.length;i++) {
+        for (uint i = 0; i < _council.length; i++) {
             require(_council[i] != address(0), "invalid council address");
             council[_council[i]] = true;
         }
