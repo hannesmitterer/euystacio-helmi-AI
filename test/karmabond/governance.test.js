@@ -66,7 +66,7 @@ describe("Governance Enforcement", function () {
       expect(await sustainment.isAboveMinimum()).to.be.false;
 
       await expect(
-        tfp.releaseTranche(trancheId, proofHash)
+        tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash)
       ).to.be.revertedWith("Sustainment below minimum");
     });
 
@@ -80,7 +80,7 @@ describe("Governance Enforcement", function () {
 
       expect(await sustainment.isAboveMinimum()).to.be.true;
 
-      await expect(tfp.releaseTranche(trancheId, proofHash))
+      await expect(tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash))
         .to.emit(tfp, "TrancheReleased");
     });
 
@@ -101,7 +101,7 @@ describe("Governance Enforcement", function () {
 
       // Transaction should revert
       await expect(
-        tfp.releaseTranche(trancheId, proofHash)
+        tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash)
       ).to.be.revertedWith("Sustainment below minimum");
     });
 
@@ -115,7 +115,7 @@ describe("Governance Enforcement", function () {
       // Should now allow tranche release even with empty sustainment
       expect(await sustainment.isAboveMinimum()).to.be.false;
 
-      await tfp.releaseTranche(trancheId, proofHash);
+      await tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash);
       expect(await tfp.trancheReleased(trancheId)).to.be.true;
     });
 
@@ -160,7 +160,7 @@ describe("Governance Enforcement", function () {
       // Fund and release
       await mockToken.connect(investor).approve(await karmaBond.getAddress(), BigInt(MIN_SUSTAINMENT) * 55n);
       await karmaBond.connect(investor).mintBond(BigInt(MIN_SUSTAINMENT) * 55n);
-      await tfp.releaseTranche(trancheId, proofHash);
+      await tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash);
 
       const [canRelease, reason] = await tfp.canReleaseTranche(trancheId);
       
@@ -188,7 +188,7 @@ describe("Governance Enforcement", function () {
       await tfp.setSustainmentContract("0x0000000000000000000000000000000000000000");
       await tfp.setGovernanceEnforcement(false);
 
-      await tfp.releaseTranche(trancheId, proofHash);
+      await tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash);
       expect(await tfp.trancheReleased(trancheId)).to.be.true;
     });
   });
@@ -203,10 +203,10 @@ describe("Governance Enforcement", function () {
       expect(await sustainment.isAboveMinimum()).to.be.true;
 
       // Release first tranche
-      await tfp.releaseTranche(1, ethers.keccak256(ethers.toUtf8Bytes("proof1")));
+      await tfp.releaseTranche(1, ethers.keccak256(ethers.toUtf8Bytes("proof1")), ethers.ZeroHash);
       
       // Release second tranche
-      await tfp.releaseTranche(2, ethers.keccak256(ethers.toUtf8Bytes("proof2")));
+      await tfp.releaseTranche(2, ethers.keccak256(ethers.toUtf8Bytes("proof2")), ethers.ZeroHash);
       
       expect(await tfp.trancheReleased(1)).to.be.true;
       expect(await tfp.trancheReleased(2)).to.be.true;
@@ -219,7 +219,7 @@ describe("Governance Enforcement", function () {
       await karmaBond.connect(investor).mintBond(fundAmount);
 
       // Release first tranche successfully
-      await tfp.releaseTranche(1, ethers.keccak256(ethers.toUtf8Bytes("proof1")));
+      await tfp.releaseTranche(1, ethers.keccak256(ethers.toUtf8Bytes("proof1")), ethers.ZeroHash);
 
       // Withdraw sustainment below minimum
       const currentReserve = await sustainment.getSustainmentReserve();
@@ -230,7 +230,7 @@ describe("Governance Enforcement", function () {
 
       // Second tranche should fail
       await expect(
-        tfp.releaseTranche(2, ethers.keccak256(ethers.toUtf8Bytes("proof2")))
+        tfp.releaseTranche(2, ethers.keccak256(ethers.toUtf8Bytes("proof2")), ethers.ZeroHash)
       ).to.be.revertedWith("Sustainment below minimum");
     });
 
@@ -240,7 +240,7 @@ describe("Governance Enforcement", function () {
 
       // Initially empty
       await expect(
-        tfp.releaseTranche(trancheId, proofHash)
+        tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash)
       ).to.be.revertedWith("Sustainment below minimum");
 
       // Replenish sustainment
@@ -249,7 +249,7 @@ describe("Governance Enforcement", function () {
       await karmaBond.connect(investor).mintBond(fundAmount);
 
       // Now should succeed
-      await tfp.releaseTranche(trancheId, proofHash);
+      await tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash);
       expect(await tfp.trancheReleased(trancheId)).to.be.true;
     });
   });
@@ -265,17 +265,17 @@ describe("Governance Enforcement", function () {
       await karmaBond.connect(investor).mintBond(fundAmount);
 
       // Release once
-      await tfp.releaseTranche(trancheId, proofHash);
+      await tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash);
 
       // Try to release again
       await expect(
-        tfp.releaseTranche(trancheId, proofHash)
+        tfp.releaseTranche(trancheId, proofHash, ethers.ZeroHash)
       ).to.be.revertedWith("Already released");
     });
 
     it("Should reject invalid proof hash", async function () {
       await expect(
-        tfp.releaseTranche(1, "0x0000000000000000000000000000000000000000000000000000000000000000")
+        tfp.releaseTranche(1, "0x0000000000000000000000000000000000000000000000000000000000000000", ethers.ZeroHash)
       ).to.be.revertedWith("Invalid proof");
     });
 
@@ -285,7 +285,7 @@ describe("Governance Enforcement", function () {
       await karmaBond.connect(investor).mintBond(fundAmount);
 
       await expect(
-        tfp.connect(investor).releaseTranche(1, ethers.keccak256(ethers.toUtf8Bytes("proof")))
+        tfp.connect(investor).releaseTranche(1, ethers.keccak256(ethers.toUtf8Bytes("proof")), ethers.ZeroHash)
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
