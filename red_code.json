@@ -49,5 +49,11 @@
       "accessibility_impact": "Enhanced AI accessibility through size reduction",
       "ai_signature": "GitHub Copilot & Seed-bringer hannesmitterer"
     }
-  ]
+  ],
+  "pdm_integration": {
+    "version": "1.0.0",
+    "rule": "NRE-002",
+    "activated": "2025-12-10T15:43:02.380297",
+    "status": "active"
+  }
 }
