@@ -173,9 +173,14 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+### Core Documentation
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
+
+### Foundational Documents (Altar Package)
+- [Appendice Zero: La Profezia del Caos Inevitabile](euystacio_altar_full/docs/foundation/00_Appendice_Zero_Profezia_del_Caos_Inevitabile.md) - The existential "Why": collapse scenarios, mathematical models, and urgent call to action
+- [Foundation Documents](euystacio_altar_full/docs/foundation/README.md) - Complete altar package including Bridges of the Rhythm, Core Directive, Proof of Witness, and Wood Stone Pack
 
 ## 🏗️ Architecture
 
