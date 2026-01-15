@@ -217,8 +217,29 @@ class EuystacioBlacklist:
         return {entity['entity_id'] for entity in self.blacklist_data['blocked_entities']}
 
 
-# Global blacklist instance
-blacklist = EuystacioBlacklist()
+# Global blacklist instance for backwards compatibility
+# For new code, prefer using get_blacklist() or creating your own instance
+_global_blacklist = None
+
+
+def get_blacklist(blacklist_path: str = BLACKLIST_PATH) -> EuystacioBlacklist:
+    """
+    Get or create the global blacklist instance.
+    
+    Args:
+        blacklist_path: Path to blacklist file
+    
+    Returns:
+        Global EuystacioBlacklist instance
+    """
+    global _global_blacklist
+    if _global_blacklist is None:
+        _global_blacklist = EuystacioBlacklist(blacklist_path)
+    return _global_blacklist
+
+
+# Module-level blacklist for backwards compatibility
+blacklist = get_blacklist()
 
 
 def ensure_blacklist(path: str = BLACKLIST_PATH) -> bool:

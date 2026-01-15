@@ -1,11 +1,14 @@
 import json
 from datetime import datetime
-from blacklist import blacklist
+from blacklist import get_blacklist
 
 class Euystacio:
-    def __init__(self, red_code_path="red_code.json", log_path="logs/evolution_log.txt"):
+    def __init__(self, red_code_path="red_code.json", log_path="logs/evolution_log.txt", 
+                 blacklist_instance=None):
         self.red_code_path = red_code_path
         self.log_path = log_path
+        # Use provided blacklist instance or get the global one (for testability)
+        self.blacklist = blacklist_instance or get_blacklist()
         self.load_red_code()
 
     def load_red_code(self):
@@ -18,8 +21,9 @@ class Euystacio:
         Checks blacklist before processing to ensure security.
         """
         # Security check: verify entity is not blacklisted
+        # Supports both 'entity_id' (preferred) and 'source_id' (fallback) for compatibility
         entity_id = input_event.get("entity_id") or input_event.get("source_id")
-        if entity_id and blacklist.check_and_log_attempt(entity_id):
+        if entity_id and self.blacklist.check_and_log_attempt(entity_id):
             # Entity is blacklisted - reject the event
             self.log_blocked_attempt(entity_id, input_event)
             return {
