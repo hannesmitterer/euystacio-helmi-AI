@@ -79,8 +79,8 @@ class TestRhythmValidator(unittest.TestCase):
     
     def test_validation_log_limit(self):
         """Test that validation log is limited to 1000 entries."""
-        # Add more than 1000 validations
-        for i in range(1100):
+        # Add more than 1000 validations (using 1050 for reasonable test time)
+        for i in range(1050):
             self.validator.validate_rhythm({"index": i})
         
         self.assertEqual(len(self.validator.validation_log), 1000)

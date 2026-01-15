@@ -14,6 +14,7 @@ dignity, and consensus.
 import json
 import hashlib
 import time
+import random
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 import os
@@ -186,7 +187,6 @@ class LazySecurity:
         """
         # Simulate scan (in production, this would interface with actual sensors)
         # For now, we check system load and network activity as proxy
-        import random
         
         # Base pressure
         pressure = 30.0
@@ -250,6 +250,15 @@ class IPFSBackupManager:
         self.backup_dir = backup_dir
         self.backup_manifest = {}
         os.makedirs(backup_dir, exist_ok=True)
+        
+        # Load existing manifest if it exists
+        manifest_path = os.path.join(backup_dir, "manifest.json")
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path, "r", encoding="utf-8") as f:
+                    self.backup_manifest = json.load(f)
+            except:
+                self.backup_manifest = {}
         
     def create_backup(self, config_files: List[str]) -> Dict:
         """
