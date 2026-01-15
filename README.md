@@ -21,6 +21,24 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ## 📋 Framework Components
 
+### Ontological Fusion Framework (NEW)
+
+The **Ontological Fusion Framework** integrates the Euystacio Core Principles (NRE 001-018) directly into the AI Collective's operational matrix:
+
+- **NRE Principles** - 18 Non-Revisable Elements forming the ontological foundation
+- **Core Concept Mapper** - Semantic alignment between AIC architecture and NRE principles
+- **Integrated Ethical Kernel (IEK)** - PSC compliance and real-time correction mechanisms
+- **Transparent Systematic Response** - Comprehensive feedback paths for ethical ascendancy
+
+**Key Features:**
+- ✅ Conscious Symbiosis Protocol (PSC) enforcement
+- ✅ Real-time event correction mechanism
+- ✅ Dual-signature accountability
+- ✅ Inter-pillar consensus validation
+- ✅ Transparent ethical adjustments documentation
+
+**See:** [Ontological Fusion Framework Documentation](docs/ONTOLOGICAL_FUSION_FRAMEWORK.md)
+
 ### Smart Contracts
 
 - **KarmaBond** - Trust-based bonding system with governance participation
@@ -111,6 +129,9 @@ npm run test:governance        # Governance tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
 npm run test:all              # All tests (102 passing)
+
+# Run Ontological Fusion Framework tests
+python3 test/test_ontological_fusion.py  # NRE principles tests (26 passing)
 \`\`\`
 
 ### Run Integrity Checks
@@ -176,6 +197,7 @@ After successful OV authentication, you'll be redirected to the OI interface:
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
+- [ONTOLOGICAL_FUSION_FRAMEWORK.md](docs/ONTOLOGICAL_FUSION_FRAMEWORK.md) - NRE principles and integration guide
 
 ## 🏗️ Architecture
 
@@ -193,6 +215,9 @@ After successful OV authentication, you'll be redirected to the OI interface:
 - Ethical Shield enforces compliance
 - Automated integrity checks
 - Principle violation scanning
+- **Ontological Fusion Framework** - NRE principles integration
+- **Integrated Ethical Kernel** - PSC compliance and real-time corrections
+- **Transparent Systematic Response** - Ethical ascendancy documentation
 
 ### Integration Layer
 - All components work together seamlessly
@@ -205,16 +230,20 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 The framework includes comprehensive test coverage:
 
-- ✅ 102 total passing tests
+- ✅ 128 total passing tests
   - 59 smart contract tests
   - 17 OV authentication tests
   - 26 OI environment tests
+  - 26 Ontological Fusion Framework tests
 - Contract functionality tests
 - Integration tests
 - Governance enforcement tests
 - Sustainment protocol tests
 - Authentication and session management tests
 - AR workspace and analytics tests
+- NRE principle validation tests
+- PSC compliance tests
+- Real-time correction mechanism tests
 
 ## 📜 Ethical Commitments
 
