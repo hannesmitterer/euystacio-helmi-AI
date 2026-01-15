@@ -1,0 +1,140 @@
+name: Workflow Health Monitor
+
+on:
+  workflow_run:
+    workflows: ["CI - Build and Test", "Docker Build and Push", "CodeQL Security Analysis"]
+    types:
+      - completed
+  schedule:
+    # Run daily at 00:00 UTC to check workflow health
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+jobs:
+  monitor-workflows:
+    name: Monitor Workflow Health
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run'
+    
+    steps:
+    - name: Check workflow result
+      id: check
+      run: |
+        WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+        WORKFLOW_STATUS="${{ github.event.workflow_run.conclusion }}"
+        WORKFLOW_URL="${{ github.event.workflow_run.html_url }}"
+        
+        echo "workflow_name=$WORKFLOW_NAME" >> $GITHUB_OUTPUT
+        echo "workflow_status=$WORKFLOW_STATUS" >> $GITHUB_OUTPUT
+        echo "workflow_url=$WORKFLOW_URL" >> $GITHUB_OUTPUT
+        
+        echo "Workflow: $WORKFLOW_NAME"
+        echo "Status: $WORKFLOW_STATUS"
+        echo "URL: $WORKFLOW_URL"
+        
+    - name: Create summary
+      run: |
+        echo "## Workflow Health Check" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Workflow:** ${{ steps.check.outputs.workflow_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status:** ${{ steps.check.outputs.workflow_status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL:** ${{ steps.check.outputs.workflow_url }}" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ steps.check.outputs.workflow_status }}" != "success" ]; then
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Workflow failed or was cancelled**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Workflow completed successfully**" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  daily-health-check:
+    name: Daily Health Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Check recent workflow runs
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+          
+          // Get workflow runs from the last 24 hours
+          const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+          
+          const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+            owner,
+            repo
+          });
+          
+          let summary = '## Daily Workflow Health Report\n\n';
+          let failureCount = 0;
+          
+          for (const workflow of workflows.workflows) {
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: workflow.id,
+              created: `>=${oneDayAgo}`,
+              per_page: 10
+            });
+            
+            const recentRuns = runs.workflow_runs.slice(0, 5);
+            const failures = recentRuns.filter(run => run.conclusion === 'failure');
+            
+            if (recentRuns.length > 0) {
+              summary += `### ${workflow.name}\n`;
+              summary += `- Recent runs: ${recentRuns.length}\n`;
+              summary += `- Failures: ${failures.length}\n`;
+              
+              if (failures.length > 0) {
+                failureCount += failures.length;
+                summary += `- ⚠️ Recent failures detected\n`;
+              } else {
+                summary += `- ✅ All recent runs successful\n`;
+              }
+              summary += '\n';
+            }
+          }
+          
+          summary += `\n**Total failures in last 24h:** ${failureCount}\n`;
+          
+          // Write to step summary
+          await core.summary
+            .addRaw(summary)
+            .write();
+            
+          console.log(summary);
+          
+    - name: Create health report issue
+      uses: actions/github-script@v7
+      if: failure()
+      with:
+        script: |
+          const { data: issues } = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: 'workflow-health',
+            state: 'open'
+          });
+          
+          // Don't create duplicate issues
+          if (issues.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '⚠️ Workflow Health Alert',
+              body: `Workflow health check detected issues.\n\nCheck the [workflow runs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions) for details.`,
+              labels: ['workflow-health', 'automated']
+            });
+          }
