@@ -1,0 +1,26 @@
+-----BEGIN PGP SIGNATURE-----
+
+This is a demonstration signature file for KOSYMBIOSIS archive.
+
+In a real deployment, this file would contain a GPG detached signature
+created by the primary creator (Hannes Mitterer) using:
+
+  gpg --detach-sign --armor -o kosymbiosis.sig kosymbiosis-archive.zip
+
+The signature would be created with the creator's GPG private key and
+can be verified by anyone with access to the corresponding public key.
+
+Example of actual GPG signature format:
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE... [base64-encoded signature data]
+...
+-----END PGP SIGNATURE-----
+
+For production use:
+1. Install GPG: https://gnupg.org/
+2. Generate or import your GPG key
+3. Sign the archive with the command above
+4. Replace this file with the actual signature
+
+-----END PGP SIGNATURE-----
