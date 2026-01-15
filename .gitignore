@@ -56,5 +56,8 @@ typechain-types/
 # Runtime generated files
 tutors.json
 
+# IPFS backup cache (local only)
+ipfs_backup/
+
 # Solar Sovereign generated artifacts
 data/solar_sovereign/

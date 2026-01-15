@@ -52,6 +52,18 @@ The **Open Interface (OI)** module delivers an immersive augmented reality works
 
 **Access**: `/oi/interface.html` (requires OV authentication)
 
+### Lex Amoris Security Enhancements
+
+The **Lex Amoris Security System** provides strategic security improvements based on love-first principles:
+
+- **Rhythm Validation** - Dynamic blacklist with harmonic frequency validation (432 Hz)
+- **Lazy Security** - Energy-efficient protection activated only when environmental pressure > 50 mV/m
+- **IPFS Backup** - Complete configuration mirroring with SHA-256 verification
+- **Rescue Channel** - Compassionate false positive recovery system
+
+**Documentation**: [LEX_AMORIS_SECURITY.md](LEX_AMORIS_SECURITY.md)  
+**CLI Tool**: `python3 lex_amoris_cli.py --help`
+
 ### Automated Workflows
 
 The framework includes comprehensive GitHub Actions workflows for:
@@ -111,6 +123,9 @@ npm run test:governance        # Governance tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
 npm run test:all              # All tests (102 passing)
+
+# Run Lex Amoris security tests
+python3 test_lex_amoris_security.py  # Security enhancements tests (36 passing)
 \`\`\`
 
 ### Run Integrity Checks
@@ -194,6 +209,13 @@ After successful OV authentication, you'll be redirected to the OI interface:
 - Automated integrity checks
 - Principle violation scanning
 
+### Security Layer
+- Lex Amoris rhythm validation at 432 Hz
+- Dynamic blacklist with behavioral analysis
+- Lazy security for energy efficiency
+- IPFS backup with SHA-256 verification
+- Rescue channel for false positive recovery
+
 ### Integration Layer
 - All components work together seamlessly
 - Contracts integrate with governance and treasury
@@ -205,16 +227,18 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 The framework includes comprehensive test coverage:
 
-- ✅ 102 total passing tests
+- ✅ 138 total passing tests
   - 59 smart contract tests
   - 17 OV authentication tests
   - 26 OI environment tests
+  - 36 Lex Amoris security tests
 - Contract functionality tests
 - Integration tests
 - Governance enforcement tests
 - Sustainment protocol tests
 - Authentication and session management tests
 - AR workspace and analytics tests
+- Security validation and rescue channel tests
 
 ## 📜 Ethical Commitments
 
