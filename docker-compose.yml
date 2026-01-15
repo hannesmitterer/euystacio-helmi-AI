@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Main Euystacio application
+  euystacio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: euystacio-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount only necessary volumes for development
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - euystacio-network
+
+  # Optional: Redis for caching (if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: euystacio-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - euystacio-network
+
+  # Optional: PostgreSQL database (if needed)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: euystacio-postgres
+  #   environment:
+  #     - POSTGRES_DB=euystacio
+  #     - POSTGRES_USER=euystacio
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+  #   networks:
+  #     - euystacio-network
+
+networks:
+  euystacio-network:
+    driver: bridge
+
+volumes:
+  # redis-data:
+  # postgres-data:
+  data:

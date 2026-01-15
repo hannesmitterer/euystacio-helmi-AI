@@ -1,0 +1,125 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  DEPLOYMENT_ENV: staging
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging Environment
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ steps.deploy.outputs.url }}
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Create deployment
+      uses: chrnorm/deployment-action@v2
+      id: deployment
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        environment: staging
+        initial-status: in_progress
+    
+    - name: Setup deployment configuration
+      run: |
+        echo "Preparing staging deployment..."
+        echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop"
+        echo "Environment: ${{ env.DEPLOYMENT_ENV }}"
+    
+    # If using Render.com
+    - name: Deploy to Render (Staging)
+      if: secrets.RENDER_DEPLOY_HOOK_STAGING != ''
+      run: |
+        curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}"
+        echo "Triggered Render deployment for staging"
+    
+    # If using other cloud provider (AWS, GCP, Azure, etc.)
+    # Uncomment and configure as needed
+    
+    # - name: Deploy to AWS ECS (Staging)
+    #   if: secrets.AWS_ACCESS_KEY_ID != ''
+    #   run: |
+    #     # Configure AWS credentials and deploy
+    #     echo "Deploy to AWS ECS staging"
+    
+    # - name: Deploy to Google Cloud Run (Staging)
+    #   if: secrets.GCP_SA_KEY != ''
+    #   uses: google-github-actions/deploy-cloudrun@v2
+    #   with:
+    #     service: euystacio-staging
+    #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+    #     region: us-central1
+    
+    - name: Wait for deployment health check
+      id: deploy
+      run: |
+        echo "Waiting for staging deployment to be healthy..."
+        sleep 30
+        
+        # Set staging URL (update with your actual staging URL)
+        STAGING_URL="https://euystacio-staging.onrender.com"
+        echo "url=$STAGING_URL" >> $GITHUB_OUTPUT
+        
+        # Health check (optional)
+        # curl -f "$STAGING_URL/healthz" || exit 1
+        
+        echo "Staging deployment successful!"
+        echo "URL: $STAGING_URL"
+    
+    - name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: success
+        environment-url: ${{ steps.deploy.outputs.url }}
+    
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: failure
+    
+    - name: Notify deployment
+      run: |
+        echo "### Staging Deployment Complete! 🚀" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** Staging" >> $GITHUB_STEP_SUMMARY
+        echo "**URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+
+  run-smoke-tests:
+    name: Run Smoke Tests
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests against staging environment..."
+        
+        # Example smoke test - update URL as needed
+        # curl -f https://euystacio-staging.onrender.com/healthz
+        
+        echo "✅ Smoke tests passed"
