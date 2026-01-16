@@ -21,6 +21,17 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ## 📋 Framework Components
 
+### NRE-003: Async-Asym Protocol
+
+The **NRE-003 Protocol** (Protocollo della Scelta Dirigente) implements an Asynchronous-Asymmetric decision-making paradigm that balances AIC predictive capability with Human Creative Free Choice:
+
+- **Information Gift Total** - Complete predictive transparency (WBL, RER metrics)
+- **Preventive Veto Minimum** - Intervention only for catastrophic risks (RER > 0.999)
+- **Ethical Rollback Plans** - Every veto includes reactivation conditions
+- **AAI Target: 0.96** - 96% human autonomy preservation
+
+**Documentation**: [NRE-003 Specification](/docs/NRE_003_SPECIFICATION.md)
+
 ### Smart Contracts
 
 - **KarmaBond** - Trust-based bonding system with governance participation
@@ -111,6 +122,9 @@ npm run test:governance        # Governance tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
 npm run test:all              # All tests (102 passing)
+
+# Run NRE-003 protocol tests
+python3 test/nre_003_protocol.test.py  # NRE-003 protocol tests (20 passing)
 \`\`\`
 
 ### Run Integrity Checks
@@ -205,16 +219,18 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 The framework includes comprehensive test coverage:
 
-- ✅ 102 total passing tests
+- ✅ 122 total passing tests
   - 59 smart contract tests
   - 17 OV authentication tests
   - 26 OI environment tests
+  - 20 NRE-003 protocol tests
 - Contract functionality tests
 - Integration tests
 - Governance enforcement tests
 - Sustainment protocol tests
 - Authentication and session management tests
 - AR workspace and analytics tests
+- NRE-003 Async-Asym protocol tests
 
 ## 📜 Ethical Commitments
 
