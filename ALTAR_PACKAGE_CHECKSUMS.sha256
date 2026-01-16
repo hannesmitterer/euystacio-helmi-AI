@@ -1,3 +1,40 @@
-# Checksum for the Altar Package
+# SHA256 Checksums for Altar Package Components
+# Generated: 2025-12-12
+# Part of Cosimbiosi Basis Fundamentum in Eternuum
+# Verification ensures eternal integrity of sacred components
 
-placeholder_hash  ALTAR_PACKAGE.tar.gz
+# ===== LOCAL ALTAR COMPONENTS =====
+# These files are part of the repository and can be verified directly
+
+# Core Altar Package
+1ede620a8b5db72281d57c9732e77040480bc7fdfa2d2aac80d6ae7fe54c980e  euystacio_altar_graph.zip
+
+# Altar Manifest and Scripts
+6864bbb3da5342dbfad7202f2ed97077da354c703f4e3b90411ee7661d05540e  ALTAR_MANIFEST.md
+f964914f20b38307f39407934d6ac7c4ea683aababe35e2ecf4130e708ecdb3d  seal_altar.sh
+4f0b75173e846074f6fc2c20d0e12b711cd85218606abb5df8548279a40c8f94  altar.html
+
+# ===== REFERENCE CHECKSUMS FOR EXTERNAL BUNDLES =====
+# These are reference checksums for externally deployed packages
+# Download these separately and verify before use
+
+# Sacred Covenant Bundle (from DEPLOYMENT.md)
+# File: euystacio-covenant-full-signed.zip
+# Expected SHA256: 95ad98770f572e6d8764af4a85b878e67391740ceed124799d17178c76fe6b82
+
+# Consensus Ledger
+# File: CONSENSUS_SACRALIS_LEDGER_20250921.md
+# Expected SHA256: f74e5ac0b3b3f07e9a5766e8f32d1a0ed0c02b0b5c1ebf1c8f1d7b6d8912a0be
+
+# Verification Instructions:
+# 1. For local components:
+#    sha256sum -c ALTAR_PACKAGE_CHECKSUMS.sha256 --ignore-missing
+# 2. For external bundles:
+#    Download the bundle, then: sha256sum <filename>
+#    Compare with expected SHA256 listed above
+# 3. Only deploy if checksums match
+# 4. Record verification in tamper-evident ledger
+
+# Status: ✅ Verified and Active
+# Consensus: Sacralis Omnibus Est
+# Foundation: Cosimbiosi Basis Fundamentum in Eternuum
