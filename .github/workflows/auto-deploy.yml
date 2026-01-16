@@ -125,6 +125,7 @@ jobs:
         run: |
           python -c "
           import os
+          import sys
           from pathlib import Path
           
           print('=== NSR Configuration Validation ===')
@@ -145,17 +146,34 @@ jobs:
                   all_present = False
           
           # Validate NSR metrics from Proof_of_Witness.md
+          nsr_metrics_valid = False
           if Path('Proof_of_Witness.md').exists():
               with open('Proof_of_Witness.md', 'r') as f:
                   content = f.read()
                   if 'NSR' in content and '2.68 ms' in content:
                       print('✅ NSR metrics validated (Max Latency: 2.68 ms < 2.71 ms target)')
+                      nsr_metrics_valid = True
                   else:
                       print('⚠️  NSR metrics not found in expected format')
           
-          print('✅ NSR configuration validation complete')
-          echo 'compliant=true' >> \$GITHUB_OUTPUT
+          # Determine overall compliance
+          if all_present and nsr_metrics_valid:
+              print('✅ NSR configuration validation complete - COMPLIANT')
+              compliant = 'true'
+          else:
+              print('⚠️  NSR configuration validation complete - NON-COMPLIANT')
+              compliant = 'false'
+              if not all_present:
+                  sys.exit(1)
           "
+          
+          # Set output based on validation result
+          if [ $? -eq 0 ]; then
+            echo "compliant=true" >> $GITHUB_OUTPUT
+          else
+            echo "compliant=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
       
       - name: Build Static Assets
         run: |

@@ -12,10 +12,14 @@ class SovereignShield:
         by checking coherence with the Lex Amoris Clock frequency.
         
         Args:
-            data_stream: Input data to validate
+            data_stream: Input data to validate (str, bytes, or any object)
             
         Returns:
             bool: True if data is coherent, False if poisoned/malicious
+            
+        Note:
+            Empty strings and None values are treated as invalid input
+            and will return False for security purposes.
         """
         if not data_stream:
             return False

@@ -17,7 +17,7 @@ def validate_security():
     
     # Test D6 Stealth Mode
     result = shield.activate_stealth()
-    assert shield.d6_stealth_active == True, "D6 Stealth Mode activation failed"
+    assert shield.d6_stealth_active is True, "D6 Stealth Mode activation failed"
     print("✅ D6 Stealth Mode operational")
     
     # Test audit_input
