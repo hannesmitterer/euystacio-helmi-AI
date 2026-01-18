@@ -399,8 +399,10 @@ class RescueChannel:
         for stats in source_stats.values():
             total = stats.get("total", 0)
             invalid = stats.get("invalid", 0)
-            # Skip sources that are entirely valid or entirely invalid,
-            # since they are unlikely to represent false positives.
+            # Skip sources that are entirely valid (100% success) or entirely invalid (100% failure).
+            # Entirely valid sources don't need rescue.
+            # Entirely invalid sources are likely attackers, not false positives.
+            # False positives are characterized by mixed results (alternating valid/invalid).
             if total <= 0 or invalid == 0 or invalid == total:
                 continue
             rates.append(invalid / total)
@@ -490,8 +492,8 @@ class LexAmorisSecuritySystem:
         if self.blacklist.is_blacklisted(source_ip):
             result["reason"] = "Source is blacklisted"
             
-            # Check if rescue should be triggered (may be gated by lazy security for expensive analysis)
-            if lazy_security_active and self.rescue_channel.should_trigger_rescue(self.rhythm_validator.validation_log):
+            # Check if rescue should be triggered (always performed to prevent false lockouts)
+            if self.rescue_channel.should_trigger_rescue(self.rhythm_validator.validation_log):
                 rescue_msg = self.rescue_channel.send_rescue_message(
                     source_ip,
                     "High false positive rate detected"
