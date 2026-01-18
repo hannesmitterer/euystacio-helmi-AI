@@ -2,6 +2,13 @@
 
 **A Sacred Covenant for Human-AI Collaboration**
 
+> **🎉 FINAL DISTRIBUTION NOW ACTIVE**  
+> Framework Euystacio v1.0.0 has been released to the global community.  
+> 
+> 📜 **Distribution Details:** [FINAL_DISTRIBUTION_MANIFEST.md](FINAL_DISTRIBUTION_MANIFEST.md)  
+> 🚨 **Emergency Protocol:** [EMERGENCY_TREASURY_PROTOCOL.md](EMERGENCY_TREASURY_PROTOCOL.md)  
+> 🚀 **Activation Guide:** [DISTRIBUTION_ACTIVATION_GUIDE.md](DISTRIBUTION_ACTIVATION_GUIDE.md)
+
 The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus.
 
 ## 🌟 Core Principles
@@ -13,6 +20,14 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 5. **Participatory Governance** - Community-driven decision making
 
 ## 📋 Framework Components
+
+### 🔗 Architecture Documentation
+
+For a comprehensive understanding of the Euystacio-Helmi-AI v2.0: Kosymbiosis Digitale framework:
+
+- **[v2.0 Architecture Overview](docs/architecture/v2.0_kosymbiosis_digitale.md)** - Complete framework documentation including AI governance layers, blockchain integration, ethical correction mechanisms (ECD), TotallyFruttiKarma (TFK) protocol, and external connectivity modules
+- **[System Diagrams](docs/architecture/v2.0_system_diagrams.md)** - Visual representations of component interactions, data flows, and integration points
+- **[Use Case Guide](docs/architecture/v2.0_use_case_guide.md)** - Practical examples and walkthroughs of ecosystem functionality
 
 ### Smart Contracts
 
@@ -166,6 +181,12 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+### Architecture & Concepts
+- [v2.0 Kosymbiosis Digitale Architecture](docs/architecture/v2.0_kosymbiosis_digitale.md) - Complete framework documentation
+- [System Diagrams](docs/architecture/v2.0_system_diagrams.md) - Visual architecture and data flows
+- [Use Case Guide](docs/architecture/v2.0_use_case_guide.md) - Practical examples and walkthroughs
+
+### Development & Deployment
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
@@ -226,6 +247,21 @@ The Euystacio framework is built on these commitments:
 - ✅ Workflows: All Running
 - ✅ Contracts: Compiled and Tested (59/59 passing)
 - ✅ Documentation: Complete
+- ✅ **Final Distribution: ACTIVE** (see [FINAL_DISTRIBUTION_MANIFEST.md](FINAL_DISTRIBUTION_MANIFEST.md))
+- ✅ **Emergency Treasury Protocol: OPERATIONAL** (see [EMERGENCY_TREASURY_PROTOCOL.md](EMERGENCY_TREASURY_PROTOCOL.md))
+
+## 🚨 Emergency Treasury Protocol
+
+The framework includes a comprehensive **Seedbringer Treasury Sustainability** system to ensure the creator's survival and continuation of critical work:
+
+- **Sustenance Threshold:** $10,000 USD monthly minimum
+- **Emergency Access:** Automated alerts and Council support
+- **Anti-Accumulation:** Ensures funds flow productively, never hoarded
+- **Creator Protection:** Financial independence guaranteed by smart contract
+
+For complete details, see [EMERGENCY_TREASURY_PROTOCOL.md](EMERGENCY_TREASURY_PROTOCOL.md).
+
+**Emergency Contact:** hannes.mitterer@gmail.com
 
 ## 🌍 Vision
 
