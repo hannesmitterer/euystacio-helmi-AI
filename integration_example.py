@@ -6,7 +6,6 @@ existing Euystacio components like red_code, sentimento_pulse_interface, and
 ethical_shield.
 """
 
-import json
 from datetime import datetime, timezone
 from lex_amoris_security import LexAmorisSecuritySystem
 from red_code import load_red_code, save_red_code, ensure_red_code
@@ -194,10 +193,10 @@ def main():
         security, red_code = integrate_with_red_code()
         
         # Example 2: Sentimento Pulse Integration
-        accepted, pulse = process_sentimento_pulse_with_security("harmony", 0.95)
+        process_sentimento_pulse_with_security("harmony", 0.95)
         
         # Example 3: IPFS Backup
-        backup_manifest = create_complete_backup()
+        create_complete_backup()
         
         # Example 4: Rescue Channel
         demonstrate_rescue_channel()

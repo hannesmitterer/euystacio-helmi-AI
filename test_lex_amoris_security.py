@@ -14,8 +14,7 @@ import json
 import os
 import tempfile
 import shutil
-from datetime import datetime
-import time
+from datetime import datetime, timezone
 
 from lex_amoris_security import (
     RhythmValidator,
@@ -164,16 +163,16 @@ class TestLazySecurity(unittest.TestCase):
         self.assertEqual(self.lazy_security.activation_threshold, 50.0)
         self.assertFalse(self.lazy_security.is_active)
     
-    def test_rotesschild_scan(self):
+    def test_environmental_pressure_scan(self):
         """Test electromagnetic field scan."""
-        pressure = self.lazy_security.rotesschild_scan()
+        pressure = self.lazy_security.environmental_pressure_scan()
         
         self.assertIsInstance(pressure, float)
         self.assertGreater(pressure, 0)
     
     def test_scan_history_logged(self):
         """Test that scans are logged."""
-        self.lazy_security.rotesschild_scan()
+        self.lazy_security.environmental_pressure_scan()
         
         self.assertEqual(len(self.lazy_security.scan_history), 1)
         scan = self.lazy_security.scan_history[0]
@@ -200,7 +199,7 @@ class TestLazySecurity(unittest.TestCase):
         """Test that scan history is limited."""
         # Perform more than 100 scans
         for _ in range(110):
-            self.lazy_security.rotesschild_scan()
+            self.lazy_security.environmental_pressure_scan()
         
         self.assertEqual(len(self.lazy_security.scan_history), 100)
 
@@ -308,17 +307,17 @@ class TestRescueChannel(unittest.TestCase):
         # Create mock validation log
         validation_log = [
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "source_ip": "10.0.0.1",
                 "valid": False
             },
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "source_ip": "10.0.0.1",
                 "valid": False
             },
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "source_ip": "10.0.0.1",
                 "valid": True
             }

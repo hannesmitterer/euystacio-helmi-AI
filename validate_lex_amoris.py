@@ -113,7 +113,7 @@ def validate_lazy_security():
     lazy_sec = LazySecurity(activation_threshold=50.0)
     
     # Perform scan
-    pressure = lazy_sec.rotesschild_scan()
+    pressure = lazy_sec.environmental_pressure_scan()
     should_activate = lazy_sec.should_activate()
     status = lazy_sec.get_status()
     
@@ -139,7 +139,6 @@ def validate_ipfs_backup():
     
     from lex_amoris_security import IPFSBackupManager
     import tempfile
-    import os
     
     # Create temporary test directory
     temp_dir = tempfile.mkdtemp()

@@ -178,9 +178,9 @@ class LazySecurity:
         self.is_active = False
         self.scan_history = []
         
-    def rotesschild_scan(self) -> float:
+    def environmental_pressure_scan(self) -> float:
         """
-        Perform Rotesschild electromagnetic field scan.
+        Perform environmental electromagnetic field pressure scan.
         
         Returns:
             Current electromagnetic field pressure in mV/m
@@ -197,7 +197,7 @@ class LazySecurity:
                 with open("/proc/loadavg", "r") as f:
                     load = float(f.read().split()[0])
                     pressure += load * 5
-            except:
+            except (OSError, ValueError, IndexError):
                 pass
         
         # Add small random variation
@@ -222,7 +222,7 @@ class LazySecurity:
         Returns:
             True if security should be active
         """
-        pressure = self.rotesschild_scan()
+        pressure = self.environmental_pressure_scan()
         self.is_active = pressure > self.activation_threshold
         return self.is_active
     
@@ -257,7 +257,7 @@ class IPFSBackupManager:
             try:
                 with open(manifest_path, "r", encoding="utf-8") as f:
                     self.backup_manifest = json.load(f)
-            except:
+            except (OSError, json.JSONDecodeError, UnicodeDecodeError):
                 self.backup_manifest = {}
         
     def create_backup(self, config_files: List[str]) -> Dict:
@@ -278,23 +278,25 @@ class IPFSBackupManager:
         for file_path in config_files:
             if os.path.exists(file_path):
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        content = f.read()
+                    # Read file in binary mode to support both text and binary files
+                    with open(file_path, "rb") as f:
+                        content_bytes = f.read()
                     
-                    # Calculate hash
-                    file_hash = hashlib.sha256(content.encode()).hexdigest()
+                    # Calculate hash on raw bytes
+                    file_hash = hashlib.sha256(content_bytes).hexdigest()
                     
                     # Save to backup directory
                     backup_filename = os.path.basename(file_path)
                     backup_path = os.path.join(self.backup_dir, f"{file_hash}_{backup_filename}")
                     
-                    with open(backup_path, "w", encoding="utf-8") as f:
-                        f.write(content)
+                    # Write backup in binary mode to preserve exact contents
+                    with open(backup_path, "wb") as f:
+                        f.write(content_bytes)
                     
                     manifest["files"][file_path] = {
                         "hash": file_hash,
                         "backup_path": backup_path,
-                        "size": len(content)
+                        "size": len(content_bytes)
                     }
                 except Exception as e:
                     manifest["files"][file_path] = {
@@ -333,12 +335,12 @@ class IPFSBackupManager:
             return False
         
         try:
-            with open(backup_path, "r", encoding="utf-8") as f:
-                content = f.read()
+            with open(backup_path, "rb") as f:
+                content_bytes = f.read()
             
-            actual_hash = hashlib.sha256(content.encode()).hexdigest()
+            actual_hash = hashlib.sha256(content_bytes).hexdigest()
             return actual_hash == expected_hash
-        except:
+        except (OSError, IOError):
             return False
 
 
@@ -383,18 +385,25 @@ class RescueChannel:
                 source_stats[source]["total"] += 1
                 if not entry.get("valid", False):
                     source_stats[source]["invalid"] += 1
-            except:
+            except (KeyError, ValueError, TypeError):
+                # Skip malformed or incomplete log entries
                 continue
         
-        # Calculate average false positive rate
+        # Calculate false positive rate focusing on sources with mixed outcomes
+        # Only consider sources that have both valid and invalid packets in the window,
+        # as these are the most indicative of potential false positives (e.g., alternating patterns).
         if not source_stats:
             return 0.0
         
-        rates = [
-            stats["invalid"] / stats["total"]
-            for stats in source_stats.values()
-            if stats["total"] > 0
-        ]
+        rates = []
+        for stats in source_stats.values():
+            total = stats.get("total", 0)
+            invalid = stats.get("invalid", 0)
+            # Skip sources that are entirely valid or entirely invalid,
+            # since they are unlikely to represent false positives.
+            if total <= 0 or invalid == 0 or invalid == total:
+                continue
+            rates.append(invalid / total)
         
         return sum(rates) / len(rates) if rates else 0.0
     
@@ -472,18 +481,17 @@ class LexAmorisSecuritySystem:
             "reason": ""
         }
         
-        # Check if lazy security should be active
-        if not self.lazy_security.should_activate():
-            result["accepted"] = True
-            result["reason"] = "Lazy security inactive - low environmental pressure"
-            return result
+        # Determine lazy security state for logging
+        lazy_security_active = self.lazy_security.should_activate()
+        if not lazy_security_active:
+            result["lazy_security_state"] = "inactive - low environmental pressure"
         
-        # Check blacklist
+        # Check blacklist (always performed regardless of lazy security)
         if self.blacklist.is_blacklisted(source_ip):
             result["reason"] = "Source is blacklisted"
             
-            # Check if rescue should be triggered
-            if self.rescue_channel.should_trigger_rescue(self.rhythm_validator.validation_log):
+            # Check if rescue should be triggered (may be gated by lazy security for expensive analysis)
+            if lazy_security_active and self.rescue_channel.should_trigger_rescue(self.rhythm_validator.validation_log):
                 rescue_msg = self.rescue_channel.send_rescue_message(
                     source_ip,
                     "High false positive rate detected"
@@ -494,7 +502,7 @@ class LexAmorisSecuritySystem:
             
             return result
         
-        # Validate rhythm
+        # Validate rhythm (always performed regardless of lazy security)
         is_valid, validation_reason = self.rhythm_validator.validate_rhythm(data, source_ip)
         
         if not is_valid:
