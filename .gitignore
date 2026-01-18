@@ -57,5 +57,8 @@ typechain-types/
 tutors.json
 blacklist.json
 
+# Build artifacts
+github_pages_deploy/
+
 # Solar Sovereign generated artifacts
 data/solar_sovereign/

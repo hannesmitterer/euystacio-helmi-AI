@@ -21,6 +21,14 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ## 📋 Framework Components
 
+### 🔗 Architecture Documentation
+
+For a comprehensive understanding of the Euystacio-Helmi-AI v2.0: Kosymbiosis Digitale framework:
+
+- **[v2.0 Architecture Overview](docs/architecture/v2.0_kosymbiosis_digitale.md)** - Complete framework documentation including AI governance layers, blockchain integration, ethical correction mechanisms (ECD), TotallyFruttiKarma (TFK) protocol, and external connectivity modules
+- **[System Diagrams](docs/architecture/v2.0_system_diagrams.md)** - Visual representations of component interactions, data flows, and integration points
+- **[Use Case Guide](docs/architecture/v2.0_use_case_guide.md)** - Practical examples and walkthroughs of ecosystem functionality
+
 ### Smart Contracts
 
 - **KarmaBond** - Trust-based bonding system with governance participation
@@ -201,6 +209,12 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+### Architecture & Concepts
+- [v2.0 Kosymbiosis Digitale Architecture](docs/architecture/v2.0_kosymbiosis_digitale.md) - Complete framework documentation
+- [System Diagrams](docs/architecture/v2.0_system_diagrams.md) - Visual architecture and data flows
+- [Use Case Guide](docs/architecture/v2.0_use_case_guide.md) - Practical examples and walkthroughs
+
+### Development & Deployment
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
