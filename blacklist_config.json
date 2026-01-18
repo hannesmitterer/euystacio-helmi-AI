@@ -1,0 +1,111 @@
+{
+  "blacklist_policy": {
+    "name": "EUYSTACIO Permanent Blacklist Configuration",
+    "version": "1.0.0",
+    "framework": "EUYSTACIO",
+    "purpose": "Block suspicious nodes and entities threatening system security",
+    "status": "ECOSYSTEM TESTING on repository upstream IP",
+    "last_updated": "2026-01-15T00:00:00Z"
+  },
+  "target_components": {
+    "description": "Three main components for blacklist measures",
+    "components": [
+      {
+        "id": "component_1",
+        "name": "Suspicious AI Agents",
+        "description": "AI entities exhibiting malicious behavior patterns",
+        "detection_triggers": [
+          "INT_MISP_POLICY_TRIGGERS",
+          "repeated_unauthorized_access_attempts",
+          "violation_of_ethical_framework",
+          "attempted_red_code_manipulation"
+        ],
+        "severity_default": "critical",
+        "auto_block_enabled": true
+      },
+      {
+        "id": "component_2",
+        "name": "Malicious Network Nodes",
+        "description": "Network nodes attempting unauthorized communication or attacks",
+        "detection_triggers": [
+          "ddos_attack_pattern",
+          "unauthorized_data_extraction",
+          "repeated_authentication_failures",
+          "suspicious_traffic_patterns"
+        ],
+        "severity_default": "high",
+        "auto_block_enabled": true
+      },
+      {
+        "id": "component_3",
+        "name": "Untrusted Upstream IPs",
+        "description": "IP addresses identified as sources of threats",
+        "detection_triggers": [
+          "known_threat_database_match",
+          "port_scanning_detected",
+          "exploit_attempt_detected",
+          "data_theft_attempt"
+        ],
+        "severity_default": "high",
+        "auto_block_enabled": true
+      }
+    ]
+  },
+  "severity_levels": {
+    "critical": {
+      "description": "Immediate threat requiring permanent block",
+      "action": "block_permanently",
+      "alert_level": "immediate"
+    },
+    "high": {
+      "description": "Serious threat requiring block and monitoring",
+      "action": "block_and_monitor",
+      "alert_level": "high"
+    },
+    "medium": {
+      "description": "Suspicious activity requiring investigation",
+      "action": "monitor_and_review",
+      "alert_level": "medium"
+    },
+    "low": {
+      "description": "Minor concern for logging",
+      "action": "log_only",
+      "alert_level": "low"
+    }
+  },
+  "protection_measures": {
+    "continuous_monitoring": true,
+    "automatic_blocking": true,
+    "threat_intelligence_integration": true,
+    "log_all_attempts": true,
+    "alert_on_critical": true,
+    "periodic_review": "weekly"
+  },
+  "integration_points": [
+    "/api/blacklist",
+    "/api/blacklist/check/<entity_id>",
+    "/api/blacklist/add",
+    "/api/blacklist/remove/<entity_id>",
+    "/api/blacklist/statistics"
+  ],
+  "default_blocked_patterns": [
+    {
+      "pattern": "malicious_bot_*",
+      "type": "ai_agent",
+      "reason": "Known malicious bot pattern",
+      "severity": "critical"
+    },
+    {
+      "pattern": "unauthorized_scraper_*",
+      "type": "ai_agent",
+      "reason": "Unauthorized data extraction attempt",
+      "severity": "high"
+    }
+  ],
+  "compliance": {
+    "ethical_framework_compliance": true,
+    "transparency_requirement": true,
+    "review_process": "human_oversight_required",
+    "appeal_process": "available_upon_request"
+  }
+}

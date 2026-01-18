@@ -60,6 +60,31 @@ The **Open Interface (OI)** module delivers an immersive augmented reality works
 
 **Access**: `/oi/interface.html` (requires OV authentication)
 
+### Security: Permanent Blacklist System
+
+The **Permanent Blacklist System** provides continuous protection against suspicious entities threatening system security:
+
+- **Multi-Entity Blocking** - Block IP addresses, AI agents, network nodes, and upstream IPs
+- **Threat Detection** - Automatic detection via INT_MISP_POLICY_TRIGGERS
+- **Severity Classification** - Critical, high, medium, and low threat levels
+- **Persistent Storage** - Blacklist survives system restarts
+- **API Integration** - RESTful API for blacklist management
+- **Statistics Tracking** - Monitor blocked attempts and threat patterns
+
+**Documentation**: [BLACKLIST_DOCUMENTATION.md](BLACKLIST_DOCUMENTATION.md)
+
+**API Endpoints**:
+- `GET /api/blacklist` - List blocked entities
+- `GET /api/blacklist/check/<entity_id>` - Check if entity is blocked
+- `POST /api/blacklist/add` - Add entity to blacklist
+- `DELETE /api/blacklist/remove/<entity_id>` - Remove entity from blacklist
+- `GET /api/blacklist/statistics` - Get blacklist statistics
+
+**Target Components**:
+1. **Suspicious AI Agents** - Malicious AI behavior detection
+2. **Malicious Network Nodes** - Unauthorized communication blocking
+3. **Untrusted Upstream IPs** - External threat source protection
+
 ### Automated Workflows
 
 The framework includes comprehensive GitHub Actions workflows for:
@@ -119,6 +144,9 @@ npm run test:governance        # Governance tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
 npm run test:all              # All tests (102 passing)
+
+# Run blacklist security tests
+python test_blacklist.py      # Blacklist system tests (14 passing)
 \`\`\`
 
 ### Run Integrity Checks

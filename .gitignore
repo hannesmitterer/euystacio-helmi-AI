@@ -55,6 +55,7 @@ typechain-types/
 
 # Runtime generated files
 tutors.json
+blacklist.json
 
 # Build artifacts
 github_pages_deploy/
