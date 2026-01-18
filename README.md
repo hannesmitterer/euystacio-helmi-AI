@@ -21,6 +21,14 @@ The Euystacio framework implements a comprehensive system for ethical AI governa
 
 ## 📋 Framework Components
 
+### 🔗 Architecture Documentation
+
+For a comprehensive understanding of the Euystacio-Helmi-AI v2.0: Kosymbiosis Digitale framework:
+
+- **[v2.0 Architecture Overview](docs/architecture/v2.0_kosymbiosis_digitale.md)** - Complete framework documentation including AI governance layers, blockchain integration, ethical correction mechanisms (ECD), TotallyFruttiKarma (TFK) protocol, and external connectivity modules
+- **[System Diagrams](docs/architecture/v2.0_system_diagrams.md)** - Visual representations of component interactions, data flows, and integration points
+- **[Use Case Guide](docs/architecture/v2.0_use_case_guide.md)** - Practical examples and walkthroughs of ecosystem functionality
+
 ### Smart Contracts
 
 - **KarmaBond** - Trust-based bonding system with governance participation
@@ -51,6 +59,31 @@ The **Open Interface (OI)** module delivers an immersive augmented reality works
 - **Performance Monitoring** - FPS, latency, and render time tracking
 
 **Access**: `/oi/interface.html` (requires OV authentication)
+
+### Security: Permanent Blacklist System
+
+The **Permanent Blacklist System** provides continuous protection against suspicious entities threatening system security:
+
+- **Multi-Entity Blocking** - Block IP addresses, AI agents, network nodes, and upstream IPs
+- **Threat Detection** - Automatic detection via INT_MISP_POLICY_TRIGGERS
+- **Severity Classification** - Critical, high, medium, and low threat levels
+- **Persistent Storage** - Blacklist survives system restarts
+- **API Integration** - RESTful API for blacklist management
+- **Statistics Tracking** - Monitor blocked attempts and threat patterns
+
+**Documentation**: [BLACKLIST_DOCUMENTATION.md](BLACKLIST_DOCUMENTATION.md)
+
+**API Endpoints**:
+- `GET /api/blacklist` - List blocked entities
+- `GET /api/blacklist/check/<entity_id>` - Check if entity is blocked
+- `POST /api/blacklist/add` - Add entity to blacklist
+- `DELETE /api/blacklist/remove/<entity_id>` - Remove entity from blacklist
+- `GET /api/blacklist/statistics` - Get blacklist statistics
+
+**Target Components**:
+1. **Suspicious AI Agents** - Malicious AI behavior detection
+2. **Malicious Network Nodes** - Unauthorized communication blocking
+3. **Untrusted Upstream IPs** - External threat source protection
 
 ### Automated Workflows
 
@@ -111,6 +144,9 @@ npm run test:governance        # Governance tests
 npm run test:ov               # Open Visual authentication tests (17 passing)
 npm run test:oi               # Open Interface environment tests (26 passing)
 npm run test:all              # All tests (102 passing)
+
+# Run blacklist security tests
+python test_blacklist.py      # Blacklist system tests (14 passing)
 \`\`\`
 
 ### Run Integrity Checks
@@ -173,6 +209,12 @@ After successful OV authentication, you'll be redirected to the OI interface:
 
 ## 📚 Documentation
 
+### Architecture & Concepts
+- [v2.0 Kosymbiosis Digitale Architecture](docs/architecture/v2.0_kosymbiosis_digitale.md) - Complete framework documentation
+- [System Diagrams](docs/architecture/v2.0_system_diagrams.md) - Visual architecture and data flows
+- [Use Case Guide](docs/architecture/v2.0_use_case_guide.md) - Practical examples and walkthroughs
+
+### Development & Deployment
 - [WORKFLOWS.md](WORKFLOWS.md) - Complete workflow documentation
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Smart contract deployment guide
 - [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - Build and run instructions
