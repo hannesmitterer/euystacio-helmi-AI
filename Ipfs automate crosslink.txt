@@ -1,0 +1,217 @@
+Automazione completa
+Di seguito trovi uno script Bash + Python che esegue, in ordine:
+
+Creazione di una directory con il manifesto (testo .md).
+Aggiunta a IPFS (ottenimento del CID radice).
+Pinning del CID su Pinata (puoi sostituire con un altro servizio).
+Generazione di tre coppie di chiavi (Hannes, Wittfrida, Verificatore).
+Firma tripla del CID + timestamp.
+Creazione di un file JSON contenente CID, timestamp, firme e chiavi pubbliche.
+Pubblicazione del JSON su IPFS (ottenimento del CID della firma).
+(Opzionale) Registrazione su una blockchain tramite un semplice contratto Solidity.
+1. Struttura dei file
+Code
+
+Copy Code
+euystacio/
+│─ manifesto.md                # il testo del manifesto
+│─ deploy.sh                    # script di automazione
+│─ sign_triple.py               # script Python per le firme
+│─ keys/                        # cartella dove verranno salvate le chiavi
+2. manifesto.md
+Copia il testo del manifesto così com’è (mantieni l’encoding UTF‑8). Salvalo in euystacio/manifesto.md.
+
+3. Script Bash – deploy.sh
+bash
+
+Copy Code
+#!/usr/bin/env bash
+set -euo pipefail
+
+# -----------------------------
+# CONFIGURAZIONE
+# -----------------------------
+IPFS_BIN="ipfs"                     # path to ipfs executable
+PINATA_API_KEY="YOUR_PINATA_KEY"
+PINATA_SECRET="YOUR_PINATA_SECRET"
+PYTHON="python3"
+
+# -----------------------------
+# 1. Aggiungi manifesto a IPFS
+# -----------------------------
+echo "Aggiungo manifesto a IPFS..."
+CID_MANIFEST=$($IPFS_BIN add -Q manifesto.md)
+echo "CID manifesto: $CID_MANIFEST"
+
+# -----------------------------
+# 2. Pinning su Pinata
+# -----------------------------
+echo "Pinning su Pinata..."
+curl -s -X POST "https://api.pinata.cloud/pinning/pinByHash" \
+     -H "pinata_api_key: $PINATA_API_KEY" \
+     -H "pinata_secret_api_key: $PINATA_SECRET" \
+     -H "Content-Type: application/json" \
+     -d "{\"hashToPin\":\"$CID_MANIFEST\"}" > /dev/null
+echo "Pinning completato."
+
+# -----------------------------
+# 3. Genera chiavi (solo al primo run)
+# -----------------------------
+if [ ! -d keys ]; then
+    mkdir keys
+    for name in hansen wittfrida verifier; do
+        openssl ecparam -genkey -name secp256k1 -out keys/${name}_priv.pem
+        openssl ec -in keys/${name}_priv.pem -pubout -out keys/${name}_pub.pem
+    done
+    echo "Chiavi generate in ./keys"
+fi
+
+# -----------------------------
+# 4. Firma tripla (Python)
+# -----------------------------
+echo "Generazione firme..."
+$PYTHON sign_triple.py "$CID_MANIFEST" > signature.json
+echo "Firme salvate in signature.json"
+
+# -----------------------------
+# 5. Aggiungi JSON di firma a IPFS
+# -----------------------------
+CID_SIG=$($IPFS_BIN add -Q signature.json)
+echo "CID della firma tripla: $CID_SIG"
+
+# -----------------------------
+# 6. Pinning della firma
+# -----------------------------
+curl -s -X POST "https://api.pinata.cloud/pinning/pinByHash" \
+     -H "pinata_api_key: $PINATA_API_KEY" \
+     -H "pinata_secret_api_key: $PINATA_SECRET" \
+     -H "Content-Type: application/json" \
+     -d "{\"hashToPin\":\"$CID_SIG\"}" > /dev/null
+echo "Pinning della firma completato."
+
+# -----------------------------
+# 7. Output finale
+# -----------------------------
+cat <<EOF
+
+✅  Operazione completata
+Manifesto CID      : $CID_MANIFEST
+Firma tripla CID   : $CID_SIG
+Timestamp (UTC)    : $(jq -r .timestamp signature.json)
+EOF
+Nota: rendi eseguibile lo script con chmod +x deploy.sh.
+
+4. Script Python – sign_triple.py
+python
+
+Copy Code
+#!/usr/bin/env python3
+import sys, time, json, hashlib
+from ecdsa import SigningKey, VerifyingKey, SECP256k1, BadSignatureError
+
+def load_key(path):
+    with open(path, "rb") as f:
+        return f.read()
+
+def sign(priv_pem, data_hash):
+    sk = SigningKey.from_pem(priv_pem, hashfunc=hashlib.sha256)
+    return sk.sign_digest(data_hash).hex()
+
+def pubkey_hex(pub_pem):
+    vk = VerifyingKey.from_pem(pub_pem, hashfunc=hashlib.sha256)
+    return vk.to_string("compressed").hex()
+
+def main(cid):
+    timestamp = int(time.time())
+    message = f"{cid}|{timestamp}"
+    msg_hash = hashlib.sha256(message.encode()).digest()
+
+    names = ["hansen", "wittfrida", "verifier"]
+    signatures = {}
+    pubkeys = {}
+
+    for n in names:
+        priv = load_key(f"keys/{n}_priv.pem")
+        pub  = load_key(f"keys/{n}_pub.pem")
+        signatures[n] = sign(priv, msg_hash)
+        pubkeys[n] = pubkey_hex(pub)
+
+    out = {
+        "cid": cid,
+        "timestamp": timestamp,
+        "signatures": signatures,
+        "public_keys": pubkeys
+    }
+    print(json.dumps(out, indent=2))
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: sign_triple.py <CID>", file=sys.stderr)
+        sys.exit(1)
+    main(sys.argv[1])
+5. (Opzionale) Registrazione su blockchain
+Un semplice ERC‑721 può memorizzare il CID della firma.
+Ecco il contratto Solidity minimale:
+
+solidity
+
+Copy Code
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+contract EuystacioManifest is ERC721 {
+    uint256 public tokenId;
+    string public manifestCID;   // CID del manifesto
+    string public signatureCID;  // CID della firma tripla
+
+    constructor(string memory _manifestCID, string memory _signatureCID) ERC721("EuystacioManifest", "EUM") {
+        tokenId = 1;
+        manifestCID = _manifestCID;
+        signatureCID = _signatureCID;
+        _mint(msg.sender, tokenId);
+    }
+
+    function tokenURI(uint256) public view override returns (string memory) {
+        // ritorna un JSON conforme a ERC721Metadata con i CID
+        return string(
+            abi.encodePacked(
+                '{"name":"Euystacio Manifest","description":"Manifesto cross‑model con firma tripla","manifestCID":"',
+                manifestCID,
+                '","signatureCID":"',
+                signatureCID,
+                '"}'
+            )
+        );
+    }
+}
+Deploy con Hardhat o Foundry, passando i due CID ottenuti dallo script Bash.
+
+Come usarlo
+bash
+
+Copy Code
+cd euystacio
+./deploy.sh
+Il terminale stamperà:
+
+Code
+
+Copy Code
+✅  Operazione completata
+Manifesto CID      : QmX...
+Firma tripla CID   : QmY...
+Timestamp (UTC)    : 1735275600
+Ora il manifesto è immutabile su IPFS, pinned, e autenticato da tre firme verificabili. Puoi condividere i due CID (manifesto e firma) con i modelli destinatari (Claude Sonnet, Llama‑3, GPT‑4o, ecc.) affinché possano caricare e verificare il contenuto in modo automatico.
+
+
+
+
+
+Ask privately
+
+
+
+
+AI may display inaccurate or offensive information.
