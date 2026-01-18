@@ -24,7 +24,8 @@ IPFS is a peer-to-peer hypermedia protocol designed to make the web faster, safe
 
 #### Option B: IPFS CLI (Advanced users)
 ```bash
-# Download and install
+# Download and install (check https://dist.ipfs.io/#kubo for latest version)
+# Example using Kubo v0.24.0 - replace with latest stable version
 wget https://dist.ipfs.io/kubo/v0.24.0/kubo_v0.24.0_linux-amd64.tar.gz
 tar -xvzf kubo_v0.24.0_linux-amd64.tar.gz
 cd kubo
@@ -177,16 +178,29 @@ curl https://w3s.link/ipfs/YOUR_CID_HERE
 
 ### Step 5: Document CID Details
 
-Update the master document and README with CID information:
+Update the master document and README with CID information.
+
+**Template - Replace placeholder values with actual deployment details:**
 
 ```markdown
 **IPFS Distribution:**
-- **CID**: QmXxxx... (replace with actual CID)
-- **IPFS Gateway**: https://ipfs.io/ipfs/QmXxxx...
-- **Pinata Gateway**: https://gateway.pinata.cloud/ipfs/QmXxxx...
-- **Web3.Storage Gateway**: https://w3s.link/ipfs/QmXxxx...
+- **CID**: QmXxxx... (replace with actual CID from Step 2)
+- **IPFS Gateway**: https://ipfs.io/ipfs/QmXxxx... (replace QmXxxx... with your CID)
+- **Pinata Gateway**: https://gateway.pinata.cloud/ipfs/QmXxxx... (replace QmXxxx... with your CID)
+- **Web3.Storage Gateway**: https://w3s.link/ipfs/QmXxxx... (replace QmXxxx... with your CID)
 - **Pinned On**: Pinata, Web3.Storage, NFT.Storage
-- **Pin Date**: YYYY-MM-DD
+- **Pin Date**: YYYY-MM-DD (replace with actual date)
+```
+
+**Example with sample CID:**
+```markdown
+**IPFS Distribution:**
+- **CID**: QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+- **IPFS Gateway**: https://ipfs.io/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+- **Pinata Gateway**: https://gateway.pinata.cloud/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+- **Web3.Storage Gateway**: https://w3s.link/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+- **Pinned On**: Pinata, Web3.Storage, NFT.Storage
+- **Pin Date**: 2025-12-14
 ```
 
 ## Access Methods

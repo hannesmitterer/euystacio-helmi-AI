@@ -21,13 +21,28 @@ const DOCUMENT_PATH = path.join(
 );
 
 function computeDocumentHash() {
-  const content = fs.readFileSync(DOCUMENT_PATH, 'utf8');
-  return crypto.createHash('sha256').update(content).digest('hex');
+  try {
+    const content = fs.readFileSync(DOCUMENT_PATH, 'utf8');
+    return crypto.createHash('sha256').update(content).digest('hex');
+  } catch (error) {
+    console.error('Failed to read document for hashing.');
+    console.error('Expected document path:', DOCUMENT_PATH);
+    console.error('Error:', error.message);
+    process.exit(1);
+  }
 }
 
 function verifyHash(expectedHash) {
   // Remove 0x prefix if present
   expectedHash = expectedHash.replace(/^0x/, '');
+  
+  // Validate hash format (should be 64 hex characters)
+  if (!/^[a-fA-F0-9]{64}$/.test(expectedHash)) {
+    console.error('Error: Invalid hash format.');
+    console.error('Expected a 64-character hexadecimal string (SHA-256 hash).');
+    console.error('Received:', expectedHash);
+    process.exit(1);
+  }
   
   console.log('Verifying document integrity...\n');
   console.log('Document:', DOCUMENT_PATH);
@@ -54,7 +69,7 @@ function verifyHash(expectedHash) {
   return isValid;
 }
 
-async function verifyOnChain(contractAddress, anchorId) {
+function verifyOnChain(contractAddress, anchorId) {
   console.log('Verifying against blockchain anchor...\n');
   
   try {
@@ -78,11 +93,12 @@ async function verifyOnChain(contractAddress, anchorId) {
 // Command line interface
 const args = process.argv.slice(2);
 
-if (args.length === 0) {
+if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
   console.log('Usage:');
   console.log('  node verify-document.js <hash>           - Verify against provided hash');
   console.log('  node verify-document.js <contract> <id>  - Verify against blockchain anchor');
   console.log('  node verify-document.js --current        - Show current hash');
+  console.log('  node verify-document.js --help           - Show this help message');
   process.exit(0);
 }
 
