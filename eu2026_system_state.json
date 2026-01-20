@@ -1,148 +1,148 @@
 {
   "protocol": "EUYSTACIO/NSR - EU 2026 Compliance",
   "version": "1.0.0",
-  "timestamp": 1768949863.322623,
+  "timestamp": 1768950079.486047,
   "components": {
     "bio_clock": {
       "status": {
         "frequency_hz": 0.0043,
         "period_seconds": 232.5581395348837,
         "cycle_count": 0,
-        "current_phase": 3.2755136489868164e-06,
+        "current_phase": 1.5049934387207032e-06,
         "drift_compensation": 0.0,
-        "uptime_seconds": 0.0007636547088623047,
-        "seed_hash": "3178a66853ac8d3f",
+        "uptime_seconds": 0.0003509521484375,
+        "seed_hash": "d686d646a3589e96",
         "oscillator_state": {
           "phase": 0.0,
           "amplitude": 1.0,
           "frequency": 0.0043,
-          "last_update": 1768949863.3218644
+          "last_update": 1768950079.4856994
         }
       },
       "state": {
-        "seed": "676c5cdda80b0572ee61946ee80471870824d71326365bd42e99c057973cc0e8",
-        "start_time": 1768949863.321863,
+        "seed": "01638d7cecba6833cf817260a4c6786655886aa5020a6213d228cb02d5f210e5",
+        "start_time": 1768950079.485698,
         "cycle_count": 0,
-        "last_pulse": 1768949863.321863,
+        "last_pulse": 1768950079.485698,
         "drift_compensation": 0.0,
         "oscillator_state": {
           "phase": 0.0,
           "amplitude": 1.0,
           "frequency": 0.0043,
-          "last_update": 1768949863.3218644
+          "last_update": 1768950079.4856994
         }
       }
     },
     "identity": {
-      "created_at": 1768949863.3219166,
+      "created_at": 1768950079.4857152,
       "identity": {
-        "bio_clock_hash": "3178a66853ac8d3f",
-        "bio_clock_seed": "676c5cdda80b0572ee61946ee80471870824d71326365bd42e99c057973cc0e8",
+        "bio_clock_hash": "d686d646a3589e96",
+        "bio_clock_seed": "01638d7cecba6833cf817260a4c6786655886aa5020a6213d228cb02d5f210e5",
         "email": "hannes.mitterer@gmail.com",
         "identifier": "hannesmitterer",
         "name": "Seedbringer"
       },
-      "updated_at": 1768949863.3219173,
+      "updated_at": 1768950079.4857154,
       "version": 1
     },
     "ipfs_shards": {
       "protocol": "EUYSTACIO/NSR Triple-Sign Pact",
       "version": "1.0.0",
-      "timestamp": 1768949863.3227353,
+      "timestamp": 1768950079.4861221,
       "identity": {
-        "created_at": 1768949863.3219166,
+        "created_at": 1768950079.4857152,
         "identity": {
-          "bio_clock_hash": "3178a66853ac8d3f",
-          "bio_clock_seed": "676c5cdda80b0572ee61946ee80471870824d71326365bd42e99c057973cc0e8",
+          "bio_clock_hash": "d686d646a3589e96",
+          "bio_clock_seed": "01638d7cecba6833cf817260a4c6786655886aa5020a6213d228cb02d5f210e5",
           "email": "hannes.mitterer@gmail.com",
           "identifier": "hannesmitterer",
           "name": "Seedbringer"
         },
-        "updated_at": 1768949863.3219173,
+        "updated_at": 1768950079.4857154,
         "version": 1
       },
       "shards": [
         {
-          "shard_id": "99baa6eff865c8f2",
-          "ipfs_cid": "Qm99e22c0b32ec16cd0a43787879f69790a5051237a651",
+          "shard_id": "32751adec6e3287d",
+          "ipfs_cid": "Qm7049e4e22d209f64ccca1fb1b7d7299707fa54a68b3a",
           "ipfs_gateway": "https://ipfs.eu-west.gateway.io",
           "region": "europe_west",
           "status": "active",
-          "last_sync": 1768949863.322051,
-          "content_hash": "71e2db2f6d8fc19f2768db1fff0ef181438b9569b16b3761a35118ab7cd71eb3"
+          "last_sync": 1768950079.4857874,
+          "content_hash": "ffa418b98933fc9ccb24afc5cdfcbad8ed67ea332df31b4099c86bd4862c697f"
         },
         {
-          "shard_id": "6e1d0b400c27cca7",
-          "ipfs_cid": "Qmf08b37e22e3e5658ff25ca75541593768c808ebb32ae",
+          "shard_id": "8f1bb0037a9d7b1d",
+          "ipfs_cid": "Qmc60fabb3628a1fc35adcbd45e65b475c26324be29f38",
           "ipfs_gateway": "https://ipfs.americas.gateway.io",
           "region": "americas",
           "status": "active",
-          "last_sync": 1768949863.3221507,
-          "content_hash": "71e2db2f6d8fc19f2768db1fff0ef181438b9569b16b3761a35118ab7cd71eb3"
+          "last_sync": 1768950079.4858408,
+          "content_hash": "ffa418b98933fc9ccb24afc5cdfcbad8ed67ea332df31b4099c86bd4862c697f"
         },
         {
-          "shard_id": "1d4fe625f2702e83",
-          "ipfs_cid": "Qm7f24d71b8674c8e61fd022197b97d6c643fe17dda21b",
+          "shard_id": "9c391d1e1e0f7515",
+          "ipfs_cid": "Qmfad14026920071a0f667bf036c3e84f439841e50fe64",
           "ipfs_gateway": "https://ipfs.asia.gateway.io",
           "region": "asia_pacific",
           "status": "active",
-          "last_sync": 1768949863.3222628,
-          "content_hash": "71e2db2f6d8fc19f2768db1fff0ef181438b9569b16b3761a35118ab7cd71eb3"
+          "last_sync": 1768950079.4858809,
+          "content_hash": "ffa418b98933fc9ccb24afc5cdfcbad8ed67ea332df31b4099c86bd4862c697f"
         }
       ],
       "status": {
         "identity_version": 1,
-        "identity_hash": "71e2db2f6d8fc19f2768db1fff0ef181438b9569b16b3761a35118ab7cd71eb3",
+        "identity_hash": "ffa418b98933fc9ccb24afc5cdfcbad8ed67ea332df31b4099c86bd4862c697f",
         "total_shards": 3,
         "active_shards": 3,
         "geographic_distribution": {
           "is_valid": true,
           "message": "Geographic distribution verified: 3 shards across 3 regions",
           "regions": [
-            "europe_west",
             "asia_pacific",
+            "europe_west",
             "americas"
           ]
         },
         "integrity": {
-          "timestamp": 1768949863.3227704,
-          "current_hash": "71e2db2f6d8fc19f2768db1fff0ef181438b9569b16b3761a35118ab7cd71eb3",
+          "timestamp": 1768950079.4861548,
+          "current_hash": "ffa418b98933fc9ccb24afc5cdfcbad8ed67ea332df31b4099c86bd4862c697f",
           "total_shards": 3,
           "shards": [
             {
-              "shard_id": "99baa6eff865c8f2",
+              "shard_id": "32751adec6e3287d",
               "status": "active",
               "region": "europe_west",
               "hash_match": true,
-              "age_seconds": 0.0007426738739013672,
+              "age_seconds": 0.00041961669921875,
               "needs_sync": false
             },
             {
-              "shard_id": "6e1d0b400c27cca7",
+              "shard_id": "8f1bb0037a9d7b1d",
               "status": "active",
               "region": "americas",
               "hash_match": true,
-              "age_seconds": 0.0006442070007324219,
+              "age_seconds": 0.0003676414489746094,
               "needs_sync": false
             },
             {
-              "shard_id": "1d4fe625f2702e83",
+              "shard_id": "9c391d1e1e0f7515",
               "status": "active",
               "region": "asia_pacific",
               "hash_match": true,
-              "age_seconds": 0.0005331039428710938,
+              "age_seconds": 0.0003287792205810547,
               "needs_sync": false
             }
           ],
           "health_percentage": 100.0,
           "is_healthy": true
         },
-        "last_check": 1768949863.3227704
+        "last_check": 1768950079.4861548
       }
     },
     "time_reference": {
       "sources_count": 3,
-      "consensus_time": 1768949863.3225772
+      "consensus_time": 1768950079.4860368
     }
   },
   "health": {

@@ -277,12 +277,8 @@ contract PeacebondTreasuryForensic is Ownable, ReentrancyGuard {
     function deactivateForensicSwitch() external onlyOwner whenForensic {
         forensicSwitchActivated = false;
         
-        // Reset all approvals
+        // Reset approval count (individual approvals remain but are not checked when inactive)
         currentApprovals = 0;
-        for (uint256 i = 0; i < guardianCount; i++) {
-            // Note: In production, you'd iterate through guardian addresses
-            // This is a simplified version
-        }
         
         emit ForensicSwitchDeactivated(msg.sender, block.timestamp);
     }

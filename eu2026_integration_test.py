@@ -84,7 +84,7 @@ def main():
     local_time = time.time()
     time_ref.add_time_source("local", local_time)
     
-    crypto_time, signature = clock.get_cryptographic_timestamp()
+    crypto_time, signature, cycle_count = clock.get_cryptographic_timestamp()
     time_ref.add_time_source("crypto", crypto_time, signature)
     
     # Simulate blockchain timestamp

@@ -42,8 +42,11 @@ async function main() {
     BLOCK_DETECTION_THRESHOLD,
     REQUIRED_GUARDIAN_APPROVALS
   );
-  await treasury.deployed();
-  console.log("✓ PeacebondTreasuryForensic deployed to:", treasury.address);
+  await treasury.waitForDeployment();
+  console.log("✓ PeacebondTreasuryForensic deployed to:", await treasury.getAddress());
+
+  // Get treasury address for use in following steps
+  const treasuryAddress = await treasury.getAddress();
 
   // Configure backup addresses
   console.log("\n=== Configuring Backup Addresses ===");
@@ -90,7 +93,7 @@ async function main() {
 
   // Print summary
   console.log("\n=== Deployment Summary ===");
-  console.log("PeacebondTreasuryForensic:", treasury.address);
+  console.log("PeacebondTreasuryForensic:", treasuryAddress);
   console.log("Resonance Credits Token:", RESONANCE_CREDITS_TOKEN);
   console.log("Block Detection Threshold:", BLOCK_DETECTION_THRESHOLD);
   console.log("Required Guardian Approvals:", REQUIRED_GUARDIAN_APPROVALS);
@@ -106,7 +109,7 @@ async function main() {
     timestamp: new Date().toISOString(),
     protocol: "EUYSTACIO/NSR - EU 2026 Compliance",
     contracts: {
-      PeacebondTreasuryForensic: treasury.address
+      PeacebondTreasuryForensic: treasuryAddress
     },
     config: {
       resonanceCreditsToken: RESONANCE_CREDITS_TOKEN,

@@ -32,22 +32,26 @@ class TestBioClock(unittest.TestCase):
     
     def test_cryptographic_timestamp(self):
         """Test cryptographic timestamp generation"""
-        timestamp, signature = self.clock.get_cryptographic_timestamp()
+        timestamp, signature, cycle_count = self.clock.get_cryptographic_timestamp()
         
         self.assertIsInstance(timestamp, float)
         self.assertIsInstance(signature, str)
+        self.assertIsInstance(cycle_count, int)
         self.assertEqual(len(signature), 64)  # SHA256 hex digest
     
     def test_timestamp_verification(self):
         """Test timestamp verification"""
-        timestamp, signature = self.clock.get_cryptographic_timestamp()
+        timestamp, signature, cycle_count = self.clock.get_cryptographic_timestamp()
         
         # Should verify correctly
-        self.assertTrue(self.clock.verify_timestamp(timestamp, signature))
+        self.assertTrue(self.clock.verify_timestamp(timestamp, signature, cycle_count))
         
         # Should fail with wrong signature
         wrong_signature = "0" * 64
-        self.assertFalse(self.clock.verify_timestamp(timestamp, wrong_signature))
+        self.assertFalse(self.clock.verify_timestamp(timestamp, wrong_signature, cycle_count))
+        
+        # Should fail with wrong cycle count
+        self.assertFalse(self.clock.verify_timestamp(timestamp, signature, cycle_count + 1))
     
     def test_drift_compensation(self):
         """Test clock drift compensation"""
@@ -199,7 +203,7 @@ class TestIntegration(unittest.TestCase):
         time_ref.add_time_source("local", local_time)
         
         # Add cryptographic timestamp from bio-clock
-        crypto_time, signature = clock.get_cryptographic_timestamp()
+        crypto_time, signature, cycle_count = clock.get_cryptographic_timestamp()
         time_ref.add_time_source("crypto", crypto_time, signature)
         
         # Get consensus

@@ -73,12 +73,12 @@ class BioClock:
         phase = cycles % 1.0
         return phase
     
-    def get_cryptographic_timestamp(self) -> Tuple[float, str]:
+    def get_cryptographic_timestamp(self) -> Tuple[float, str, int]:
         """
         Generate cryptographically verified timestamp
         
         Returns:
-            Tuple of (timestamp, signature_hash)
+            Tuple of (timestamp, signature_hash, cycle_count)
         """
         timestamp = time.time()
         
@@ -86,21 +86,22 @@ class BioClock:
         signature_data = f"{timestamp}:{self.seed}:{self.cycle_count}"
         signature = hashlib.sha256(signature_data.encode()).hexdigest()
         
-        return timestamp, signature
+        return timestamp, signature, self.cycle_count
     
-    def verify_timestamp(self, timestamp: float, signature: str) -> bool:
+    def verify_timestamp(self, timestamp: float, signature: str, cycle_count: int) -> bool:
         """
         Verify a cryptographic timestamp
         
         Args:
             timestamp: The timestamp to verify
             signature: The signature hash to verify
+            cycle_count: The cycle count when timestamp was generated
             
         Returns:
             True if signature is valid
         """
         # Reconstruct signature for verification
-        expected_data = f"{timestamp}:{self.seed}:{self.cycle_count}"
+        expected_data = f"{timestamp}:{self.seed}:{cycle_count}"
         expected_signature = hashlib.sha256(expected_data.encode()).hexdigest()
         
         return signature == expected_signature
@@ -125,12 +126,13 @@ class BioClock:
         self.last_pulse = time.time()
         
         # Generate cryptographic timestamp
-        timestamp, signature = self.get_cryptographic_timestamp()
+        timestamp, signature, cycle_count = self.get_cryptographic_timestamp()
         
         pulse_data = {
             'cycle': self.cycle_count,
             'timestamp': timestamp,
             'signature': signature,
+            'cycle_count': cycle_count,
             'phase': self.get_current_phase(),
             'frequency_hz': self.FREQUENCY_HZ,
             'period_seconds': self.PERIOD_SECONDS,
@@ -292,11 +294,12 @@ if __name__ == "__main__":
     print(json.dumps(status, indent=2))
     
     # Generate cryptographic timestamp
-    timestamp, signature = clock.get_cryptographic_timestamp()
+    timestamp, signature, cycle_count = clock.get_cryptographic_timestamp()
     print(f"\nCryptographic Timestamp:")
     print(f"  Time: {timestamp}")
     print(f"  Signature: {signature[:16]}...")
-    print(f"  Verified: {clock.verify_timestamp(timestamp, signature)}")
+    print(f"  Cycle Count: {cycle_count}")
+    print(f"  Verified: {clock.verify_timestamp(timestamp, signature, cycle_count)}")
     
     # Demonstrate decentralized time reference
     time_ref = DecentralizedTimeReference()
