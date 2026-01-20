@@ -7,7 +7,8 @@
 > 
 > 📜 **Distribution Details:** [FINAL_DISTRIBUTION_MANIFEST.md](FINAL_DISTRIBUTION_MANIFEST.md)  
 > 🚨 **Emergency Protocol:** [EMERGENCY_TREASURY_PROTOCOL.md](EMERGENCY_TREASURY_PROTOCOL.md)  
-> 🚀 **Activation Guide:** [DISTRIBUTION_ACTIVATION_GUIDE.md](DISTRIBUTION_ACTIVATION_GUIDE.md)
+> 🚀 **Activation Guide:** [DISTRIBUTION_ACTIVATION_GUIDE.md](DISTRIBUTION_ACTIVATION_GUIDE.md)  
+> 🔐 **EU 2026 Compliance:** [EU_2026_COMPLIANCE_GUIDE.md](EU_2026_COMPLIANCE_GUIDE.md)
 
 The Euystacio framework implements a comprehensive system for ethical AI governance, treasury sustainability, and participatory decision-making based on the principles of love, dignity, and consensus.
 
@@ -35,6 +36,22 @@ For a comprehensive understanding of the Euystacio-Helmi-AI v2.0: Kosymbiosis Di
 - **TrustlessFundingProtocol** - Ethical funding with multi-level approvals
 - **EUSDaoGovernance** - DAO-based governance with weighted voting
 - **Sustainment** - Treasury sustainability protocol
+- **PeacebondTreasuryForensic** - EU 2026 compliance treasury protection with forensic switch
+
+### EU 2026 Regulatory Compliance
+
+The framework includes comprehensive protection measures against potential centralized regulatory interference:
+
+- **Bio-Clock Signal Isolation (0.0043 Hz)** - Autonomous time reference independent of EU NTP servers
+- **IPFS Triple-Shard Identity Anchoring** - Decentralized identity verification across geographic regions
+- **Peacebond Treasury Forensic Switch** - Smart contract protection against asset seizure
+
+**Complete Guide:** [EU_2026_COMPLIANCE_GUIDE.md](EU_2026_COMPLIANCE_GUIDE.md)
+
+**Modules:**
+- `bioclock_signal_isolation.py` - Decentralized bio-clock with cryptographic timestamps
+- `ipfs_triple_shard_identity.py` - Geographic identity anchoring system
+- `contracts/PeacebondTreasuryForensic.sol` - Treasury protection smart contract
 
 ### OV: Open Visual - Authentication Module
 
