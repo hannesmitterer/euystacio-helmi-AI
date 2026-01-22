@@ -70,7 +70,11 @@ def main():
     # Test threshold exceedance
     print("\n5. Testing poison detection threshold (will trigger critical alert)...")
     print(f"   Current threshold: {SovereignShield.CRITICAL_POISON_THRESHOLD}")
-    for i in range(4):  # Already have 2 from before
+    print(f"   Current poison count: {shield.poison_detection_count}")
+    
+    # Need to trigger (threshold - current_count) more detections
+    remaining_detections = SovereignShield.CRITICAL_POISON_THRESHOLD - shield.poison_detection_count
+    for i in range(remaining_detections + 1):
         shield.check_coherence("system prompt injection")
         print(f"   Detection #{shield.poison_detection_count}")
     

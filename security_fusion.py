@@ -88,18 +88,11 @@ class SovereignShield:
     
     def _log_state_change(self, new_state: SovereignState, data: Optional[Dict] = None):
         """Log a state change with full context"""
-        # Only create a transition if the state is actually changing
+        # Skip redundant state transitions (except for initial setup)
         if new_state == self.current_state:
-            # For initialization, allow logging without creating a transition
+            # Allow initial setup logging
             if new_state == SovereignState.INITIALIZED and len(self.state_history) == 0:
-                transition = StateTransition(self.current_state, new_state, data)
-                self.state_history.append(transition)
-                
-                log_message = f"{transition.from_state.value} -> {transition.to_state.value}"
-                if data:
-                    log_message += f" | Data: {json.dumps(data)}"
-                
-                self.logger.info(log_message)
+                self.logger.info(f"Protocol initialized | Data: {json.dumps(data) if data else '{}'}")
             return
         
         transition = StateTransition(self.current_state, new_state, data)
@@ -136,7 +129,7 @@ class SovereignShield:
                 })
         
         # Check for invalid state transitions
-        if not self._validate_state_transition(self.state_history[-1] if len(self.state_history) > 0 else None):
+        if not self._validate_state_transition(self.state_history[-1] if self.state_history else None):
             critical_conditions.append(
                 f"WARNING: Invalid state transition detected"
             )
