@@ -32,6 +32,7 @@ contract EUSDaoGovernance is ERC20, Ownable {
      */
     function setSTAnchor(address _stAnchor) external onlyOwner {
         require(_stAnchor != address(0), "Invalid STAnchor address");
+        require(address(stAnchor) == address(0), "STAnchor already set");
         stAnchor = IEuystacioSTAnchor(_stAnchor);
         emit STAnchorSet(_stAnchor);
     }

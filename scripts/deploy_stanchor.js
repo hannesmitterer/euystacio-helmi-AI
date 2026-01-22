@@ -24,10 +24,20 @@ async function main() {
   const RED_CODE_IPFS_CID = process.env.RED_CODE_IPFS_CID;
   if (RED_CODE_IPFS_CID) {
     console.log("\n=== Initializing Red Code IPFS ===");
-    const vetoSigner = deployer; // In production, this would be the veto authority signer
-    const tx = await anchor.connect(vetoSigner).setRedCodeIPFS(RED_CODE_IPFS_CID);
-    await tx.wait();
-    console.log("✓ Red Code IPFS CID set:", RED_CODE_IPFS_CID);
+    // Only attempt to set Red Code IPFS if the deployer is the veto authority
+    if (deployer.address.toLowerCase() === RED_CODE_VETO_AUTHORITY.toLowerCase()) {
+      const vetoSigner = deployer;
+      const tx = await anchor.connect(vetoSigner).setRedCodeIPFS(RED_CODE_IPFS_CID);
+      await tx.wait();
+      console.log("✓ Red Code IPFS CID set:", RED_CODE_IPFS_CID);
+    } else {
+      console.log(
+        "⚠ Skipping setRedCodeIPFS: deployer is not the Red Code Veto Authority."
+      );
+      console.log(
+        "  Please have the veto authority set the Red Code IPFS CID on-chain."
+      );
+    }
   }
 
   // Register deployment keys if provided

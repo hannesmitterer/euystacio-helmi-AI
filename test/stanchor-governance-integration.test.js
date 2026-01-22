@@ -54,6 +54,16 @@ describe("EUSDaoGovernance and EuystacioSTAnchor Integration", function () {
         governance.setRedCodeVetoEnabled(true)
       ).to.be.revertedWith("STAnchor not set");
     });
+    
+    it("Should not allow changing STAnchor once set", async function () {
+      const anchorAddress = await anchor.getAddress();
+      await governance.setSTAnchor(anchorAddress);
+      
+      // Try to set a different address
+      await expect(
+        governance.setSTAnchor(user.address)
+      ).to.be.revertedWith("STAnchor already set");
+    });
   });
 
   describe("Red Code Veto Integration", function () {

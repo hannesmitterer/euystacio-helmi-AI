@@ -134,7 +134,7 @@ contract EuystacioSTAnchor is Ownable {
      * @param govContract Address of the governance contract
      * @param authorized Whether to authorize or deauthorize
      */
-    function setAuthorizedGovernanceContract(address govContract, bool authorized) external onlyOwner {
+    function setAuthorizedGovernanceContract(address govContract, bool authorized) external onlyOwner whenNotSealed {
         require(govContract != address(0), "Invalid governance contract");
         authorizedGovernanceContracts[govContract] = authorized;
         emit GovernanceContractAuthorized(govContract, authorized);
@@ -266,6 +266,7 @@ contract EuystacioSTAnchor is Ownable {
         require(bytes(ipfsCID).length > 0, "Invalid IPFS CID");
         require(contentHash != bytes32(0), "Invalid content hash");
         require(bytes(name).length > 0, "Invalid name");
+        require(bytes(governanceDocuments[docId].name).length == 0, "Document already exists");
         
         governanceDocuments[docId] = GovernanceDocument({
             name: name,

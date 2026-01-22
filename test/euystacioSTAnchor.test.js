@@ -91,6 +91,14 @@ describe("EuystacioSTAnchor", function () {
         anchor.connect(vetoAuthority).setRedCodeIPFS(ipfsCID)
       ).to.be.revertedWith("Deployment is sealed");
     });
+    
+    it("Should not allow authorizing governance contracts after deployment sealed", async function () {
+      await anchor.sealDeployment();
+      
+      await expect(
+        anchor.setAuthorizedGovernanceContract(user.address, true)
+      ).to.be.revertedWith("Deployment is sealed");
+    });
   });
 
   describe("Deployment Sealing", function () {
@@ -314,6 +322,14 @@ describe("EuystacioSTAnchor", function () {
       await expect(
         anchor.anchorGovernanceDocument(docId, docName, ipfsCID, ethers.ZeroHash)
       ).to.be.revertedWith("Invalid content hash");
+    });
+    
+    it("Should not allow overwriting existing governance documents", async function () {
+      await anchor.anchorGovernanceDocument(docId, docName, ipfsCID, contentHash);
+      
+      await expect(
+        anchor.anchorGovernanceDocument(docId, "Different Name", "QmDifferent123", contentHash)
+      ).to.be.revertedWith("Document already exists");
     });
   });
 
