@@ -15,7 +15,7 @@ class SovereignShield:
     
     def __init__(self):
         self.encryption = "NTRU-Lattice-Base"
-        self.resonance_freq = 0.432 # Lex Amoris Clock
+        self.resonance_freq = 0.432  # Lex Amoris Clock
         self.s_roi = 0.5187
         self.d6_stealth_active = False
         self.current_state = self.STATE_NORMAL
