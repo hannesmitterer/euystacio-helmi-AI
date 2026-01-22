@@ -44,6 +44,8 @@ logs/
 # S-ROI State Exports
 *_sroi_export.json
 sroi_state_export.json
+demo_sroi_export.json
+demo_sroi.log
 
 # Node
 node_modules/

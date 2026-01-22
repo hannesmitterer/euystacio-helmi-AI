@@ -154,7 +154,8 @@ class SovereignShield:
         valid_transitions = {
             SovereignState.INITIALIZED: [
                 SovereignState.COHERENCE_CHECK, 
-                SovereignState.STEALTH_ACTIVATING
+                SovereignState.STEALTH_ACTIVATING,
+                SovereignState.AUDIT_PROCESSING
             ],
             SovereignState.COHERENCE_CHECK: [
                 SovereignState.AUDIT_PROCESSING,
@@ -163,7 +164,8 @@ class SovereignShield:
             ],
             SovereignState.AUDIT_PROCESSING: [
                 SovereignState.DATA_CLEAN,
-                SovereignState.POISON_DETECTED
+                SovereignState.POISON_DETECTED,
+                SovereignState.COHERENCE_CHECK
             ],
             SovereignState.STEALTH_ACTIVATING: [
                 SovereignState.STEALTH_ACTIVE
@@ -176,15 +178,20 @@ class SovereignShield:
             SovereignState.POISON_DETECTED: [
                 SovereignState.COHERENCE_CHECK,
                 SovereignState.CRITICAL_ALERT,
-                SovereignState.INITIALIZED
+                SovereignState.INITIALIZED,
+                SovereignState.AUDIT_PROCESSING,
+                SovereignState.STEALTH_ACTIVATING
             ],
             SovereignState.CRITICAL_ALERT: [
                 SovereignState.INITIALIZED,
-                SovereignState.STEALTH_ACTIVATING
+                SovereignState.STEALTH_ACTIVATING,
+                SovereignState.COHERENCE_CHECK
             ],
             SovereignState.STEALTH_ACTIVE: [
                 SovereignState.COHERENCE_CHECK,
-                SovereignState.INITIALIZED
+                SovereignState.INITIALIZED,
+                SovereignState.AUDIT_PROCESSING,
+                SovereignState.STEALTH_ACTIVATING
             ]
         }
         
