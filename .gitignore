@@ -41,6 +41,10 @@ Thumbs.db
 *.log
 logs/
 
+# S-ROI State Exports
+*_sroi_export.json
+sroi_state_export.json
+
 # Node
 node_modules/
 
