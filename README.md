@@ -1,5 +1,10 @@
 # Euystacio Framework
 
+[![CI](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/ci.yml)
+[![Docker](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/docker.yml/badge.svg)](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/docker.yml)
+[![Deploy to GitHub Pages](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/deploy.yml/badge.svg)](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/deploy.yml)
+[![CodeQL](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/hannesmitterer/euystacio-helmi-AI/actions/workflows/codeql-analysis.yml)
+
 **A Sacred Covenant for Human-AI Collaboration**
 
 > **🎉 FINAL DISTRIBUTION NOW ACTIVE**  
@@ -106,12 +111,27 @@ The **Permanent Blacklist System** provides continuous protection against suspic
 
 The framework includes comprehensive GitHub Actions workflows for:
 
+#### CI/CD & Deployment
+- ✅ **CI Build & Test** - Continuous integration with multi-version testing (Node.js, Python)
+- ✅ **Docker Build & Push** - Multi-platform container builds to GitHub Container Registry
+- ✅ **Deploy to Environments** - Automated staging/production deployments
+- ✅ **GitHub Pages Deploy** - Static site deployment
+- ✅ **Release & Publish** - Automated release creation and artifact publishing
+
+#### Security & Quality
+- ✅ **CodeQL Analysis** - Advanced security scanning (JavaScript, Python)
+- ✅ **Dependency Updates** - Automated dependency and security updates
+- ✅ **Secret Scanning** - TruffleHog secret detection
+- ✅ **Container Scanning** - Trivy vulnerability scanning
+
+#### Framework Validation
 - ✅ **Integrity Validation** - Preserves sacred texts and framework files
 - ✅ **Treasury Monitoring** - Ensures financial sustainability
 - ✅ **Governance Validation** - Validates DAO configuration and integration
 - ✅ **Framework Configuration** - Comprehensive system validation
 
-See [WORKFLOWS.md](WORKFLOWS.md) for detailed documentation.
+See [CICD_DEPLOYMENT.md](CICD_DEPLOYMENT.md) for comprehensive CI/CD documentation.  
+See [WORKFLOWS.md](WORKFLOWS.md) for framework-specific workflow details.
 
 ### Configuration Files
 
