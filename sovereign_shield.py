@@ -126,9 +126,12 @@ class SovereignShield:
         # Convert request data to searchable string
         search_text = json.dumps(request_data, default=str).lower()
         
-        # Check for SPID attempts
+        # Check for SPID attempts (but exclude common legitimate uses)
         for pattern in self.spid_patterns:
             if re.search(pattern, search_text, re.IGNORECASE):
+                # Exclude user-agent header (legitimate)
+                if pattern == r'user[-_]?agent' and 'headers' in request_data:
+                    continue
                 threat_level = ThreatLevel.HIGH
                 threat_type = ThreatType.SPID
                 description = f"SPID pattern detected: {pattern}"
