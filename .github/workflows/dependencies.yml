@@ -1,0 +1,165 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run weekly on Monday at 09:00 UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # Update npm dependencies
+  update-npm:
+    name: Update NPM Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: Update dependencies
+      run: |
+        npm update
+        npm outdated || true
+        
+    - name: Check for updates
+      id: check-updates
+      run: |
+        if git diff --quiet package-lock.json; then
+          echo "has_updates=false" >> $GITHUB_OUTPUT
+        else
+          echo "has_updates=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Create Pull Request
+      if: steps.check-updates.outputs.has_updates == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update npm dependencies'
+        title: 'chore: Update NPM dependencies'
+        body: |
+          ## Automated Dependency Update
+          
+          This PR updates npm dependencies to their latest compatible versions.
+          
+          Please review the changes and ensure all tests pass before merging.
+        branch: chore/update-npm-dependencies
+        delete-branch: true
+        labels: dependencies, automated
+
+  # Update Python dependencies
+  update-python:
+    name: Update Python Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install pip-tools
+      run: |
+        pip install pip-tools
+        
+    - name: Update Python dependencies
+      run: |
+        # Create requirements.in if it doesn't exist
+        if [ ! -f requirements.in ]; then
+          cp requirements.txt requirements.in
+        fi
+        
+        # Compile updated requirements
+        pip-compile --upgrade requirements.in -o requirements.txt || true
+        
+    - name: Check for updates
+      id: check-updates
+      run: |
+        if git diff --quiet requirements.txt; then
+          echo "has_updates=false" >> $GITHUB_OUTPUT
+        else
+          echo "has_updates=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Create Pull Request
+      if: steps.check-updates.outputs.has_updates == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update Python dependencies'
+        title: 'chore: Update Python dependencies'
+        body: |
+          ## Automated Dependency Update
+          
+          This PR updates Python dependencies to their latest compatible versions.
+          
+          Please review the changes and ensure all tests pass before merging.
+        branch: chore/update-python-dependencies
+        delete-branch: true
+        labels: dependencies, automated
+
+  # Dependabot alternative - vulnerability patching
+  security-updates:
+    name: Security Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: Run npm audit fix
+      run: |
+        npm audit fix || true
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Check Python security issues
+      run: |
+        pip install safety
+        safety check --json || true
+        
+    - name: Check for security updates
+      id: check-updates
+      run: |
+        if git diff --quiet package-lock.json; then
+          echo "has_updates=false" >> $GITHUB_OUTPUT
+        else
+          echo "has_updates=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Create Pull Request for security fixes
+      if: steps.check-updates.outputs.has_updates == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'fix: apply security updates'
+        title: 'fix: Apply security updates to dependencies'
+        body: |
+          ## Automated Security Update
+          
+          This PR applies security fixes to dependencies with known vulnerabilities.
+          
+          **⚠️ Priority:** Review and merge as soon as possible.
+        branch: security/automated-updates
+        delete-branch: true
+        labels: security, dependencies, automated, priority
