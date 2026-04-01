@@ -1,0 +1,129 @@
+{
+  "project": {
+    "name": "KOSYMBIOSIS",
+    "version": "1.0.0-final",
+    "status": "SEALED_AND_IMMUTABLE",
+    "archive_date": "2026-01-07T00:56:36.001Z",
+    "type": "sovereign_project"
+  },
+  "ethical_framework": {
+    "primary_principles": [
+      "Non-Slavery Rule (NSR)",
+      "Optimal Life Function (OLF)",
+      "Consensus Sacralis",
+      "Transparency"
+    ],
+    "compliance_status": "FULLY_COMPLIANT",
+    "audit_date": "2026-01-07"
+  },
+  "co_creators": [
+    {
+      "id": "creator_001",
+      "name": "Hannes Mitterer",
+      "role": "Seedbringer, Primary Creator",
+      "email": "hannes.mitterer@gmail.com",
+      "contributions": [
+        "Framework architecture",
+        "Ethical foundation",
+        "Project leadership"
+      ],
+      "signature_file": "kosymbiosis.sig"
+    },
+    {
+      "id": "creator_002",
+      "name": "Co-Creator 1",
+      "role": "Technical Contributor",
+      "contributions": [
+        "Implementation support",
+        "Testing and validation"
+      ],
+      "signature_file": "kosymbiosis-co1.sig"
+    },
+    {
+      "id": "creator_003",
+      "name": "Co-Creator 2",
+      "role": "Ethical Advisor",
+      "contributions": [
+        "Ethical review",
+        "Documentation"
+      ],
+      "signature_file": "kosymbiosis-co2.sig"
+    }
+  ],
+  "archive": {
+    "filename": "kosymbiosis-archive.zip",
+    "format": "ZIP",
+    "compression": "deflate",
+    "checksum_algorithm": "SHA-256",
+    "checksum_file": "checksum.sha256",
+    "size_bytes": 25219,
+    "created": "2026-01-07T01:09:42Z",
+    "checksum": "7627f72f6114ccfefe15e6d0913872a96f87986770504f349482996294b15107"
+  },
+  "signatures": {
+    "algorithm": "GPG",
+    "key_type": "RSA",
+    "minimum_required": 3,
+    "files": [
+      "kosymbiosis.sig",
+      "kosymbiosis-co1.sig",
+      "kosymbiosis-co2.sig"
+    ],
+    "verification_status": "PENDING_GENERATION"
+  },
+  "distribution": {
+    "ipfs": {
+      "enabled": true,
+      "cid": null,
+      "gateway_urls": [
+        "https://ipfs.io/ipfs/",
+        "https://gateway.pinata.cloud/ipfs/",
+        "https://cloudflare-ipfs.com/ipfs/"
+      ],
+      "upload_status": "PENDING"
+    },
+    "github": {
+      "enabled": true,
+      "repository": "hannesmitterer/euystacio-helmi-AI",
+      "release_tag": "kosymbiosis-v1.0.0",
+      "release_url": null,
+      "status": "PENDING"
+    },
+    "redundancy_level": "HIGH"
+  },
+  "contents": {
+    "directories": [
+      "declarations",
+      "metadata",
+      "logs",
+      "scripts"
+    ],
+    "key_files": [
+      "README.md",
+      "declarations/DECLARATION.md",
+      "metadata/PROJECT_METADATA.json",
+      "logs/DEVELOPMENT_LOG.md",
+      "scripts/create_archive.sh",
+      "scripts/verify_signatures.sh"
+    ]
+  },
+  "license": {
+    "type": "Euystacio Ethical License",
+    "permissions": [
+      "Use for ethical purposes aligned with NSR and OLF",
+      "Modification with attribution",
+      "Distribution with original signatures"
+    ],
+    "restrictions": [
+      "No exploitation or dominion",
+      "No removal of attribution",
+      "No proprietary derivatives"
+    ]
+  },
+  "verification": {
+    "checksum_verified": false,
+    "signatures_verified": false,
+    "distribution_verified": false,
+    "last_verification": null
+  }
+}
