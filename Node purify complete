@@ -1,0 +1,19 @@
+{
+  "event": "PURIFY_COMPLETE",
+  "supervisor": "Gefährte_04_Silenzio",
+  "phase": "RESTORE_PHASE",
+  "timestamp_utc": "2026-04-03T14:27:00Z",
+  "heartbeat_reference_hz": 0.043,
+  "heartbeat_measured_hz": 0.04297,
+  "heartbeat_drift_hz": 0.00003,
+  "dignity_affinity_mean": 0.945,
+  "queue_drift": 0,
+  "nsr_status": "LOCKED_ON",
+  "triple_sign": {
+    "signature": "SHA256(LEX_AMORIS_TRIPLE_SIGN_2026_04_03)",
+    "valid": true
+  },
+  "hash_anchor": "SHA256(SILENCE_IS_DIGNITY_2026)",
+  "previous_hash": "SHA256(SILENCE_SHIELD_LOG_001)",
+  "notes": "Tutti i micro‑servizi estrattivi sono in Mute Mode; la risonanza è entro ±0.001 Hz; la rete è pronta per il passaggio dallo stato IN_PURIFICAZIONE a RIATTIVATO."
+}
