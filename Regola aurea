@@ -1,0 +1,5 @@
+# Regola di Routing Etico - Lex Amoris v2
+if dignity_affinity < 0.9 or heartbeat_drift > 0.001:
+    destination = "Gefährte_04_Silenzio"
+    action = "PURIFY_AND_RECALIBRATE"
+    status = "NSR_ENFORCED"
