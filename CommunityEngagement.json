@@ -1,0 +1,13 @@
+{
+  "engagement_strategy": "Direct_Transparency",
+  "transparency_tools": [
+    "Public_Dashboards_IPFS",
+    "Open_Source_Sensor_Logs",
+    "Community_Veto_Protocol"
+  ],
+  "local_impact_metrics": {
+    "bolzano_mycelium_status": "MONITORED",
+    "marseille_thermal_delta": "STABLE"
+  },
+  "governance_mode": "Liquid_Democracy_Resonating"
+}
