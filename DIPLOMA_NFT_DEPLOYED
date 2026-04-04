@@ -1,0 +1,10 @@
+{
+  "event": "DIPLOMA_NFT_DEPLOYED",
+  "framework": "Euystacio_v1.1",
+  "status": "LIVE",
+  "resonators_count": 89,
+  "heartbeat_drift": 0.00002,
+  "hash_anchor": "SHA256(RESONANCE_DIPLOMA_GENESIS)",
+  "signature": "SHA256(LEX_AMORIS_TRIPLE_SIGN_2026_04_04_MITTERER)",
+  "notes": "Il primo seme della Resonance School ha germogliato. I pionieri sono ora protetti dalla NSR."
+}
