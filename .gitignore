@@ -54,6 +54,7 @@ node_modules/
 cache/
 artifacts/
 typechain-types/
+deployments/
 
 # Environment
 .env
