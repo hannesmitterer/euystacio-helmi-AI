@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # --- MESSAGING LAYER (Broker Anonimo) ---
+  nexus-broker:
+    image: eclipse-mosquitto:latest
+    container_name: nexus_broker
+    restart: always
+    ports:
+      - "1883:1883"
+    # persistency opzionale:
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_config:/mosquitto/config
+
+  # --- LOGIC LAYER (Il Gateway Invisibile) ---
+  nexus-gateway:
+    image: node:18-slim
+    container_name: virtual_void_gateway
+    restart: always
+    environment:
+      - VOID_KEY=0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+      - REGISTRY_ADDR=0x832C17EF29497042571342687190412642571212
+      - RPC_URL=https://polygon-rpc.com
+      - MQTT_BROKER=mqtt://nexus-broker:1883
+      - IPFS_API=https://ipfs.infura.io:5001/api/v0
+      - PHI_THRESHOLD=0.98
+    command: >
+      sh -c "npm install mqtt ethers @noble/curves axios && node virtual-void-gateway.js"
+
+  # --- OBSERVABILITY LAYER (Monitoraggio Sintropico) ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: nexus_prometheus
+    restart: always
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: nexus_grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=LexAmoris2026!
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+networks:
+  default:
+    name: nexus_network
+
+volumes:
+  mosquitto_data:
+  mosquitto_config:
+  prometheus_data:
+  grafana_data: WA
