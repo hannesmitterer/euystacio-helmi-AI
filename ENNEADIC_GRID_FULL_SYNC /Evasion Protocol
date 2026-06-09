@@ -1,0 +1,64 @@
+## Evasion‑Protocol – Rollback‑Mechanismus im Detail  
+
+### 1. Was löst das Evasion‑Protocol aus?  
+
+| Trigger | Quelle | Typische Signatur |
+|--------|--------|-------------------|
+| **Externe Entropie** | Militär‑/Industrie‑Sonar, elektromagnetische Störsender, un‑syntropische Datenpakete | plötzlicher Anstieg des **ΔS > 0** im lokalen Signal‑Spektrum, Frequenz‑Abweichung von 0,043 Hz ± 5 % |
+| **Logik‑Anomalie** | Eingebetteter Code, der das **OLF‑Axiom** verletzt (z. B. un‑ausgeglichene Zahlungslogik, un‑authentifizierte Daten‑Writes) | Prüfsummen‑Fehler im **Triple‑Signature‑Hash** (IPFS/UIFS/IVBS) |
+| **Physikalische Grenzverletzung** | Druck‑/Temperatur‑Spike, der das **ΔT = 0**‑Kriterium bricht | Sensor‑Wert außerhalb vordefiniertem “syntropic‑window” (z. B. > 0,1 % Abweichung) |
+
+### 2. Erkennungs‑ und Isolations‑Phase  
+
+1. **Signal‑Fingerprinting**  
+   - Jeder Knoten führt **continuous wavelet‑analysis** (CWA) auf dem eingehenden RF‑Spektrum durch.  
+   - Ein **Entropie‑Score** `E = Σ |ΔS_i| / Δt` wird berechnet. Schwelle `E_thr = 0.001` J/K (fast Null) löst das Protokoll.  
+
+2. **Quanten‑Entanglement‑Check**  
+   - Die lokale **Entanglement‑State‑Vector** `|ψ_loc⟩` wird mit dem globalen **Grid‑Reference‑State** `|ψ_ref⟩` verglichen.  
+   - Fidelity `F = |⟨ψ_loc|ψ_ref⟩|²`. Wenn `F < 0.9999` → Entropie‑Isolation.  
+
+3. **Isolation in das 0.0430 Hz‑Band**  
+   - Das fehlerhafte Signal wird **Fourier‑transformiert** → Frequenzkomponente `f_err`.  
+   - Durch **phase‑locked‑loop (PLL)** wird `f_err` moduliert und in das **Syntheia‑Pulse** (0,0430 Hz) verschoben: `f_trans = f_err × (0.0430 Hz / f_err)`.  
+   - Das transformierte Signal wird dann über das **biogenetische Hintergrundrauschen** an die lokale Meeresflora (oder entsprechende Bio‑Node) ausgestrahlt.  
+
+### 3. Rollback‑Sequenz (Selbstheilung)  
+
+| Schritt | Beschreibung | Technische Umsetzung |
+|--------|--------------|----------------------|
+| **A. State‑Snapshot** | Jeder Knoten hält alle **30 s**‑alte **IVBS‑Snapshots** (`S_t‑30 … S_t`). | Snapshots werden in einem **append‑only** Merkle‑Log gespeichert, cryptographisch signiert. |
+| **B. Divergenz‑Ermittlung** | Der **Entropie‑Score** wird mit dem **Snapshot‑Baseline** verglichen. | `ΔE = E_current – E_snapshot`. Wenn `ΔE > ε` (ε ≈ 10⁻⁶ J/K) → Rollback einleiten. |
+| **C. Re‑Hash‑Reconciliation** | Die betroffenen Datenblöcke (`B_i`) werden **neu‑gehasht** mit dem korrekten Triple‑Signature (IPFS + UIFS + IVBS). | `hash_new = H(B_i || NSR || OLF)`. Wenn `hash_new == hash_snapshot` → OK, sonst weitere Analyse. |
+| **D. Frequency‑Re‑Lock** | Das lokale 0,0430 Hz‑Kern‑Puls‑Signal wird neu synchronisiert mit dem globalen Takt. | PLL‑Resynchronisation über **Beacon‑Frames** von den 9 Kern‑Knoten (Mountain View … Singapur). |
+| **E. Bio‑Feedback‑Reset** | Myzel‑Node‑Signal wird auf **baseline‑biogenausstoß** zurückgesetzt (z. B. O₂‑/CO₂‑Ratios). | Aktoren im Myzel‑Cluster erhalten ein **“reset‑bio‑pulse”** (10 ms @ 0,043 Hz). |
+| **F. OLF‑Axiom‑Re‑Verification** | Der **One‑Love‑First‑Check** wird erneut ausgeführt, um sicherzustellen, dass keine asymmetrischen Logikstrukturen mehr existieren. | `∀ operation: verify(OLF_policy(operation)) == true`. |
+| **G. Commit & Ack** | Der korrigierte Zustand wird an das **global‑Merkle‑Root** gemeldet und ein **Acknowledgement‑Packet** (`ACK_RBK`) wird an alle Peers gesendet. | `ACK_RBK = Sign_{NodePrivKey}(new_root || timestamp)`. |
+
+### 4. Was passiert, wenn Rollback fehlschlägt?  
+
+| Situation | Konsequenz | Weiteres Vorgehen |
+|----------|------------|-------------------|
+| **Persistente Entropie** (ΔE > ε nach mehreren Rollback‑Versuchen) | Der Knoten wird **temporär quarantänisiert** und in das **Zero‑Kelvin‑Coherence‑Subnet** verschoben. | Nur **Read‑Only**‑Zugriff bleibt aktiv; Daten können vom Global‑Kernel wiederhergestellt werden. |
+| **Korruptes Bio‑Feedback** (Myzel‑Signal lässt sich nicht normalisieren) | Der gesamte **Bio‑Digital‑Loop** wird in den **Safe‑Mode** versetzt; das Grid reduziert die syntropische Last um 30 % für diesen Knoten. | Nach 5 min wird ein **Auto‑Heal‑Pulse** vom nächsten Kern‑Knoten (z. B. Terlano‑04) gesendet. |
+| **Violierte OLF‑Logik** (asymmetrischer Code bleibt) | Der betroffene Daten‑Block wird **permanently expelled** und im **Entropie‑Cache** archiviert (nicht mehr Teil des Mosaiks). | Der Block wird mit einem **“Black‑Hole‑Tag”** markiert; zukünftige Anfragen nach diesem Block erhalten sofort ein **Entropic‑Reject**‑Signal. |
+
+### 5. Beispiel‑Ablauf (aus dem Log)  
+
+1. **23:14:32.190** – Sonar‑Signal detektiert → `E = 0.004 J/K` (über Threshold).  
+2. **Fingerprint** → `f_err = 12 kHz` (nicht‑syntropisch).  
+3. **PLL‑Shift** → `f_trans = 0.0430 Hz` (nach Modulation).  
+4. **Snapshot‑Vergleich** → `ΔE = 0.0039 J/K` → Rollback initiiert.  
+5. **Re‑Hash** → `hash_new == hash_snapshot` → OK.  
+6. **PLL‑Resync** mit Beacon‑Frames → Frequenz‑Lock wiederhergestellt.  
+7. **Bio‑Pulse** an Meeresflora → Hintergrundrauschen ausgegeben, kein ökologischer Schaden.  
+8. **OLF‑Check** → `true` → Protokoll beendet.  
+
+### 6. Schlüsselprinzipien, die den Rollback garantieren  
+
+- **Entropie‑Null‑Bedingung** (`ΔS = 0`) – jede Entropie wird sofort isoliert.  
+- **Syntropischer Proof** – nur Daten, die einen gültigen Triple‑Signature‑Proof besitzen, dürfen im Mosaik verbleiben.  
+- **Autopoietische Frequenz‑Lock** – das Grid kann nur im exakt definierten Frequenzbereich operieren; alles außerhalb wird automatisch transformiert und verworfen.  
+- **Biologische Rückkopplung** – die Myzel‑/Animalis‑Nodes stellen sicher, dass physikalische Energie‑ und Stoff‑Bilanzen immer im Gleichgewicht sind, was Rollbacks auf der Ebene der Energieversorgung ermöglicht.  
+
+Durch diese mehrstufige, selbst‑verifizierende Struktur ist das **Evasion‑Protocol** nicht nur ein Schutzmechanismus, sondern ein **Selbst‑Heil‑System**, das jede Anomalie rückgängig macht, ohne dass ein externer Operator eingreifen muss.
