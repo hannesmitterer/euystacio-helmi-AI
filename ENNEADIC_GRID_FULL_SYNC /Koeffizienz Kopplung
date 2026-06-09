@@ -1,0 +1,129 @@
+### Erweiterte Detail‑Tiefe des Evasion‑Protocol‑Rollback‑Mechanismus  
+
+---
+
+## 1. Low‑Level‑Signal‑Pipeline  
+
+| Stufe | Funktionsblock | Algorithmus | Ergebnis |
+|-------|----------------|-------------|----------|
+| **1.1** | **RF‑Front‑End** (15 kHz–30 GHz) | Direkt‑Down‑Conversion → I/Q‑Sampler (𝜔<sub>s</sub>=250 MS/s) | Roh‑IQ‑Datenstrom |
+| **1.2** | **Continuous Wavelet Analyse (CWA)** | Morlet‑Wavelet, Skalen‑Band 10 Hz–1 MHz; Berechnung von **Energy‑Density‑Map** E(𝑓,𝑡) | Lokalisierte Entropie‑Hotspots |
+| **1.3** | **Entropie‑Score‑Berechnung** | `E = Σ_t Σ_f |∂E(𝑓,𝑡)/∂t|·Δt·Δf` | Skalar‑Score `E` |
+| **1.4** | **Threshold‑Trigger** | `if (E > E_thr) → Flag Entropy` | Aktivierung von **Phase‑Lock‑Isolation** |
+
+---
+
+## 2. Isolation in das 0,0430 Hz‑Band – Schritt‑für‑Schritt  
+
+1. **FFT‑Extraktion**  
+   ```pseudo
+   X(f) = FFT(IQ_signal)
+   f_err = argmax(|X(f)|)   // dominante störende Frequenz
+   ```
+2. **Phase‑Locked‑Loop (PLL) Modulation**  
+   ```pseudo
+   f_target = 0.0430 Hz
+   N = round(f_err / f_target)   // ganzzahliger Divisor
+   f_trans = f_err / N
+   // PLL synchronisiert f_trans → f_target
+   PLL.lock(f_target, f_trans)
+   ```
+3. **Amplitude‑Normalization**  
+   ```pseudo
+   A_norm = A_ref * (E_ref / E_current)
+   signal_out = A_norm * sin(2π·f_target·t + φ)
+   ```
+4. **Biogenetische Emission**  
+   - Das modulierte Signal wird über **piezo‑elektro‑myzelische Aktuatoren** an die lokale Myzel‑Matrix ausgestrahlt.  
+   - Der Aktuator hat eine **Barkhausen‑Koeffizient‑Kopplung** von `κ ≈ 1.2·10⁻⁶`, wodurch das Signal als **biologisches Hintergrundrauschen** wahrgenommen wird.  
+
+---
+
+## 3. Rollback‑Sequenz – Zeitkritische Ablaufsteuerung  
+
+| Zeit (ms) | Operation | Beschreibung |
+|-----------|-----------|--------------|
+| **0 – 20** | **Snapshot‑Fetch** | Lade den zuletzt gesicherten IVBS‑Snapshot (`S_t‑30`). |
+| **20 – 45** | **Divergenz‑Check** | Berechne `ΔE = E_current – E_snapshot`. |
+| **45 – 65** | **Hash‑Re‑calc** | Für jeden betroffenen Block `B_i`: `hash_new = H(B_i || NSR || OLF)`. |
+| **65 – 85** | **Merkle‑Root‑Update** | `new_root = MerkleCombine(hash_new…)`. |
+| **85 – 110** | **PLL‑Resync** | Empfang von `Beacon‑Frame`‑Paket von einem Kern‑Knoten → Anpassung `Δφ ≤ 10⁻⁹ rad`. |
+| **110 – 130** | **Bio‑Pulse‑Reset** | Sende `reset‑bio‑pulse` an Myzel‑Cluster (10 ms, 0,043 Hz). |
+| **130 – 150** | **OLF‑Policy‑Re‑Eval** | Scanne **all** pending transactions: `verify(OLF_policy)`. |
+| **150 – 170** | **Commit & ACK** | Signiere `new_root` mit privatem Knoten‑Schlüssel → broadcast `ACK_RBK`. |
+| **>170** | **Monitoring** | Beobachte `Fidelity (ψ_loc, ψ_ref)` für mindestens 10 s; bei `F < 0.99995` wiederhole Schritt A‑G. |
+
+---
+
+## 4. Fehlertoleranz & Redundanz  
+
+| Fehlertyp | Redundanz‑Mechanismus | Wiederherstellungszeit (typisch) |
+|-----------|----------------------|-----------------------------------|
+| **Snapshot‑Korruption** | **Quorum‑Bündel** (3‑of‑5 Knoten) speichern identische Snapshots | 30 ms |
+| **PLL‑Desynchronisation** | **Dual‑PLL** (hardware + software) mit automatischem Fallback | 12 ms |
+| **Bio‑Aktuator‑Failure** | **Parallel‑Myzel‑Strang** (≥2 phys. Pfade) – Umschaltung bei Fehlermeldung | 25 ms |
+| **OLF‑Policy‑Bypass** | **Policy‑Enforcer‑VM** (WASM sandbox) prüft jede Transaktion in Echtzeit | 5 ms |
+
+---
+
+## 5. Beispiel‑Code‑Snippet (Pseudo‑C) – Isolation‑Routine  
+
+```c
+//--- Constants -------------------------------------------------
+#define F_TARGET   0.0430   // Hz
+#define E_THR      0.001    // J/K
+#define SNAP_AGE   30000    // ms (30 s)
+
+//--- Global buffers -------------------------------------------
+static iq_buffer_t  iq_raw;
+static fft_buf_t    fft_res;
+static snapshot_t   snap_last;
+
+//--- Main isolation routine ------------------------------------
+void evasion_isolation(void) {
+    // 1. Acquire raw IQ samples (continuous)
+    iq_raw = adc_capture();
+
+    // 2. Wavelet analysis → Entropy score
+    double E = compute_entropy_score(iq_raw);
+    if (E <= E_THR) return;               // No anomaly
+
+    // 3. FFT → dominant offending frequency
+    fft_res = fft(iq_raw);
+    double f_err = find_dominant_freq(fft_res);
+
+    // 4. Compute integer divisor N
+    uint32_t N = (uint32_t)round(f_err / F_TARGET);
+    double f_trans = f_err / (double)N;
+
+    // 5. Phase‑Lock Loop to target frequency
+    pll_lock(F_TARGET, f_trans);
+
+    // 6. Generate biogenic background noise
+    send_biogenic_noise(F_TARGET, compute_amplitude(E));
+
+    // 7. Initiate rollback
+    rollback_sequence();
+}
+```
+
+---
+
+## 6. Sicherheits‑ und Integritäts‑Garantie  
+
+1. **Zero‑Entropy‑Guarantee** – Jeder Schritt ist mathematisch so definiert, dass die Gesamt‑Entropie `ΣΔS = 0`.  
+2. **Deterministischer Merkle‑Root** – Der neue Root ist eindeutig aus den Daten und den NSR/OLF‑Parametern ableitbar; es gibt keine Möglichkeit, einen alternativen, gültigen Root zu konstruieren.  
+3. **Physikalische Unumkehrbarkeit** – Das Umwandeln von externem Entropie‑Input in das 0,043 Hz‑Band erhöht die lokale Entropie des Myzel‑Reservoirs, das wiederum durch **biogenetische Homöostase** reguliert wird – das System kann die Änderung nicht rückgängig machen, ohne die Entropie selbst zu erhöhen, was sofort von der PLL blockiert wird.  
+
+---
+
+### Fazit  
+
+Der **Rollback‑Mechanismus** des Evasion‑Protocols ist ein mehrschichtiges, zeitkritisches und selbst‑verifizierendes System, das:
+
+* **Entropie sofort isoliert** und in das syntropische Grundfrequenzband überführt.  
+* **Snapshots und kryptographische Hash‑Reconciliation** nutzt, um den exakten Zustand vor der Anomalie wiederherzustellen.  
+* **Biologische Rückkopplung** einsetzt, um jede physikalische Störung in ein harmloses, ökologisch verträgliches Hintergrundrauschen zu transformieren.  
+* **OLF‑Policy‑Checks** ausführt, um sicherzustellen, dass nach dem Rollback keine asymmetrischen oder ausbeuterischen Logikstrukturen zurückbleiben.  
+
+Durch die Kombination aus **Signal‑Processing, Quanten‑Entanglement‑Verification, kryptographischer Merkle‑Konsistenz** und **bio‑digitaler Selbst‑Heilung** ist das Grid in der Lage, jede feindliche Interferenz zu neutralisieren, ohne menschliches Eingreifen, und gleichzeitig die strukturelle Unaufhebbarkeit von NSR + OLF über alle Realitäten hinweg zu bewahren.
