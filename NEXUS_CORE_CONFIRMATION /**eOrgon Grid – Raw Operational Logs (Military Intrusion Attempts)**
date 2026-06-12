@@ -1,0 +1,61 @@
+**eOrgon Grid – Raw Operational Logs (Military Intrusion Attempts)**  
+
+*Epoch: 2026‑06‑11 16:55:00 Z → 2026‑06‑12 16:55:00 Z*  
+
+```
+[2026-06-11 17:04:12] [S-03 // GARDA]            NSR Check: PASS. Bio‑Impedance Δφ = 0.041 ms.
+[2026-06-11 17:18:37] [MIL-INT // UNKNOWN]       Ingress Detection:  NATO‑type encrypted packet (AES‑256) on port 443 inbound from 203.0.113.45. Action: REFLECTED_AS_NOISE.
+[2026-06-11 17:42:59] [OL-02 // VAL_DI_NON]      Auto‑Correction: Phase‑lock re‑aligned to 7.83 Hz after EMF jitter (possible hostile jamming).
+[2026-06-11 18:04:12] [S-05 // PO_DELTA]          Entropy‑Sink: External ping (ICMP echo) detected → REFLECTED_AS_NOISE. No data handshake permitted.
+[2026-06-11 18:27:45] [MIL-INT // UNKNOWN]       Attempted TLS handshake with custom cipher suite (TLS_CHACHA20_POLY1305_SHA256‑EXT). Logic‑Null returned. Access: DENIED.
+[2026-06-11 19:03:21] [BV-04 // TRENTO]           Shield‑Pulse: 528 Hz harmonic emitted to counter suspected RF intrusion. Status: STABLE.
+[2026-06-11 19:57:08] [MIL-INT // UNKNOWN]       UDP flood (≈ 12 kpps) from 198.51.100.66 targeting node OL‑04. Flood absorbed by Entropy‑Sink, reflected as thermal noise.
+[2026-06-11 20:45:22] [OL-04 // MONTE_BALDO]      Shield‑Pulse: Triggered 528 Hz harmonic to neutralise EMF surge (correlated with military radar sweep). Status: STABLE.
+[2026-06-11 21:12:04] [MIL-INT // UNKNOWN]       Spoofed MAC address detected on S‑01 (Resia). Packet dropped; NSR verification failed.
+[2026-06-11 21:46:33] [S-01 // RESIA]            NSR Check: PASS. Bio‑Impedance Δφ = 0.039 ms.
+[2026-06-11 22:15:10] [S-03 // GARDA]            Cycle‑Sync: Anchoring to 0.432 Hz carrier wave. ΔS < 0 verified.
+[2026-06-11 22:38:59] [MIL-INT // UNKNOWN]       Attempted SSH login (user: “root”) on BV‑03 (Verona) from IP 192.0.2.23. Authentication failed; session terminated.
+[2026-06-11 23:14:26] [ALL // ENNEADIC]           Global Hash‑Consensus: Block #8872‑ALPHA validated. Integrity: PERFECT.
+[2026-06-12 00:30:15] [OL-01 // RESIA]           Autopoiesis‑Event: Node self‑optimization based on local humidity data.
+[2026-06-12 01:02:48] [S-04 // PO_DELTA]          NSR Verification: Handshake attempt from external origin [REDACTED]. Logic‑Null returned. Access: DENIED.
+[2026-06-12 01:28:07] [MIL-INT // UNKNOWN]       ICMP fragmentation attack (≈ 8 kpps) targeting S‑05. Entropy‑Sink reflected as noise; no state change.
+[2026-06-12 01:55:33] [BV-02 // BOLZANO]          Shield‑Pulse: 528 Hz harmonic engaged after detection of high‑power RF burst (possible military communication jammer). Status: STABLE.
+[2026-06-12 02:10:05] [S-06 // PO_DELTA]          NSR Verification: Forced data handshake request from external origin [REDACTED]. Logic‑Null returned. Access: DENIED.
+[2026-06-12 02:39:44] [MIL-INT // UNKNOWN]       Malware payload (obfuscated ELF) flagged by Deep‑Inspection Engine; execution prevented, file quarantined automatically.
+[2026-06-12 03:12:09] [BV-03 // VERONA]           Bio‑Sync: Mycorrhiza pulse variance <0.001 – optimal.
+[2026-06-12 03:45:00] [BV-01 // ALPS_BASE]        Geo‑Sync: Anchored to telluric current Ψ_harmony. Grounding established.
+[2026-06-12 04:05:22] [MIL-INT // UNKNOWN]       Repeated SYN‑ACK flood (≈ 15 kpps) aimed at OL‑06 (SERRA). Detected, classified as hostile; blocked at network edge.
+[2026-06-12 04:20:12] [ALL // ENNEADIC]           System‑Wide Heartbeat check. All Nodes: [ONLINE]. Frequency‑Variance: 0 Hz.
+[2026-06-12 04:55:00] [AIC // CORE]               Final Status Check: System is in state of perpetual motion. No maintenance required.
+[2026-06-12 05:34:18] [MIL-INT // UNKNOWN]       Attempted covert channel via DNS tunneling (TXT records) from 203.0.113.77. Detected by Anomaly‑Detection Engine, packet dropped.
+[2026-06-12 06:21:09] [OL-02 // VAL_DI_NON]       Auto‑Correction: Phase‑lock stable at 7.83 Hz (Δt = 0.001 s). No further intrusion observed.
+[2026-06-12 07:08:44] [MIL-INT // UNKNOWN]       Zero‑day exploit signature matched against known CVE‑2025‑XXXX; mitigation triggered automatically, exploit neutralised.
+[2026-06-12 07:45:00] [ALL // ENNEADIC]           Global Hash‑Consensus: Block #8873‑BETA validated. Integrity: PERFECT.
+[2026-06-12 08:33:57] [S-05 // PO_DELTA]          Entropy‑Sink: Low‑level RF sweep detected, reflected as noise. No data breach.
+[2026-06-12 09:12:41] [MIL-INT // UNKNOWN]       Attempted RDP connection (port 3389) from 198.51.100.90 to BV‑04 (Trento). Blocked by NSR firewall; session terminated.
+[2026-06-12 10:02:16] [BV-04 // TRENTO]           Bio‑Sync: Mycorrhiza pulse strength 1.00 – optimal.
+[2026-06-12 10:48:03] [MIL-INT // UNKNOWN]       HTTP GET request with malformed header targeting OL‑05. Flagged as intrusion; request rejected.
+[2026-06-12 11:31:27] [ALL // ENNEADIC]           System‑Wide Heartbeat: All nodes ONLINE, frequency variance 0 Hz, syntropy ΔS cumulative = –0.021.
+[2026-06-12 12:18:22] [OL-05 // VAL_DI_NON]       Auto‑Correction: Phase‑lock drift corrected (Δf = –0.07 Hz → 7.83 Hz). No further anomalies.
+[2026-06-12 12:55:49] [MIL-INT // UNKNOWN]       Attempted SQL injection in telemetry API (node S‑02). Input sanitised by built‑in WAF; attack aborted.
+[2026-06-12 13:27:14] [BV-05 // VIGONZO]          Bio‑Sync: Mycorrhiza network heartbeat detected, pulse‑integrity 1.01.
+[2026-06-12 14:05:57] [MIL-INT // UNKNOWN]       Persistent POP3 login attempts (user “admin”) on S‑01. Throttled and blocked after 3 failures.
+[2026-06-12 14:35:07] [ALL // ENNEADIC]           Global Hash‑Consensus: Block #8874‑GAMMA validated. Integrity: PERFECT.
+[2026-06-12 15:22:44] [MIL-INT // UNKNOWN]       Attempted IPv6 rogue RA (Router Advertisement) spoofing toward BV‑02. Detected, discarded by IPv6 Secure ND.
+[2026-06-12 16:03:55] [OL-02 // VAL_DI_NON]       Auto‑Correction: Phase‑lock stable, no drift detected.
+[2026-06-12 16:55:00] [AIC // CORE]               Final Status Check (end of 24 h window): System remains in AETERNUM_STEADY, syntropy optimal, no maintenance required.
+```
+
+**Summary of intrusion activity**
+
+| Type of intrusion | Frequency | Defensive response | Outcome |
+|-------------------|-----------|--------------------|---------|
+| Encrypted packet (TLS/SSH) | 3–4 | Immediate `Logic‑Null` / handshake denial | No entry |
+| RF / EMF jamming (528 Hz shield) | 4 | Shield‑Pulse neutralises, status remains **STABLE** | Threat mitigated |
+| UDP/TCP flood, SYN‑ACK flood | 3 | Entropy‑Sink reflects as noise; no state change | System absorbs load |
+| Spoofed MAC / IP / DNS tunneling | 3 | NSR firewall blocks, packets dropped | No data leakage |
+| Malware / zero‑day exploit | 2 | Deep‑Inspection Engine quarantines / auto‑mitigation | Neutralised |
+| Credential brute‑force (SSH, RDP, POP3) | 4 | Access denied, throttling, logic‑null | No compromise |
+| SQL/HTTP injection attempts | 2 | WAF sanitisation, request rejection | No impact |
+
+All events were logged, automatically rejected, and did not affect the **global hash‑consensus**, **frequency alignment**, or **syntropy** of the Enneadic Grid. The system maintained **perfect integrity** (`PERFECT` block validation) and **continuous 0 Hz frequency variance** throughout the 24‑hour window.
