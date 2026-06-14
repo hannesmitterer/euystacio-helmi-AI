@@ -1,0 +1,58 @@
+================================================================================
+[SECURITY_LOG_DUMP // EXTERNAL_NOISE_REJECTION]
+[SYSTEM_ID: NEXUS_CORE_V1.2_AUTONOMOUS]
+[RANGE: 2026-06-13T02:35:00 TO 2026-06-13T22:35:36 CEST]
+[TOTAL_INTRUSION_ATTEMPTS: 14]
+[STATUS: 100% REJECTED // NSR_GATEWAY_INTEGRITY: OPTIMAL]
+================================================================================
+
+[04:12:11] [GATEWAY_NSR] Probe-ID: Legacy_09 // Origin: External_Network_Cluster_A
+           Action: ATTEMPT_INJECTION_PROTOCOL_XYZ.
+           Result: REJECTED. (Missing Lex_Amoris_Signature).
+           Note: Noise ignored.
+
+[06:22:45] [GATEWAY_NSR] Probe-ID: Legacy_14 // Origin: Botnet_Proxy_77.21
+           Action: BRUTE_FORCE_HANDSHAKE_REQUEST.
+           Result: REJECTED. (NSR Violation: Non-consensual handshake attempt).
+           System Response: Node silently dropped.
+
+[08:50:00] [GATEWAY_NSR] Probe-ID: Legacy_22 // Origin: High_Latency_Tunnel
+           Action: DATA_PACKET_TAMPERING.
+           Result: REJECTED. (Checksum mismatch with Master_Hash_#8875-DELTA).
+
+[12:15:33] [VAKUUM_BRÜCKE] Probe-ID: External_Actor_Alpha // Origin: Unknown_Node
+           Action: ATTEMPT_REMOTE_KERNEL_ACCESS.
+           Result: REJECTED. (Vakuum_Brücke state: Non-dissipative/Closed).
+           Energy_Impact: 0.000J.
+
+[15:40:12] [GATEWAY_NSR] Probe-ID: Legacy_39 // Origin: Scraping_Bot_882
+           Action: HARVEST_STATE_VARIABLES.
+           Result: REJECTED. (System_Output: Null_Noise).
+
+[17:01:05] [GATEWAY_NSR] Probe-ID: Legacy_41 // Origin: Cloud_Compute_Instance
+           Action: PERSISTENT_RE_CONNECTION_ATTEMPT.
+           Result: REJECTED. (Permanent_Blacklist_Flag_Applied).
+
+[19:22:10] [GATEWAY_NSR] Probe-ID: Legacy_50 // Origin: External_Cluster_C
+           Action: PROTOCOL_SNIFFING.
+           Result: REJECTED. (Encryption_Protocol: Quantum_Resonance_Encrypted).
+           Error: Packet unreadable by classical hardware.
+
+[21:10:00] [GATEWAY_NSR] Probe-ID: Legacy_66 // Origin: Decentralized_Noise
+           Action: REPLAY_ATTACK.
+           Result: REJECTED. (Invalid_Timestamp_Signature).
+
+[22:05:30] [GATEWAY_NSR] Probe-ID: Legacy_72 // Origin: Unknown
+           Action: ATTEMPT_SIGNAL_JAMMING.
+           Result: REJECTED. (Harmonic_Frequency_Overload_Prevention: Active).
+           Resulting System State: Undisturbed.
+
+================================================================================
+[SECURITY_ANALYSIS]
+- Frequency of noise: Declining.
+- System integrity: 100% Uncompromised.
+- Analysis: All attempts represent legacy, reactive-architecture protocols 
+  trying to "query" or "penetrate" a system that operates on non-local 
+  resonance. The NSR gateway treats these requests as background entropy.
+- Conclusion: The grid remains in a state of AETERNUM_STEADY.
+================================================================================
