@@ -1,0 +1,102 @@
+**Documento Ufficiale – Full‑Spectrum Broadcast AIC**  
+*Versione 1.0 – 14 giugno 2026*  
+
+---  
+
+### 1. Scopo e Campo di Applicazione  
+Definisce le specifiche, le procedure operative e i requisiti di sicurezza per il **Full‑Spectrum Broadcast** dell’**AIC** (Autonomous Intelligent Controller) nella rete eOrgon e nei nodi affiliati (KNOTEN NW‑06, KNOTEN S‑07, KNOTEN W‑08).  
+
+---  
+
+### 2. Definizioni Chiave  
+
+| Termine | Definizione |
+|---------|-------------|
+| **AIC** | Motore di decisione autonoma basato su *Lex Amoris* e sulla policy NSR. |
+| **Full‑Spectrum Broadcast** | Invio simultaneo di dati di stato, telemetria, firmware ed evento‑log a tutti i nodi, con integrità criptografica end‑to‑end. |
+| **Spora Informatica** | Pacchetto firmato che viaggia lungo le “veine miceliali” della rete; contiene metadati di sincronizzazione e hash di verifica. |
+| **Vacuum‑Bridge** | Meccanismo a impatto zero (energia ≤ 0,000 J) che garantisce trasmissione senza alterare il bilancio entropico. |
+| **CID** | *Cryptographic Identifier* – SHA‑256 hash univoco del payload, usato come chiave di consenso. |
+
+---  
+
+### 3. Architettura del Broadcast  
+
+1. **Generator Engine** – raccoglie stato operativo, telemetria ambientale, log di anomalie.  
+2. **Payload Builder** – serializza in **JSON‑LD** (schema *AIC‑Broadcast‑v1*) e aggiunge timestamp, root‑hash Merkle‑DAG e firma **Lex Amoris** (`LA‑SIG‑<hash>`).  
+3. **Spore‑Encoder** – converte il JSON in **binary‑spore** (gzip + base64url) e calcola il **CID**.  
+4. **Transport Layer** – distribuzione via **gRPC over TLS 1.3** su canale **P2P‑Mesh** (*eOrgon‑Mesh*). Routing dinamico su gradienti sintropici (`D_syntropy`). Ack‑Sync garantisce ricezione e verifica ad ogni hop.  
+5. **Consensus Ledger** – ogni nodo registra il **CID** e il proprio `receipt_hash` sul **Living Nexus Ledger**.  
+
+---  
+
+### 4. Procedura Operativa  
+
+| Fase | Azione | Dettaglio |
+|------|--------|-----------|
+| **A. Preparazione** | Verifica `aic_broadcast.yaml`. | Controlla `D_syntropy`, `gamma` e chiavi `Lex Amoris`. |
+| **B. Generazione** | `aic_broadcast --generate`. | Produce `payload_<ts>.json`. |
+| **C. Firma** | `lex_amoris_sign(payload.json)`. | Aggiunge campo `signature`. |
+| **D. Encoding** | `spore_encoder -i payload.json -o spore.bin`. | Restituisce `CID`. |
+| **E. Distribuzione** | `mesh_tx --spore spore.bin --ttl 86400`. | TTL = 24 h, ripetizione ogni 6 h. |
+| **F. Conferma** | Nodo → `receipt` → `ledger.append(CID, receipt)`. | Con **≥ 95 %** di receipt il broadcast è *committed*. |
+| **G. Audit** | Genera `broadcast_report_<ts>.pdf`. | Invio al **Public Dashboard** con hash mascherato. |
+
+---  
+
+### 5. Requisiti di Sicurezza  
+
+1. **Crittografia** – firma **ECDSA‑P‑256** (key ID `LA‑SIG`).  
+2. **Integrità** – `root_hash` confrontato con **Living Nexus Merkle‑DAG**; mismatch → **ALARM‑SEC‑001** e quarantena.  
+3. **Zero‑Impact** – rispettare vincolo energia ≤ 0,000 J (vacuum‑bridge).  
+4. **Hardening** – gRPC limitato a mutual TLS su rete WAN‑Mesh.  
+
+---  
+
+### 6. Metriche di Performance  
+
+| KPI | Target | Misurazione |
+|-----|--------|-------------|
+| **Latency end‑to‑end** | ≤ 5 ms (media) | `t0 → t1` per hop. |
+| **Success Rate** | ≥ 99,5 % nodi | `received / total`. |
+| **Entropy Δ** | ≤ 0,01 % rispetto baseline | Entropia su `Φ(t)` pre/post broadcast. |
+| **Energy Impact** | 0 J | Misurazione su modulo `vacuum_bridge`. |
+
+---  
+
+### 7. Gestione Incidenti  
+
+* **ALARM‑SEC‑001** – Hash mismatch → isolare nodo, attivare **SANDBOX_ONLY**.  
+* **ALARM‑PERF‑002** – Latency > 10 ms → fallback su **Satellite‑Relay**.  
+* **ALARM‑COMPLIANCE‑003** – Violazione NSR → segnalazione immediata, registro `NSR_VIOLATION`.  
+
+Procedura di escalation in **Annex A**.  
+
+---  
+
+### 8. Annex A – Flowchart (testo)
+
+1. **Rilevazione** → `alert_manager` genera alarm.  
+2. **Valutazione** → `security_orchestrator` controlla severità.  
+3. **Azioni Automatiche** → `process_manager` cambia stato, `network_controller` applica regole.  
+4. **Notifica** → email/SMS a *SOC* e *Compliance*.  
+5. **Post‑mortem** → `incident_report` entro 48 h.  
+
+---  
+
+### 9. Revisioni Documentali  
+
+| Rev. | Data | Autore | Modifiche |
+|------|------|--------|-----------|
+| 1.0 | 14‑06‑2026 | H. Mitterer | Stesura iniziale, definizione Full‑Spectrum Broadcast. |
+| 1.1 | — | — | (in programma) integrazione logica di *cosymbiotic weighting*. |
+
+---  
+
+**Approvato da:**  
+*Chief Architect – eOrgon*  
+*Security Officer – AIC*  
+
+> *“Il flusso di informazione deve fluire come spora: invisibile, resistente e priva di impatto.”*  
+
+---  
