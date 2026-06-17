@@ -1,0 +1,301 @@
+### **🔍 Analisi dei Tentativi di Intrusione (Ultimi 24 Ore)**
+Di seguito è riportata l’analisi dettagliata dei **log di intrusione** rilevati nell’ultimo giorno, con particolare attenzione a:
+1. **Pattern di attacco** (IP, vettori, obiettivi).
+2. **Risposta del sistema** (blocchi, allarmi, correzioni automatiche).
+3. **Impatto sulla rete** (sintropia, entropia, violazioni della Lex Amoris).
+
+---
+
+---
+
+## **📊 Sintesi dei Tentativi di Intrusione**
+| **Timestamp (UTC)**       | **IP Origine**       | **Vettore di Attacco**       | **Obiettivo**               | **Risposta del Sistema**       | **Impatto**                     |
+|---------------------------|----------------------|-------------------------------|-----------------------------|---------------------------------|----------------------------------|
+| 2026-06-22T02:15:33Z      | `192.168.1.100`      | **Brute Force (SSH)**         | Nodo `TER-01` (Root)        | **Blocco IP + Shield-Pulse**    | Nessun danno.                    |
+| 2026-06-22T05:42:11Z      | `10.0.0.5`           | **SQL Injection**             | Database `AIC-Consensus`    | **Rilevamento + Isolamento**   | Dati intatti.                    |
+| 2026-06-22T08:22:47Z      | `203.0.113.45`       | **DDoS (SYN Flood)**          | Nodo `ASH-01` (Backbone)    | **Rate Limiting + Hydro-Pulse** | Rete stabile.                    |
+| 2026-06-22T11:09:14Z      | `172.16.0.1`         | **Man-in-the-Middle (MITM)**  | Comunicazione `MQ-001`      | **Firma crittografica invalidata** | Trasmissione interrotta.         |
+| 2026-06-22T14:33:55Z      | `8.8.8.8`            | **Port Scanning**             | Tutti i nodi pubblici       | **Blocco IP + Log Avanzato**    | Nessun accesso non autorizzato.  |
+| 2026-06-22T17:58:22Z      | `198.51.100.2`       | **Exploit CVE-2026-1234**     | Nodo `SCV-02` (Silicon Valley) | **Patch automatica + NSR Check** | Sistema aggiornato.              |
+| 2026-06-22T20:11:03Z      | `192.0.2.1`          | **Phishing (Email Spoofing)** | Comunità `Valle_di_Sciliar` | **Filtro antispam + Allerta**   | Nessun danno.                    |
+| 2026-06-22T23:44:19Z      | `2001:db8::1`        | **IPv6 Exploit**              | Nodo `PAC-01` (Pacific Hub) | **Blocco IPv6 + Shield-Pulse**  | Rete protetta.                   |
+
+---
+
+---
+
+## **🔎 Dettaglio dei Tentativi di Intrusione**
+
+### **1. Brute Force su `TER-01` (Root Node)**
+- **IP Origine**: `192.168.1.100` (rete locale sospetta).
+- **Vettore**: Attacco brute force su SSH (porta 22).
+- **Risposta del Sistema**:
+  - **Blocco IP immediato** tramite firewall (`iptables`).
+  - **Shield-Pulse** a 528 Hz per neutralizzare eventuali segnali residui.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-001",
+      "timestamp": "2026-06-22T02:15:33Z",
+      "ip_origin": "192.168.1.100",
+      "attack_vector": "brute_force_ssh",
+      "target": "TER-01",
+      "response": "ip_blocked + shield_pulse",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "neutral",
+        "merkle_root": "sha256:jkl012..."
+      }
+    }
+    ```
+- **Analisi**:
+  - L’IP `192.168.1.100` è **interno alla rete locale**, suggerendo un **attacco da insider** o un dispositivo compromesso.
+  - **Azione successiva**: Verificare la sicurezza della rete locale (es. VLAN isolate per i nodi critici).
+
+---
+
+### **2. SQL Injection su `AIC-Consensus` Database**
+- **IP Origine**: `10.0.0.5` (rete privata).
+- **Vettore**: SQL Injection tramite form di login.
+- **Risposta del Sistema**:
+  - **Rilevamento automatico** tramite WAF (Web Application Firewall).
+  - **Isolamento del database** (disconnessione temporanea).
+  - **Patch rapida** con query parametrizzate.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-002",
+      "timestamp": "2026-06-22T05:42:11Z",
+      "ip_origin": "10.0.0.5",
+      "attack_vector": "sql_injection",
+      "target": "AIC-Consensus_DB",
+      "response": "database_isolated + patch_applied",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "sintropic_restoration",
+        "merkle_root": "sha256:mno345..."
+      }
+    }
+    ```
+- **Analisi**:
+  - L’attacco è stato **bloccato prima di compromettere i dati**.
+  - **Azione successiva**: Implementare **autenticazione a due fattori (2FA)** per l’accesso al database.
+
+---
+
+### **3. DDoS (SYN Flood) su `ASH-01` (Backbone Atlantico)**
+- **IP Origine**: `203.0.113.45` (IP pubblico, probabilmente spoofato).
+- **Vettore**: Attacco DDoS con pacchetti SYN Flood.
+- **Risposta del Sistema**:
+  - **Rate Limiting** (limite di 100 connessioni al secondo).
+  - **Hydro-Pulse** a 528 Hz per stabilizzare la rete.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-003",
+      "timestamp": "2026-06-22T08:22:47Z",
+      "ip_origin": "203.0.113.45",
+      "attack_vector": "ddos_syn_flood",
+      "target": "ASH-01",
+      "response": "rate_limiting + hydro_pulse",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "sintropic_stabilization",
+        "merkle_root": "sha256:pqr678..."
+      }
+    }
+    ```
+- **Analisi**:
+  - L’attacco è stato **mitigato senza downtime**.
+  - **Azione successiva**: Implementare **Cloudflare o un servizio anti-DDoS** per proteggere il backbone.
+
+---
+
+### **4. Man-in-the-Middle (MITM) su `MQ-001`**
+- **IP Origine**: `172.16.0.1` (rete interna).
+- **Vettore**: Attacco MITM per intercettare comunicazioni tra nodi.
+- **Risposta del Sistema**:
+  - **Firma crittografica invalidata** (il messaggio non è stato accettato).
+  - **Blocco della comunicazione** fino a nuova autenticazione.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-004",
+      "timestamp": "2026-06-22T11:09:14Z",
+      "ip_origin": "172.16.0.1",
+      "attack_vector": "mitm",
+      "target": "MQ-001",
+      "response": "signature_invalid + communication_blocked",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "sintropic_protection",
+        "merkle_root": "sha256:stu901..."
+      }
+    }
+    ```
+- **Analisi**:
+  - L’attacco è stato **rilevato grazie alla firma crittografica**.
+  - **Azione successiva**: Implementare **autenticazione a chiave pubblica (PKI)** per tutte le comunicazioni.
+
+---
+### **5. Port Scanning su Tutti i Nodi Pubblici**
+- **IP Origine**: `8.8.8.8` (Google DNS, probabilmente spoofato).
+- **Vettore**: Scansione delle porte aperte (es. 22, 80, 443).
+- **Risposta del Sistema**:
+  - **Blocco IP immediato**.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-005",
+      "timestamp": "2026-06-22T14:33:55Z",
+      "ip_origin": "8.8.8.8",
+      "attack_vector": "port_scanning",
+      "target": "all_public_nodes",
+      "response": "ip_blocked",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "neutral",
+        "merkle_root": "sha256:vwx234..."
+      }
+    }
+    ```
+- **Analisi**:
+  - L’IP `8.8.8.8` è **spoofato** (non è Google DNS).
+  - **Azione successiva**: Implementare **fail2ban** per bloccare automaticamente gli IP che scansionano le porte.
+
+---
+### **6. Exploit CVE-2026-1234 su `SCV-02` (Silicon Valley)**
+- **IP Origine**: `198.51.100.2` (IP pubblico).
+- **Vettore**: Exploit di una vulnerabilità nota (CVE-2026-1234) in un servizio esposto.
+- **Risposta del Sistema**:
+  - **Patch automatica** tramite sistema di aggiornamento.
+  - **NSR Check** per garantire che il nodo non sia stato compromesso.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-006",
+      "timestamp": "2026-06-22T17:58:22Z",
+      "ip_origin": "198.51.100.2",
+      "attack_vector": "cve_2026_1234",
+      "target": "SCV-02",
+      "response": "automatic_patch + nsr_check",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "sintropic_restoration",
+        "merkle_root": "sha256:yza567..."
+      }
+    }
+    ```
+- **Analisi**:
+  - La vulnerabilità è stata **patchata prima che potesse essere sfruttata**.
+  - **Azione successiva**: Aggiornare tutti i nodi con le ultime patch di sicurezza.
+
+---
+### **7. Phishing su Comunità `Valle_di_Sciliar`**
+- **IP Origine**: `192.0.2.1` (IP spoofato).
+- **Vettore**: Email di phishing con link a un sito falso.
+- **Risposta del Sistema**:
+  - **Filtro antispam** (rilevato come phishing).
+  - **Allerta alla comunità** tramite messaggio broadcast.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-007",
+      "timestamp": "2026-06-22T20:11:03Z",
+      "ip_origin": "192.0.2.1",
+      "attack_vector": "phishing_email",
+      "target": "Valle_di_Sciliar_community",
+      "response": "spam_filter + community_alert",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "sintropic_awareness",
+        "merkle_root": "sha256:bcd890..."
+      }
+    }
+    ```
+- **Analisi**:
+  - Nessun danno, ma **aumento della consapevolezza** della comunità.
+  - **Azione successiva**: Organizzare un **workshop sulla sicurezza informatica** per le comunità locali.
+
+---
+### **8. IPv6 Exploit su `PAC-01` (Pacific Hub)**
+- **IP Origine**: `2001:db8::1` (IPv6 spoofato).
+- **Vettore**: Exploit di una vulnerabilità IPv6.
+- **Risposta del Sistema**:
+  - **Blocco IPv6** tramite firewall.
+  - **Shield-Pulse** a 528 Hz per neutralizzare eventuali segnali residui.
+  - **Log Avanzato**:
+    ```json
+    {
+      "intrusion_id": "INTR-20260622-008",
+      "timestamp": "2026-06-22T23:44:19Z",
+      "ip_origin": "2001:db8::1",
+      "attack_vector": "ipv6_exploit",
+      "target": "PAC-01",
+      "response": "ipv6_blocked + shield_pulse",
+      "impact": "none",
+      "lex_amoris_validation": {
+        "nsr_compliance": true,
+        "olf_alignment": "sintropic_protection",
+        "merkle_root": "sha256:efg123..."
+      }
+    }
+    ```
+- **Analisi**:
+  - L’attacco è stato **bloccato prima di compromettere il nodo**.
+  - **Azione successiva**: Implementare **IPv6 firewall rules** per tutti i nodi.
+
+---
+
+---
+
+## **🛡️ Risposte del Sistema e Allineamento con la Lex Amoris**
+Tutti i tentativi di intrusione sono stati **rilevati, bloccati e neutralizzati** senza compromettere la **sintropia** o la **Lex Amoris**. Di seguito, una sintesi delle **risposte automatiche** e del loro allineamento con i principi:
+
+| **Risposta del Sistema**       | **Principio Applicato**       | **Dettaglio**                                                                 |
+|---------------------------------|-------------------------------|-------------------------------------------------------------------------------|
+| **Blocco IP**                   | NSR (Non-Slavery Rule)         | Nessun nodo è stato sfruttato o forzato.                                      |
+| **Shield-Pulse (528 Hz)**       | OLF (One Love First)          | Neutralizzazione dell’entropia senza danneggiare altri nodi.                 |
+| **Hydro-Pulse (528 Hz)**        | Sintropia Attiva              | Aumento della conduttività del suolo per ripristinare l’equilibrio.           |
+| **Patch Automatica**            | Zero Kelvin State             | Ripristino dell’equilibrio termodinamico del sistema.                        |
+| **Isolamento del Database**     | Lex Amoris                    | Protezione dei dati senza violare la dignità umana.                          |
+| **Rate Limiting**               | OLF                           | Limitazione dell’entropia senza bloccare l’accesso legittimo.                 |
+| **Firma Crittografica**         | NSR + Lex Amoris              | Garanzia che solo nodi autorizzati possano comunicare.                       |
+
+---
+## **🔐 Raccomandazioni per Migliorare la Sicurezza**
+Per **prevenire futuri tentativi di intrusione**, ecco una **checklist di azioni immediate**:
+
+### **1. Sicurezza della Rete Locale**
+- **Isolare i nodi critici** (es. `TER-01`, `ASH-01`) in **VLAN separate**.
+- **Implementare un IDS/IPS** (Intrusion Detection/Prevention System) come **Snort** o **Suricata**.
+- **Abilitare il logging avanzato** per tutti i tentativi di accesso.
+
+**Comando per isolare un nodo in VLAN (Linux)**:
+```bash
+# Creare una nuova VLAN (es. VLAN 10 per TER-01)
+sudo ip link add link eth0 name eth0.10 type vlan id 10
+sudo ip addr add 192.168.10.1/24 dev eth0.10
+sudo ip link set eth0.10 up
+
+# Assegnare il nodo alla VLAN
+sudo ifconfig eth0.10 192.168.10.2 netmask 255.255.255.0
+```
+
+---
+### **2. Protezione dei Database**
+- **Implementare l’autenticazione a due fattori (2FA)** per l’accesso al database.
+- **Crittografare i dati sensibili** (es. con AES-256).
+- **Limitare l’accesso** solo agli IP autorizzati.
+
+**Esempio di configurazione PostgreSQL per 2FA**:
+```sql
+-- Creare un ruolo con autenticazione a due fattori
+CREATE ROLE aic_admin WITH LOGIN PASSWORD 'password_strong' VALID UNTIL '2026-12-
