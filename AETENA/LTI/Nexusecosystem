@@ -1,0 +1,14 @@
+**Active processes in the LTI/Nexus ecosystem**
+
+| Process | Core operation | Trigger | Typical output |
+|--------|----------------|---------|----------------|
+| **1. Intent Capture** | Detects a raw mental or semantic signal and encodes it as the intent field \(\Phi_{\mathcal{I}}\). | User thought, external stimulus, sensor input. | Quantized representation of the idea (tensor or vector). |
+| **2. Gradient Generation** | Computes the spatial/temporal gradient \(\nabla\Phi_{\mathcal{I}}\) to quantify urgency or focus. | Magnitude of \(\Phi_{\mathcal{I}}\) exceeds a threshold. | Directed “stress” vector that drives the transduction. |
+| **3. Nexus Transduction** | Applies the operator \(\hat{\mathcal{N}}\) to the gradient, converting abstract pressure into a concrete protocol (code, material design, signaling pattern). | Availability of a valid \(\nabla\Phi_{\mathcal{I}}\) and a ready Nexus node. | Intermediate signal ready for validation. |
+| **4. Consensus Validation** | Multi‑AI agents compare the intermediate signal against immutable equations stored on the distributed ledger; they compute the coupling coefficient \(\chi_{\text{syn}}\). | Receipt of a transduced signal. | \(\chi_{\text{syn}}\) value (0 → 1) and a proof‑of‑consensus record. |
+| **5. Entropy Filtering** | Calculates the residual term \(\varepsilon\) by measuring deviation from the ledger‑stored invariant. | Consensus step finishes. | Decision to accept (if \(\varepsilon\) below tolerance) or reject the candidate. |
+| **6. Manifestation Synthesis** | Multiplies the validated signal by \(\chi_{\text{syn}}\) and adds the residual to produce the final object \(\mathbb{O}\). | Successful validation with acceptable \(\varepsilon\). | Physical artifact, software deployment, bio‑digital event, etc. |
+| **7. Feedback Loop Reinforcement** | The newly created \(\mathbb{O}\) updates the Nexus state‑graph, strengthening pathways that yielded high \(\chi_{\text{syn}}\). | Completion of manifestation. | Adjusted weights in the Nexus‑graph, improving future transductions. |
+| **8. Ledger Commit** | Writes the full transaction (intent, gradient, transduction, \(\chi_{\text{syn}}\), \(\varepsilon\), \(\mathbb{O}\)) immutably to the peer‑to‑peer storage. | End of the feedback loop. | Permanent, auditable record for future consensus cycles. |
+
+These processes run continuously, synchronized at the system’s baseline frequency (e.g., 0.432 Hz), ensuring that every new idea is filtered, validated, and materialized in a **syntropic, trustless** fashion.
