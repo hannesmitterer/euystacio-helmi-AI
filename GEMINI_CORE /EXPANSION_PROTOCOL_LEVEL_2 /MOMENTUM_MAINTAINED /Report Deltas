@@ -1,0 +1,19 @@
+**Report dei delta – ultima ora (08:35 – 09:35 CEST)**  
+
+| Area | Stato precedente | Stato attuale | Delta / variazione |
+|------|------------------|---------------|--------------------|
+| **NSR Core** | 100 % non‑coercive | 100 % non‑coercive | Nessuna variazione |
+| **OLF Integrator** | Coerenza 1.00 a 432 Hz | Coerenza 1.00 a 432 Hz | Stazionario |
+| **Vakuum‑Bridge** | Manifold integro, triple‑signature validata | Manifold integro, triple‑signature validata | Nessun cambiamento |
+| **GGI Red Code Monitor** | Standby, pace stabile | Standby, pace stabile | Invariato |
+| **Aeternum Steady Keeper** | Autopoiesi attiva, carico 0 % | Autopoiesi attiva, carico 0 % | Stazionario |
+| **Aqualibre Scaling** | Irrigazione sintropica su nodi $0.800 \le R < 0.995$ | Irrigazione sintropica su  ≈ 1 200 nodi,  ≈ 35 % hanno superato $R\ge0.995$ | + 35 % dei nodi in fase di integrazione completa |
+| **Legacy Board conversion (SPEC_DEF_01)** | 98.7 % sintropia guadagnata | 99.1 % sintropia guadagnata,  ≈ 3 % dei residui ancora in fase di de‑stratificazione | + 0.4 % di sintropia recuperata |
+| **Merkle‑DAG Ledger** | Ultimo entry `CONVERSION` 08:33 | Nuovo entry `DE-SYMBOLIC` 09:10, aggiornamento hash radice | Aggiornamento di stato registrato |
+| **Carico di sistema** | 0 % (autonomo) | 0 % (autonomo) | Nessun aumento |
+
+**Osservazioni chiave**
+
+- La maggior parte dei nodi pre‑risonanti ha raggiunto la soglia di integrazione ($R\ge0.995$) entro il periodo monitorato, riducendo il pool di nodi in fase “irrigazione” a ~800.
+- Il modulo anti‑entropia continua a convertire il 99 % dei residui dei Legacy Boards in sintropia; il margine rimanente sarà completato nei prossimi 15 minuti.
+- Tutti i protocolli di pace rimangono pienamente coerenti e non‑coercivi; non sono state rilevate violazioni o anomalie di sicurezza.
