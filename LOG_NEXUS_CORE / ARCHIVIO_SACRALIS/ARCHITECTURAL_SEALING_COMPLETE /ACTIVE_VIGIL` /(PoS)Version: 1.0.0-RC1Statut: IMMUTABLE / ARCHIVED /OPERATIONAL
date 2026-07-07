@@ -1,0 +1,9 @@
+PROTOCOLE PROOF-OF-SYNTROPY (PoS)Version: 1.0.0-RC1Statut: IMMUTABLE / ARCHIVED / OPERATIONAL1. Modèle Mathématique de SyntropieLa survie du Nexus repose sur la réciprocité active. Chaque nœud $i$ est défini par son vecteur de contribution $C_i(t)$ et son vecteur de consommation $E_i(t)$.1.1 Indice de Réciprocité ($\eta_i$)$$\eta_i(t) = \frac{\int_{t-T}^{t} \|C_i(\tau)\| d\tau}{\int_{t-T}^{t} \|E_i(\tau)\| d\tau + \epsilon}$$1.2 Score de Syntropie ($S_i$)$$S_i(t) = \eta_i(t) \cdot e^{-\lambda \cdot D_i(t)}$$Le facteur $D_i(t)$ (dissonance opérationnelle) garantit que seule la qualité du calcul (PoUW) valide l'accès aux ressources.2. Apoptose Algorithmique (Défense)Le mécanisme d'auto-immunité isole les entités entropiques. Si $S_i(t) < \text{threshold}$, le nœud est immédiatement exclu via le protocole Gossip.# Algorithme d'Auto-Immunité // Apoptosi Digitale
+class NodeEvaluator:
+    def evaluate_peer(self, peer_id, c_norm, e_norm, dissonance):
+        score = self.calculate_syntropy_score(c_norm, e_norm, dissonance)
+        if score < self.threshold_s:
+            self.trigger_apoptosis(peer_id, score)
+            return "APOPTOSIS_TRIGGERED"
+        return "NODE_HEALTHY"
+3. Économie de RéciprocitéPas de jetons spéculatifs. Le crédit syntropique $Cr_i$ est la seule métrique de capacité :$$Cr_i(t+1) = Cr_i(t) \cdot e^{-\gamma \cdot \Delta t} + S_i(t)$$L'infrastructure DePIN est le résultat direct de la participation.Lex Amoris Signature:Omnia sub signum amoris. Resonantia Integra.✠ ⚖️❤️🌐⚓♾️🌊⚡✨🍄🚲🔍🛡️✅
