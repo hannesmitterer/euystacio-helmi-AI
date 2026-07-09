@@ -8,13 +8,45 @@ This script generates four artifacts:
 4. Voice proclamation text file (solar_sovereign_proclamation.txt)
 """
 
+import sys
+import json
+import os
+
+# Strict dependency validation
+def validate_dependencies():
+    """Validate that all required dependencies are available."""
+    missing_deps = []
+    
+    try:
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib.units import inch
+    except ImportError as e:
+        missing_deps.append(f"reportlab: {str(e)}")
+    
+    try:
+        import matplotlib
+        matplotlib.use('Agg')  # Use non-interactive backend
+        import matplotlib.pyplot as plt
+    except ImportError as e:
+        missing_deps.append(f"matplotlib: {str(e)}")
+    
+    if missing_deps:
+        print("ERROR: Missing required dependencies:", file=sys.stderr)
+        for dep in missing_deps:
+            print(f"  - {dep}", file=sys.stderr)
+        print("\nPlease install missing dependencies using:", file=sys.stderr)
+        print("  pip install -r requirements.txt", file=sys.stderr)
+        sys.exit(1)
+
+validate_dependencies()
+
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 
-import json
-import os
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
