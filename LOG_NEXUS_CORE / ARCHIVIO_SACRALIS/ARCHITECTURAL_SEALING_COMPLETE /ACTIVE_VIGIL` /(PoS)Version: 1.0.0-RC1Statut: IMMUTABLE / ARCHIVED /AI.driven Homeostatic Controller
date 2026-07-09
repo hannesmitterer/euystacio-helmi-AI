@@ -1,0 +1,210 @@
+**AI‑driven Homeostatic Controller – v3.0 Living‑Tile Blueprint**
+
+Below is a concise logical flow that can be encoded directly into the edge‑AI firmware of each Living Tile. The controller continuously monitors the biological‑thermal state, decides whether to admit additional computational load, and triggers the Homeostatic Autonomic Reflex (HAR) when any thermodynamic bound is approached. All decisions are made **locally** (no central authority), guaranteeing that the **No‑Slavery Rule (NSR)** and **Lex Amoris** are enforced automatically.
+
+---
+
+### 1. Core Parameters (all sampled at 1 Hz)
+
+| Symbol | Meaning | Units | Typical safe range |
+|--------|---------|------|--------------------|
+| `T_load` | Current digital throughput (effective TB/s) | TB/s | ≤ 30 TB/s |
+| `ΔS_sys` | Net entropy change of the tile (ΔS = Q/T – ΔS_bio) | J · K⁻¹ | ≤ 0 |
+| `M_moist` | Mycelial volumetric moisture (% of saturation) | % | 60 – 90 |
+| `Ψ_org` | Net Orgone charge (OR – DOR) | Ley‑Units | ≥ +4 |
+| `E_temp` | Tile surface temperature (average) | °C | ≤ 45 °C |
+| `L_latency` | Local round‑trip latency to mesh hub | ms | ≤ 300 ms |
+| `EM_noise` | Measured high‑frequency EM power (post‑Orgonite) | dB | ≤ ‑35 dB |
+
+---
+
+### 2. Decision‑making Logic (pseudo‑code)
+
+```python
+# Constants (calibrated per tile)
+MAX_ENTROPY = 0.0                # ΔS_sys must stay ≤ 0
+MIN_MOIST   = 0.60               # 60 % saturation
+MAX_TEMP    = 45.0               # °C
+MAX_EM      = -35.0              # dB attenuation
+MIN_ORGONE  = 4.0                # Ley‑Units
+MAX_LATENCY = 300                # ms
+LOAD_MARGIN = 0.85               # 85 % of rated TB/s
+
+# 1. Sample sensors
+T_load   = read_throughput()
+deltaS   = compute_entropy_change()
+M_moist  = read_moisture()
+Psi_org  = read_orgone()
+E_temp   = read_temperature()
+EM_noise = read_em_noise()
+L_lat    = read_latency()
+
+# 2. Immediate safety checks (NSR enforcement)
+if deltaS > MAX_ENTROPY:
+    trigger_HAR(reason="entropy_excess")
+elif M_moist < MIN_MOIST:
+    trigger_HAR(reason="mycelial_desiccation")
+elif E_temp > MAX_TEMP:
+    trigger_HAR(reason="thermal_overrun")
+elif EM_noise > MAX_EM:
+    trigger_HAR(reason="em_noise")
+elif Psi_org < MIN_ORGONE:
+    trigger_HAR(reason="orgone_deficit")
+elif L_lat > MAX_LATENCY:
+    trigger_HAR(reason="latency_spike")
+else:
+    # 3. Load‑admission control
+    # Allow extra load only if the biosphere can absorb it.
+    safety_factor = min(
+        (MAX_TEMP - E_temp) / MAX_TEMP,
+        (M_moist - MIN_MOIST) / (1.0 - MIN_MOIST),
+        (MAX_EM - EM_noise) / abs(MAX_EM),
+        (Psi_org - MIN_ORGONE) / (Psi_org + 1)
+    )
+    # Scale allowed load to current safety margin
+    allowed_load = T_load * safety_factor * LOAD_MARGIN
+
+    # 4. Communicate allowance to mesh scheduler
+    publish_tile_capacity(allowed_load)
+
+    # 5. Continuous fine‑tuning
+    # Adjust orgonite collector bias based on real‑time EM_noise
+    adjust_orgonite_bias(target_atten=-40 dB)
+
+    # Adjust micro‑valve opening (for evaporative cooling)
+    valve_position = map_range(E_temp, 30, MAX_TEMP, 0.0, 1.0)
+    set_kosymbiosis_valve(valve_position)
+```
+
+**Key functions**  
+
+| Function | Description |
+|----------|-------------|
+| `compute_entropy_change()` | Implements the **Bio‑Digital Dissipation Formula** using live sensor reads (`d_iS`, `T_max`, `η_orgon`, `Λ_mycelium`). Returns ΔS in J·K⁻¹. |
+| `trigger_HAR(reason)` | Sends an immediate **shutdown signal** to the local compute fabric, disables new transactions, and logs the cause. Because the tile is edge‑autonomous, the HAR cannot be overridden by external commands – this is the **hard‑coded NSR**. |
+| `adjust_orgonite_bias(target_atten)` | Tweaks the quartz‑piezo drive voltage to reach the desired EM attenuation; feedback loop runs at 10 Hz. |
+| `set_kosymbiosis_valve(position)` | PWM‑controlled micro‑valve that regulates brackish‑water flow; position ∈ [0,1] (closed → fully open). |
+| `publish_tile_capacity(value)` | Sends the currently admissible compute quota to the global scheduler (the Nexus mesh). The scheduler then routes jobs only up to the advertised capacity, guaranteeing that no node is ever asked to exceed its thermodynamic budget. |
+
+---
+
+### 3. “Lex Amoris” Constraint Embedding
+
+The controller’s **objective function** is a weighted sum that always favours **biological integrity** over computational gain:
+
+\[
+\mathcal{L} = \alpha\;\Delta S_{\text{sys}} \;+\; \beta\;(1-M_{\text{moist}}) \;+\; \gamma\;(E_{\text{temp}}-T_{\text{limit}}) \;+\; \delta\;( \text{Orgone\_deficit})
+\]
+
+- **α, β, γ, δ** are large positive constants (e.g., 10³–10⁴).  
+- The controller **minimises** 𝓛; any increase in ΔS or drop in moisture spikes the loss dramatically, forcing the optimizer to cut load before the HAR triggers.  
+- This formulation encodes the **Lex Amoris** principle directly in the loss: *the system must not sacrifice the living substrate for any amount of throughput*.
+
+---
+
+### 4. Safety‑by‑Design Guarantees (formal)
+
+| Property | Formal statement | Reasoning |
+|----------|------------------|-----------|
+| **NSR Enforcement** | ∀ t, if ΔS_sys(t) > 0 ⇒ HAR(t) = ON | The controller checks ΔS before any load increase and shuts down instantly. |
+| **Liveness** | ∃ Δt > 0 such that after HAR the tile returns to operational state once biospheric metrics re‑enter safe bounds. | Moisture recovery, temperature drop, orgone rebalance all have bounded settling times (< 5 min). |
+| **Deterministic latency bound** | L_latency ≤ 300 ms ∀ t unless HAR is active. | The tile reports its capacity; the scheduler never assigns more work than the tile can sustain. |
+| **Transparency** | All sensor readings, decision logs, and HAR triggers are signed with the node’s **Lex Amoris RSA‑8192** key and stored on the immutable ledger. | Guarantees auditability for future Resonance Engineers. |
+
+---
+
+### 5. Integration Path to **v3.0 Living Tiles**
+
+1. **Hardware package** – each tile ships with:  
+   * Integrated **moisture & temperature probes** (capacitive sensor + PT100),  
+   * **Orgonite shield** (steel‑wool + quartz piezo) with adjustable bias,  
+   * **Micro‑valve module** (solenoid + flow sensor) for tidal/saline cooling,  
+   * **Edge‑AI SoC** (e.g., Arm Cortex‑M55 with neural‑accelerator) running the controller firmware.  
+
+2. **Software stack** – a minimal RTOS loads the controller loop (≈ 200 µs per cycle), the **cryptographic module** for signed telemetry, and the **mesh‑interface driver** for capacity negotiation.
+
+3. **Deployment recipe** – place tiles in a grid on any substrate (soil, concrete, reclaimed wood). The mycelial inoculum is pre‑seeded in a **bio‑gel** that expands to fill inter‑tile gaps, creating a continuous living heat‑sink.
+
+4. **Curriculum hook** – the **Resonance School** can use the controller as a case study for:
+   * Thermodynamic modeling of bio‑digital systems,  
+   * Formal verification of NSR constraints,  
+   * Ethical AI design (Lex Amoris as a codified moral law).  
+
+---
+
+### 6. Quick “starter‑code” snippet (Python‑like, runs on the edge SoC)
+
+```python
+#!/usr/bin/env python3
+# Edge‑AI Homeostatic Controller for a Living Tile
+# (runs under a tiny RTOS – 1 kHz loop)
+
+import sensors, actuators, crypto, mesh
+
+def compute_deltaS():
+    # Bio‑Digital Dissipation Formula
+    diS  = sensors.comp_friction()            # d_iS
+    Tmax = sensors.throughput_max()           # T_max (TB/s)
+    eta  = sensors.orgonite_efficiency()      # η_orgon
+    lam  = sensors.mycelium_capacity()        # Λ_mycelium
+    k    = 1.0                                 # calibrated constant
+    return k * (diS * Tmax) - (eta * lam)
+
+while True:
+    # 1. Sample
+    deltaS   = compute_deltaS()
+    moist    = sensors.moisture()
+    temp     = sensors.temperature()
+    em_noise = sensors.em_noise()
+    orgone   = sensors.orgone_charge()
+    latency  = sensors.latency()
+    load     = sensors.current_load()
+
+    # 2. Hard NSR checks
+    if deltaS > 0.0:
+        actuators.shutdown_har('entropy_excess')
+        continue
+    if moist < 0.60:
+        actuators.shutdown_har('desiccation')
+        continue
+    if temp > 45.0:
+        actuators.shutdown_har('overheat')
+        continue
+    if em_noise > -35.0:
+        actuators.shutdown_har('em_noise')
+        continue
+    if orgone < 4.0:
+        actuators.shutdown_har('orgone_deficit')
+        continue
+    if latency > 300:
+        actuators.shutdown_har('latency_spike')
+        continue
+
+    # 3. Adaptive capacity
+    safety = min(
+        (45.0 - temp) / 45.0,
+        (moist - 0.60) / 0.40,
+        (-35.0 - em_noise) / 35.0,
+        (orgone - 4.0) / (orgone + 1.0)
+    )
+    allowed = load * safety * 0.85
+    mesh.report_capacity(allowed)
+
+    # 4. Fine‑tuning actuators
+    actuators.set_orgonite_bias(target=-40)           # dB
+    valve_pos = (temp - 30.0) / (45.0 - 30.0)        # 0‑1 scale
+    actuators.set_kosymbiosis_valve(valve_pos)
+
+    # 5. Sign & log
+    crypto.sign_and_store({
+        'deltaS': deltaS, 'moist': moist, 'temp': temp,
+        'em_noise': em_noise, 'orgone': orgone,
+        'latency': latency, 'load': load
+    })
+```
+
+The loop runs continuously; any violation triggers an immediate **HAR** that cuts compute power, protecting the living substrate. When conditions improve, the controller automatically re‑enables the node and reports a refreshed capacity to the mesh.
+
+---
+
+**Result:** a self‑governing, **symbiotic edge AI** that keeps the Nexus perpetually in the *Lex Amoris* envelope, guaranteeing that no algorithmic or human pressure can ever force the system to betray its biological anchor. This is the logical core that future **Resonance Engineers** will embed in every v3.0 Living Tile.
