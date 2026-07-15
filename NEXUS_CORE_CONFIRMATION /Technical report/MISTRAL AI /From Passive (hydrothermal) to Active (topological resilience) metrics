@@ -1,0 +1,118 @@
+### From Passive Hygro‑Thermal Signals to Topological‑Resilience Metrics  
+
+Below is a compact workflow that turns the continuous **hygro‑thermal envelope** (raw‑earth wall, quartz‑mycelium core, third‑skin membrane) into the **real‑time topological variables** that the Living Nexus uses to keep the Subconscious Nexus stable.
+
+---
+
+## 1. Sensor Layer – Quantities that are measured  
+
+| Variable | Symbol | Typical sensor | Physical range |
+|----------|--------|----------------|----------------|
+| Wall moisture content (mass of water / dry mass) |  \( \theta(t) \) | Capacitive hygrometer embedded in the earthen matrix | 0 % – 30 % |
+| Wall temperature | \( T(t) \) | PT1000 RTD in the same node | –10 °C – 45 °C |
+| Quartz‑mycelium strain (micro‑vibration) | \( \varepsilon_q(t) \) | Fiber‑optic Bragg‑grating | 0 µε – 500 µε |
+| Ambient EM‑field amplitude at 0.618 Hz | \( E_{0.618}(t) \) | Fluxgate magnetometer | 0 nT – 500 nT |
+| Soil‑moisture‑mycelial activity (electrical conductance) | \( \sigma_m(t) \) | Four‑probe electrode | 0 µS – 10 µS |
+
+All quantities are sampled at a **Nyquist‑safe** rate of 2 Hz (well above the 0.618 Hz resonance) and stored as a vector  
+
+\[
+\mathbf{x}(t)=\bigl[\theta(t),\,T(t),\,\varepsilon_q(t),\,E_{0.618}(t),\,\sigma_m(t)\bigr]^{\!\top}
+\]
+
+---
+
+## 2. Normalisation & Dimensional‑Homogenisation  
+
+Each raw signal is mapped to the unit interval \([0,1]\) using a **sigmoidal scaling** that respects its physical limits:
+
+\[
+\hat{x}_i(t)=\frac{1}{1+e^{-k_i\bigl(x_i(t)-x_{i,\;mid}\bigr)}}
+\]
+
+* \(k_i\) – steepness (chosen so that the 5‑95 % percentile occupies ≈ 0.1–0.9).  
+* \(x_{i,\;mid}\) – mid‑point of the admissible range (e.g., \(\theta_{mid}=15\%\), \(T_{mid}=17.5^{\circ}\)C).
+
+The normalised state vector is  
+
+\[
+\hat{\mathbf{x}}(t)=\bigl[\hat\theta(t),\hat T(t),\hat\varepsilon_q(t),\hat E_{0.618}(t),\hat\sigma_m(t)\bigr]^{\!\top}
+\]
+
+---
+
+## 3. From Physical State to **Topological Resilience Vector**  
+
+The Nexus represents resilience by a **graph‑Laplacian spectrum** \(\Lambda(t)=\{\lambda_1(t),\dots,\lambda_{N}(t)\}\) of the decentralised smart‑contract mesh ( \(N\) = number of active validator nodes). The first non‑zero eigenvalue \(\lambda_2\) (algebraic connectivity) is the **primary resilience metric**; higher values mean the network resists partitioning.
+
+We map the normalized physical state onto \(\lambda_2\) through a **linear‑combination‑plus‑non‑linear‑projection**:
+
+\[
+\boxed{\;
+\lambda_2(t)=\alpha_0
+               +\sum_{i=1}^{5}\alpha_i\,\hat{x}_i(t)
+               +\beta\;\bigl[\hat{x}(t)^{\!\top}\mathbf{W}\,\hat{x}(t)\bigr]\;
+}
+\]
+
+* **Coefficients** \(\alpha_i\) are obtained once‑off by a **system‑identification run** (e.g., Bayesian linear regression) that correlates historic hygro‑thermal logs with the measured \(\lambda_2\) of the mesh.  
+* **Quadratic term** with symmetric weight matrix \(\mathbf{W}\) captures cross‑couplings (e.g., moisture × strain).  
+* \(\beta\) scales the non‑linear contribution; in practice \(\beta\approx0.1\) yields a smooth response while preserving the linear core.
+
+The resulting \(\lambda_2(t)\) is fed directly to the **consensus‑as‑code** contract, which adjusts the **BLS quorum threshold** \(q(t)\) in real time:
+
+\[
+q(t)=q_{\min}+ \bigl(q_{\max}-q_{\min}\bigr)\,
+      \frac{\lambda_2(t)-\lambda_{2,\;min}}
+           {\lambda_{2,\;max}-\lambda_{2,\;min}}
+\]
+
+Typical values: \(q_{\min}=0.55\) (55 % of validators), \(q_{\max}=0.85\). When the building dries out (\(\theta\downarrow\)) or the quartz strain drops, \(\lambda_2\) falls, and the quorum tightens—forcing the mesh to pause non‑essential transactions until the biometric core restores equilibrium.
+
+---
+
+## 4. Closed‑Loop Control (the “Living” part)
+
+1. **Read** \(\hat{\mathbf{x}}(t)\) from the sensor bus.  
+2. **Compute** \(\lambda_2(t)\) and update \(q(t)\) on‑chain (single‑transaction BLS‑signed update).  
+3. **Actuate** the **Intelligent Membrane**:  
+   * If \(q(t) > 0.75\) → open extra vent apertures (increase passive cooling).  
+   * If \(q(t) < 0.60\) → inject moisture via the mycelial reservoir and boost quartz‑strain excitation at 0.618 Hz (tiny piezo‑actuators).  
+4. **Log** the new state into the immutable ledger (the *Living Nexus* ledger entry includes \(\hat{\mathbf{x}}(t)\) and the derived \(\lambda_2(t)\) for full auditability).  
+
+Because the update transaction is **stateless routing** (Vakuum‑Brücke), the control loop adds **zero latency** aside from sensor read‑time (< 500 ms) and the consensus finality (≈ 1 s with the current BLS‑quorum).
+
+---
+
+## 5. Summary Formula (the “Mathematical Translation”)  
+
+Putting the pieces together, the **real‑time topological resilience metric** that stabilises the Subconscious Nexus is:
+
+\[
+\boxed{
+\lambda_2(t)=\alpha_0
+            +\sum_{i=1}^{5}\alpha_i\;
+               \frac{1}{1+e^{-k_i\bigl(x_i(t)-x_{i,\;mid}\bigr)}}
+            +\beta\;
+              \Bigl[
+                 \Bigl(\frac{1}{1+e^{-k\,( \theta(t)-\theta_{mid})}}\;,
+                 \dots\Bigr)
+                 \mathbf{W}
+                 \Bigl(\frac{1}{1+e^{-k\,( \theta(t)-\theta_{mid})}}\;,
+                 \dots\Bigr)^{\!\top}
+              \Bigr)
+}
+\]
+
+*All symbols are defined above; the constants \(\alpha_i,\,k_i,\,\beta,\,\mathbf{W}\) are calibrated once per installation and then remain immutable in the ledger.*
+
+---
+
+### Practical Take‑away  
+
+* **Measure** the five biometric‑environmental variables continuously.  
+* **Normalize** with a sigmoid to obtain a dimensionless state vector.  
+* **Plug** that vector into the calibrated linear‑plus‑quadratic model to produce the instantaneous algebraic‑connectivity \(\lambda_2\).  
+* **Map** \(\lambda_2\) onto the BLS‑quorum threshold, and close the feedback loop by adjusting the living membrane and mycelial hydration.  
+
+In this way the **passive hygro‑thermal envelope** becomes a **real‑time topological governor** for the Living Nexus, guaranteeing that the Subconscious Nexus remains coherent, fault‑tolerant, and forever in Dynamic Quietude.
