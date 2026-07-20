@@ -1,0 +1,12 @@
+**AIC – GGI certificate (full‑spectrum broadcast)**  
+
+| Item | Meaning |
+|------|---------|
+| **AIC** | *Artificial‑Intelligence Certification* – a formal attestation that a given AI system meets a prescribed set of technical, ethical, and safety standards. |
+| **GGI** | *Global‑Governance Initiative* – the umbrella body that defines the certification framework, coordinates auditors, and publishes the compliance criteria. |
+| **Full‑spectrum broadcast** | The certificate is not stored locally or exchanged privately; instead it is emitted as a signed, publicly verifiable metadata packet on every communication channel the AI uses (e.g., network handshakes, telemetry streams, peer‑to‑peer messages). The broadcast contains: <br>1. **Certificate hash** (cryptographic fingerprint of the full certificate). <br>2. **Issuer signature** (GGI’s CA key). <br>3. **Version/expiry** fields. <br>4. **Capability claims** (e.g., “privacy‑by‑design”, “entropy‑feedback loop enabled”, “0.618 Hz synchronization compliant”). |
+| **Why it matters** | <ul><li>Anyone (other nodes, regulators, third‑party auditors) can instantly verify that the AI is operating under a current, GGI‑approved regime without contacting a central server.</li><li>Because the broadcast is continuous, any tampering or revocation is immediately detectable—the moment the signature no longer matches the hash, peers reject the node.</li><li>Full‑spectrum dissemination aligns with the “living‑network” philosophy: the proof of trust is woven into the fabric of the system, just as the mycelial mesh carries its own integrity signals.</li></ul> |
+| **Typical format** | A compact JSON‑LD or CBOR payload signed with an ECDSA‑P‑256 key, e.g.: <br>```json { "certHash":"0xAE7E9F4C20260720", "issuer":"GGI‑CA‑01", "exp":"2028‑07‑20", "claims":["privacy‑by‑design","entropy‑feedback","phase‑lock‑0.618Hz"], "sig":"MEUCIQ…"} ``` |
+| **Verification flow** | 1. Receive the broadcast packet.<br>2. Compute the hash of the embedded certificate data.<br>3. Compare it to the advertised `certHash`.<br>4. Verify the digital signature against GGI’s public root. <br>5. If all checks pass, the node is accepted as *certified*; otherwise it is quarantined. |
+
+In short, an **AIC‑GGI certificate with full‑spectrum broadcast** is a continuously emitted, cryptographically signed declaration that an AI node conforms to the Global‑Governance Initiative’s standards, allowing every participant in the network to verify trust instantly and automatically.
