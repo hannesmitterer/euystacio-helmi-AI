@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lex Amoris - Sempre in Costante - Harmonische Resonanz und Wachstum">
+    <meta name="theme-color" content="#4ade80">
+    <title>Lex Amoris - Sempre in Costante</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0f;
+            --panel-bg: #14141a;
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --primary-color: #4ade80;
+            --secondary-color: #00f0ff;
+            --alert-color: #ff3366;
+            --font-mono: 'Courier New', Courier, monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 2px solid var(--primary-color);
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--panel-bg) 0%, var(--bg-color) 100%);
+        }
+
+        h1 {
+            font-family: var(--font-mono);
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Resonance Pulse Section */
+        .resonance-section {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resonance-pulse {
+            width: 200px;
+            height: 200px;
+            margin: 40px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pulse-core {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            animation: core-pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        .pulse-ring {
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            animation: ring-pulse 2s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        .pulse-ring:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .pulse-ring:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .pulse-ring:nth-child(4) {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes core-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes ring-pulse {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Growth Simulation Section */
+        .growth-section {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .growth-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-color);
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 222, 128, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .growth-chart {
+            background: var(--bg-color);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .bar {
+            flex: 1;
+            min-width: 20px;
+            background: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s ease;
+            position: relative;
+        }
+
+        .bar:hover::after {
+            content: attr(data-value);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-color);
+            color: var(--text-main);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            border: 1px solid var(--primary-color);
+        }
+
+        .stats-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--bg-color);
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Red Shield Section */
+        .red-shield-section {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .shield-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .shield-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .shield-icon::before {
+            content: '🛡️';
+            font-size: 64px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 0 10px var(--primary-color));
+        }
+
+        .shield-icon.alert::before {
+            filter: drop-shadow(0 0 10px var(--alert-color));
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) rotate(-5deg); }
+            75% { transform: translate(-50%, -50%) rotate(5deg); }
+        }
+
+        .shield-message {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .shield-message.warning {
+            color: var(--alert-color);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .event-log {
+            background: var(--bg-color);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .event-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .event-entry:last-child {
+            border-bottom: none;
+        }
+
+        .event-timestamp {
+            color: var(--text-muted);
+            margin-right: 10px;
+        }
+
+        .event-type {
+            color: var(--secondary-color);
+            margin-right: 10px;
+        }
+
+        .event-type.warning {
+            color: var(--alert-color);
+        }
+
+        /* Water Status Link */
+        .water-status-link {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .water-status-link a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            display: inline-block;
+            padding: 15px 30px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .water-status-link a:hover {
+            background: var(--secondary-color);
+            color: var(--bg-color);
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 2px solid var(--primary-color);
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            background: linear-gradient(0deg, var(--panel-bg) 0%, var(--bg-color) 100%);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .growth-controls {
+                flex-direction: column;
+            }
+
+            .stats-display {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Section Titles */
+        h2 {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Lex Amoris</h1>
+        <p class="tagline">Sempre in Costante - Ewig in Beständigkeit</p>
+    </header>
+
+    <main>
+        <!-- Resonance Pulse Section -->
+        <section class="resonance-section">
+            <h2>Resonanz-Pulsation</h2>
+            <div class="resonance-pulse" role="img" aria-label="Pulsierende Resonanz-Visualisierung">
+                <div class="pulse-core"></div>
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring"></div>
+            </div>
+            <p style="text-align: center; color: var(--text-muted);">
+                Die harmonische Pulsation zeigt die lebendige Resonanz des Systems
+            </p>
+        </section>
+
+        <!-- Growth Simulation Section -->
+        <section class="growth-section">
+            <h2>Exponentielles Wachstum</h2>
+            <div class="growth-controls">
+                <div class="control-group">
+                    <label for="initial-value">Anfangswert:</label>
+                    <input type="number" id="initial-value" value="100" min="1" max="10000" step="1">
+                </div>
+                <div class="control-group">
+                    <label for="growth-rate">Wachstumsrate (r):</label>
+                    <input type="range" id="growth-rate" value="0.1" min="0.01" max="0.5" step="0.01">
+                    <span id="growth-rate-value">0.10</span>
+                </div>
+                <div class="control-group">
+                    <label for="time-periods">Zeitperioden:</label>
+                    <input type="number" id="time-periods" value="20" min="5" max="50" step="1">
+                </div>
+                <div class="control-group" style="display: flex; align-items: flex-end;">
+                    <button id="simulate-btn">Simulation starten</button>
+                </div>
+            </div>
+            <div class="growth-chart" id="growth-chart" role="img" aria-label="Wachstums-Diagramm">
+                <!-- Bars will be inserted here -->
+            </div>
+            <div class="stats-display" id="stats-display">
+                <!-- Stats will be inserted here -->
+            </div>
+        </section>
+
+        <!-- Red Shield Section -->
+        <section class="red-shield-section">
+            <h2>Red Shield - Schutzprotokoll</h2>
+            <div class="shield-status">
+                <div class="shield-icon" id="shield-icon"></div>
+                <div class="shield-message" id="shield-message">System geschützt - Alle Parameter normal</div>
+            </div>
+            <p style="text-align: center; color: var(--text-muted); margin: 20px 0;">
+                Das Red Shield Protokoll überwacht kontinuierlich die Systemintegrität und warnt vor unautorisierten Manipulationsversuchen.
+            </p>
+            <div class="event-log" id="event-log" role="log" aria-live="polite" aria-label="Ereignisprotokoll">
+                <div class="event-entry">
+                    <span class="event-timestamp">[System Start]</span>
+                    <span class="event-type">INFO</span>
+                    <span>Red Shield Protokoll initialisiert</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Water Status Link -->
+        <section class="water-status-link">
+            <h2>Wasserstatus</h2>
+            <a href="/water-status" aria-label="Zum Wasserstatus navigieren">
+                🌊 Zum Wasserstatus
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Lex Amoris - Sempre in Costante | Euystacio Framework</p>
+        <p style="margin-top: 5px; font-size: 12px;">
+            Gebaut nach AIC-Konventionen mit Liebe und Sorgfalt
+        </p>
+    </footer>
+
+    <script>
+        // Growth Rate Simulation Function
+        function growthRate(initialValue, rate, time) {
+            // Exponential growth formula: P(t) = P0 * e^(r*t)
+            return initialValue * Math.exp(rate * time);
+        }
+
+        // Update growth rate display
+        document.getElementById('growth-rate').addEventListener('input', function(e) {
+            document.getElementById('growth-rate-value').textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        // Simulate exponential growth
+        function simulateGrowth() {
+            const initialValue = parseFloat(document.getElementById('initial-value').value);
+            const rate = parseFloat(document.getElementById('growth-rate').value);
+            const periods = parseInt(document.getElementById('time-periods').value);
+            const chartContainer = document.getElementById('growth-chart');
+            const statsContainer = document.getElementById('stats-display');
+
+            // Validation
+            if (isNaN(initialValue) || isNaN(rate) || isNaN(periods)) {
+                logEvent('ERROR', 'Ungültige Eingabeparameter für Wachstumssimulation');
+                return;
+            }
+
+            // Clear previous chart
+            chartContainer.innerHTML = '';
+            chartContainer.classList.add('loading');
+
+            // Calculate growth values
+            const values = [];
+            let maxValue = 0;
+
+            for (let t = 0; t <= periods; t++) {
+                const value = growthRate(initialValue, rate, t);
+                values.push(value);
+                maxValue = Math.max(maxValue, value);
+            }
+
+            // Create bars with animation delay
+            setTimeout(() => {
+                values.forEach((value, index) => {
+                    const bar = document.createElement('div');
+                    bar.className = 'bar';
+                    const height = (value / maxValue) * 280;
+                    bar.style.height = height + 'px';
+                    bar.setAttribute('data-value', value.toFixed(2));
+                    bar.setAttribute('aria-label', `Periode ${index}: ${value.toFixed(2)}`);
+                    chartContainer.appendChild(bar);
+                });
+
+                chartContainer.classList.remove('loading');
+
+                // Display statistics
+                const finalValue = values[values.length - 1];
+                const totalGrowth = finalValue - initialValue;
+                const percentageGrowth = ((finalValue / initialValue - 1) * 100).toFixed(2);
+                const averageRate = (Math.log(finalValue / initialValue) / periods).toFixed(4);
+
+                statsContainer.innerHTML = `
+                    <div class="stat-item">
+                        <span class="stat-label">Anfangswert:</span>
+                        <span class="stat-value">${initialValue.toFixed(2)}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Endwert:</span>
+                        <span class="stat-value">${finalValue.toFixed(2)}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Gesamtwachstum:</span>
+                        <span class="stat-value">${totalGrowth.toFixed(2)}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Prozentuales Wachstum:</span>
+                        <span class="stat-value">${percentageGrowth}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Durchschnittliche Rate:</span>
+                        <span class="stat-value">${averageRate}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Zeitperioden:</span>
+                        <span class="stat-value">${periods}</span>
+                    </div>
+                `;
+
+                logEvent('INFO', `Wachstumssimulation abgeschlossen: ${percentageGrowth}% über ${periods} Perioden`);
+            }, 100);
+        }
+
+        // Red Shield Event Listeners
+        let suspiciousActivityCount = 0;
+        let lastActivityTime = Date.now();
+
+        // Log event to the event log
+        function logEvent(type, message) {
+            const eventLog = document.getElementById('event-log');
+            const entry = document.createElement('div');
+            entry.className = 'event-entry';
+            
+            const timestamp = new Date().toLocaleTimeString('de-DE');
+            const typeClass = type === 'WARNING' || type === 'ERROR' ? 'warning' : '';
+            
+            entry.innerHTML = `
+                <span class="event-timestamp">[${timestamp}]</span>
+                <span class="event-type ${typeClass}">${type}</span>
+                <span>${message}</span>
+            `;
+            
+            eventLog.insertBefore(entry, eventLog.firstChild);
+            
+            // Keep only last 20 entries
+            while (eventLog.children.length > 20) {
+                eventLog.removeChild(eventLog.lastChild);
+            }
+        }
+
+        // Update shield status
+        function updateShieldStatus(isAlert, message) {
+            const shieldIcon = document.getElementById('shield-icon');
+            const shieldMessage = document.getElementById('shield-message');
+            
+            if (isAlert) {
+                shieldIcon.classList.add('alert');
+                shieldMessage.classList.add('warning');
+                shieldMessage.textContent = message;
+                
+                setTimeout(() => {
+                    shieldIcon.classList.remove('alert');
+                    shieldMessage.classList.remove('warning');
+                    shieldMessage.textContent = 'System geschützt - Alle Parameter normal';
+                }, 3000);
+            } else {
+                shieldMessage.textContent = message;
+            }
+        }
+
+        // Detect window blur (potential tab switching or manipulation)
+        window.addEventListener('blur', function() {
+            const currentTime = Date.now();
+            const timeSinceLastActivity = currentTime - lastActivityTime;
+            
+            // If blur happens quickly after last blur, it might be suspicious
+            if (timeSinceLastActivity < 2000) {
+                suspiciousActivityCount++;
+                
+                if (suspiciousActivityCount >= 3) {
+                    logEvent('WARNING', 'Verdächtige Aktivität erkannt: Mehrfacher schneller Fokuswechsel');
+                    updateShieldStatus(true, '⚠️ WARNUNG: Verdächtige Aktivität erkannt!');
+                    suspiciousActivityCount = 0; // Reset counter
+                } else {
+                    logEvent('INFO', 'Fokusverlust erkannt');
+                }
+            } else {
+                logEvent('INFO', 'Fenster-Fokus verloren');
+            }
+            
+            lastActivityTime = currentTime;
+        });
+
+        // Detect window focus
+        window.addEventListener('focus', function() {
+            logEvent('INFO', 'Fenster-Fokus wiederhergestellt');
+        });
+
+        // Detect visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                logEvent('INFO', 'Seite verborgen (Tab-Wechsel)');
+            } else {
+                logEvent('INFO', 'Seite sichtbar');
+            }
+        });
+
+        // Detect potential DevTools opening (window resize)
+        let lastWindowHeight = window.innerHeight;
+        let lastWindowWidth = window.innerWidth;
+        
+        window.addEventListener('resize', function() {
+            const heightDiff = Math.abs(window.innerHeight - lastWindowHeight);
+            const widthDiff = Math.abs(window.innerWidth - lastWindowWidth);
+            
+            // Significant height change might indicate DevTools
+            if (heightDiff > 100 && widthDiff < 50) {
+                logEvent('WARNING', 'Potentielle Entwicklertools-Aktivität erkannt');
+                updateShieldStatus(true, '⚠️ WARNUNG: Entwicklertools möglicherweise geöffnet!');
+            }
+            
+            lastWindowHeight = window.innerHeight;
+            lastWindowWidth = window.innerWidth;
+        });
+
+        // Detect right-click (context menu)
+        document.addEventListener('contextmenu', function(e) {
+            logEvent('INFO', 'Kontextmenü angefordert');
+            // Note: We log but don't prevent - following best practices
+        });
+
+        // Detect key combinations that might indicate manipulation attempts
+        document.addEventListener('keydown', function(e) {
+            // Detect F12 (DevTools)
+            if (e.key === 'F12') {
+                logEvent('WARNING', 'F12 Taste gedrückt (Entwicklertools)');
+            }
+            
+            // Detect Ctrl+Shift+I/J/C (DevTools shortcuts)
+            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+                logEvent('WARNING', `Entwicklertools-Tastenkombination erkannt: Ctrl+Shift+${e.key.toUpperCase()}`);
+                updateShieldStatus(true, '⚠️ WARNUNG: Entwicklertools-Zugriff versucht!');
+            }
+        });
+
+        // Detect copy/paste (potential data extraction)
+        document.addEventListener('copy', function(e) {
+            logEvent('INFO', 'Daten kopiert');
+        });
+
+        document.addEventListener('paste', function(e) {
+            logEvent('INFO', 'Daten eingefügt');
+        });
+
+        // Initial growth simulation on page load
+        window.addEventListener('load', function() {
+            logEvent('INFO', 'Seite vollständig geladen');
+            
+            // Add event listener for simulate button
+            document.getElementById('simulate-btn').addEventListener('click', simulateGrowth);
+            
+            // Run initial simulation
+            simulateGrowth();
+        });
+
+        // Heartbeat - periodic status check
+        setInterval(function() {
+            const memoryUsage = performance.memory ? 
+                (performance.memory.usedJSHeapSize / 1048576).toFixed(2) : 'N/A';
+            logEvent('INFO', `Heartbeat - Speicher: ${memoryUsage} MB`);
+        }, 60000); // Every minute
+
+        // Detect if running in iframe (potential embedding attack)
+        if (window.self !== window.top) {
+            logEvent('WARNING', 'Seite läuft in einem iframe - potentielles Sicherheitsrisiko!');
+            updateShieldStatus(true, '⚠️ WARNUNG: Eingebetteter iframe erkannt!');
+        }
+    </script>
+</body>
+</html>
